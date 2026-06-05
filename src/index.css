@@ -1,0 +1,7 @@
+/* Tailwind CSS directives - these inject Tailwind's styles into your project */
+/* "base" = CSS reset/normalize */
+/* "components" = reusable component classes */
+/* "utilities" = all the utility classes like p-4, text-lg, flex, etc. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
