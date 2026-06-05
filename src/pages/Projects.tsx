@@ -1,48 +1,52 @@
 /**
- * Projects Index Page (/projects)
+ * Projects index (/projects)
  *
- * Shows a grid of all projects from the data file.
- * Each project card links to either an internal detail page
- * or an external URL.
+ * A clean row list of all projects. Projects with an externalUrl link out (↗);
+ * the rest open their detail page here. The dock's back chevron handles "back".
  */
 
-import { Link } from 'react-router-dom'
-import { Button } from '@scorp-ds/components'
-import { ArrowLeft } from 'lucide-react'
+import MinimalPage from '../components/MinimalPage'
+import { Item, List } from '../components/Item'
 import { projects } from '../data/projects'
-import FeaturedProjectCard from '../components/FeaturedProjectCard'
-import PageContainer from '../components/PageContainer'
+import { useXp, XP_AWARDS } from '../context/XpProvider'
 
 export default function Projects() {
+  const { award } = useXp()
+
   return (
-    <PageContainer className="space-y-8">
+    <MinimalPage>
+      <h1 className="page">Projects</h1>
+      <p className="lead">
+        A few things I've designed and built. Scorpion links out; the rest open here.
+      </p>
 
-      {/* Back to home */}
-      <Link to="/" className="no-underline">
-        <Button variant="link" iconLeft={<ArrowLeft size={16} className="-translate-y-px" />} className="-ml-6">
-          Home
-        </Button>
-      </Link>
-
-      {/* Page header - matches the home page type scale */}
-      <div>
-        <h1 className="text-base font-mono font-medium text-[var(--text-primary)] leading-[1.7] mb-3">
-          Projects
-        </h1>
-        <p className="text-base font-mono text-[var(--text-secondary)] leading-[1.625]">
-          A collection of projects built with AI tools, from design systems
-          to web applications. Some live here, some live elsewhere, all built
-          with intention.
-        </p>
+      <div className="mn-block">
+        <List>
+          {projects.map((p) =>
+            p.external && p.externalUrl ? (
+              <Item
+                key={p.slug}
+                href={p.externalUrl}
+                external
+                title={p.title}
+                desc={p.description}
+                img={p.img}
+                imgSrc={p.thumbnail}
+                onClick={() => award(XP_AWARDS.project, `opened ${p.title}`, `project:${p.slug}`)}
+              />
+            ) : (
+              <Item
+                key={p.slug}
+                to={`/projects/${p.slug}`}
+                title={p.title}
+                desc={p.description}
+                img={p.img}
+                imgSrc={p.thumbnail}
+              />
+            )
+          )}
+        </List>
       </div>
-
-      {/* Project grid - single column, full-image cards (matches home) */}
-      <div className="grid grid-cols-1 gap-6">
-        {projects.map((project) => (
-          <FeaturedProjectCard key={project.slug} project={project} />
-        ))}
-      </div>
-
-    </PageContainer>
+    </MinimalPage>
   )
 }

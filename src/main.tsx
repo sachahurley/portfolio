@@ -8,6 +8,9 @@ import '@scorp-ds/components/styles'
 // Your project's Tailwind CSS (uses the tokens loaded above)
 import './index.css'
 
+// Minimal-mode stylesheet (ported from the prototype; uses the aliases in index.css)
+import './styles/minimal.css'
+
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(

@@ -1,0 +1,219 @@
+/* ============================================================
+   Minimal mode — ported from sacha-minimal-prototype.html
+   Layout/spacing kept verbatim; every color routed through the
+   Minimal-mode token aliases defined in index.css (which trace
+   back to scorp-ds). Excluded from the prototype: the cube hero
+   (.scene/.cube/.face), skills bars (.skill/.meter), and the
+   newsletter field (.field/.input).
+   ============================================================ */
+
+body {
+  background: var(--bg);
+  color: var(--body);
+  font-family: var(--mono);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ---- loading screen ---- */
+#loader {
+  position: fixed; inset: 0; z-index: 90; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .4s ease;
+}
+#loader.hide { opacity: 0; pointer-events: none; }
+.spinner {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 3px solid var(--border); border-top-color: var(--accent);
+  animation: mn-spin360 .8s linear infinite;
+}
+@keyframes mn-spin360 { to { transform: rotate(360deg); } }
+
+/* ---- floating bottom-center dock: menu button + sliding back chevron ---- */
+.dock {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  z-index: 72; display: flex; align-items: center;
+}
+.menubtn {
+  position: relative; font-family: var(--mono); font-size: 15px;
+  background: #181818; border: 1px solid var(--border); border-radius: 999px;
+  padding: 14px 24px; cursor: pointer; color: var(--fg);
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 26px rgba(0,0,0,.45);
+}
+.menubtn:hover { background: #222; }
+.menubtn .ic { display: inline-flex; flex-direction: column; gap: 4px; }
+.menubtn .ic span { display: block; width: 18px; height: 2px; background: var(--fg); border-radius: 2px; }
+.backbtn {
+  position: absolute; right: calc(100% + 10px); top: 50%;
+  width: 50px; height: 50px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  background: #181818; border: 1px solid var(--border); color: var(--fg);
+  box-shadow: 0 8px 26px rgba(0,0,0,.45); cursor: pointer;
+  transform: translateY(-50%) translateX(14px) scale(.85);
+  opacity: 0; pointer-events: none;
+  transition: transform .3s cubic-bezier(.34,1.15,.5,1), opacity .2s ease;
+}
+.dock.sub .backbtn { transform: translateY(-50%) translateX(0) scale(1); opacity: 1; pointer-events: auto; }
+.backbtn:hover { background: #222; }
+.tip {
+  position: fixed; left: 50%; bottom: 78px; transform: translateX(-50%);
+  z-index: 72; background: var(--fg); color: var(--bg);
+  font-size: 11px; padding: 6px 10px; border-radius: 6px; white-space: nowrap;
+}
+.tip:after {
+  content: ""; position: absolute; bottom: -5px; left: 50%; margin-left: -5px;
+  border: 5px solid transparent; border-top-color: var(--fg); border-bottom: 0;
+}
+
+/* ---- iOS-style bottom sheet (desktop + mobile) ---- */
+.scrim {
+  position: fixed; inset: 0; z-index: 74; background: rgba(0,0,0,.55);
+  backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .3s ease;
+}
+.scrim.open { opacity: 1; pointer-events: auto; }
+.sheet {
+  position: fixed; left: 50%; bottom: 0; width: min(540px,100%); z-index: 75;
+  background: var(--bg); border: 1px solid var(--border); border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+  padding: 8px 24px calc(28px + env(safe-area-inset-bottom));
+  max-height: 86vh; overflow: auto;
+  transform: translateX(-50%) translateY(110%);
+  transition: transform .34s cubic-bezier(.32,.72,0,1);
+  box-shadow: 0 -12px 48px rgba(0,0,0,.55);
+}
+.sheet.open { transform: translateX(-50%) translateY(0); }
+.sheet.dragging { transition: none; }
+.grabber { width: 42px; height: 5px; border-radius: 999px; background: #3a3a3a; margin: 8px auto 16px; cursor: grab; touch-action: none; }
+.menu-nav { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+.menu-nav a {
+  display: flex; align-items: baseline; font-size: 22px; font-weight: 600;
+  letter-spacing: -.02em; padding: 9px 0; color: var(--fg); text-transform: capitalize;
+}
+/* Nav: inactive links muted, hover brightens, current page in the warm accent. */
+.menu-nav a { color: var(--mut); }
+.menu-nav a:hover { color: var(--fg); }
+.menu-nav a.active { color: var(--accent); }
+.menu-foot {
+  margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+.menu-foot .lvl { font-size: 14px; color: var(--mut); display: flex; align-items: center; gap: 10px; }
+.menu-foot .mbar { width: 90px; height: 8px; background: var(--hover); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.menu-foot .mbar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s; }
+.toggle {
+  font-family: var(--mono); font-size: 14px; border: 1px solid var(--border);
+  background: var(--bg); border-radius: 6px; padding: 8px 12px; cursor: pointer; color: var(--fg);
+}
+.toggle:hover { background: var(--hover); }
+/* the ⚔ icon matches the home "See all" arrow size */
+.toggle .qicon { font-size: 1.6rem; line-height: 0; vertical-align: -0.04em; }
+.menu-note { font-size: 11px; color: var(--mut2); width: 100%; text-align: center; margin-top: 10px; }
+
+/* ---- layout — narrow column, emil-style rhythm ---- */
+.mn-main { max-width: var(--col); margin: 0 auto; padding: 96px 24px 160px; }
+/* Home keeps the pixel graphics flush; its column needs less top padding */
+.mn-main.flush-top { padding-top: 32px; }
+
+.intro { display: block; }
+.intro h1 { font-size: 16px; font-weight: 500; letter-spacing: -.01em; margin: 0; color: var(--accent); }
+.role { color: var(--mut); font-size: 16px; font-weight: 500; margin: 2px 0 0; }
+.bio { margin: 24px 0 0; max-width: 62ch; }
+.bio p { margin: 0 0 16px; }
+.bio p:last-child { margin-bottom: 0; }
+.bio a { border-bottom: 1px solid var(--mut2); }
+.bio a:hover { border-color: var(--fg); }
+/* hero mark (scorpion) sits above the name, centered in the content column */
+.heromark { display: flex; justify-content: center; margin: 0 0 34px; }
+
+/* emil rhythm: 128px desktop / 64px mobile between sections.
+   Namespaced as .mn-block (NOT .block) to avoid colliding with Tailwind's
+   `block` display utility, which is used by the pixel-graphic canvases. */
+.mn-block { margin-top: 64px; }
+@media (min-width: 640px) { .mn-block { margin-top: 128px; } }
+.label { font-size: 16px; font-weight: 500; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
+.shead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 16px; }
+.shead .label { margin: 0; }
+.seeall { font-size: 15px; color: var(--accent); }
+.seeall:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* match the See all arrow to the external-link icon size (1.6rem = 1.6em on the
+   16px row titles); rem keeps it identical despite the 15px .seeall base */
+.seeall .arr { font-size: 1.6rem; line-height: 0; vertical-align: -0.04em; }
+/* "See all" sits at the bottom of a section, aligned with the row text */
+.seefoot { margin-top: 20px; }
+
+/* link rows: stacked title + muted description (exact emil metrics) */
+.list { display: flex; flex-direction: column; gap: 16px; margin: 0 -12px -12px; }
+.item { display: block; padding: 12px; border-radius: 8px; transition: background .12s; }
+.item:hover { background: var(--hover); }
+.item .nd { display: block; color: var(--mut); font-size: 14px; line-height: 20px; margin-bottom: 2px; }
+.item .t { display: block; color: var(--fg); line-height: 24px; }
+/* link titles carry the warm sepia-gold accent (no hover underline on rows) */
+a.item .t { color: var(--accent); }
+.item .d { display: block; color: var(--body); line-height: 24px; }
+.item .ext { color: inherit; font-size: 1.6em; line-height: 0; vertical-align: -0.04em; }
+.meta { color: var(--mut); font-size: 14px; }
+/* optional 16:9 thumbnail on the far right of a row */
+.item.has-img { display: flex; align-items: center; gap: 16px; }
+.item.has-img .txt { flex: 1; min-width: 0; }
+.thumbimg {
+  flex: none; width: 132px; aspect-ratio: 16/9; border: 1px solid var(--border); border-radius: 6px;
+  object-fit: cover; display: block;
+  background: repeating-linear-gradient(45deg,#121212,#121212 8px,#181818 8px,#181818 16px);
+}
+@media (max-width: 480px) { .thumbimg { width: 104px; } }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 13px;
+  border: 1px solid var(--fg); background: var(--fg); color: var(--bg); border-radius: 5px;
+  padding: 8px 13px; cursor: pointer;
+}
+.btn:hover { opacity: .85; }
+.btn.outline { background: var(--bg); color: var(--fg); border-color: var(--border); }
+.btn.outline:hover { background: var(--hover); }
+
+/* lab demo */
+#labcanvas {
+  width: 100%; height: 300px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--hover); display: block; touch-action: none; margin-top: 18px;
+}
+
+/* detail bits */
+.thumb {
+  height: 150px; border: 1px solid var(--border); border-radius: 6px; margin: 18px 0;
+  background: repeating-linear-gradient(45deg,#121212,#121212 8px,#181818 8px,#181818 16px);
+}
+h1.page { font-size: 16px; font-weight: 600; margin: 0; color: var(--fg); text-transform: capitalize; }
+.lead { color: var(--body); margin: 10px 0 0; max-width: 60ch; }
+
+/* article / writing prose — measured from emilkowal.ski/ui/agents-with-taste */
+.prose { margin-top: 28px; }
+.prose p { font-size: 16px; line-height: 1.65; margin: 0 0 26px; color: var(--body); }
+.prose p:last-child { margin-bottom: 0; }
+.prose h2 { font-size: 16px; font-weight: 550; line-height: 1.5; margin: 56px 0 20px; color: var(--fg); }
+.prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.prose ul { margin: 0 0 26px; padding-left: 20px; }
+.prose li { margin: 0 0 8px; line-height: 1.65; color: var(--body); }
+.prose .thumb { margin: 0 0 26px; }
+.prose strong { color: var(--fg); }
+
+/* toasts — above the menu button */
+#toaster {
+  position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 8px; z-index: 80; align-items: center;
+}
+.toast {
+  background: var(--fg); color: var(--bg); font-size: 12.5px; padding: 8px 13px; border-radius: 5px;
+  opacity: 0; transform: translateY(8px); transition: .25s;
+}
+.toast.show { opacity: 1; transform: none; }
+.toast.level { background: var(--bg); color: var(--accent); border: 1px solid var(--accent); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+  * { transition: none !important; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

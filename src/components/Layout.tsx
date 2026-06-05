@@ -1,13 +1,13 @@
 /**
  * Layout Component
- * 
- * Wraps every page with the shared Navbar and Footer.
- * This means you don't have to repeat the nav/footer in every page file.
+ *
+ * Wraps every page. Renders the page content plus the persistent Minimal-mode
+ * chrome (loader, floating dock, bottom sheet, toasts). No header, no footer.
  */
 
 import { type ReactNode } from 'react'
+import MinimalChrome from './MinimalChrome'
 
-// "children" is whatever page content gets placed inside the Layout
 interface LayoutProps {
   children: ReactNode
 }
@@ -15,12 +15,11 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-[var(--surface-page)] transition-colors flex flex-col overflow-x-hidden">
-
       {/* Page content - this is where Home, Projects, Notes, etc. render */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
 
+      {/* The only persistent UI: floating dock + sheet + loader + toasts */}
+      <MinimalChrome />
     </div>
   )
 }

@@ -5,9 +5,9 @@
  * just add a new object to the "projects" array below.
  *
  * - "slug" is the URL-friendly name (e.g., /projects/scorpion-ui)
- * - every project has its own detail page at /projects/:slug
- * - "externalUrl" is the link OUT to the live project, shown as a button
- *   on that detail page
+ * - every internal project has its own detail page at /projects/:slug
+ * - "externalUrl" links OUT to the live project. Projects with an
+ *   externalUrl are treated as external links (↗) in the row lists.
  * - "featured: true" makes it show on the Home page
  */
 
@@ -15,11 +15,14 @@
 export interface Project {
   slug: string            // URL path, e.g. "scorpion-ui"
   title: string           // Display name
-  description: string     // Short summary (1-2 sentences)
+  description: string     // Short summary (1-2 sentences) - shown on row lists
+  role?: string           // Your role, shown as meta on the detail page
   tags: string[]          // Category labels, e.g. ["Design System", "React"]
   featured: boolean       // Show on homepage?
-  externalUrl?: string    // Link out to the live project (button on the detail page)
-  thumbnail?: string      // Optional image path (can add later)
+  img?: boolean           // Show a 16:9 thumbnail on the row
+  external?: boolean      // If true, the row links straight out (no detail page)
+  externalUrl?: string    // Link out to the live project (CTA on the detail page)
+  thumbnail?: string      // Optional image path (used as the row thumbnail)
   tools?: string[]        // AI tools / tech used
   year?: string           // When the project was made
   longDescription?: string // Full description for the detail page
@@ -32,15 +35,37 @@ export const projects: Project[] = [
   {
     slug: 'scorpion-ui',
     title: 'Scorpion Design System',
-    description:
-      'A modern, token-based design system built with React, TypeScript, and Tailwind CSS. Features light/dark theme support and comprehensive documentation.',
+    description: 'A terminal-style design system for building with AI.',
+    role: 'Designer & Builder',
     tags: ['Design System', 'React', 'TypeScript'],
     featured: true,
+    img: true,
     externalUrl: 'https://sachahurley.github.io/scorpion-ui-v2/',
     tools: ['Cursor', 'Claude', 'React', 'Tailwind CSS'],
     year: '2025',
     longDescription:
       'Scorpion UI is a token-based design system built from the ground up using AI tools. It includes a complete component library, design token system, and interactive documentation site.',
+  },
+  {
+    slug: 'coldaw',
+    title: 'ColDAW',
+    description: 'Cloud-based collaborative DAW.',
+    role: 'Founding PM',
+    tags: ['Product', 'Audio', 'Collaboration'],
+    featured: true,
+    img: true,
+    longDescription:
+      'ColDAW is a cloud-based, collaborative digital audio workstation. Placeholder case study - replace with the real write-up.',
+  },
+  {
+    slug: 'thinkle',
+    title: 'Thinkle',
+    description: 'Smart-glasses learning system.',
+    role: 'Product Designer',
+    tags: ['Product Design', 'Hardware', 'Learning'],
+    featured: false,
+    longDescription:
+      'Thinkle is a smart-glasses learning system. Placeholder case study - replace with the real write-up.',
   },
 ]
 

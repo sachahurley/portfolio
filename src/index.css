@@ -5,3 +5,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   Minimal-mode semantic tokens
+   These alias the scorp-ds dark-theme CSS variables (loaded via
+   `@scorp-ds/components/styles` in main.tsx) so the Minimal-mode
+   stylesheet can reference `var(--bg)`, `var(--accent)`, etc. while
+   every color still traces back to the design system.
+   ============================================================ */
+:root {
+  --bg: var(--surface-page);        /* page background */
+  --fg: var(--text-primary);        /* labels, names, page titles */
+  --body: var(--text-secondary);    /* descriptions, paragraphs */
+  --mut: var(--text-tertiary);      /* dates, meta, role */
+  --mut2: var(--border-muted);      /* faint arrows */
+  /* Warm sepia-gold highlight for links / See all / active nav / XP bar / focus
+     + selection. Known gap: scorp-ds has no muted warm-gold accent token — the
+     amber steps are too bright (amber-400) or too orange (amber-600) and the
+     sepia steps are neutral grays — so this is a scoped one-off (the gold the
+     Minimal prototype was designed around). Reconcile into the DS later. */
+  --accent: #e0a33d;
+  --hover: var(--surface-muted);    /* row / control hover */
+  --ring: var(--border-focus);      /* focus ring */
+
+  /* Known gap: scorp-ds has no near-black semantic border. Its darkest
+     semantic border (--border-default #695F4D) is far lighter than the
+     prototype's #242424, so we use the dark sepia step here. Reconcile
+     into a scorp-ds dark-border token later. */
+  --border: var(--color-sepia-950, #1a150f);
+
+  --col: 644px;                     /* content column width */
+  --mono: var(
+    --font-family-mono,
+    "Geist Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace
+  );
+}
+
+/* Amber selection + focus ring, per the Minimal spec */
+::selection { background: var(--accent); color: var(--bg); }
+:focus-visible { outline: 1.5px solid var(--accent); outline-offset: 3px; border-radius: 2px; }

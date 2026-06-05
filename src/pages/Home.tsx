@@ -1,115 +1,146 @@
+/**
+ * Home (/)
+ *
+ * Between the fixed pixel graphics (stalactites top / fire bottom): the
+ * scorpion hero mark, name + role, bio, and preview sections for Projects,
+ * Lab, and Notes, then a "Find me" section. The pixel graphics and the
+ * scorpion are preserved exactly - do not replace the scorpion with a cube.
+ */
+
 import { Link } from 'react-router-dom'
-import { Button } from '@scorp-ds/components'
-import { ArrowRight } from 'lucide-react'
 import PixelFire from '../components/PixelFire'
-import PixelClouds from '../components/PixelClouds'
-import PageContainer from '../components/PageContainer'
-
-// Pull real data from the data files
-import { getFeaturedProjects } from '../data/projects'
-import { getLatestPosts } from '../data/posts'
-
-// Reusable card components
-import FeaturedProjectCard from '../components/FeaturedProjectCard'
-import PostCard from '../components/PostCard'
-
-// Carousel sizing. EDGE_PAD aligns the first card with the 672px content column
-// (and the page's 24px mobile gutter); cards then scroll off the right edge.
-// CARD_W matches the content column so the lead card looks like the page width.
-const EDGE_PAD = 'max(24px, calc((100vw - 672px) / 2))'
-const CARD_W = 'min(672px, calc(100vw - 48px))'
+import PixelStalactites from '../components/PixelStalactites'
+import PixelScorpion from '../components/PixelScorpion'
+import MinimalPage from '../components/MinimalPage'
+import { Item, List } from '../components/Item'
+import { projects } from '../data/projects'
+import { getSortedPosts } from '../data/posts'
+import { lab } from '../data/lab'
+import { useXp, XP_AWARDS } from '../context/XpProvider'
+import { formatDate } from '../lib/date'
 
 export default function Home() {
-  // Get featured projects and the 3 most recent posts
-  const featuredProjects = getFeaturedProjects()
-  const latestPosts = getLatestPosts(3)
+  const { award } = useXp()
+  // Each section previews up to 3 rows; "See all" appears at the bottom only
+  // when the full collection has more than 3 items.
+  const PREVIEW = 3
+  const projectItems = projects.slice(0, PREVIEW)
+  const labItems = lab.slice(0, PREVIEW)
+  const allNotes = getSortedPosts()
+  const notes = allNotes.slice(0, PREVIEW)
 
   return (
     <>
-    {/* Pixel clouds drifting left to right across the top */}
-    <PixelClouds />
+      {/* Pixel stalactites hanging from the top of the page */}
+      <PixelStalactites />
 
-    <PageContainer flushTop>
+      <MinimalPage flushTop>
+        {/* ===== Intro ===== */}
+        <section className="intro">
+          {/* Animated pixel scorpion as the hero mark, above the name */}
+          <div className="heromark" aria-hidden="true">
+            {/* 25% smaller than the 340px default, static, centered via .heromark */}
+            <PixelScorpion width={255} />
+          </div>
+          <h1>Sacha Hurley</h1>
+        </section>
 
-      <div className="space-y-16 md:space-y-20 pt-8 md:pt-12">
-
-      {/* ===== Hero Section ===== */}
-      <section>
-        <h1 className="text-base font-mono font-light text-amber-600 leading-[1.7] mb-4">
-          Sacha Hurley
-        </h1>
-        <p className="text-base font-mono text-[var(--text-secondary)] max-w-3xl leading-[1.625]">
-          I'm a product designer working where design meets AI. I use AI tools
-          to build real products, from design systems to full apps.
-        </p>
-      </section>
-
-      <div className="border-t-[0.5px] border-solid border-sepia-500 dark:border-sepia-800" role="separator" />
-
-      {/* ===== Featured Projects ===== */}
-      <section className="space-y-6 pb-6 md:pb-8">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-mono font-medium text-[var(--text-primary)]">
-            Projects
-          </h2>
-          <Link to="/projects" className="no-underline">
-            <Button variant="link" iconRight={<ArrowRight size={16} className="-translate-y-px" />} className="-mr-6">
-              View All
-            </Button>
-          </Link>
+        <div className="bio">
+          <p>
+            Product designer building a health app at Betterfly. Before: Meta, my
+            agency Utility, and games at EA Sports.
+          </p>
         </div>
 
-        {/* Full-bleed horizontal carousel. The lead card aligns with the page
-            content; the rest scroll off the right edge of the screen. */}
-        <div
-          className="flex gap-6 overflow-x-auto w-screen relative left-1/2 -ml-[50vw] snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-          style={{ paddingLeft: EDGE_PAD, paddingRight: EDGE_PAD, scrollPaddingLeft: EDGE_PAD }}
-        >
-          {featuredProjects.map((project) => (
-            <div key={project.slug} className="shrink-0 snap-start" style={{ width: CARD_W }}>
-              <FeaturedProjectCard project={project} />
+        {/* ===== Projects ===== */}
+        <div className="mn-block">
+          <div className="label">projects</div>
+          <List>
+            {projectItems.map((p) =>
+              p.external && p.externalUrl ? (
+                <Item
+                  key={p.slug}
+                  href={p.externalUrl}
+                  external
+                  title={p.title}
+                  desc={p.description}
+                  img={p.img}
+                  imgSrc={p.thumbnail}
+                  onClick={() => award(XP_AWARDS.project, `opened ${p.title}`, `project:${p.slug}`)}
+                />
+              ) : (
+                <Item
+                  key={p.slug}
+                  to={`/projects/${p.slug}`}
+                  title={p.title}
+                  desc={p.description}
+                  img={p.img}
+                  imgSrc={p.thumbnail}
+                />
+              )
+            )}
+          </List>
+          {projects.length > PREVIEW && (
+            <div className="seefoot">
+              <Link className="seeall" to="/projects">See all <span className="arr">→</span></Link>
             </div>
-          ))}
+          )}
+        </div>
 
-          {/* Two more image containers that scroll off the side (placeholders) */}
-          {[0, 1].map((i) => (
-            <div key={`placeholder-${i}`} className="shrink-0 snap-start" style={{ width: CARD_W }}>
-              <div className="relative overflow-hidden rounded-[24px] border-[0.5px] border-solid border-sepia-500 dark:border-sepia-800 aspect-video">
-                <div className="absolute inset-0 bg-gradient-to-br from-sepia-200 via-sepia-100 to-amber-100 dark:from-sepia-950 dark:via-sepia-925 dark:to-amber-950" />
-              </div>
+        {/* ===== Lab ===== */}
+        <div className="mn-block">
+          <div className="label">lab</div>
+          <List>
+            {labItems.map((x) => (
+              <Item key={x.slug} to={`/lab/${x.slug}`} title={x.title} desc={x.desc} img={x.img} />
+            ))}
+          </List>
+          {lab.length > PREVIEW && (
+            <div className="seefoot">
+              <Link className="seeall" to="/lab">See all <span className="arr">→</span></Link>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <div className="border-t-[0.5px] border-solid border-sepia-500 dark:border-sepia-800" role="separator" />
-
-      {/* ===== Latest Notes ===== */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-mono font-medium text-[var(--text-primary)]">
-            Notes
-          </h2>
-          <Link to="/notes" className="no-underline">
-            <Button variant="link" iconRight={<ArrowRight size={16} className="-translate-y-px" />} className="-mr-6">
-              View All
-            </Button>
-          </Link>
+          )}
         </div>
 
-        <div className="divide-y-[0.5px] divide-solid divide-sepia-500 dark:divide-sepia-800 [&>a:first-child>article]:pt-0">
-          {latestPosts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
+        {/* ===== Notes ===== */}
+        <div className="mn-block">
+          <div className="label">notes</div>
+          <List>
+            {notes.map((n) => (
+              <Item
+                key={n.slug}
+                to={`/notes/${n.slug}`}
+                date={formatDate(n.date)}
+                title={n.title}
+                desc={n.excerpt}
+                img={n.img}
+              />
+            ))}
+          </List>
+          {allNotes.length > PREVIEW && (
+            <div className="seefoot">
+              <Link className="seeall" to="/notes">See all <span className="arr">→</span></Link>
+            </div>
+          )}
         </div>
-      </section>
 
-      </div>
+        {/* ===== Find me ===== */}
+        <div className="mn-block">
+          <div className="label">find me</div>
+          <List>
+            <Item
+              href="https://x.com/sacha_hurley"
+              external
+              title="X"
+              desc="@sacha_hurley"
+              onClick={() => award(XP_AWARDS.follow, 'followed on X', 'follow')}
+            />
+          </List>
+        </div>
+      </MinimalPage>
 
-    </PageContainer>
-
-    {/* Pixel fire animation - only on the home page */}
-    <PixelFire />
+      {/* Pixel fire animation - only on the home page */}
+      <PixelFire />
     </>
   )
 }

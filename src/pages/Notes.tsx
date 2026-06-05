@@ -1,54 +1,36 @@
 /**
- * Notes Index Page (/notes)
+ * Notes index (/notes)
  *
- * Shows a list of all notes, sorted newest first.
+ * A row list with the date shown on each row. No tag-filter row.
  */
 
-import { Link } from 'react-router-dom'
-import { Button } from '@scorp-ds/components'
-import { ArrowLeft } from 'lucide-react'
+import MinimalPage from '../components/MinimalPage'
+import { Item, List } from '../components/Item'
 import { getSortedPosts } from '../data/posts'
-import PostCard from '../components/PostCard'
-import PageContainer from '../components/PageContainer'
+import { formatDate } from '../lib/date'
 
 export default function Notes() {
-  const sortedPosts = getSortedPosts()
+  const posts = getSortedPosts()
 
   return (
-    <PageContainer className="space-y-8">
+    <MinimalPage>
+      <h1 className="page">Notes</h1>
+      <p className="lead">Short notes &amp; things I'm learning.</p>
 
-      {/* Back to home */}
-      <Link to="/" className="no-underline">
-        <Button variant="link" iconLeft={<ArrowLeft size={16} className="-translate-y-px" />} className="-ml-6">
-          Home
-        </Button>
-      </Link>
-
-      {/* Page header - matches the home page type scale */}
-      <div>
-        <h1 className="text-base font-mono font-medium text-[var(--text-primary)] leading-[1.7] mb-3">
-          Notes
-        </h1>
-        <p className="text-base font-mono text-[var(--text-secondary)] leading-[1.625]">
-          Notes on building with AI, design process, and lessons learned along
-          the way.
-        </p>
+      <div className="mn-block">
+        <List>
+          {posts.map((n) => (
+            <Item
+              key={n.slug}
+              to={`/notes/${n.slug}`}
+              date={formatDate(n.date)}
+              title={n.title}
+              desc={n.excerpt}
+              img={n.img}
+            />
+          ))}
+        </List>
       </div>
-
-      {/* Posts list */}
-      <div className="space-y-4">
-        {sortedPosts.map((post) => (
-          <PostCard key={post.slug} post={post} />
-        ))}
-      </div>
-
-      {/* Empty state if no posts */}
-      {sortedPosts.length === 0 && (
-        <p className="text-[var(--text-secondary)] text-center py-12">
-          No posts yet. Check back soon!
-        </p>
-      )}
-
-    </PageContainer>
+    </MinimalPage>
   )
 }

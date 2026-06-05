@@ -17,6 +17,7 @@ export interface Post {
   excerpt: string    // Short preview (1-2 sentences, shown in post lists)
   tags: string[]     // Topic labels, e.g. ["AI", "Design"]
   content: string    // Full post content (supports basic HTML)
+  img?: boolean      // Show a 16:9 thumbnail on the row
 }
 
 // ============================================
@@ -28,8 +29,9 @@ export const posts: Post[] = [
     title: 'The Design-to-Engineering Handoff Is Dead. Here\u2019s What Replaced It.',
     date: '2026-02-15',
     excerpt:
-      'The design-to-engineering workflow hasn\u2019t just improved - the entire model has changed. Here\u2019s how an AI-first workflow replaces the handoff entirely.',
+      'How an AI-first workflow replaces the design-to-engineering handoff',
     tags: ['AI', 'Design', 'Engineering', 'Process'],
+    img: true,
     content: `
       <p>
         For years, the design-to-engineering workflow has looked the same: designer builds mockups in Figma, writes specs, hands them over a wall, and hopes the engineer interprets them correctly. Then weeks later, you\u2019re in a QA review comparing screenshots to Figma frames, filing tickets for every misaligned pixel.
@@ -114,7 +116,7 @@ export const posts: Post[] = [
     title: 'Why Every AI Builder Needs a Design System',
     date: '2026-02-10',
     excerpt:
-      'A design system isn\'t just for big teams. If you\'re building with AI, having consistent tokens and components makes everything better.',
+      'A design system isn\'t just for big teams. If you\'re building with AI, consistent tokens and components make everything better',
     tags: ['Design Systems', 'AI', 'Process'],
     content: `
       <h2>The problem with one-off builds</h2>
@@ -137,6 +139,32 @@ export const posts: Post[] = [
         defining your color palette and a few reusable components makes a huge
         difference. This is a sample post - replace it with your real content!
       </p>
+    `,
+  },
+  {
+    slug: 'playgrounds',
+    title: 'Playgrounds Beat Decks',
+    date: '2026-01-28',
+    excerpt:
+      'Interactive sites hold attention far longer than case studies',
+    tags: ['Portfolio', 'Craft'],
+    content: `
+      <p>Interactive sites hold attention far longer than case studies. Placeholder body - replace with the real note.</p>
+      <h2>A subheading</h2>
+      <p>Real notes are readable prose with comfortable rhythm: 16px text, 1.65 line-height, and 26px between paragraphs. Inline <a href="https://x.com/sacha_hurley" target="_blank" rel="noopener">links</a> are amber and underlined.</p>
+      <p>A friendly closing thought, then a way to keep the conversation going.</p>
+    `,
+  },
+  {
+    slug: 'uses',
+    title: 'What I Use',
+    date: '2026-01-20',
+    excerpt: 'The tools I actually reach for, day to day',
+    tags: ['Tools'],
+    // The /notes/uses page renders the tools list (from data/tools.ts) instead
+    // of this HTML, so this content is just a fallback.
+    content: `
+      <p>The tools I actually reach for, day to day. I keep the kit small and lean on AI tooling to move fast.</p>
     `,
   },
 ]
