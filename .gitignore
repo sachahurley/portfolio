@@ -8,8 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-ssr
+# scope to the repo-root build output so vendored scorp-ds dist stays tracked
+/dist
+/dist-ssr
 *.local
 
 # Editor directories and files
