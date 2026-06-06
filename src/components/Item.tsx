@@ -18,6 +18,7 @@ interface ItemProps {
   desc?: ReactNode
   img?: boolean      // show a placeholder 16:9 thumbnail
   imgSrc?: string    // a real thumbnail image (overrides the placeholder)
+  imgRight?: boolean // on mobile, keep a two-column row with a portrait (9:16) image on the right, instead of stacking it below
   onClick?: () => void
 }
 
@@ -37,9 +38,9 @@ function clampSentences(s: string, max = 2): string {
   return sentences.slice(0, max).join(' ').trim()
 }
 
-export function Item({ to, href, external, date, title, desc, img, imgSrc, onClick }: ItemProps) {
+export function Item({ to, href, external, date, title, desc, img, imgSrc, imgRight, onClick }: ItemProps) {
   const hasImg = !!img || !!imgSrc
-  const className = `item${hasImg ? ' has-img' : ''}`
+  const className = `item${hasImg ? ' has-img' : ''}${hasImg && imgRight ? ' img-right' : ''}`
 
   const displayTitle = stripTrailingPeriod(title)
   const displayDesc = typeof desc === 'string' ? clampSentences(desc) : desc

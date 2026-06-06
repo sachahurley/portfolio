@@ -20,6 +20,7 @@ export interface Project {
   tags: string[]          // Category labels, e.g. ["Design System", "React"]
   featured: boolean       // Show on homepage?
   img?: boolean           // Show a 16:9 thumbnail on the row
+  imgRight?: boolean      // On mobile, keep a two-column row with a portrait (9:16) image on the right
   external?: boolean      // If true, the row links straight out (no detail page)
   externalUrl?: string    // Link out to the live project (CTA on the detail page)
   thumbnail?: string      // Optional image path (used as the row thumbnail)
@@ -54,6 +55,7 @@ export const projects: Project[] = [
     tags: ['Product', 'Audio', 'Collaboration'],
     featured: true,
     img: true,
+    imgRight: true, // demo: two-column portrait thumbnail on mobile
     longDescription:
       'ColDAW is a cloud-based, collaborative digital audio workstation. Placeholder case study - replace with the real write-up.',
   },

@@ -32,6 +32,7 @@ export default function Projects() {
                 desc={p.description}
                 img={p.img}
                 imgSrc={p.thumbnail}
+                imgRight={p.imgRight}
                 onClick={() => award(XP_AWARDS.project, `opened ${p.title}`, `project:${p.slug}`)}
               />
             ) : (
@@ -42,6 +43,7 @@ export default function Projects() {
                 desc={p.description}
                 img={p.img}
                 imgSrc={p.thumbnail}
+                imgRight={p.imgRight}
               />
             )
           )}
