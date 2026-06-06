@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bash dev.sh",
     "dev:portfolio-only": "vite",
-    "sync:ds": "npm run build --prefix ../scorp-ds",
+    "vendor:ds": "bash scripts/vendor-ds.sh",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
