@@ -10,6 +10,7 @@
 import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useXp } from '../context/XpProvider'
+import PixelStoneBorder from './PixelStoneBorder'
 
 const NAV: [string, string][] = [
   ['/', 'Home'],
@@ -110,23 +111,29 @@ export default function BottomSheet({
         </nav>
 
         <div className="menu-foot">
+          <div className="foot-left">
+            <span className="foot-title">Your level</span>
+            <span className="lvl">
+              <span>{`Level ${level.idx + 1}`}</span>
+              <span className="mbar">
+                <i style={{ width: `${level.pct}%` }} />
+              </span>
+              <span className="exp">
+                {level.nextAt != null ? `${xp - level.curAt}/${level.nextAt - level.curAt}` : 'MAX'}
+              </span>
+            </span>
+          </div>
           <button
             className="toggle"
             aria-label="Switch to Quest mode"
-            onClick={() => toast('Quest mode is coming soon, building minimal first ⚔')}
+            onClick={() => toast('Quest mode is coming soon, building minimal first')}
           >
             <span className="qicon">⚔</span> Quest mode
           </button>
-          <span className="lvl">
-            <span>{`Level ${level.idx + 1}`}</span>
-            <span className="mbar">
-              <i style={{ width: `${level.pct}%` }} />
-            </span>
-            <span className="exp">
-              {level.nextAt != null ? `${xp - level.curAt}/${level.nextAt - level.curAt}` : 'MAX'}
-            </span>
-          </span>
         </div>
+
+        {/* Carved-stone baseboard along the very bottom of the sheet. */}
+        <PixelStoneBorder />
       </div>
     </>
   )

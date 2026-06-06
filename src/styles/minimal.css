@@ -16,6 +16,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; text-decoration: none; }
+/* Single weight across the whole site: everything regular, regardless of size.
+   Emphasis is carried by colour, not weight. */
+strong, b { font-weight: 400; }
 
 /* ---- loading screen ---- */
 #loader {
@@ -50,7 +53,7 @@ a { color: inherit; text-decoration: none; }
 @media (prefers-reduced-motion: no-preference) {
   .menubtn::after {
     content: ""; position: absolute; left: 0; right: 0; top: 0; height: 70%;
-    background: radial-gradient(55% 100% at 50% 0%, rgba(204, 64, 24, 0.24), rgba(204, 64, 24, 0) 72%);
+    background: radial-gradient(55% 100% at 50% 0%, rgba(204, 64, 24, 0.14), rgba(204, 64, 24, 0) 72%);
     pointer-events: none; z-index: -1; opacity: 0; transition: opacity .9s ease;
   }
   .menubtn.lit::after { opacity: 1; }
@@ -92,7 +95,7 @@ a { color: inherit; text-decoration: none; }
   position: fixed; left: 50%; bottom: 0; width: min(540px,100%); z-index: 75;
   background: var(--bg); border: 1px solid rgba(255, 255, 255, 0.14); border-bottom: 0;
   border-radius: 20px 20px 0 0;
-  padding: 8px 24px calc(28px + env(safe-area-inset-bottom));
+  padding: 8px 24px env(safe-area-inset-bottom);
   max-height: 86vh; overflow: auto;
   transform: translateX(-50%) translateY(110%);
   transition: transform .34s cubic-bezier(.32,.72,0,1);
@@ -101,9 +104,13 @@ a { color: inherit; text-decoration: none; }
 .sheet.open { transform: translateX(-50%) translateY(0); }
 .sheet.dragging { transition: none; }
 .grabber { width: 42px; height: 5px; border-radius: 999px; background: #3a3a3a; margin: 8px auto 16px; cursor: grab; touch-action: none; }
+/* carved-stone baseboard: full-bleed (breaks the 24px side padding) along the
+   bottom of the sheet, with a gap above it from the footer. */
+.stoneborder { margin: 16px -24px 0; line-height: 0; pointer-events: none; }
+.stoneborder canvas { display: block; width: 100%; image-rendering: pixelated; }
 .menu-nav { display: flex; flex-direction: column; gap: 2px; width: 100%; }
 .menu-nav a {
-  display: flex; align-items: baseline; font-size: 22px; font-weight: 600;
+  display: flex; align-items: baseline; font-size: 22px; font-weight: 400;
   letter-spacing: -.02em; padding: 9px 0; color: var(--fg); text-transform: capitalize;
 }
 /* Nav: inactive links muted, hover brightens, current page in the warm accent. */
@@ -114,6 +121,8 @@ a { color: inherit; text-decoration: none; }
   margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
 }
+.menu-foot .foot-left { display: flex; flex-direction: column; gap: 6px; }
+.menu-foot .foot-title { font-size: 12px; color: var(--mut2); }
 .menu-foot .lvl { font-size: 14px; color: var(--mut); display: flex; align-items: center; gap: 10px; }
 .menu-foot .exp { font-size: 12px; }
 .menu-foot .mbar { width: 90px; height: 8px; background: var(--hover); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
@@ -133,8 +142,8 @@ a { color: inherit; text-decoration: none; }
 .mn-main.flush-top { padding-top: 32px; }
 
 .intro { display: block; }
-.intro h1 { font-size: 16px; font-weight: 500; letter-spacing: -.01em; margin: 0; color: var(--accent); }
-.role { color: var(--mut); font-size: 16px; font-weight: 500; margin: 2px 0 0; }
+.intro h1 { font-size: 16px; font-weight: 400; letter-spacing: -.01em; margin: 0; color: var(--accent); }
+.role { color: var(--mut); font-size: 16px; font-weight: 400; margin: 2px 0 0; }
 .bio { margin: 8px 0 0; max-width: 62ch; }
 .bio p { margin: 0 0 16px; }
 .bio p:last-child { margin-bottom: 0; }
@@ -153,7 +162,7 @@ a { color: inherit; text-decoration: none; }
    `block` display utility, which is used by the pixel-graphic canvases. */
 .mn-block { margin-top: 64px; }
 @media (min-width: 640px) { .mn-block { margin-top: 128px; } }
-.label { font-size: 16px; font-weight: 500; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
+.label { font-size: 16px; font-weight: 400; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
 .shead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 16px; }
 .shead .label { margin: 0; }
 .seeall { font-size: 15px; color: var(--accent); }
@@ -211,14 +220,14 @@ a.item .t { color: var(--accent); }
   height: 150px; border: 1px solid var(--border); border-radius: 6px; margin: 18px 0;
   background: repeating-linear-gradient(45deg,#121212,#121212 8px,#181818 8px,#181818 16px);
 }
-h1.page { font-size: 16px; font-weight: 600; margin: 0; color: var(--fg); text-transform: capitalize; }
+h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-transform: capitalize; }
 .lead { color: var(--body); margin: 10px 0 0; max-width: 60ch; }
 
 /* article / writing prose — measured from emilkowal.ski/ui/agents-with-taste */
 .prose { margin-top: 28px; }
 .prose p { font-size: 16px; line-height: 1.65; margin: 0 0 26px; color: var(--body); }
 .prose p:last-child { margin-bottom: 0; }
-.prose h2 { font-size: 16px; font-weight: 550; line-height: 1.5; margin: 56px 0 20px; color: var(--fg); }
+.prose h2 { font-size: 16px; font-weight: 400; line-height: 1.5; margin: 56px 0 20px; color: var(--fg); }
 .prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .prose ul { margin: 0 0 26px; padding-left: 20px; }
 .prose li { margin: 0 0 8px; line-height: 1.65; color: var(--body); }
@@ -231,16 +240,13 @@ h1.page { font-size: 16px; font-weight: 600; margin: 0; color: var(--fg); text-t
   display: flex; flex-direction: column; gap: 8px; z-index: 80; align-items: center;
 }
 .toast {
+  /* one consistent width for every toast (not content-hugging, not full-bleed) */
+  width: min(320px, calc(100vw - 32px)); box-sizing: border-box; text-align: center;
   background: var(--fg); color: var(--bg); font-size: 14px; padding: 11px 20px; border-radius: 5px;
   opacity: 0; transform: translateY(8px); transition: .25s;
 }
 .toast.show { opacity: 1; transform: none; }
-.toast.level { background: var(--bg); color: var(--accent); border: 1px solid var(--accent); font-weight: 600; }
-/* Mobile: toasts span full width with a 16px gutter on each side */
-@media (max-width: 640px) {
-  #toaster { left: 16px; right: 16px; transform: none; align-items: stretch; }
-  .toast { width: 100%; text-align: center; }
-}
+.toast.level { background: var(--bg); color: var(--accent); border: 1px solid var(--accent); font-weight: 400; }
 
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation: none; }
