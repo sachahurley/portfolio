@@ -232,6 +232,11 @@ h1.page { font-size: 16px; font-weight: 600; margin: 0; color: var(--fg); text-t
 }
 .toast.show { opacity: 1; transform: none; }
 .toast.level { background: var(--bg); color: var(--accent); border: 1px solid var(--accent); font-weight: 600; }
+/* Mobile: toasts span full width with a 16px gutter on each side */
+@media (max-width: 640px) {
+  #toaster { left: 16px; right: 16px; transform: none; align-items: stretch; }
+  .toast { width: 100%; text-align: center; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation: none; }
