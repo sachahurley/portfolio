@@ -18,7 +18,7 @@ interface ItemProps {
   desc?: ReactNode
   img?: boolean      // show a placeholder 16:9 thumbnail
   imgSrc?: string    // a real thumbnail image (overrides the placeholder)
-  imgRight?: boolean // on mobile, keep a two-column row with a portrait (9:16) image on the right, instead of stacking it below
+  imgRight?: boolean // on mobile, keep a two-column row with a portrait (4:3) image on the right, instead of stacking it below
   onClick?: () => void
 }
 

@@ -197,10 +197,10 @@ a.item .t { color: var(--accent); }
 @media (max-width: 600px) {
   .item.has-img { flex-direction: column; align-items: stretch; }
   .item.has-img .thumbimg { width: 100%; }
-  /* opt-in: keep the row two-column with a portrait (9:16) image on the right */
+  /* opt-in: keep the row two-column with a portrait (4:3) image on the right */
   .item.has-img.img-right { flex-direction: row; align-items: center; }
   .item.has-img.img-right .txt { flex: 1; min-width: 0; }
-  .item.has-img.img-right .thumbimg { width: 84px; aspect-ratio: 9 / 16; }
+  .item.has-img.img-right .thumbimg { width: 84px; aspect-ratio: 3 / 4; }
 }
 
 /* buttons */
