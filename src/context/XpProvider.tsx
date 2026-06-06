@@ -44,7 +44,14 @@ export function levelInfo(xp: number) {
   const cur = LEVELS[i]
   const next = LEVELS[i + 1]
   const pct = next ? Math.round(((xp - cur[1]) / (next[1] - cur[1])) * 100) : 100
-  return { idx: i, name: cur[0], pct, next: next ? next[0] : null }
+  return {
+    idx: i,
+    name: cur[0],
+    pct,
+    next: next ? next[0] : null,
+    curAt: cur[1],
+    nextAt: next ? next[1] : null,
+  }
 }
 
 interface ToastItem {

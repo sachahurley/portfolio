@@ -27,7 +27,7 @@ export default function BottomSheet({
   onClose: () => void
 }) {
   const location = useLocation()
-  const { level, toast } = useXp()
+  const { xp, level, toast } = useXp()
   const sheetRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
 
@@ -110,12 +110,6 @@ export default function BottomSheet({
         </nav>
 
         <div className="menu-foot">
-          <span className="lvl">
-            <span>{`lv${level.idx + 1} · ${level.name}`}</span>
-            <span className="mbar">
-              <i style={{ width: `${level.pct}%` }} />
-            </span>
-          </span>
           <button
             className="toggle"
             aria-label="Switch to Quest mode"
@@ -123,6 +117,15 @@ export default function BottomSheet({
           >
             <span className="qicon">⚔</span> Quest mode
           </button>
+          <span className="lvl">
+            <span>{`Level ${level.idx + 1}`}</span>
+            <span className="mbar">
+              <i style={{ width: `${level.pct}%` }} />
+            </span>
+            <span className="exp">
+              {level.nextAt != null ? `${xp - level.curAt}/${level.nextAt - level.curAt}` : 'MAX'}
+            </span>
+          </span>
         </div>
       </div>
     </>

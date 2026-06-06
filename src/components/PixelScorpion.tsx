@@ -24,6 +24,15 @@ import { COLS, ROWS, PARTS, TONES, RIG, Part } from './scorpionPixels'
 //   tone 2 = body  → #968A75 (sepia-600, muted warm stone)
 const PALETTE = ['transparent', '#4A3C2C', '#968A75'] as const
 
+// Sparse brighter specks, scattered deterministically across the body so the
+// scorpion reads with a bit more detail instead of two flat tones.
+const SPEC_WHITE = '#fdfbf5' // bright warm white highlight
+const SPEC_GOLD = '#e0a33d' // gold fleck (matches the site accent)
+const rand = (n: number): number => {
+  const x = Math.sin(n) * 43758.5453
+  return x - Math.floor(x)
+}
+
 // --- tiny affine helpers: 2x3 matrix mapping (x,y) -> (a*x+c*y+e, b*x+d*y+f) ---
 type Mat = { a: number; b: number; c: number; d: number; e: number; f: number }
 const translate = (tx: number, ty: number): Mat => ({ a: 1, b: 0, c: 0, d: 1, e: tx, f: ty })
@@ -107,12 +116,26 @@ export default function PixelScorpion({ width = 340, animated = false, className
 
     // Draw a single cell group through a grid→canvas transform.
     const Sscale = scale(cell)
+    // Per-cell color: mostly the base tone, with occasional white/gold specks
+    // keyed off the grid position so the pattern is stable (the scorpion is static).
+    const colorFor = (c: number, r: number, base: string): string => {
+      const h = rand(c * 12.9898 + r * 78.233)
+      if (h > 0.95) return SPEC_WHITE
+      if (h > 0.89) return SPEC_GOLD
+      return base
+    }
     const drawGroup = (g: CellGroup, m: Mat) => {
       ctx.setTransform(m.a, m.b, m.c, m.d, m.e, m.f)
-      ctx.fillStyle = PALETTE[1]
-      for (let i = 0; i < g.gray.length; i += 2) ctx.fillRect(g.gray[i], g.gray[i + 1], 1.02, 1.02)
-      ctx.fillStyle = PALETTE[2]
-      for (let i = 0; i < g.white.length; i += 2) ctx.fillRect(g.white[i], g.white[i + 1], 1.02, 1.02)
+      for (let i = 0; i < g.gray.length; i += 2) {
+        const c = g.gray[i], r = g.gray[i + 1]
+        ctx.fillStyle = colorFor(c, r, PALETTE[1])
+        ctx.fillRect(c, r, 1.02, 1.02)
+      }
+      for (let i = 0; i < g.white.length; i += 2) {
+        const c = g.white[i], r = g.white[i + 1]
+        ctx.fillStyle = colorFor(c, r, PALETTE[2])
+        ctx.fillRect(c, r, 1.02, 1.02)
+      }
     }
 
     const render = (t: number) => {
