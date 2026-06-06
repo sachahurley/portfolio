@@ -27,7 +27,7 @@ const PALETTE = [
   '#282119',      // 2: outline — edges, tips, ceiling lip (defines the shape)
   '#201A14',      // 3: base slab / mid churn
   '#18130F',      // 4: body (closest to the background)
-  '#4A3C2C',      // 5: warm highlight (sparse mineral fleck)
+  '#7C93A1',      // 5: desaturated-blue glint (the dripping-water highlight)
 ]
 
 const PIXEL_SIZE = 4    // Each "pixel" is 4x4 real pixels
@@ -128,6 +128,14 @@ export default function PixelStalactites() {
 
       // Hang each stalactite from the ceiling, tapering to a point.
       for (const spike of spikesRef.current) {
+        // One blue water drip per spike: it forms at the top, descends slowly,
+        // then disappears at the tip with a short pause before the next forms.
+        // Per-spike phase + speed so the drips aren't synchronised.
+        const dripPhase = rand(spike.center * 0.917)
+        const dripSpeed = 1.2 + rand(spike.center * 1.31) * 1.2 // rows/sec (slow)
+        const dripCycle = spike.length + 1 + 14 // travel length + a long pause before respawn
+        const dripPos = (timestamp * 0.001 * dripSpeed + dripPhase * dripCycle) % dripCycle
+
         for (let r = 0; r <= spike.length; r++) {
           const t = r / spike.length
           // Taper toward the tip, eased so spikes stay broad up top then pinch.
@@ -138,6 +146,11 @@ export default function PixelStalactites() {
           const hwL = Math.max(0, Math.round(base) - jagL)
           const hwR = Math.max(0, Math.round(base) - jagR)
           const row = CEILING_ROWS + r
+          // This row carries the drip while it's passing through it.
+          const isDrip = dripPos <= spike.length && Math.abs(r - dripPos) < 0.6
+          // The drip core wanders slightly off-axis as it falls, so the cluster
+          // stays slim and asymmetric instead of a wide, centred band.
+          const dripCenter = spike.center + Math.round(Math.sin(r * 0.8 + dripPhase * 6.283))
 
           for (let col = spike.center - hwL; col <= spike.center + hwR; col++) {
             if (col < 0 || col >= gridWidth) continue
@@ -148,9 +161,11 @@ export default function PixelStalactites() {
               tone = 2 // outline + tip
             } else {
               const n = flow(spike.center + col, r, f)
-              if (n > 2.4) tone = 5      // sparse mineral highlight
-              else if (n > 0.8) tone = 3 // mid churn
-              else tone = 4              // body (darkest, hides into bg)
+              // Slim, ragged, asymmetric drip: a solid core plus flow-picked side
+              // cells within one column of the wandering centre.
+              const inDrip = isDrip && Math.abs(col - dripCenter) <= 1
+              if (inDrip && (col === dripCenter || n > -0.3)) tone = 5
+              else tone = n > 0.8 ? 3 : 4
             }
             paint(col, row, tone)
           }

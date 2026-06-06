@@ -42,28 +42,22 @@ a { color: inherit; text-decoration: none; }
   padding: 14px 24px; cursor: pointer; color: var(--fg);
   display: flex; align-items: center; gap: 10px;
   box-shadow: 0 8px 26px rgba(0,0,0,.45);
+  isolation: isolate; /* contain the heat-glow pseudo below the label */
 }
 .menubtn:hover { background: #222; }
-/* animated gold sweep traveling through the Menu button's stroke */
-@property --mn-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
-.menubtn::before {
-  content: ""; position: absolute; inset: -1px; border-radius: 999px; padding: 1px;
-  background: conic-gradient(from var(--mn-angle),
-    transparent 0deg 280deg, var(--accent) 318deg, #ffe7ad 330deg, var(--accent) 342deg, transparent 360deg);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-  /* hidden at rest; sweeps once on arrival (after the ~1.35s loader), then gone */
-  opacity: 0;
-  animation: mn-stroke 2.6s linear 1.4s forwards;
+/* subtle reddish heat glow concentrated at the top-centre (below the flame)
+   while the fire burns; fades out when extinguished. Motion-allowed only. */
+@media (prefers-reduced-motion: no-preference) {
+  .menubtn::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 70%;
+    background: radial-gradient(55% 100% at 50% 0%, rgba(204, 64, 24, 0.24), rgba(204, 64, 24, 0) 72%);
+    pointer-events: none; z-index: -1; opacity: 0; transition: opacity .9s ease;
+  }
+  .menubtn.lit::after { opacity: 1; }
 }
-@keyframes mn-stroke {
-  0%   { --mn-angle: 0deg;   opacity: 0; }
-  12%  { opacity: 1; }
-  88%  { opacity: 1; }
-  100% { --mn-angle: 360deg; opacity: 0; }
-}
+/* short doom-fire burning along the top of the Menu pill (see MenuFire.tsx);
+   replaces the old on-load gold stroke sweep. Extinguished on first tap. */
+.menufire { position: absolute; left: 50%; transform: translateX(-50%); width: 50%; bottom: calc(100% + 1px); pointer-events: none; }
 .menubtn .ic { display: inline-flex; flex-direction: column; gap: 4px; }
 .menubtn .ic span { display: block; width: 18px; height: 2px; background: var(--fg); border-radius: 2px; }
 .backbtn {
@@ -148,6 +142,11 @@ a { color: inherit; text-decoration: none; }
 .bio a:hover { border-color: var(--fg); }
 /* hero mark (scorpion) sits above the name, centered in the content column */
 .heromark { display: flex; justify-content: center; margin: 0 0 34px; }
+/* roaming variant: a full-width, fixed-height band the scorpion wanders across.
+   Fixed height keeps the name/bio from shifting; the canvas fills the band. */
+.heromark--roam { display: block; position: relative; width: 100%; height: 64px; margin: 12px 0 32px; overflow: hidden; }
+.heromark--roam canvas { display: block; position: absolute; inset: 0; pointer-events: none; }
+@media (max-width: 600px) { .heromark--roam { height: 56px; margin: 8px 0 28px; } }
 
 /* emil rhythm: 128px desktop / 64px mobile between sections.
    Namespaced as .mn-block (NOT .block) to avoid colliding with Tailwind's
@@ -185,6 +184,11 @@ a.item .t { color: var(--accent); }
   background: repeating-linear-gradient(45deg,#121212,#121212 8px,#181818 8px,#181818 16px);
 }
 @media (max-width: 480px) { .thumbimg { width: 104px; } }
+/* On mobile, stack the row vertically: text on top, full-width thumbnail below. */
+@media (max-width: 600px) {
+  .item.has-img { flex-direction: column; align-items: stretch; }
+  .item.has-img .thumbimg { width: 100%; }
+}
 
 /* buttons */
 .btn {
@@ -240,7 +244,6 @@ h1.page { font-size: 16px; font-weight: 600; margin: 0; color: var(--fg); text-t
 
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation: none; }
-  .menubtn::before { animation: none; }
   * { transition: none !important; }
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

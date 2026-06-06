@@ -7,6 +7,8 @@ export default defineConfig({
   // Bind on all interfaces so both 127.0.0.1 (IPv4) and ::1 (IPv6) work
   server: {
     host: true,
+    port: 5173,
+    strictPort: true, // fail loudly instead of silently hopping to 5174/5175/...
   },
   // One React instance for app + @scorp-ds/components (avoids invalid hook call / white screen)
   resolve: {

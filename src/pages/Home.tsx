@@ -10,7 +10,7 @@
 import { Link } from 'react-router-dom'
 import PixelFire from '../components/PixelFire'
 import PixelStalactites from '../components/PixelStalactites'
-import PixelScorpion from '../components/PixelScorpion'
+import RoamingScorpion from '../components/RoamingScorpion'
 import MinimalPage from '../components/MinimalPage'
 import { Item, List } from '../components/Item'
 import { projects } from '../data/projects'
@@ -35,20 +35,19 @@ export default function Home() {
       <PixelStalactites />
 
       <MinimalPage flushTop>
-        {/* ===== Intro ===== */}
+        {/* Roaming pixel scorpion — its own lane ABOVE the hero, so it never
+            overlaps the name/bio. Wanders left/right within the content column. */}
+        <RoamingScorpion />
+
+        {/* ===== Intro (hero) ===== */}
         <section className="intro">
-          {/* Animated pixel scorpion as the hero mark, above the name */}
-          <div className="heromark" aria-hidden="true">
-            {/* 25% smaller than the 340px default, static, centered via .heromark */}
-            <PixelScorpion width={255} />
-          </div>
           <h1>Sacha Hurley</h1>
         </section>
 
         <div className="bio">
           <p>
-            Product designer building a health app at Betterfly. Before: Meta, my
-            agency Utility, and games at EA Sports.
+            Product designer building a health app at Betterfly. Before: Meta,
+            Utility (the agency I co-founded), and EA Sports.
           </p>
         </div>
 
