@@ -8,32 +8,15 @@
  * sweep on the Menu button.
  */
 
-import { useEffect, useRef } from 'react'
-
-// Mirrors PixelFire's DARK_PALETTE (this site is forced dark).
-const PALETTE = [
-  'transparent', // 0: no fire
-  '#0A0704',
-  '#120D09',
-  '#1A150F',
-  '#2D1102',
-  '#451A03',
-  '#78350F',
-  '#92400E',
-  '#B45309',
-  '#D97706',
-  '#F59E0B',
-  '#FBBF24',
-  '#FCD34D',
-  '#FDE68A', // 13: white-hot tip
-]
+import { useEffect, useMemo, useRef } from 'react'
+import { useXp } from '../context/XpProvider'
+import { firePaletteFor } from '../lib/themes'
 
 const PIXEL_SIZE = 4 // matches PixelFire
 // A few rows of headroom above the flames so the tips taper off instead of
 // being clipped at the canvas ceiling (the base flame only fills the lower part).
 const ROWS = 9
 const SPEED = 150 // ms between frames (same crackle as PixelFire)
-const MAX = PALETTE.length - 1
 
 // A puff of smoke particles, emitted once when the fire is extinguished.
 type Smoke = { x: number; y: number; vx: number; vy: number; age: number; life: number; size: number }
@@ -43,7 +26,19 @@ export default function MenuFire({ lit }: { lit: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   // Read the latest `lit` inside the loop without re-running the effect.
   const litRef = useRef(lit)
-  litRef.current = lit
+  useEffect(() => {
+    litRef.current = lit
+  }, [lit])
+
+  // Palette follows the active egg theme (stock amber for default); read via
+  // ref inside the loop, same pattern as litRef, so a theme switch recolors
+  // the next frame without re-running the mount effect.
+  const { activeEgg } = useXp()
+  const palette = useMemo(() => firePaletteFor(activeEgg), [activeEgg])
+  const paletteRef = useRef(palette)
+  useEffect(() => {
+    paletteRef.current = palette
+  }, [palette])
 
   useEffect(() => {
     const wrap = wrapRef.current
@@ -79,7 +74,8 @@ export default function MenuFire({ lit }: { lit: boolean }) {
         // that tapers to a point.
         const d = Math.abs(x - center) / half // 0 centre .. ~1 edge
         const profile = 1 - d * d
-        fire[start + x] = Math.max(0, Math.round(profile * MAX) - Math.floor(Math.random() * 3))
+        const max = paletteRef.current.length - 1
+        fire[start + x] = Math.max(0, Math.round(profile * max) - Math.floor(Math.random() * 3))
       }
     }
     function extinguishBottom() {
@@ -111,7 +107,7 @@ export default function MenuFire({ lit }: { lit: boolean }) {
         for (let x = 0; x < cols; x++) {
           const c = fire[y * cols + x]
           if (c === 0) continue
-          ctx!.fillStyle = PALETTE[c]
+          ctx!.fillStyle = paletteRef.current[c]
           ctx!.fillRect(x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE)
         }
       }

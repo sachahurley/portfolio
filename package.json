@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/fragment-mono": "^5.2.8",
     "@scorp-ds/components": "file:./vendor/scorp-ds/packages/components",
     "@scorp-ds/tokens": "file:./vendor/scorp-ds/packages/tokens",
     "lucide-react": "^0.564.0",

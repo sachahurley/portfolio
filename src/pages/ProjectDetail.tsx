@@ -11,10 +11,13 @@ import MinimalPage from '../components/MinimalPage'
 import { getProjectBySlug } from '../data/projects'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
+import { ArrowUpRight } from '../components/icons'
+import { usePageTitle } from '../lib/usePageTitle'
 
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>()
   const project = slug ? getProjectBySlug(slug) : undefined
+  usePageTitle(project?.title)
   const { award } = useXp()
 
   useEffect(() => {
@@ -51,7 +54,7 @@ export default function ProjectDetail() {
         {project.externalUrl && (
           <p>
             <a href={project.externalUrl} target="_blank" rel="noopener noreferrer">
-              View project ↗
+              View project <ArrowUpRight />
             </a>
           </p>
         )}
@@ -65,7 +68,7 @@ export default function ProjectDetail() {
           rel="noopener noreferrer"
           style={{ marginTop: 28 }}
         >
-          view project ↗
+          view project <ArrowUpRight />
         </a>
       )}
     </MinimalPage>

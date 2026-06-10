@@ -10,6 +10,7 @@
 import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useXp } from '../context/XpProvider'
+import { levelLabel } from '../lib/levels'
 import PixelStoneBorder from './PixelStoneBorder'
 
 const NAV: [string, string][] = [
@@ -28,7 +29,7 @@ export default function BottomSheet({
   onClose: () => void
 }) {
   const location = useLocation()
-  const { xp, level, toast } = useXp()
+  const { level, toast } = useXp()
   const sheetRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
 
@@ -112,14 +113,12 @@ export default function BottomSheet({
 
         <div className="menu-foot">
           <div className="foot-left">
-            <span className="foot-title">Your level</span>
+            {/* Same copy string as the home progress row (levelLabel) so the
+                two readouts can never drift. */}
             <span className="lvl">
-              <span>{`Level ${level.idx + 1}`}</span>
+              <span>{levelLabel(level)}</span>
               <span className="mbar">
                 <i style={{ width: `${level.pct}%` }} />
-              </span>
-              <span className="exp">
-                {level.nextAt != null ? `${xp - level.curAt}/${level.nextAt - level.curAt}` : 'MAX'}
               </span>
             </span>
           </div>

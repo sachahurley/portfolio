@@ -9,8 +9,10 @@ import MinimalPage from '../components/MinimalPage'
 import { Item, List } from '../components/Item'
 import { tools } from '../data/tools'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
+import { usePageTitle } from '../lib/usePageTitle'
 
 export default function About() {
+  usePageTitle('About')
   const { award } = useXp()
 
   return (

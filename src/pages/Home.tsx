@@ -7,20 +7,28 @@
  * scorpion are preserved exactly - do not replace the scorpion with a cube.
  */
 
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import PixelFire from '../components/PixelFire'
+import PixelFire, { type PixelFireHandle } from '../components/PixelFire'
 import PixelStalactites from '../components/PixelStalactites'
 import RoamingScorpion from '../components/RoamingScorpion'
 import MinimalPage from '../components/MinimalPage'
 import { Item, List } from '../components/Item'
+import { ArrowRight } from '../components/icons'
+import ProgressSection from '../components/progress/ProgressSection'
 import { projects } from '../data/projects'
 import { getSortedPosts } from '../data/posts'
 import { lab } from '../data/lab'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { formatDate } from '../lib/date'
+import { usePageTitle } from '../lib/usePageTitle'
 
 export default function Home() {
+  usePageTitle()
   const { award } = useXp()
+  // The bottom-of-page fire doubles as the egg drop target; the progress
+  // section's drag interaction drives it through this handle.
+  const fireApiRef = useRef<PixelFireHandle>(null)
   // Each section previews up to 3 rows; "See all" appears at the bottom only
   // when the full collection has more than 3 items.
   const PREVIEW = 3
@@ -83,7 +91,7 @@ export default function Home() {
           </List>
           {projects.length > PREVIEW && (
             <div className="seefoot">
-              <Link className="seeall" to="/projects">See all <span className="arr">→</span></Link>
+              <Link className="seeall" to="/projects">See all <span className="arr"><ArrowRight /></span></Link>
             </div>
           )}
         </div>
@@ -98,7 +106,7 @@ export default function Home() {
           </List>
           {lab.length > PREVIEW && (
             <div className="seefoot">
-              <Link className="seeall" to="/lab">See all <span className="arr">→</span></Link>
+              <Link className="seeall" to="/lab">See all <span className="arr"><ArrowRight /></span></Link>
             </div>
           )}
         </div>
@@ -120,7 +128,7 @@ export default function Home() {
           </List>
           {allNotes.length > PREVIEW && (
             <div className="seefoot">
-              <Link className="seeall" to="/notes">See all <span className="arr">→</span></Link>
+              <Link className="seeall" to="/notes">See all <span className="arr"><ArrowRight /></span></Link>
             </div>
           )}
         </div>
@@ -138,10 +146,14 @@ export default function Home() {
             />
           </List>
         </div>
+
+        {/* ===== Your progress (EXP system: level + eggs; eggs drop into
+            the pixel fire at the very bottom of the page) ===== */}
+        <ProgressSection fireApiRef={fireApiRef} />
       </MinimalPage>
 
       {/* Pixel fire animation - only on the home page */}
-      <PixelFire />
+      <PixelFire ref={fireApiRef} />
     </>
   )
 }

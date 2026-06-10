@@ -167,9 +167,11 @@ strong, b { font-weight: 400; }
 .shead .label { margin: 0; }
 .seeall { font-size: 15px; color: var(--accent); }
 .seeall:hover { text-decoration: underline; text-underline-offset: 3px; }
-/* match the See all arrow to the external-link icon size (1.6rem = 1.6em on the
-   16px row titles); rem keeps it identical despite the 15px .seeall base */
-.seeall .arr { font-size: 1.6rem; line-height: 0; vertical-align: -0.04em; }
+/* SVG arrow icons (see components/icons.tsx): em-sized, so .arr bumps the
+   context font so the See all arrow matches the 16px-row external icon */
+/* Tailwind preflight makes svg display:block; restore inline flow for icons */
+.icon-arrow { display: inline-block; vertical-align: -0.1em; }
+.seeall .arr { font-size: 16px; line-height: 0; }
 /* "See all" sits at the bottom of a section, aligned with the row text */
 .seefoot { margin-top: 20px; }
 
@@ -182,7 +184,7 @@ strong, b { font-weight: 400; }
 /* link titles carry the warm sepia-gold accent (no hover underline on rows) */
 a.item .t { color: var(--accent); }
 .item .d { display: block; color: var(--body); line-height: 24px; }
-.item .ext { color: inherit; font-size: 1.6em; line-height: 0; vertical-align: -0.04em; }
+.item .ext { color: inherit; line-height: 0; margin-left: 8px; }
 .meta { color: var(--mut); font-size: 14px; }
 /* optional 16:9 thumbnail on the far right of a row */
 .item.has-img { display: flex; align-items: center; gap: 16px; }
@@ -252,8 +254,97 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 .toast.show { opacity: 1; transform: none; }
 .toast.level { background: var(--bg); color: var(--accent); border: 1px solid var(--accent); font-weight: 400; }
 
+/* ---- "Your Progress" section (EXP system) ---- */
+.xp-explain { color: var(--body); font-size: 14px; margin: 0; max-width: 54ch; }
+.xp-line { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.xp-row { font-family: var(--mono); font-size: 14px; color: var(--accent); white-space: nowrap; }
+.xp-bar {
+  height: 14px; flex: 1; max-width: 240px; background: var(--hover);
+  border: 1px solid var(--border); border-radius: 999px; overflow: hidden;
+}
+.xp-bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s ease; }
+
+/* ---- egg track ---- */
+.egg-track { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.track-egg { position: relative; cursor: grab; display: inline-flex; touch-action: none; padding: 7px; }
+.track-egg:active { cursor: grabbing; }
+.egg-wrap { display: inline-flex; }
+.egg-track .egg-art { width: 25px; height: 32px; display: block; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)); }
+/* active highlight: an egg-shaped outline floating ~1.29x around the egg */
+.egg-ring {
+  position: absolute; left: 50%; top: 50%; width: 25px; height: 32px;
+  transform: translate(-50%,-50%) scale(1.29); pointer-events: none;
+}
+.egg-ring path { fill: none; stroke: var(--accent); stroke-width: 1; stroke-linejoin: round; }
+.track-egg.empty { cursor: default; color: #3a3a3a; }
+.track-egg.empty .egg-art { filter: none; }
+/* grip: a real, grabbable 2x3 dot grid below the egg (box-shadow dots have no hit area) */
+.grip {
+  position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%);
+  width: 12px; height: 8px; cursor: grab;
+  background-image: radial-gradient(circle, var(--mut) .9px, transparent 1.3px);
+  background-size: 4px 4px;
+}
+.track-egg:active .grip { cursor: grabbing; }
+
+/* ---- egg drag clone + impact effects ---- */
+.dragclone {
+  position: fixed; z-index: 96; pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.dragclone .egg-art { width: 25px; height: 32px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)); }
+.dragclone.fall { transition: transform .42s cubic-bezier(.45,.05,.7,1), opacity .42s; }
+.dragclone.snap { transition: left .3s ease, top .3s ease; }
+.ember {
+  position: fixed; border-radius: 1px; z-index: 96; pointer-events: none;
+  transition: transform .95s cubic-bezier(.2,.5,.2,1), opacity .95s ease;
+}
+.flash {
+  position: fixed; width: 70px; height: 70px; z-index: 95; pointer-events: none;
+  border-radius: 50%; opacity: .9;
+  transition: transform .6s cubic-bezier(.2,.6,.2,1), opacity .6s ease;
+}
+.pulse { position: fixed; inset: 0; z-index: 94; pointer-events: none; opacity: 0; }
+
+/* ---- theme cascade (EXP system) ----
+   applyTheme staggers --accent then --fg/--body; this transition is what
+   makes the recolor sweep across the text instead of snapping. */
+body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose p, .menu-nav a {
+  transition: color .55s ease;
+}
+
+/* ---- level-up modal (EXP system) ---- */
+.emodal {
+  position: fixed; inset: 0; z-index: 97; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(0,0,0,.62); backdrop-filter: blur(3px);
+}
+.emodal.open { display: flex; }
+.em-card {
+  background: var(--bg); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 16px;
+  padding: 28px 28px 24px; max-width: 320px; text-align: center;
+  box-shadow: 0 18px 60px rgba(0,0,0,.6);
+}
+.em-egg { animation: mn-eggpop .45s cubic-bezier(.34,1.3,.5,1) both; }
+.egg-art-lg { width: 96px; height: 122px; display: block; margin: 0 auto; }
+@keyframes mn-eggpop {
+  from { transform: scale(.3) translateY(10px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+/* single-weight site: emphasis via size/color, never weight */
+.em-title { font-size: 20px; font-weight: 400; color: var(--fg); margin-top: 16px; }
+.em-text { color: var(--body); font-size: 14px; line-height: 1.55; margin-top: 8px; }
+.em-text b { color: var(--accent); }
+.em-btn {
+  font-family: var(--mono); font-size: 14px; font-weight: 400; margin-top: 18px;
+  background: var(--accent); color: #0a0a0a; border: 0; border-radius: 8px;
+  padding: 10px 16px; cursor: pointer;
+}
+.em-btn:hover { opacity: .9; }
+
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation: none; }
+  .em-egg { animation: none; }
   * { transition: none !important; }
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

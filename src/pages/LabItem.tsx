@@ -11,10 +11,12 @@ import MinimalPage from '../components/MinimalPage'
 import { getLabBySlug } from '../data/lab'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
+import { usePageTitle } from '../lib/usePageTitle'
 
 export default function LabItem() {
   const { slug } = useParams<{ slug: string }>()
   const item = slug ? getLabBySlug(slug) : undefined
+  usePageTitle(item?.title)
   const { award } = useXp()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const hasDemo = item?.demo === 'reactive-grid'

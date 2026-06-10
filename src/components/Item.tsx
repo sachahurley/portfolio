@@ -8,11 +8,12 @@
 
 import { type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { ArrowUpRight } from './icons'
 
 interface ItemProps {
   to?: string        // internal route (React Router)
   href?: string      // external URL
-  external?: boolean // append the ↗ glyph + open in a new tab
+  external?: boolean // append the external-arrow icon + open in a new tab
   date?: string      // note date (shown above the title)
   title: string
   desc?: ReactNode
@@ -50,7 +51,7 @@ export function Item({ to, href, external, date, title, desc, img, imgSrc, imgRi
       {date && <span className="nd">{date}</span>}
       <span className="t">
         {displayTitle}
-        {external && <span className="ext"> ↗</span>}
+        {external && <span className="ext"><ArrowUpRight /></span>}
       </span>
       {displayDesc && <span className="d">{displayDesc}</span>}
     </>

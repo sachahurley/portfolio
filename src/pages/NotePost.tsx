@@ -9,15 +9,18 @@
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
+import { ArrowUpRight } from '../components/icons'
 import { getPostBySlug } from '../data/posts'
 import { tools } from '../data/tools'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { formatDate } from '../lib/date'
 import NotFound from './NotFound'
+import { usePageTitle } from '../lib/usePageTitle'
 
 export default function NotePost() {
   const { slug } = useParams<{ slug: string }>()
   const post = slug ? getPostBySlug(slug) : undefined
+  usePageTitle(post?.title)
   const { award } = useXp()
 
   useEffect(() => {
@@ -54,7 +57,7 @@ export default function NotePost() {
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
             <p>
               <a href="https://x.com/sacha_hurley" target="_blank" rel="noopener noreferrer">
-                Discuss on X ↗
+                Discuss on X <ArrowUpRight />
               </a>
             </p>
           </>

@@ -34,6 +34,13 @@
      into a scorp-ds dark-border token later. */
   --border: var(--color-sepia-950, #1a150f);
 
+  /* Egg-theme flame hues [bright, mid, dim] - consumed by the impact effects
+     in the EXP system. applyTheme (src/lib/themes.ts) overrides these inline
+     on <html> when a non-default egg theme is active. */
+  --fire1: #FDE68A;
+  --fire2: #F59E0B;
+  --fire3: #B45309;
+
   --col: 644px;                     /* content column width */
   --mono: var(
     --font-family-mono,

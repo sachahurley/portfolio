@@ -9,27 +9,19 @@
  * - Max flame height ~60px with varying heights across the width
  * - Uses DS amber and sepia colors exclusively
  * - Separate palettes for light and dark mode
+ * - Recolors when an egg theme is active, and exposes an imperative handle
+ *   (setFlare / surge / getElement) so the EXP system's egg drag can tease
+ *   and ignite THIS fire - it is the drop target on the home page.
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback, useMemo } from 'react'
+import { useXp } from '../context/XpProvider'
+import { DEFAULT_FIRE_PALETTE, firePaletteFor } from '../lib/themes'
 
-// Dark mode palette: bright flames on dark background
-const DARK_PALETTE = [
-  'transparent',        // 0: no fire
-  '#0A0704',            // 1: sepia-1000 (barely visible ember)
-  '#120D09',            // 2: sepia-975
-  '#1A150F',            // 3: sepia-950
-  '#2D1102',            // 4: amber-975 (dark ember)
-  '#451A03',            // 5: amber-950
-  '#78350F',            // 6: amber-900
-  '#92400E',            // 7: amber-800
-  '#B45309',            // 8: amber-700 (warm glow)
-  '#D97706',            // 9: amber-600
-  '#F59E0B',            // 10: amber-500 (bright flame)
-  '#FBBF24',            // 11: amber-400
-  '#FCD34D',            // 12: amber-300 (hot tip)
-  '#FDE68A',            // 13: amber-200 (white-hot)
-]
+// Dark mode palette lives in lib/themes (DEFAULT_FIRE_PALETTE) so the egg
+// theme system can keep the stock look pixel-identical while generating
+// matching ramps for the other themes.
+const DARK_PALETTE = DEFAULT_FIRE_PALETTE
 
 // Light mode palette: warm sepia/amber tones that look soft on light backgrounds
 const LIGHT_PALETTE = [
@@ -50,10 +42,26 @@ const LIGHT_PALETTE = [
 ]
 
 const PIXEL_SIZE = 4          // Each "pixel" is 4x4 real pixels
-const FIRE_HEIGHT = 15        // Grid rows (~60px at 4px per pixel)
+// The sim grid is taller than the fire's visual band: the extra rows are
+// headroom so surged flames taper off naturally instead of being sliced
+// flat at the canvas ceiling. The footer keeps the original 60px footprint;
+// the canvas bottom-aligns inside it and extends (transparently) upward.
+const FIRE_HEIGHT = 21        // Grid rows (84px canvas, ~60px typical flames)
+const VISUAL_HEIGHT = 60      // Footer band height (layout footprint)
 const ANIMATION_SPEED = 150   // ms between frames (slower crackle)
+const SURGE_MS = 850
 
-export default function PixelFire() {
+export interface PixelFireHandle {
+  /** Hover tease while an egg is dragged over the fire. */
+  setFlare(on: boolean): void
+  /** The ~850ms blowup when an egg lands. */
+  surge(): void
+  /** The fire's footer element, for drop hit-testing and impact anchoring. */
+  getElement(): HTMLElement | null
+}
+
+const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
+  const footerRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fireArrayRef = useRef<number[]>([])
   const animFrameRef = useRef<number | null>(null)
@@ -61,6 +69,40 @@ export default function PixelFire() {
   const [isVisible, setIsVisible] = useState(false)
   const [fireWidth, setFireWidth] = useState(0)
   const [isDark, setIsDark] = useState(false)
+  const flareRef = useRef(false)
+  const surgeUntilRef = useRef(0)
+  const surgeTimerRef = useRef<number | null>(null)
+
+  const applyFilter = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    if (performance.now() < surgeUntilRef.current) {
+      canvas.style.filter = 'brightness(1.4) saturate(1.15)'
+      canvas.style.transform = 'scaleY(1.18)' // leap up; origin bottom, no clip
+    } else if (flareRef.current) {
+      canvas.style.filter = 'brightness(1.15)'
+      canvas.style.transform = ''
+    } else {
+      canvas.style.filter = ''
+      canvas.style.transform = ''
+    }
+  }, [])
+
+  useImperativeHandle(ref, () => ({
+    setFlare(on: boolean) {
+      flareRef.current = on
+      applyFilter()
+    },
+    surge() {
+      surgeUntilRef.current = performance.now() + SURGE_MS
+      applyFilter()
+      if (surgeTimerRef.current) clearTimeout(surgeTimerRef.current)
+      surgeTimerRef.current = window.setTimeout(applyFilter, SURGE_MS + 20)
+    },
+    getElement() {
+      return footerRef.current
+    },
+  }))
 
   // Detect light/dark mode
   useEffect(() => {
@@ -80,8 +122,11 @@ export default function PixelFire() {
     return () => observer.disconnect()
   }, [])
 
-  // Get the active palette based on theme
-  const palette = isDark ? DARK_PALETTE : LIGHT_PALETTE
+  // Get the active palette: an active egg theme overrides; otherwise the
+  // stock light/dark palettes (default keeps today's exact rendering).
+  const { activeEgg } = useXp()
+  const themePalette = useMemo(() => firePaletteFor(activeEgg), [activeEgg])
+  const palette = activeEgg !== 'default' ? themePalette : isDark ? DARK_PALETTE : LIGHT_PALETTE
   const paletteMax = palette.length - 1
 
   // Detect when user scrolls to the bottom of the page
@@ -130,8 +175,10 @@ export default function PixelFire() {
         if (srcVal === 0) {
           fire[(y - 1) * fireWidth + x] = 0
         } else {
-          // Random decay (0-2) and random horizontal wind (-1 to 1)
-          const decay = Math.floor(Math.random() * 3)
+          // Random decay (0-2; hotter while surging) + random wind (-1 to 1).
+          // Surge decay averages ~0.7 so peaks stay inside the headroom rows.
+          const surging = performance.now() < surgeUntilRef.current
+          const decay = surging ? (Math.random() < 0.7 ? 1 : 0) : Math.floor(Math.random() * 3)
           const wind = Math.floor(Math.random() * 3) - 1
           const destX = Math.min(Math.max(x + wind, 0), fireWidth - 1)
           const destIdx = (y - 1) * fireWidth + destX
@@ -147,9 +194,11 @@ export default function PixelFire() {
     if (fire.length === 0) return
 
     const bottomStart = (FIRE_HEIGHT - 1) * fireWidth
+    const surging = performance.now() < surgeUntilRef.current
     for (let x = 0; x < fireWidth; x++) {
-      const intensity = paletteMax - Math.floor(Math.random() * 4)
-      fire[bottomStart + x] = intensity
+      // flare keeps the base hotter; surge pins it to the ceiling
+      const cool = surging ? 0 : Math.floor(Math.random() * (flareRef.current ? 2 : 4))
+      fire[bottomStart + x] = paletteMax - cool
     }
   }, [fireWidth, paletteMax])
 
@@ -225,12 +274,26 @@ export default function PixelFire() {
   }, [fireWidth, isVisible, spreadFire, renderFire, igniteBottomRow, extinguishBottomRow])
 
   return (
-    <footer className="mt-12">
+    // The footer keeps the 60px layout footprint; the taller sim canvas is
+    // bottom-aligned inside it so headroom rows overlap the page padding
+    // above as transparent pixels (drop hit-testing uses the footer rect).
+    <footer className="mt-12" ref={footerRef} style={{ height: VISUAL_HEIGHT, position: 'relative' }}>
       <canvas
         ref={canvasRef}
         className="w-full block"
-        style={{ height: `${FIRE_HEIGHT * PIXEL_SIZE}px`, imageRendering: 'pixelated' }}
+        style={{
+          position: 'absolute',
+          left: 0,
+          bottom: 0,
+          width: '100%',
+          height: `${FIRE_HEIGHT * PIXEL_SIZE}px`,
+          imageRendering: 'pixelated',
+          transition: 'filter .25s ease, transform .25s ease',
+          transformOrigin: 'bottom',
+        }}
       />
     </footer>
   )
-}
+})
+
+export default PixelFire

@@ -8,8 +8,10 @@ import MinimalPage from '../components/MinimalPage'
 import { Item, List } from '../components/Item'
 import { getSortedPosts } from '../data/posts'
 import { formatDate } from '../lib/date'
+import { usePageTitle } from '../lib/usePageTitle'
 
 export default function Notes() {
+  usePageTitle('Notes')
   const posts = getSortedPosts()
 
   return (
