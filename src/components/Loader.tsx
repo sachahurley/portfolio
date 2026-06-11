@@ -36,7 +36,10 @@ export default function Loader() {
   if (gone) return null
 
   return (
-    <div id="loader" className={hidden ? 'hide' : undefined} onPointerDown={() => setHidden(true)}>
+    // Dismiss on click, NOT pointerdown: hiding on pointerdown turns off the
+    // overlay's pointer-events mid-tap, so the tap's pointerup/click would
+    // fall through and activate whatever sits underneath on the page.
+    <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
       {VERSION === 'pixel' ? <PixelName fillContainer /> : <AsciiName fillContainer />}
     </div>
   )
