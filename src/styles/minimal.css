@@ -20,19 +20,26 @@ a { color: inherit; text-decoration: none; }
    Emphasis is carried by colour, not weight. */
 strong, b { font-weight: 400; }
 
-/* ---- loading screen ---- */
+/* ---- loading screen (AsciiName welcome art) ---- */
 #loader {
   position: fixed; inset: 0; z-index: 90; background: var(--bg);
   display: flex; align-items: center; justify-content: center;
+  padding: 16px; cursor: pointer;
   transition: opacity .4s ease;
+  /* Welcome-art theming hooks (PixelName + AsciiName), routed through the
+     token aliases above: fire1 (bright flame) -> accent (gold); drips render
+     in the accent. --ascii-font only affects the ASCII version. It is NOT
+     var(--mono): the art is built from shade blocks that Fragment Mono
+     lacks; when spaces and shades come from different fonts their advances
+     differ, rows end at different widths, and the right border breaks.
+     Menlo/Consolas carry both glyphs in one file. */
+  --ascii-font: Menlo, Consolas, monospace;
+  --ascii-gradient-from: var(--fire1);
+  --ascii-gradient-to: var(--accent);
 }
 #loader.hide { opacity: 0; pointer-events: none; }
-.spinner {
-  width: 34px; height: 34px; border-radius: 50%;
-  border: 3px solid var(--border); border-top-color: var(--accent);
-  animation: mn-spin360 .8s linear infinite;
-}
-@keyframes mn-spin360 { to { transform: rotate(360deg); } }
+/* mobile: the stone frame runs edge to edge and frames the whole page */
+@media (max-width: 600px) { #loader { padding: 0; } }
 
 /* ---- floating bottom-center dock: menu button + sliding back chevron ---- */
 .dock {
@@ -343,7 +350,6 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 .em-btn:hover { opacity: .9; }
 
 @media (prefers-reduced-motion: reduce) {
-  .spinner { animation: none; }
   .em-egg { animation: none; }
   * { transition: none !important; }
 }
