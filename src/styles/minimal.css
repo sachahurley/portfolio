@@ -117,7 +117,7 @@ strong, b { font-weight: 400; }
 .stoneborder canvas { display: block; width: 100%; image-rendering: pixelated; }
 .menu-nav { display: flex; flex-direction: column; gap: 2px; width: 100%; }
 .menu-nav a {
-  display: flex; align-items: baseline; font-size: 22px; font-weight: 400;
+  display: flex; align-items: baseline; font-size: 20px; font-weight: 400;
   letter-spacing: -.02em; padding: 9px 0; color: var(--fg); text-transform: capitalize;
 }
 /* Nav: inactive links muted, hover brightens, current page in the warm accent. */
