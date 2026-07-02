@@ -10,9 +10,9 @@
 
 import { shade, type Theme } from './themes'
 
-// Shared egg outline (viewBox 0 0 64 82).
-export const EGGPATH =
-  'M32 3 C48 3 58 28 58 47 C58 66 47 78 32 78 C17 78 6 66 6 47 C6 28 16 3 32 3 Z'
+// Shared egg outline (viewBox 0 0 64 82): a circle centered in the box so the
+// track, ring, placeholder, and drag clone all stay in sync.
+export const EGGPATH = 'M6 41 a26 26 0 1 0 52 0 a26 26 0 1 0 -52 0 Z'
 
 let eggUid = 0
 
@@ -63,7 +63,7 @@ export function eggSVG(t: Theme, cls?: string): string {
     </defs>
     <path d="${EGGPATH}" fill="url(#g-${u})"/>
     <g clip-path="url(#cl-${u})">${patternMarks(t)}</g>
-    <ellipse cx="24" cy="22" rx="9" ry="13" fill="#fff" opacity=".14"/>
+    <ellipse cx="24" cy="32" rx="8" ry="10" fill="#fff" opacity=".14"/>
     <path d="${EGGPATH}" fill="none" stroke="${shade(t.base, -22)}" stroke-width="1.5"/>
   </svg>`
 }
