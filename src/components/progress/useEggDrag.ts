@@ -7,6 +7,11 @@
  * 40px below for forgiveness. Eggs are reusable, never consumed - dropping
  * just switches the active theme.
  *
+ * Gravity: releasing short of the fire doesn't always snap back. If the egg
+ * was pulled down past GRAVITY_MIN_PULL and the fire is still below it, the
+ * egg free-falls the rest of the way (duration scales with distance) and
+ * lands as a normal drop. Upward/sideways releases still snap home.
+ *
  * Drop timeline (t=0 at pointerup over fire):
  *   t=0     clone falls into the fire (.42s: shrink, spin, fade)
  *   t=330ms impact: canvas surge + embers/flash/pulse + theme applies
@@ -19,6 +24,9 @@ import { eggSVG } from '../../lib/eggArt'
 import { runImpact } from '../../lib/impactFx'
 import { THEMES, type ThemeId } from '../../lib/themes'
 import type { PixelFireHandle } from '../PixelFire'
+
+// a release this many px below the slot hands the egg to gravity
+const GRAVITY_MIN_PULL = 60
 
 interface DragState {
   clone: HTMLDivElement
@@ -76,8 +84,25 @@ export function useEggDrag(opts: {
       const restoreSlot = () => {
         slot.style.opacity = '1'
       }
+      const doneMsg =
+        id === 'default'
+          ? 'reverted to the default look'
+          : `dropped the ${THEMES[id].name} egg · site recolored`
 
-      if (!overFire(e.clientX, e.clientY)) {
+      const fr = fireRect()
+      const cloneTop = parseFloat(clone.style.top)
+      const hitFire = overFire(e.clientX, e.clientY)
+      // gravity handoff: released mid-air after a real downward pull, with
+      // the fire still below the egg and the release inside the fire's span
+      const gravity =
+        !hitFire &&
+        !!fr &&
+        cloneTop - home.top > GRAVITY_MIN_PULL &&
+        fr.top > cloneTop + clone.offsetHeight &&
+        e.clientX > fr.left &&
+        e.clientX < fr.right
+
+      if (!hitFire && !gravity) {
         // snap back to the slot
         clone.classList.add('snap')
         clone.style.left = `${home.left}px`
@@ -89,50 +114,62 @@ export function useEggDrag(opts: {
         return
       }
 
-      const fr = fireRect()!
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (reduced) {
         clone.remove()
         restoreSlot()
         onDrop(id)
-        toast(
-          id === 'default'
-            ? 'reverted to the default look'
-            : `dropped the ${THEMES[id].name} egg · site recolored`
-        )
+        toast(doneMsg)
         return
       }
 
       busyRef.current = true
-      // fall into the fire: shrink toward the flame base, spin, fade
-      const fc = fr.left + fr.width / 2
-      const fb = fr.bottom - 18
-      const rot = (Math.random() < 0.5 ? -1 : 1) * (25 + Math.random() * 35)
-      clone.classList.add('fall')
-      clone.style.transform = `translate(${fc - parseFloat(clone.style.left) - clone.offsetWidth / 2}px, ${
-        fb - parseFloat(clone.style.top) - clone.offsetHeight * 0.6
-      }px) scale(.18) rotate(${rot}deg)`
-      clone.style.opacity = '0'
-      setTimeout(() => {
-        clone.remove()
-        restoreSlot()
-      }, 440)
+      const fb = fr!.bottom - 18
+      const finish = (impactAt: number, cleanupAt: number) => {
+        setTimeout(() => {
+          fireApiRef.current?.surge()
+          const el = fireApiRef.current?.getElement()
+          if (el) runImpact(el, THEMES[id])
+          onDrop(id) // provider effect runs the applyTheme cascade
+        }, impactAt)
+        setTimeout(() => {
+          clone.remove()
+          restoreSlot()
+        }, cleanupAt)
+        setTimeout(() => {
+          toast(doneMsg)
+          busyRef.current = false
+        }, impactAt + 250)
+      }
 
-      setTimeout(() => {
-        fireApiRef.current?.surge()
-        const el = fireApiRef.current?.getElement()
-        if (el) runImpact(el, THEMES[id])
-        onDrop(id) // provider effect runs the applyTheme cascade
-      }, 330)
+      if (hitFire) {
+        // fall into the fire: shrink toward the flame base, spin, fade
+        const fc = fr!.left + fr!.width / 2
+        const rot = (Math.random() < 0.5 ? -1 : 1) * (25 + Math.random() * 35)
+        clone.classList.add('fall')
+        clone.style.transform = `translate(${fc - parseFloat(clone.style.left) - clone.offsetWidth / 2}px, ${
+          fb - cloneTop - clone.offsetHeight * 0.6
+        }px) scale(.18) rotate(${rot}deg)`
+        clone.style.opacity = '0'
+        finish(330, 440)
+        return
+      }
 
+      // gravity: free-fall straight down from the release point, full size and
+      // accelerating, then sink into the flames on landing
+      fireApiRef.current?.setFlare(true)
+      const dy = fb - cloneTop - clone.offsetHeight * 0.6
+      const fallMs = Math.max(300, Math.min(800, Math.sqrt(dy) * 26))
+      const rot = (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 15)
+      clone.style.transition = `transform ${fallMs}ms cubic-bezier(.5,.05,.9,.4)`
+      clone.style.transform = `translate(0px, ${dy}px) rotate(${rot}deg)`
       setTimeout(() => {
-        toast(
-          id === 'default'
-            ? 'reverted to the default look'
-            : `dropped the ${THEMES[id].name} egg · site recolored`
-        )
-        busyRef.current = false
-      }, 580)
+        fireApiRef.current?.setFlare(false)
+        clone.style.transition = 'transform .18s ease-in, opacity .18s ease-in'
+        clone.style.transform = `translate(0px, ${dy + 10}px) scale(.18) rotate(${rot * 2}deg)`
+        clone.style.opacity = '0'
+      }, fallMs)
+      finish(fallMs, fallMs + 200)
     },
     [fireApiRef, fireRect, onDrop, onMove, overFire, toast]
   )
