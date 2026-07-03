@@ -11,7 +11,7 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import PixelFire, { type PixelFireHandle } from '../components/PixelFire'
 import PixelStalactites from '../components/PixelStalactites'
-import RoamingScorpion from '../components/RoamingScorpion'
+import StageHero from '../components/StageHero'
 import MinimalPage from '../components/MinimalPage'
 import { Item, List } from '../components/Item'
 import { ArrowRight } from '../components/icons'
@@ -43,9 +43,9 @@ export default function Home() {
       <PixelStalactites />
 
       <MinimalPage flushTop>
-        {/* Roaming pixel scorpion — its own lane ABOVE the hero, so it never
-            overlaps the name/bio. Wanders left/right within the content column. */}
-        <RoamingScorpion />
+        {/* Stage hero — a framed 200px box above the name/bio, reserved for a
+            future 8-bit pixel diorama. Only the roaming scorpion draws in it today. */}
+        <StageHero />
 
         {/* ===== Intro (hero) ===== */}
         <section className="intro">

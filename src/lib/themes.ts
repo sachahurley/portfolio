@@ -10,7 +10,7 @@
  * impact effects - if the scorp-ds tokens ever change, update them here too.
  *
  * Colors on ember/tide/dusk are the placeholder art-direction set from the
- * prototype spec; the contract is the variable structure (--accent,
+ * prototype spec; the contract is the variable structure (--accent, --hover,
  * --fire1/2/3, --fg, --body) and the Theme shape, not the hexes.
  */
 
@@ -179,7 +179,14 @@ export function applyTheme(id: ThemeId) {
   st.setProperty('--fire3', t.fire[2])
   const set = (k: string, v: string) =>
     id === 'default' ? st.removeProperty(k) : st.setProperty(k, v)
-  pending.push(window.setTimeout(() => set('--accent', t.accent), 240))
+  pending.push(
+    window.setTimeout(() => {
+      set('--accent', t.accent)
+      // hover tint follows the accent (near-black); default falls back to the
+      // stock sepia --surface-muted alias in index.css
+      set('--hover', mix(t.accent, '#000000', 0.85))
+    }, 240)
+  )
   pending.push(
     window.setTimeout(() => {
       set('--fg', t.head)

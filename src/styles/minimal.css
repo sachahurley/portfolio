@@ -164,6 +164,12 @@ strong, b { font-weight: 400; }
 .heromark--roam canvas { display: block; position: absolute; inset: 0; pointer-events: none; }
 @media (max-width: 600px) { .heromark--roam { height: 56px; margin: 8px 0 28px; } }
 
+/* stage hero: bounded 200px box holding the pixel-castle diorama. */
+.stage-hero { position: relative; width: 100%; height: 200px; margin: 0 0 32px; overflow: hidden; border: 1px solid var(--border); background: var(--hover); }
+.pixel-castle { position: absolute; inset: 0; pointer-events: none; }
+.stage-hero .heromark--roam { height: 100%; margin: 0; }
+@media (max-width: 600px) { .stage-hero { height: 140px; margin: 0 0 28px; } }
+
 /* emil rhythm: 128px desktop / 64px mobile between sections.
    Namespaced as .mn-block (NOT .block) to avoid colliding with Tailwind's
    `block` display utility, which is used by the pixel-graphic canvases. */

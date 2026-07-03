@@ -198,13 +198,13 @@ export default function RoamingScorpion({ className }: { className?: string }) {
     }
 
     // South-facing (top-down) pose, used only as a turn transition. Centred on
-    // the same footprint as the walk sprite and vertically centred in the band.
+    // the same footprint as the walk sprite and flush against the band's floor.
     function drawSouth() {
       if (!sheets) return
       const h = walkH
       const w = Math.round((IDLE_FW / IDLE_FH) * h)
       const dx = Math.round(x + (walkW - w) / 2)
-      const dy = Math.round((bandH - h) / 2)
+      const dy = bandH - h
       ctx!.drawImage(sheets.idle, 0, 0, IDLE_FW, IDLE_FH, dx, dy, w, h)
     }
 
@@ -213,7 +213,7 @@ export default function RoamingScorpion({ className }: { className?: string }) {
       if (!sheets) return
       const sheet = dir === -1 ? sheets.left : sheets.right
       const sy = frame * WALK_FH
-      const dy = Math.round((bandH - walkH) / 2)
+      const dy = bandH - walkH
       ctx!.drawImage(sheet, 0, sy, WALK_FW, WALK_FH, Math.round(x), dy, walkW, walkH)
     }
 
@@ -235,7 +235,7 @@ export default function RoamingScorpion({ className }: { className?: string }) {
       const h = walkH
       const w = Math.round((IDLE_FW / IDLE_FH) * h)
       const dx = Math.round(x + (walkW - w) / 2)
-      const dy = Math.round((bandH - h) / 2)
+      const dy = bandH - h
       const sx = w / IDLE_FW // sprite px -> canvas px
       const sy = h / IDLE_FH
       const open = Math.sin(clawPhase) * 0.5 + 0.5 // 0..1
@@ -358,7 +358,7 @@ export default function RoamingScorpion({ className }: { className?: string }) {
       const rect = canvas!.getBoundingClientRect()
       const cssX = clientX - rect.left
       const cssY = clientY - rect.top
-      const top = (bandH - walkH) / 2
+      const top = bandH - walkH
       return cssX >= x && cssX <= x + walkW && cssY >= top && cssY <= top + walkH
     }
     const onPointerDown = (e: PointerEvent) => {
