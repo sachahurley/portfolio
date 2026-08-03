@@ -3,7 +3,8 @@
  *
  * Procedural pixel-art castle facade for StageHero's background: a coursed
  * stone wall with a round arched gate, a highlighted ring of voussoir stones,
- * and a keystone carved with a skull whose gem eyes pulse slowly. Same
+ * and a keystone carved with a bull skull whose gem eyes pulse slowly and
+ * whose horns overflow above the stage frame. Same
  * technique as PixelStalactites/PixelFire (a PIXEL_SIZE canvas grid) so all
  * three read as one material/art style.
  *
@@ -35,18 +36,29 @@ const GEM_BASE: [number, number, number] = [0x5c, 0x0a, 0x0a] // deep garnet
 const GEM_GLOW: [number, number, number] = [0xe6, 0x33, 0x33] // bright pulse peak
 const PULSE_HZ = 0.15 // slow — a full pulse roughly every ~6.5s
 
-// Simplified skull, 9 cols x 7 rows: 4 = keystone stone, 6 = bone,
-// 3 = socket shadow, 7 = gem (drawn separately so it can animate).
+// Bull skull, 17 cols x 11 rows. The top HORN_ROWS rows are the horns,
+// which sweep up and outward past the wall top so they overflow above the
+// stage frame. 0 = transparent (sky above the wall, keystone inside it),
+// 4 = keystone stone, 6 = bone, 3 = socket shadow, 7 = gem (drawn
+// separately so it can animate).
 const SKULL = [
-  [4, 4, 6, 6, 6, 6, 6, 4, 4],
-  [4, 6, 6, 6, 6, 6, 6, 6, 4],
-  [6, 6, 3, 3, 6, 3, 3, 6, 6],
-  [6, 6, 7, 3, 6, 3, 7, 6, 6],
-  [6, 6, 3, 3, 6, 3, 3, 6, 6],
-  [4, 6, 6, 3, 3, 3, 6, 6, 4],
-  [4, 4, 6, 6, 6, 6, 6, 4, 4],
+  [6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6],
+  [0, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 0],
+  [0, 0, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 0, 0],
+  [0, 0, 0, 6, 6, 6, 0, 0, 0, 0, 0, 6, 6, 6, 0, 0, 0],
+  [0, 0, 0, 0, 4, 6, 6, 6, 6, 6, 6, 6, 4, 0, 0, 0, 0],
+  [0, 0, 0, 0, 4, 6, 6, 6, 6, 6, 6, 6, 4, 0, 0, 0, 0],
+  [0, 0, 0, 0, 6, 6, 3, 3, 6, 3, 3, 6, 6, 0, 0, 0, 0],
+  [0, 0, 0, 0, 6, 6, 7, 3, 6, 3, 7, 6, 6, 0, 0, 0, 0],
+  [0, 0, 0, 0, 6, 6, 3, 3, 6, 3, 3, 6, 6, 0, 0, 0, 0],
+  [0, 0, 0, 0, 4, 6, 6, 3, 3, 3, 6, 6, 4, 0, 0, 0, 0],
+  [0, 0, 0, 0, 4, 4, 6, 6, 6, 6, 6, 4, 4, 0, 0, 0, 0],
 ]
 const SKULL_SCALE = 2 // each skull cell draws as a SKULL_SCALE x SKULL_SCALE grid block
+const HORN_ROWS = 4 // sprite rows that are horn-only (allowed above the wall)
+const FACE_ROWS = SKULL.length - HORN_ROWS
+// Sky rows baked above the frame line so the horns have room to overflow.
+const OVERHANG_ROWS = HORN_ROWS * SKULL_SCALE
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t
@@ -106,19 +118,24 @@ export default function PixelCastle() {
       const tone = new Uint8Array(cols * rows)
       const at = (c: number, r: number) => r * cols + c
 
+      // The top OVERHANG_ROWS of the grid hang above the stage frame; only
+      // the horns draw there. The masonry wall starts at wallTop.
+      const wallTop = Math.min(OVERHANG_ROWS, Math.max(0, rows - 1))
+
       // Round arch: a rectangular jamb topped by a semicircle, centred in the
       // wall. archRadius/jambRows are sized off the available wall height so
       // the gate stays proportional whether the stage is 200px or 140px.
-      const innerRows = Math.max(1, rows - FOUNDATION_ROWS)
+      const innerRows = Math.max(1, rows - wallTop - FOUNDATION_ROWS)
       let archRadius = Math.max(4, Math.min(Math.round(innerRows * 0.32), Math.floor(cols / 3)))
       let jambRows = Math.round(innerRows * 0.42)
       const RING_LIP = 1
       const RING_STONE = 3
-      // The keystone skull protrudes skullH*0.6 above the voussoir ring's
+      // The skull's face protrudes faceH*0.6 above the voussoir ring's
       // apex; if the stage is too short for jamb + ring + that headroom
       // (the 140px mobile box), shrink the gate proportionally so the whole
-      // composition fits instead of clipping the skull off the top.
-      const headroom = Math.ceil(SKULL.length * SKULL_SCALE * 0.6)
+      // composition fits instead of clipping the face off the top. Horns
+      // are exempt: they're meant to overflow into the sky rows.
+      const headroom = Math.ceil(FACE_ROWS * SKULL_SCALE * 0.6)
       const maxGate = innerRows - headroom - RING_LIP - RING_STONE
       if (jambRows + archRadius > maxGate) {
         const f = maxGate / (jambRows + archRadius)
@@ -129,9 +146,9 @@ export default function PixelCastle() {
       const gateBottomRow = rows - FOUNDATION_ROWS - 1
       const archCenterCol = Math.floor(cols / 2)
 
-      // Base wall texture everywhere first.
-      for (let r = 0; r < rows - FOUNDATION_ROWS; r++) {
-        for (let c = 0; c < cols; c++) tone[at(c, r)] = wallTone(c, r)
+      // Base wall texture everywhere first (masonry anchored at wallTop).
+      for (let r = wallTop; r < rows - FOUNDATION_ROWS; r++) {
+        for (let c = 0; c < cols; c++) tone[at(c, r)] = wallTone(c, r - wallTop)
       }
 
       // Cut the opening, ringed by a thin lip then a thick voussoir stone
@@ -142,7 +159,7 @@ export default function PixelCastle() {
       const R3 = archRadius + RING_LIP + RING_STONE // + voussoir stone band
       const halfAt = (r: number, R: number) => (r <= springRow ? Math.sqrt(Math.max(0, R * R - (springRow - r) ** 2)) : R)
       const ringTopRow = springRow - R3
-      for (let r = Math.max(0, ringTopRow); r <= gateBottomRow; r++) {
+      for (let r = Math.max(wallTop, ringTopRow); r <= gateBottomRow; r++) {
         const hOpen = halfAt(r, R1)
         const hLip = halfAt(r, R2)
         const hStone = halfAt(r, R3)
@@ -161,16 +178,20 @@ export default function PixelCastle() {
       }
 
       // Stamp the keystone/skull, overlapping the ring's apex like a real
-      // protruding keystone. Skipped if the box is too short to fit it.
+      // protruding keystone. The horns rise HORN_ROWS above the face into
+      // the sky rows. Skipped if the face would ride above the wall or the
+      // box is too narrow to fit it.
       gems = []
       const skullW = SKULL[0].length * SKULL_SCALE
-      const skullH = SKULL.length * SKULL_SCALE
+      const faceH = FACE_ROWS * SKULL_SCALE
       const left = archCenterCol - Math.floor(skullW / 2)
-      const top = Math.round(ringTopRow - skullH * 0.6)
-      if (top >= 0 && left >= 0 && left + skullW <= cols) {
+      const faceTop = Math.round(ringTopRow - faceH * 0.6)
+      const top = faceTop - HORN_ROWS * SKULL_SCALE
+      if (faceTop >= wallTop && left >= 0 && left + skullW <= cols) {
         for (let sr = 0; sr < SKULL.length; sr++) {
           for (let sc = 0; sc < SKULL[0].length; sc++) {
             const v = SKULL[sr][sc]
+            if (v === 0) continue // transparent sprite cell — leave sky/wall
             for (let dy = 0; dy < SKULL_SCALE; dy++) {
               for (let dx = 0; dx < SKULL_SCALE; dx++) {
                 const c = left + sc * SKULL_SCALE + dx
@@ -270,7 +291,14 @@ export default function PixelCastle() {
   }, [])
 
   return (
-    <div ref={wrapRef} className="pixel-castle" aria-hidden="true">
+    // Extends OVERHANG_ROWS above the stage box so the horns can poke out
+    // of the frame (.stage-hero is overflow: visible for this).
+    <div
+      ref={wrapRef}
+      className="pixel-castle"
+      aria-hidden="true"
+      style={{ top: -(OVERHANG_ROWS * PIXEL_SIZE) }}
+    >
       <canvas
         ref={canvasRef}
         style={{ display: 'block', position: 'absolute', inset: 0, width: '100%', height: '100%', imageRendering: 'pixelated' }}
