@@ -110,8 +110,21 @@ export default function PixelCastle() {
       // wall. archRadius/jambRows are sized off the available wall height so
       // the gate stays proportional whether the stage is 200px or 140px.
       const innerRows = Math.max(1, rows - FOUNDATION_ROWS)
-      const archRadius = Math.max(4, Math.min(Math.round(innerRows * 0.32), Math.floor(cols / 3)))
-      const jambRows = Math.round(innerRows * 0.42)
+      let archRadius = Math.max(4, Math.min(Math.round(innerRows * 0.32), Math.floor(cols / 3)))
+      let jambRows = Math.round(innerRows * 0.42)
+      const RING_LIP = 1
+      const RING_STONE = 3
+      // The keystone skull protrudes skullH*0.6 above the voussoir ring's
+      // apex; if the stage is too short for jamb + ring + that headroom
+      // (the 140px mobile box), shrink the gate proportionally so the whole
+      // composition fits instead of clipping the skull off the top.
+      const headroom = Math.ceil(SKULL.length * SKULL_SCALE * 0.6)
+      const maxGate = innerRows - headroom - RING_LIP - RING_STONE
+      if (jambRows + archRadius > maxGate) {
+        const f = maxGate / (jambRows + archRadius)
+        archRadius = Math.max(4, Math.floor(archRadius * f))
+        jambRows = Math.max(2, Math.floor(jambRows * f))
+      }
       const springRow = rows - FOUNDATION_ROWS - jambRows
       const gateBottomRow = rows - FOUNDATION_ROWS - 1
       const archCenterCol = Math.floor(cols / 2)
@@ -124,8 +137,6 @@ export default function PixelCastle() {
       // Cut the opening, ringed by a thin lip then a thick voussoir stone
       // band — substantial enough that the keystone above doesn't read as
       // top-heavy against a hairline arch edge.
-      const RING_LIP = 1
-      const RING_STONE = 3
       const R1 = archRadius // opening
       const R2 = archRadius + RING_LIP // + outline lip
       const R3 = archRadius + RING_LIP + RING_STONE // + voussoir stone band
