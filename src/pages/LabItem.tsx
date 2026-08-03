@@ -106,6 +106,8 @@ export default function LabItem() {
           <canvas id="labcanvas" ref={canvasRef} />
           <p className="meta">demo: a reactive dot grid — every lab toy would be its own experiment.</p>
         </>
+      ) : item.body ? (
+        <p style={{ marginTop: 18 }}>{item.body}</p>
       ) : (
         <p className="meta" style={{ marginTop: 18 }}>
           Placeholder — this experiment isn't wired up yet.

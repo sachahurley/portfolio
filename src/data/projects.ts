@@ -47,28 +47,6 @@ export const projects: Project[] = [
     longDescription:
       'Scorpion UI is a token-based design system built from the ground up using AI tools. It includes a complete component library, design token system, and interactive documentation site.',
   },
-  {
-    slug: 'coldaw',
-    title: 'ColDAW',
-    description: 'Cloud-based collaborative DAW.',
-    role: 'Founding PM',
-    tags: ['Product', 'Audio', 'Collaboration'],
-    featured: true,
-    img: true,
-    imgRight: true, // demo: two-column portrait thumbnail on mobile
-    longDescription:
-      'ColDAW is a cloud-based, collaborative digital audio workstation. Placeholder case study - replace with the real write-up.',
-  },
-  {
-    slug: 'thinkle',
-    title: 'Thinkle',
-    description: 'Smart-glasses learning system.',
-    role: 'Product Designer',
-    tags: ['Product Design', 'Hardware', 'Learning'],
-    featured: false,
-    longDescription:
-      'Thinkle is a smart-glasses learning system. Placeholder case study - replace with the real write-up.',
-  },
 ]
 
 // Helper: get only featured projects (for the Home page)
