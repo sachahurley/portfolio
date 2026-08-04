@@ -18,7 +18,7 @@ export default function MessageLog() {
   }, [log])
 
   return (
-    <footer className="gf-log" aria-label="Message log">
+    <section className="gf-log" aria-label="Message log">
       <div className="gf-label">log</div>
       <div className="gf-logscroll" ref={scrollRef} aria-live="polite">
         {log.length === 0 ? (
@@ -31,6 +31,6 @@ export default function MessageLog() {
           ))
         )}
       </div>
-    </footer>
+    </section>
   )
 }

@@ -13,6 +13,9 @@ export interface GameLocation {
   name: string
   /** Plain-language name (tooltips, page titles, accessibility). */
   real: string
+  /** Unicode glyph shown left of the name (compass + sheet). Rendered via
+   *  font fallback — Fragment Mono lacks these; pixel icons come later. */
+  icon: string
   /** Compass hotkey, pressed as a bare digit. */
   hotkey: string
   /** Message-log line on first arrival and revisits. */
@@ -26,6 +29,7 @@ export const LOCATIONS: GameLocation[] = [
     path: '/',
     name: 'The Crossroads',
     real: 'Home',
+    icon: '⌂',
     hotkey: '1',
     arrive: 'You stand at the Crossroads. Signposts point everywhere.',
   },
@@ -33,6 +37,7 @@ export const LOCATIONS: GameLocation[] = [
     path: '/projects',
     name: 'Quest Log',
     real: 'Projects',
+    icon: '⚔',
     hotkey: '2',
     arrive: 'You arrive at the Quest Log. Completed quests await review.',
   },
@@ -40,6 +45,7 @@ export const LOCATIONS: GameLocation[] = [
     path: '/notes',
     name: 'The Library',
     real: 'Notes',
+    icon: '✎',
     hotkey: '3',
     arrive: 'You enter the Library. The shelves hum quietly.',
   },
@@ -47,21 +53,16 @@ export const LOCATIONS: GameLocation[] = [
     path: '/about',
     name: 'Hall of Records',
     real: 'About',
+    icon: '◈',
     hotkey: '4',
     arrive: 'You enter the Hall of Records.',
-  },
-  {
-    path: '/contact',
-    name: "Messenger's Post",
-    real: 'Contact',
-    hotkey: '5',
-    arrive: "You reach the Messenger's Post. Ravens shuffle on their perches.",
   },
   {
     path: '/lab',
     name: 'The Vault',
     real: 'Lab',
-    hotkey: '6',
+    icon: '✦',
+    hotkey: '5',
     arrive: 'The Vault door grinds open.',
     minLevel: 2,
   },

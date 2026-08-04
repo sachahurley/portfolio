@@ -17,7 +17,6 @@ import NotePost from './pages/NotePost'
 import Lab from './pages/Lab'
 import LabItem from './pages/LabItem'
 import About from './pages/About'
-import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 
 import { locationFor } from './game/locations'
@@ -74,9 +73,6 @@ function App() {
 
               {/* About */}
               <Route path="/about" element={<About />} />
-
-              {/* Contact - the Messenger's Post */}
-              <Route path="/contact" element={<Contact />} />
 
               {/* 404 - any unmatched route */}
               <Route path="*" element={<NotFound />} />

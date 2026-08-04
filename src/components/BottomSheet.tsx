@@ -1,25 +1,20 @@
 /**
- * BottomSheet — the iOS-style menu (all screen sizes).
+ * BottomSheet — the iOS-style sheet (all screen sizes), opened by the dock's
+ * Menu button or the game frame's character strip.
  *
- * A scrim + sliding sheet containing the nav list, then a footer row with the
- * level + XP bar and the Game/Minimal mode toggle (a placeholder for now).
- * Drag the grab handle down to dismiss; also closes on scrim tap, Esc, or
- * selecting a nav link.
+ * Contents: nav from the world-map registry (icon + game name + plain name,
+ * Vault sealed until Level 2), the full character sheet (avatar, name, XP,
+ * banners), and the contact links ("dispatch a raven"). Drag the grab handle
+ * down to dismiss; also closes on scrim tap, Esc, or selecting a nav link.
  */
 
 import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { useXp } from '../context/XpProvider'
-import { levelLabel } from '../lib/levels'
+import { useXp, XP_AWARDS } from '../context/XpProvider'
+import { LOCATIONS } from '../game/locations'
+import CharacterPanel from './game/CharacterPanel'
 import PixelStoneBorder from './PixelStoneBorder'
-
-const NAV: [string, string][] = [
-  ['/', 'Home'],
-  ['/projects', 'Projects'],
-  ['/lab', 'Lab'],
-  ['/notes', 'Notes'],
-  ['/about', 'About'],
-]
+import { ArrowUpRight } from './icons'
 
 export default function BottomSheet({
   open,
@@ -29,7 +24,8 @@ export default function BottomSheet({
   onClose: () => void
 }) {
   const location = useLocation()
-  const { level, toast } = useXp()
+  const { level, award } = useXp()
+  const displayLevel = level.level + 1
   const sheetRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
 
@@ -99,36 +95,43 @@ export default function BottomSheet({
         <div className="grabber" onPointerDown={onGrabberDown} />
 
         <nav className="menu-nav">
-          {NAV.map(([path, label]) => (
-            <Link
-              key={path}
-              to={path}
-              className={isActive(path) ? 'active' : undefined}
-              onClick={onClose}
-            >
-              {label}
-            </Link>
-          ))}
+          {LOCATIONS.map((loc) => {
+            const locked = loc.minLevel != null && displayLevel < loc.minLevel
+            return locked ? (
+              <span key={loc.path} className="nav-sealed" aria-label="Sealed location">
+                <span className="gf-ic">?</span> ???
+                <span className="nav-real">sealed</span>
+              </span>
+            ) : (
+              <Link
+                key={loc.path}
+                to={loc.path}
+                className={isActive(loc.path) ? 'active' : undefined}
+                onClick={onClose}
+              >
+                <span className="gf-ic">{loc.icon}</span> {loc.name}
+                <span className="nav-real">{loc.real}</span>
+              </Link>
+            )
+          })}
         </nav>
 
-        <div className="menu-foot">
-          <div className="foot-left">
-            {/* Same copy string as the home progress row (levelLabel) so the
-                two readouts can never drift. */}
-            <span className="lvl">
-              <span>{levelLabel(level)}</span>
-              <span className="mbar">
-                <i style={{ width: `${level.pct}%` }} />
-              </span>
-            </span>
-          </div>
-          <button
-            className="toggle"
-            aria-label="Switch to Quest mode"
-            onClick={() => toast('Quest mode is coming soon, building minimal first')}
+        <CharacterPanel />
+
+        {/* Contact — sheet-only by design; no dedicated page, no email. */}
+        <div className="sheet-contact">
+          <div className="gf-label">dispatch a raven</div>
+          <a
+            href="https://x.com/sacha_hurley"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => award(XP_AWARDS.follow, 'followed on X', 'follow')}
           >
-            <span className="qicon">⚔</span> Quest mode
-          </button>
+            X · @sacha_hurley <ArrowUpRight />
+          </a>
+          <a href="https://github.com/sachahurley" target="_blank" rel="noopener noreferrer">
+            GitHub · sachahurley <ArrowUpRight />
+          </a>
         </div>
 
         {/* Carved-stone baseboard along the very bottom of the sheet. */}

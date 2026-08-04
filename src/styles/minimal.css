@@ -392,15 +392,16 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
     position: fixed; inset: 0;
     display: grid;
     grid-template-columns: minmax(0, 1fr) clamp(240px, 24vw, 320px);
-    grid-template-rows: minmax(0, 1fr) 132px;
-    grid-template-areas: 'viewport side' 'log log';
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: 'viewport side';
     background: var(--bg);
   }
   .gf-viewport { grid-area: viewport; overflow-y: auto; overflow-x: hidden; min-width: 0; }
-  .gf-side { grid-area: side; display: flex; flex-direction: column; overflow-y: auto; border-left: 2px solid var(--border); }
-  .gf-log { grid-area: log; display: flex; gap: 20px; align-items: stretch; border-top: 2px solid var(--border); padding: 14px 20px; }
-  /* compass replaces the dock; the log replaces toasts */
-  .dock { display: none; }
+  .gf-side { grid-area: side; display: flex; flex-direction: column; min-height: 0; border-left: 2px solid var(--border); }
+  /* log lives beneath the compass: fills the leftover column height,
+     scrolls internally, newest line pinned by MessageLog's auto-scroll */
+  .gf-log { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 16px 20px; }
+  /* the log replaces toasts on desktop (the dock + campfire stay) */
   #toaster { display: none; }
 }
 
@@ -427,10 +428,99 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 .gf-lock { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-left: auto; opacity: .8; }
 
 /* message log */
-.gf-log .gf-label { margin: 0; align-self: flex-start; }
-.gf-logscroll { flex: 1; overflow-y: auto; font-family: var(--mono); font-size: 13px; line-height: 1.7; }
+.gf-log .gf-label { margin: 0 0 8px; }
+.gf-logscroll { flex: 1; min-height: 0; overflow-y: auto; font-family: var(--mono); font-size: 13px; line-height: 1.7; }
 .gf-logline { color: var(--body); }
 .gf-logline.is-xp { color: var(--accent); }
 .gf-logline.is-level { color: var(--fg); }
 .gf-logline.is-arrive { color: var(--fg); }
 .gf-logline.is-hint { font-style: italic; }
+
+/* compass icon column */
+.gf-ic { min-width: 16px; text-align: center; opacity: .9; }
+
+/* character strip: profile readout at the foot of the right column;
+   opens the sheet. Never a save button — saving is automatic. */
+.gf-charstrip {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 14px 20px; border: 0; border-top: 2px solid var(--border);
+  background: var(--hover); cursor: pointer; text-align: left;
+  font-family: var(--mono); color: var(--fg); position: relative;
+}
+.gf-charstrip:hover { background: var(--bg); }
+.gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gf-cs-lvl { font-size: 11px; color: var(--body); }
+.gf-cs-bar { height: 6px; border: 1px solid var(--border); background: var(--bg); }
+.gf-cs-bar > i { display: block; height: 100%; background: var(--accent); transition: width .3s ease; }
+.gf-cs-badge {
+  font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--bg); background: var(--accent); padding: 3px 6px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gf-cs-badge { animation: gf-pulse 1.6s ease-in-out infinite; }
+  @keyframes gf-pulse { 50% { opacity: .55; } }
+}
+
+/* ---- title-screen save readout (NEW GAME / CONTINUE) ---- */
+.title-save {
+  position: absolute; left: 48px; right: 48px; bottom: 64px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  font-family: var(--mono); pointer-events: none;
+}
+.ts-char { display: flex; align-items: center; gap: 12px; }
+.ts-line { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg); }
+.ts-hint { font-size: 12px; color: var(--body); }
+@media (prefers-reduced-motion: no-preference) {
+  .ts-hint { animation: ts-blink 1.4s steps(2, jump-none) infinite; }
+  @keyframes ts-blink { 50% { opacity: .25; } }
+}
+@media (max-width: 600px) { .title-save { left: 24px; right: 24px; bottom: 40px; } }
+
+/* ---- sheet: registry nav extras, character sheet, contact ---- */
+.menu-nav .gf-ic { font-size: 16px; margin-right: 8px; }
+.menu-nav .nav-real { margin-left: auto; font-size: 13px; color: var(--mut2); text-transform: lowercase; }
+.nav-sealed {
+  display: flex; align-items: baseline; font-size: 20px; padding: 9px 0;
+  color: var(--mut2); opacity: .6; cursor: not-allowed;
+}
+.nav-sealed .nav-real { margin-left: auto; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+
+.cs { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.cs-head { display: flex; align-items: flex-start; gap: 14px; }
+.cs-avatarbtn {
+  padding: 4px; background: var(--hover); border: 1px solid var(--border);
+  cursor: pointer; line-height: 0;
+}
+.cs-avatarbtn:hover { border-color: var(--accent); }
+.cs-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.cs-name {
+  font-family: var(--mono); font-size: 16px; color: var(--fg);
+  background: transparent; border: 1px solid transparent; border-bottom-color: var(--border);
+  padding: 2px 0; width: 100%;
+}
+.cs-name:hover { border-bottom-color: var(--mut); }
+.cs-name:focus { outline: none; border-bottom-color: var(--accent); }
+.cs-lvl { font-size: 12px; color: var(--body); }
+.cs-levelup {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--bg); background: var(--accent); border: 0; padding: 6px 10px; cursor: pointer;
+}
+@media (prefers-reduced-motion: no-preference) { .cs-levelup { animation: gf-pulse 1.6s ease-in-out infinite; } }
+.cs-picker {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  margin-top: 12px; padding: 12px; border: 1px solid var(--border); background: var(--hover);
+}
+.cs-cand { padding: 3px; background: transparent; border: 1px solid var(--border); cursor: pointer; line-height: 0; }
+.cs-cand:hover { border-color: var(--accent); }
+.cs-reroll {
+  font-family: var(--mono); font-size: 12px; color: var(--body);
+  background: transparent; border: 1px solid var(--border); padding: 8px 12px; cursor: pointer;
+}
+.cs-reroll:hover { color: var(--fg); border-color: var(--mut); }
+.cs .gf-eggrow { margin-top: 14px; }
+.cs-autosave { margin-top: 10px; font-size: 11px; }
+
+.sheet-contact { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.sheet-contact a { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--mut); padding: 4px 0; }
+.sheet-contact a:hover { color: var(--fg); }

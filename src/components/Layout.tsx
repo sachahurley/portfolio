@@ -2,25 +2,27 @@
  * Layout Component
  *
  * Wraps every page in the RPG game frame: the adventure viewport (page
- * content, ~70% width), the character panel + compass on the right, and the
- * message log along the bottom. On desktop the frame is fixed and the
- * viewport scrolls internally, like a real game UI; below 960px the frame
- * chrome hides and the page scrolls normally with the dock/sheet (the
- * "handheld port"). MinimalChrome still provides the loader (title screen),
- * dock + sheet (mobile nav), toasts (mobile), and the level-up modal.
+ * content) on the left; compass, message log, and the character strip
+ * stacked in the right column. On desktop the frame is fixed and the
+ * viewport scrolls internally; below 960px the frame chrome hides and the
+ * page scrolls normally (the "handheld port"). The bottom sheet (character
+ * sheet + nav + contact) is owned here so both the dock's Menu button and
+ * the character strip can open it.
  */
 
-import { type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import MinimalChrome from './MinimalChrome'
-import CharacterPanel from './game/CharacterPanel'
 import Compass from './game/Compass'
 import MessageLog from './game/MessageLog'
+import CharacterStrip from './game/CharacterStrip'
 
 interface LayoutProps {
   children: ReactNode
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const [sheetOpen, setSheetOpen] = useState(false)
+
   return (
     <div className="gframe bg-[var(--surface-page)] transition-colors">
       {/* Adventure viewport - where Home, Quest Log, Library, etc. render */}
@@ -28,17 +30,15 @@ export default function Layout({ children }: LayoutProps) {
         {children}
       </main>
 
-      {/* Right column: the visitor's save file + navigation */}
+      {/* Right column: navigation, narration, and the visitor's character */}
       <aside className="gf-side">
-        <CharacterPanel />
         <Compass />
+        <MessageLog />
+        <CharacterStrip onOpen={() => setSheetOpen(true)} />
       </aside>
 
-      {/* Bottom strip: the narrating message log */}
-      <MessageLog />
-
-      {/* Loader (title screen), dock + sheet (mobile), toasts, level-up modal */}
-      <MinimalChrome />
+      {/* Loader (title screen), dock (Menu + campfire), sheet, toasts, modal */}
+      <MinimalChrome sheetOpen={sheetOpen} onSheetOpenChange={setSheetOpen} />
     </div>
   )
 }

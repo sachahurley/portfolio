@@ -1,10 +1,11 @@
 /**
  * LevelUpModal — the egg-award dialog, mounted once in MinimalChrome.
  *
- * Shows the head of XpProvider's modal queue (threshold numbers 1..3); the
- * queue lets several level-ups from one award present sequentially with a
- * short beat between them. The title uses the display level (band + 1) so it
- * matches the "Level N · ..." progress copy. Esc or the button dismisses.
+ * Pull, not push: it opens only when the visitor taps the ▴ LEVEL UP badge
+ * (celebrateLevel), then presents pending level-ups (threshold numbers 1..3)
+ * sequentially with a short beat between them. The title uses the display
+ * level (band + 1) so it matches the "Level N · ..." progress copy. Esc or
+ * the button dismisses (dismissModal pops the pending queue and persists).
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -14,8 +15,8 @@ import { LEVEL_EGGS, THEMES } from '../lib/themes'
 import Egg from './progress/Egg'
 
 export default function LevelUpModal() {
-  const { modalQueue, dismissModal } = useXp()
-  const head = modalQueue.length ? modalQueue[0] : null
+  const { pendingLevels, celebrating, dismissModal } = useXp()
+  const head = celebrating && pendingLevels.length ? pendingLevels[0] : null
   const [shown, setShown] = useState<number | null>(null)
   const wasOpenRef = useRef(false)
   const btnRef = useRef<HTMLButtonElement>(null)

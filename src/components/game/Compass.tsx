@@ -45,7 +45,8 @@ export default function Compass() {
             <li key={loc.path}>
               {locked ? (
                 <span className="gf-dest locked" aria-label="Sealed location">
-                  <span className="gf-key">{loc.hotkey}</span> ??? <span className="gf-lock">sealed</span>
+                  <span className="gf-key">{loc.hotkey}</span>
+                  <span className="gf-ic">?</span> ??? <span className="gf-lock">sealed</span>
                 </span>
               ) : (
                 <Link
@@ -54,7 +55,8 @@ export default function Compass() {
                   aria-current={active ? 'page' : undefined}
                   title={loc.real}
                 >
-                  <span className="gf-key">{loc.hotkey}</span> {loc.name}
+                  <span className="gf-key">{loc.hotkey}</span>
+                  <span className="gf-ic">{loc.icon}</span> {loc.name}
                 </Link>
               )}
             </li>

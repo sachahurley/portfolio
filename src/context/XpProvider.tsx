@@ -23,6 +23,7 @@ import {
 } from 'react'
 import { applyTheme, LEVEL_EGGS, type EggId, type ThemeId } from '../lib/themes'
 import { levelInfo, LEVEL_TITLES, type LevelInfo } from '../lib/levels'
+import { generateName, randomSeed } from '../game/names'
 
 // XP awarded per action (each de-duped by key), tuned to the RPG doc's
 // economy. `subscribe` is unused since the newsletter was removed, but kept
@@ -69,8 +70,19 @@ interface XpValue {
   setActiveEgg: (id: ThemeId) => void
   resetLook: () => void
   resetProgress: () => void
-  /** Pending level-up modals (threshold numbers 1..3), head is shown. */
-  modalQueue: number[]
+  /** Character identity (persisted in the save). */
+  name: string
+  setName: (name: string) => void
+  avatarSeed: number
+  setAvatarSeed: (seed: number) => void
+  /** True when this browser has an existing save (CONTINUE vs NEW GAME). */
+  isReturning: boolean
+  /** Levels reached but not yet celebrated (threshold numbers 1..3),
+   *  persisted. A badge on the character strip/sheet invites the visitor to
+   *  open the celebration; nothing auto-pops. */
+  pendingLevels: number[]
+  celebrating: boolean
+  celebrateLevel: () => void
   dismissModal: () => void
 }
 
@@ -84,34 +96,62 @@ interface PersistedState {
   earned: string[]
   eggs: EggId[]
   activeEgg: ThemeId
+  name: string
+  avatarSeed: number
+  pendingLevels: number[]
 }
 
 /**
  * Load + migrate. Tolerates: the pre-egg shape ({xp, earned} only), the
- * prototype's legacy eggsHeld/eggsDropped arrays (unioned into eggs), and
- * invalid activeEgg values (must be a valid theme and an owned egg).
+ * prototype's legacy eggsHeld/eggsDropped arrays (unioned into eggs),
+ * invalid activeEgg values (must be a valid theme and an owned egg), and
+ * pre-character saves (no name/avatarSeed — a character is rolled for them).
+ * `existed` reports whether any save was present (CONTINUE vs NEW GAME).
  */
-function load(): PersistedState {
-  const out: PersistedState = { xp: 0, earned: [], eggs: [], activeEgg: 'default' }
+function load(): { state: PersistedState; existed: boolean } {
+  const seed = randomSeed()
+  const state: PersistedState = {
+    xp: 0,
+    earned: [],
+    eggs: [],
+    activeEgg: 'default',
+    name: generateName(seed),
+    avatarSeed: seed,
+    pendingLevels: [],
+  }
+  let existed = false
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return out
+    if (!raw) return { state, existed }
     const s = JSON.parse(raw) as Record<string, unknown>
-    if (!s || typeof s !== 'object') return out
-    if (typeof s.xp === 'number' && Number.isFinite(s.xp)) out.xp = Math.max(0, s.xp)
-    if (Array.isArray(s.earned)) out.earned = s.earned.filter((k) => typeof k === 'string')
+    if (!s || typeof s !== 'object') return { state, existed }
+    existed = true
+    if (typeof s.xp === 'number' && Number.isFinite(s.xp)) state.xp = Math.max(0, s.xp)
+    if (Array.isArray(s.earned)) state.earned = s.earned.filter((k) => typeof k === 'string')
     const eggSources = [s.eggs, s.eggsHeld, s.eggsDropped]
     for (const src of eggSources) {
       if (!Array.isArray(src)) continue
-      for (const e of src) if (isEggId(e) && !out.eggs.includes(e)) out.eggs.push(e)
+      for (const e of src) if (isEggId(e) && !state.eggs.includes(e)) state.eggs.push(e)
     }
-    if (s.activeEgg === 'default' || (isEggId(s.activeEgg) && out.eggs.includes(s.activeEgg))) {
-      out.activeEgg = s.activeEgg
+    if (s.activeEgg === 'default' || (isEggId(s.activeEgg) && state.eggs.includes(s.activeEgg))) {
+      state.activeEgg = s.activeEgg
+    }
+    if (typeof s.name === 'string' && s.name.trim()) state.name = s.name.trim().slice(0, 40)
+    if (typeof s.avatarSeed === 'number' && Number.isFinite(s.avatarSeed)) {
+      state.avatarSeed = Math.floor(s.avatarSeed)
+      // Pre-character saves get a name rolled from their (fresh) seed above;
+      // saves with a stored seed but no name keep name/seed consistent.
+      if (!(typeof s.name === 'string' && s.name.trim())) state.name = generateName(state.avatarSeed)
+    }
+    if (Array.isArray(s.pendingLevels)) {
+      state.pendingLevels = s.pendingLevels.filter(
+        (n): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= LEVEL_EGGS.length
+      )
     }
   } catch {
     /* ignore malformed storage */
   }
-  return out
+  return { state, existed }
 }
 
 export function XpProvider({ children }: { children: ReactNode }) {
@@ -119,19 +159,22 @@ export function XpProvider({ children }: { children: ReactNode }) {
   // which grants eggs for levels a returning visitor has already achieved,
   // silently (no modal) - this also covers the threshold migration from the
   // old 5-level system.
-  const [initial] = useState<PersistedState>(() => {
-    const s = load()
+  const [initial] = useState<PersistedState & { existed: boolean }>(() => {
+    const { state: s, existed } = load()
     for (let l = 1; l <= levelInfo(s.xp).level; l++) {
       const egg = LEVEL_EGGS[l - 1]
       if (egg && !s.eggs.includes(egg)) s.eggs.push(egg)
     }
-    return s
+    return { ...s, existed }
   })
 
   const [xp, setXp] = useState(initial.xp)
   const [eggs, setEggs] = useState<EggId[]>(initial.eggs)
   const [activeEgg, setActiveEggState] = useState<ThemeId>(initial.activeEgg)
-  const [modalQueue, setModalQueue] = useState<number[]>([])
+  const [name, setNameState] = useState(initial.name)
+  const [avatarSeed, setAvatarSeedState] = useState(initial.avatarSeed)
+  const [pendingLevels, setPendingLevels] = useState<number[]>(initial.pendingLevels)
+  const [celebrating, setCelebrating] = useState(false)
   const [toasts, setToasts] = useState<ToastItem[]>([])
   const [log, setLog] = useState<LogEntry[]>([])
 
@@ -139,6 +182,9 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const earnedRef = useRef<Set<string>>(new Set(initial.earned))
   const eggsRef = useRef<EggId[]>(initial.eggs)
   const activeEggRef = useRef<ThemeId>(initial.activeEgg)
+  const nameRef = useRef(initial.name)
+  const avatarSeedRef = useRef(initial.avatarSeed)
+  const pendingRef = useRef<number[]>(initial.pendingLevels)
   const idRef = useRef(0)
 
   const persist = useCallback(() => {
@@ -150,6 +196,9 @@ export function XpProvider({ children }: { children: ReactNode }) {
           earned: [...earnedRef.current],
           eggs: eggsRef.current,
           activeEgg: activeEggRef.current,
+          name: nameRef.current,
+          avatarSeed: avatarSeedRef.current,
+          pendingLevels: pendingRef.current,
         })
       )
     } catch {
@@ -195,7 +244,9 @@ export function XpProvider({ children }: { children: ReactNode }) {
       setXp(xpRef.current)
       toast(`+${amount} xp · ${reason}`)
       logLine(`+${amount} XP — ${reason}`, 'xp')
-      // Each threshold crossed grants its egg and queues a level-up modal.
+      // Each threshold crossed grants its egg immediately (the ritual never
+      // waits) and queues a PENDING level-up: the celebration modal opens
+      // only when the visitor taps the badge, never auto-pops.
       const queued: number[] = []
       for (let l = before + 1; l <= after; l++) {
         const egg = LEVEL_EGGS[l - 1]
@@ -205,18 +256,47 @@ export function XpProvider({ children }: { children: ReactNode }) {
         }
         logLine(`You have reached Level ${l + 1} — ${LEVEL_TITLES[l] ?? ''}`.trim(), 'level')
       }
-      persist()
       if (queued.length) {
+        pendingRef.current = [...pendingRef.current, ...queued]
         setEggs([...eggsRef.current])
-        setModalQueue((q) => [...q, ...queued])
+        setPendingLevels(pendingRef.current)
       }
+      persist()
     },
     [persist, toast, logLine]
   )
 
-  const dismissModal = useCallback(() => {
-    setModalQueue((q) => q.slice(1))
+  /** Open the celebration for the oldest un-celebrated level-up. */
+  const celebrateLevel = useCallback(() => {
+    if (pendingRef.current.length) setCelebrating(true)
   }, [])
+
+  const dismissModal = useCallback(() => {
+    pendingRef.current = pendingRef.current.slice(1)
+    setPendingLevels(pendingRef.current)
+    if (pendingRef.current.length === 0) setCelebrating(false)
+    persist()
+  }, [persist])
+
+  const setName = useCallback(
+    (n: string) => {
+      const clean = n.trim().slice(0, 40)
+      if (!clean) return
+      nameRef.current = clean
+      setNameState(clean)
+      persist()
+    },
+    [persist]
+  )
+
+  const setAvatarSeed = useCallback(
+    (seed: number) => {
+      avatarSeedRef.current = Math.floor(seed)
+      setAvatarSeedState(avatarSeedRef.current)
+      persist()
+    },
+    [persist]
+  )
 
   const setActiveEgg = useCallback(
     (id: ThemeId) => {
@@ -234,15 +314,22 @@ export function XpProvider({ children }: { children: ReactNode }) {
   }, [setActiveEgg, toast])
 
   const resetProgress = useCallback(() => {
+    const seed = randomSeed()
     xpRef.current = 0
     earnedRef.current = new Set()
     eggsRef.current = []
     activeEggRef.current = 'default'
+    nameRef.current = generateName(seed)
+    avatarSeedRef.current = seed
+    pendingRef.current = []
     persist()
     setXp(0)
     setEggs([])
     setActiveEggState('default')
-    setModalQueue([])
+    setNameState(nameRef.current)
+    setAvatarSeedState(seed)
+    setPendingLevels([])
+    setCelebrating(false)
     toast('progress reset')
   }, [persist, toast])
 
@@ -260,7 +347,14 @@ export function XpProvider({ children }: { children: ReactNode }) {
     setActiveEgg,
     resetLook,
     resetProgress,
-    modalQueue,
+    name,
+    setName,
+    avatarSeed,
+    setAvatarSeed,
+    isReturning: initial.existed,
+    pendingLevels,
+    celebrating,
+    celebrateLevel,
     dismissModal,
   }
 
