@@ -12,7 +12,7 @@
  * quantized to the Genesis levels. Background is transparent (the loader's
  * --bg shows through) rather than the reference's opaque black.
  *
- * All 36 frames are baked once at native resolution (216x132) on mount;
+ * All 36 frames are baked once at native resolution (168x108) on mount;
  * the animation loop just blits the current frame, scaled to an integer
  * device-pixel multiple, nearest-neighbour.
  */
@@ -32,18 +32,22 @@ const FONT: Record<string, string[]> = {
   Y: ['#...#', '#...#', '.#.#.', '..#..', '..#..', '..#..', '..#..'],
 }
 
-const SC = 3 // each font pixel -> 3x3
+// Layout tuned from the reference: SC 4 (not 3) for thicker strokes, a
+// tighter canvas so the wordmark fills more of the frame, and the two
+// words pulled close (17px visual gap — attached drips reach ~13px, so
+// SACHA's drips just clear HURLEY's top; only falling droplets cross it).
+const SC = 4 // each font pixel -> 4x4
 const LW = 5 * SC
 const LH = 7 * SC
 const GAP = 3
 const T = 36 // loop length in frames
 const FRAME_MS = 90
 const SHEAR = 0.6
-const W = 216
-const H = 132
+const W = 168
+const H = 108
 const WORDS: Array<[string, number]> = [
-  ['SACHA', 16],
-  ['HURLEY', 74],
+  ['SACHA', 6],
+  ['HURLEY', 51],
 ]
 
 type RGB = readonly [number, number, number]
