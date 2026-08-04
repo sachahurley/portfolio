@@ -11,6 +11,7 @@
 import { useEffect, useState } from 'react'
 import AsciiName from './AsciiName'
 import PixelName from './PixelName'
+import JeweledFrame from './JeweledFrame'
 
 const VERSION: 'pixel' | 'ascii' = 'pixel'
 
@@ -41,6 +42,7 @@ export default function Loader() {
     // fall through and activate whatever sits underneath on the page.
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
       {VERSION === 'pixel' ? <PixelName fillContainer /> : <AsciiName fillContainer />}
+      <JeweledFrame />
     </div>
   )
 }
