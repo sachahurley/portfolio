@@ -80,9 +80,10 @@ export default function AsciiName({
       );
       const cols = Math.floor(box.w / (fs * CHAR_W));
       const rows = Math.floor(box.h / (fs * LINE_H));
-      return { comp: frameTo(art, cols, rows), fontSize: `${fs}px` };
+      // Borderless: the jeweled viewport frame does the framing now.
+      return { comp: frameTo(art, cols, rows, false), fontSize: `${fs}px` };
     }
-    const comp = frameTo(art, art.cols + 8, art.rows + 4);
+    const comp = frameTo(art, art.cols + 8, art.rows + 4, false);
     return {
       comp,
       fontSize: `min(calc(100cqw / ${comp.cols * CHAR_W}), ${maxFontSize}px)`,

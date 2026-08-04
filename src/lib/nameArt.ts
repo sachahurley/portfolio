@@ -153,8 +153,37 @@ const cyc = (pat: string, n: number) => pat.repeat(Math.ceil(n / pat.length)).sl
 const sideL = (y: number) => (y % 2 === 0 ? "▓▒" : "▒▓");
 const sideR = (y: number) => (y % 2 === 0 ? "▒▓" : "▓▒");
 
-/** Center the art inside a frame of targetCols x targetRows (borders included). */
-export function frameTo(art: Composition, targetCols: number, targetRows: number): Composition {
+/** Center the art inside a frame of targetCols x targetRows (borders included).
+ *  With border: false, no checker ring is drawn — the art is just centred in
+ *  the full target grid (used since the jeweled viewport frame took over the
+ *  framing job on the welcome screen). */
+export function frameTo(
+  art: Composition,
+  targetCols: number,
+  targetRows: number,
+  border = true
+): Composition {
+  if (!border) {
+    const cols = Math.max(targetCols, art.cols);
+    const rows = Math.max(targetRows, art.rows);
+    const offX = (cols - art.cols) >> 1;
+    const offY = (rows - art.rows) >> 1;
+    const lines: string[] = [];
+    for (let y = 0; y < rows; y++) {
+      const src = y - offY;
+      lines.push(
+        src >= 0 && src < art.rows
+          ? (" ".repeat(offX) + art.lines[src]).padEnd(cols, " ").slice(0, cols)
+          : " ".repeat(cols)
+      );
+    }
+    return {
+      lines,
+      drips: art.drips.map((d) => ({ ...d, x: d.x + offX, y: d.y + offY })),
+      cols,
+      rows,
+    };
+  }
   const innerC = Math.max(targetCols - 4, art.cols);
   const innerR = Math.max(targetRows - 2, art.rows);
   const offX = (innerC - art.cols) >> 1;

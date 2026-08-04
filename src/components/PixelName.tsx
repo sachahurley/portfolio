@@ -132,11 +132,12 @@ export default function PixelName({
       if (w === 0) return
       let u: number
       if (fillContainer && h > 0) {
-        // Same sizing as AsciiName: art plus a 6-col / 1-row gutter inside the frame.
+        // Same sizing as AsciiName: art plus a 6-col / 1-row gutter. Borderless:
+        // the jeweled viewport frame does the framing now.
         u = Math.min(w / ((art.cols + 16) * CHAR_W), h / ((art.rows + 4) * LINE_H), maxCell)
-        comp = frameTo(art, Math.floor(w / (u * CHAR_W)), Math.floor(h / (u * LINE_H)))
+        comp = frameTo(art, Math.floor(w / (u * CHAR_W)), Math.floor(h / (u * LINE_H)), false)
       } else {
-        comp = frameTo(art, art.cols + 8, art.rows + 4)
+        comp = frameTo(art, art.cols + 8, art.rows + 4, false)
         u = Math.min(w / (comp.cols * CHAR_W), maxCell)
         canvas!.style.height = `${Math.round(comp.rows * u * LINE_H)}px`
       }
