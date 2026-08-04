@@ -1,13 +1,15 @@
 /**
- * XP / progression system
+ * XP / progression system — the visitor's SAVE FILE.
  *
- * Ports the prototype's leveling + egg system to React. State persists to
- * localStorage ('sh_min') and carries across visits. `award()` adds XP
- * (de-duped by key) and fires a toast; crossing a level threshold grants an
- * egg and queues the level-up modal (LevelUpModal in MinimalChrome). Earned
- * eggs live in the home "Your Progress" egg track; dropping one into the fire
+ * State persists to localStorage ('sh_min') and carries across visits: a
+ * returning visitor CONTINUEs where they left off. `award()` adds XP
+ * (de-duped by key), fires a toast (mobile), and writes to the message log
+ * (the game frame's bottom panel); crossing a level threshold grants an
+ * egg and queues the level-up modal. Earned eggs live in the character
+ * panel and the home "Your Progress" egg track; dropping one into the fire
  * sets `activeEgg`, which re-themes the site (applyTheme cascade) and
- * recolors all three canvas fires.
+ * recolors all three canvas fires — that ritual IS the "choose your
+ * banner" unlock from the RPG structure doc.
  */
 
 import {
@@ -20,15 +22,18 @@ import {
   type ReactNode,
 } from 'react'
 import { applyTheme, LEVEL_EGGS, type EggId, type ThemeId } from '../lib/themes'
-import { levelInfo, type LevelInfo } from '../lib/levels'
+import { levelInfo, LEVEL_TITLES, type LevelInfo } from '../lib/levels'
 
-// XP awarded per action (each de-duped by key). `subscribe` is unused since
-// the newsletter was removed, but kept so the rule survives a reintroduction.
+// XP awarded per action (each de-duped by key), tuned to the RPG doc's
+// economy. `subscribe` is unused since the newsletter was removed, but kept
+// so the rule survives a reintroduction.
 export const XP_AWARDS = {
-  visit: 10,
-  project: 15,
+  visit: 25, // discover a location for the first time
+  project: 15, // open a quest (case study)
+  questComplete: 35, // read a quest to the end (scroll bottom)
   note: 10,
   lab: 20,
+  secret: 50, // find a hidden interaction
   follow: 50,
   subscribe: 25,
 } as const
@@ -39,6 +44,16 @@ interface ToastItem {
   kind?: 'level'
 }
 
+export type LogKind = 'xp' | 'arrive' | 'level' | 'hint' | 'system'
+
+export interface LogEntry {
+  id: number
+  msg: string
+  kind: LogKind
+}
+
+const LOG_LIMIT = 80
+
 interface XpValue {
   xp: number
   level: LevelInfo
@@ -46,6 +61,9 @@ interface XpValue {
   toast: (msg: string, kind?: 'level') => void
   toasts: ToastItem[]
   removeToast: (id: number) => void
+  /** Message log history (session-scoped), newest last. */
+  log: LogEntry[]
+  logLine: (msg: string, kind?: LogKind) => void
   eggs: EggId[]
   activeEgg: ThemeId
   setActiveEgg: (id: ThemeId) => void
@@ -115,6 +133,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const [activeEgg, setActiveEggState] = useState<ThemeId>(initial.activeEgg)
   const [modalQueue, setModalQueue] = useState<number[]>([])
   const [toasts, setToasts] = useState<ToastItem[]>([])
+  const [log, setLog] = useState<LogEntry[]>([])
 
   const xpRef = useRef(initial.xp)
   const earnedRef = useRef<Set<string>>(new Set(initial.earned))
@@ -155,6 +174,11 @@ export function XpProvider({ children }: { children: ReactNode }) {
     setToasts((t) => [...t, { id, msg, kind }])
   }, [])
 
+  const logLine = useCallback((msg: string, kind: LogKind = 'system') => {
+    const id = ++idRef.current
+    setLog((l) => [...l.slice(-(LOG_LIMIT - 1)), { id, msg, kind }])
+  }, [])
+
   const removeToast = useCallback((id: number) => {
     setToasts((t) => t.filter((x) => x.id !== id))
   }, [])
@@ -170,6 +194,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
       const after = levelInfo(xpRef.current).level
       setXp(xpRef.current)
       toast(`+${amount} xp · ${reason}`)
+      logLine(`+${amount} XP — ${reason}`, 'xp')
       // Each threshold crossed grants its egg and queues a level-up modal.
       const queued: number[] = []
       for (let l = before + 1; l <= after; l++) {
@@ -178,6 +203,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
           eggsRef.current = [...eggsRef.current, egg]
           queued.push(l)
         }
+        logLine(`You have reached Level ${l + 1} — ${LEVEL_TITLES[l] ?? ''}`.trim(), 'level')
       }
       persist()
       if (queued.length) {
@@ -185,7 +211,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
         setModalQueue((q) => [...q, ...queued])
       }
     },
-    [persist, toast]
+    [persist, toast, logLine]
   )
 
   const dismissModal = useCallback(() => {
@@ -227,6 +253,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
     toast,
     toasts,
     removeToast,
+    log,
+    logLine,
     eggs,
     activeEgg,
     setActiveEgg,

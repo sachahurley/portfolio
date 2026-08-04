@@ -129,30 +129,44 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
   const palette = activeEgg !== 'default' ? themePalette : isDark ? DARK_PALETTE : LIGHT_PALETTE
   const paletteMax = palette.length - 1
 
-  // Detect when user scrolls to the bottom of the page
+  // Detect when the user scrolls near the bottom - of the game frame's
+  // internal viewport when it scrolls (desktop), else of the page (mobile).
   useEffect(() => {
+    const scroller = document.getElementById('gf-viewport')
     const handleScroll = () => {
-      const scrollBottom = window.innerHeight + window.scrollY
-      const pageHeight = document.documentElement.scrollHeight
-      // Trigger when within 100px of the bottom
-      setIsVisible(scrollBottom >= pageHeight - 100)
+      if (scroller && scroller.scrollHeight > scroller.clientHeight + 1) {
+        setIsVisible(scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 100)
+      } else {
+        const scrollBottom = window.innerHeight + window.scrollY
+        const pageHeight = document.documentElement.scrollHeight
+        // Trigger when within 100px of the bottom
+        setIsVisible(scrollBottom >= pageHeight - 100)
+      }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
+    scroller?.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll()
 
-    return () => window.removeEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      scroller?.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
-  // Calculate fire grid width based on full window width
+  // Fire grid width from the rendered footer, not the window: inside the
+  // game frame the fire spans the viewport column, not the screen.
   useEffect(() => {
+    const el = footerRef.current
     const updateWidth = () => {
-      setFireWidth(Math.floor(window.innerWidth / PIXEL_SIZE))
+      const w = el?.clientWidth || window.innerWidth
+      setFireWidth(Math.floor(w / PIXEL_SIZE))
     }
 
     updateWidth()
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
+    const ro = new ResizeObserver(updateWidth)
+    if (el) ro.observe(el)
+    return () => ro.disconnect()
   }, [])
 
   // Initialize fire array when dimensions change

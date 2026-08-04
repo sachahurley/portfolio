@@ -13,6 +13,7 @@ import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
 import { ArrowUpRight } from '../components/icons'
 import { usePageTitle } from '../lib/usePageTitle'
+import { useReadToEnd } from '../lib/useReadToEnd'
 
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -23,6 +24,13 @@ export default function ProjectDetail() {
   useEffect(() => {
     if (project) award(XP_AWARDS.project, `opened ${project.title}`, `project:${project.slug}`)
   }, [project, award])
+
+  // "Read a quest to the end": the bottom sentinel awards once per quest.
+  const endRef = useReadToEnd(() => {
+    if (project) {
+      award(XP_AWARDS.questComplete, `quest complete: ${project.title}`, `questdone:${project.slug}`)
+    }
+  }, !!project)
 
   if (!project) return <NotFound />
 
@@ -71,6 +79,9 @@ export default function ProjectDetail() {
           view project <ArrowUpRight />
         </a>
       )}
+
+      {/* read-to-end sentinel (quest completion XP) */}
+      <div ref={endRef} aria-hidden="true" />
     </MinimalPage>
   )
 }

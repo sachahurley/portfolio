@@ -86,14 +86,18 @@ export default function PixelStalactites() {
   const animFrameRef = useRef<number | null>(null)
   const [gridWidth, setGridWidth] = useState(0)
 
-  // Track grid width based on full window width
+  // Grid width from the rendered canvas (w-full, so it tracks its container;
+  // inside the game frame that is the viewport column, not the window).
   useEffect(() => {
+    const canvas = canvasRef.current
     const updateWidth = () => {
-      setGridWidth(Math.floor(window.innerWidth / PIXEL_SIZE))
+      const w = canvas?.clientWidth || window.innerWidth
+      setGridWidth(Math.floor(w / PIXEL_SIZE))
     }
     updateWidth()
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
+    const ro = new ResizeObserver(updateWidth)
+    if (canvas) ro.observe(canvas)
+    return () => ro.disconnect()
   }, [])
 
   // Main animation loop

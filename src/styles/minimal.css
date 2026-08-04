@@ -374,3 +374,63 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
   * { transition: none !important; }
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ==== game frame (RPG chrome) ====================================
+   Desktop: a fixed single-screen frame in the M&M tradition — the
+   adventure viewport scrolls internally; character panel + compass on
+   the right; message log along the bottom. Below 960px the chrome
+   hides and the page scrolls normally (the "handheld port"): dock,
+   sheet, and toasts take over, exactly the pre-RPG mobile experience. */
+.gframe { min-height: 100vh; overflow-x: hidden; }
+.gf-side, .gf-log { display: none; }
+
+.gf-label { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--body); margin: 0 0 12px; }
+.gf-dim { color: var(--body); opacity: .7; font-size: 13px; }
+
+@media (min-width: 960px) {
+  .gframe {
+    position: fixed; inset: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(240px, 24vw, 320px);
+    grid-template-rows: minmax(0, 1fr) 132px;
+    grid-template-areas: 'viewport side' 'log log';
+    background: var(--bg);
+  }
+  .gf-viewport { grid-area: viewport; overflow-y: auto; overflow-x: hidden; min-width: 0; }
+  .gf-side { grid-area: side; display: flex; flex-direction: column; overflow-y: auto; border-left: 2px solid var(--border); }
+  .gf-log { grid-area: log; display: flex; gap: 20px; align-items: stretch; border-top: 2px solid var(--border); padding: 14px 20px; }
+  /* compass replaces the dock; the log replaces toasts */
+  .dock { display: none; }
+  #toaster { display: none; }
+}
+
+/* right column panels */
+.gf-panel { padding: 20px; border-bottom: 2px solid var(--border); }
+.gf-charname { font-family: var(--mono); font-size: 16px; color: var(--fg); letter-spacing: .04em; }
+.gf-charlvl { font-family: var(--mono); font-size: 13px; color: var(--body); margin: 6px 0 14px; }
+.gf-xpbar { height: 10px; border: 1px solid var(--border); background: var(--hover); }
+.gf-xpfill { height: 100%; background: var(--accent); transition: width .3s ease; }
+.gf-xpnum { font-family: var(--mono); font-size: 12px; color: var(--body); margin-top: 6px; }
+.gf-eggrow { display: flex; gap: 8px; margin-top: 14px; min-height: 16px; align-items: center; }
+.gf-egg { width: 14px; height: 16px; border: 1px solid; border-radius: 50% 50% 46% 46%; display: inline-block; }
+.gf-egg.active { outline: 1.5px solid var(--accent); outline-offset: 2px; }
+.gf-unlock { margin-top: 14px; line-height: 1.5; }
+.gf-unlock a { color: var(--accent); }
+
+/* compass */
+.gf-compass ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.gf-dest { display: flex; align-items: baseline; gap: 10px; font-family: var(--mono); font-size: 14px; color: var(--body); padding: 7px 8px; text-decoration: none; border: 1px solid transparent; transition: color .15s ease, border-color .15s ease; }
+.gf-dest:hover { color: var(--fg); }
+.gf-dest.active { color: var(--fg); border-color: var(--border); }
+.gf-dest.locked { color: var(--body); opacity: .55; cursor: not-allowed; }
+.gf-key { font-size: 11px; color: var(--accent); min-width: 12px; }
+.gf-lock { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-left: auto; opacity: .8; }
+
+/* message log */
+.gf-log .gf-label { margin: 0; align-self: flex-start; }
+.gf-logscroll { flex: 1; overflow-y: auto; font-family: var(--mono); font-size: 13px; line-height: 1.7; }
+.gf-logline { color: var(--body); }
+.gf-logline.is-xp { color: var(--accent); }
+.gf-logline.is-level { color: var(--fg); }
+.gf-logline.is-arrive { color: var(--fg); }
+.gf-logline.is-hint { font-style: italic; }
