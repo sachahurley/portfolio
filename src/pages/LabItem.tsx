@@ -8,6 +8,7 @@
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
+import DotLoader from '../components/DotLoader'
 import { getLabBySlug } from '../data/lab'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
@@ -105,6 +106,16 @@ export default function LabItem() {
         <>
           <canvas id="labcanvas" ref={canvasRef} />
           <p className="meta">demo: a reactive dot grid — every lab toy would be its own experiment.</p>
+        </>
+      ) : item.demo === 'dot-loader' ? (
+        <>
+          <div style={{ marginTop: 24 }}>
+            <DotLoader label="conjuring" />
+          </div>
+          <p className="meta" style={{ marginTop: 18 }}>
+            demo: the site's loading indicator — six dots twinkling at random, and the time
+            you've spent watching them.
+          </p>
         </>
       ) : item.body ? (
         <p style={{ marginTop: 18 }}>{item.body}</p>

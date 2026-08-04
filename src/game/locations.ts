@@ -1,7 +1,7 @@
 /**
  * The world map — every portfolio section as an RPG location.
  *
- * The registry drives the Compass (navigation + hotkeys), arrival lines in
+ * The registry drives the Compass (navigation), arrival lines in
  * the message log, and the Vault's level gate. Paths keep their original
  * URLs so existing deep links and SEO survive the RPG framing; the game
  * names are presentation only.
@@ -16,8 +16,6 @@ export interface GameLocation {
   /** Unicode glyph shown left of the name (compass + sheet). Rendered via
    *  font fallback — Fragment Mono lacks these; pixel icons come later. */
   icon: string
-  /** Compass hotkey, pressed as a bare digit. */
-  hotkey: string
   /** Message-log line on first arrival and revisits. */
   arrive: string
   /** Minimum display level (1-based) before the compass reveals it. */
@@ -30,7 +28,6 @@ export const LOCATIONS: GameLocation[] = [
     name: 'The Crossroads',
     real: 'Home',
     icon: '⌂',
-    hotkey: '1',
     arrive: 'You stand at the Crossroads. Signposts point everywhere.',
   },
   {
@@ -38,7 +35,6 @@ export const LOCATIONS: GameLocation[] = [
     name: 'Quest Log',
     real: 'Projects',
     icon: '⚔',
-    hotkey: '2',
     arrive: 'You arrive at the Quest Log. Completed quests await review.',
   },
   {
@@ -46,7 +42,6 @@ export const LOCATIONS: GameLocation[] = [
     name: 'The Library',
     real: 'Notes',
     icon: '✎',
-    hotkey: '3',
     arrive: 'You enter the Library. The shelves hum quietly.',
   },
   {
@@ -54,7 +49,6 @@ export const LOCATIONS: GameLocation[] = [
     name: 'Hall of Records',
     real: 'About',
     icon: '◈',
-    hotkey: '4',
     arrive: 'You enter the Hall of Records.',
   },
   {
@@ -62,7 +56,6 @@ export const LOCATIONS: GameLocation[] = [
     name: 'The Vault',
     real: 'Lab',
     icon: '✦',
-    hotkey: '5',
     arrive: 'The Vault door grinds open.',
     minLevel: 2,
   },

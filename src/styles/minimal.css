@@ -424,7 +424,6 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 .gf-dest:hover { color: var(--fg); }
 .gf-dest.active { color: var(--fg); border-color: var(--border); }
 .gf-dest.locked { color: var(--body); opacity: .55; cursor: not-allowed; }
-.gf-key { font-size: 11px; color: var(--accent); min-width: 12px; }
 .gf-lock { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-left: auto; opacity: .8; }
 
 /* message log */
@@ -524,3 +523,16 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 .sheet-contact { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
 .sheet-contact a { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--mut); padding: 4px 0; }
 .sheet-contact a:hover { color: var(--fg); }
+
+/* ---- dot-matrix loading indicator (DotLoader.tsx) ---- */
+.dotloader { display: inline-flex; align-items: center; gap: 12px; font-family: var(--mono); }
+.dotloader-glyph {
+  display: grid; grid-template-columns: repeat(2, 4px); grid-auto-rows: 4px;
+  gap: 3px; align-items: center;
+}
+.dotloader-dot {
+  width: 4px; height: 4px; border-radius: 999px; background: var(--fg);
+  opacity: 0; transition: opacity .1s linear;
+}
+.dotloader-label { font-size: 14px; color: var(--body); }
+.dotloader-time { font-size: 14px; color: var(--body); font-variant-numeric: tabular-nums; }

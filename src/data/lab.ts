@@ -11,7 +11,7 @@ export interface LabItem {
   title: string    // Display name
   desc: string     // Short description (shown on row lists and as the lead)
   img?: boolean    // Show a 16:9 thumbnail on the row
-  demo?: 'reactive-grid' // Which live demo to render, if any
+  demo?: 'reactive-grid' | 'dot-loader' // Which live demo to render, if any
   body?: string    // Longer write-up for the detail page (no live demo)
 }
 
@@ -22,6 +22,12 @@ export const lab: LabItem[] = [
     desc: 'A local knowledge base and MCP server that teaches AI agents how I work.',
     body:
       'DAWG is a local knowledge base plus a RAG MCP server that plugs into Cursor and Claude Code. It holds my design system decisions, working principles, corrections, and process docs, and serves them to AI agents so they pick up context the way a teammate would. Embeddings run on Ollama and vectors live in a local ChromaDB, so nothing in the pipeline needs a cloud API.',
+  },
+  {
+    slug: 'dot-loader',
+    title: 'Dot loader',
+    desc: 'A twinkling dot-matrix loading glyph with an elapsed-time readout.',
+    demo: 'dot-loader',
   },
 ]
 
