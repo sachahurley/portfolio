@@ -3,17 +3,14 @@
  * Stays up until the visitor taps, clicks, or presses a key, then fades
  * out and unmounts.
  *
- * Two renderers of the same name art exist: 'pixel' (8-bit canvas,
- * PixelName) and 'ascii' (text characters, AsciiName). Flip VERSION to
- * switch.
+ * The title is DripTitle (italic molten-drip "SACHA HURLEY"); the older
+ * PixelName/AsciiName letterform renderers still exist in the repo but
+ * are unused.
  */
 
 import { useEffect, useState } from 'react'
-import AsciiName from './AsciiName'
-import PixelName from './PixelName'
+import DripTitle from './DripTitle'
 import JeweledFrame from './JeweledFrame'
-
-const VERSION: 'pixel' | 'ascii' = 'pixel'
 
 export default function Loader() {
   const [hidden, setHidden] = useState(false)
@@ -41,7 +38,7 @@ export default function Loader() {
     // overlay's pointer-events mid-tap, so the tap's pointerup/click would
     // fall through and activate whatever sits underneath on the page.
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
-      {VERSION === 'pixel' ? <PixelName fillContainer /> : <AsciiName fillContainer />}
+      <DripTitle />
       <JeweledFrame />
     </div>
   )
