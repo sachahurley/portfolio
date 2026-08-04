@@ -36,15 +36,17 @@ const GEM_BASE: [number, number, number] = [0x5c, 0x0a, 0x0a] // deep garnet
 const GEM_GLOW: [number, number, number] = [0xe6, 0x33, 0x33] // bright pulse peak
 const PULSE_HZ = 0.15 // slow — a full pulse roughly every ~6.5s
 
-// Bull skull, 17 cols x 11 rows. The top HORN_ROWS rows are the horns,
-// which sweep up and outward past the wall top so they overflow above the
-// stage frame. 0 = transparent (sky above the wall, keystone inside it),
-// 4 = keystone stone, 6 = bone, 3 = socket shadow, 7 = gem (drawn
-// separately so it can animate).
+// Bull skull, 17 cols x 12 rows. The top HORN_ROWS rows are the horns:
+// they flare outward from the head, rise at the outer edge, then hook back
+// in so the tips point up-and-inward, overflowing above the stage frame.
+// 0 = transparent (sky above the wall, keystone inside it), 4 = keystone
+// stone, 6 = bone, 3 = socket shadow, 7 = gem (drawn separately so it can
+// animate).
 const SKULL = [
-  [6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6],
-  [0, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 0],
   [0, 0, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 0, 0],
+  [0, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 0],
+  [6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6],
+  [0, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 0],
   [0, 0, 0, 6, 6, 6, 0, 0, 0, 0, 0, 6, 6, 6, 0, 0, 0],
   [0, 0, 0, 0, 4, 6, 6, 6, 6, 6, 6, 6, 4, 0, 0, 0, 0],
   [0, 0, 0, 0, 4, 6, 6, 6, 6, 6, 6, 6, 4, 0, 0, 0, 0],
@@ -55,7 +57,7 @@ const SKULL = [
   [0, 0, 0, 0, 4, 4, 6, 6, 6, 6, 6, 4, 4, 0, 0, 0, 0],
 ]
 const SKULL_SCALE = 2 // each skull cell draws as a SKULL_SCALE x SKULL_SCALE grid block
-const HORN_ROWS = 4 // sprite rows that are horn-only (allowed above the wall)
+const HORN_ROWS = 5 // sprite rows that are horn-only (allowed above the wall)
 const FACE_ROWS = SKULL.length - HORN_ROWS
 // Sky rows baked above the frame line so the horns have room to overflow.
 const OVERHANG_ROWS = HORN_ROWS * SKULL_SCALE
