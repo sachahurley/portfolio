@@ -62,7 +62,8 @@ const BLACK: RGB = [0, 0, 0]
 interface Buf {
   w: number
   h: number
-  data: Uint8ClampedArray
+  // ArrayBuffer-backed explicitly: ImageData rejects ArrayBufferLike views
+  data: Uint8ClampedArray<ArrayBuffer>
 }
 
 const makeBuf = (w: number, h: number): Buf => ({ w, h, data: new Uint8ClampedArray(w * h * 4) })
