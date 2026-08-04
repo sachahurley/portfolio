@@ -2,9 +2,10 @@
  * PixelCastle
  *
  * Procedural pixel-art castle facade for StageHero's background: a coursed
- * stone wall with a round arched gate, a highlighted ring of voussoir stones,
- * and a keystone carved with a bull skull whose gem eyes pulse slowly and
- * whose horns overflow above the stage frame. Same
+ * stone wall with a round arched gate reading as a closed double door (a
+ * centre seam with a ring pull either side), a highlighted ring of voussoir
+ * stones, and a keystone carved with a bull skull whose gem eyes pulse
+ * slowly and whose horns overflow above the stage frame. Same
  * technique as PixelStalactites/PixelFire (a PIXEL_SIZE canvas grid) so all
  * three read as one material/art style.
  *
@@ -24,8 +25,10 @@ const PALETTE = [
   '#2E2519',     // 2: wall body (mid course)
   '#140F0A',     // 3: mortar joint / eye socket (darkest line)
   '#4A3C2A',     // 4: voussoir + keystone highlight stone
-  '#0D0906',     // 5: foundation course
+  '#0D0906',     // 5: foundation course / door seam
   '#C7B896',     // 6: bone (skull)
+  'transparent', // 7: never in the tone grid — 7 is the sprite's gem marker
+  '#8A784F',     // 8: aged brass (door ring pulls)
 ]
 
 const FOUNDATION_ROWS = 2
@@ -177,6 +180,28 @@ export default function PixelCastle() {
       // Foundation course along the base, full width.
       for (let r = rows - FOUNDATION_ROWS; r < rows; r++) {
         for (let c = 0; c < cols; c++) tone[at(c, r)] = 5
+      }
+
+      // Closed double door: a seam down the middle of the opening and a
+      // hanging ring pull (stud + hollow ring) either side of it. Drawn
+      // into the opening's transparent cells, so the stage background
+      // reads as the door leaves themselves.
+      const doorTopRow = springRow - R1
+      for (let r = Math.max(wallTop, doorTopRow); r <= gateBottomRow; r++) {
+        tone[at(archCenterCol, r)] = 5
+      }
+      const ringRow = springRow + Math.round(jambRows * 0.35)
+      for (const side of [-1, 1]) {
+        const hc = archCenterCol + side * 3 // ring centre, 2 cells off the seam
+        const cells: Array<[number, number]> = [
+          [hc, ringRow - 2], // mounting stud the ring hangs from
+          [hc - 1, ringRow - 1], [hc, ringRow - 1], [hc + 1, ringRow - 1],
+          [hc - 1, ringRow], [hc + 1, ringRow],
+          [hc - 1, ringRow + 1], [hc, ringRow + 1], [hc + 1, ringRow + 1],
+        ]
+        for (const [c, r] of cells) {
+          if (c >= 0 && c < cols && r >= wallTop && r < rows) tone[at(c, r)] = 8
+        }
       }
 
       // Stamp the keystone/skull, overlapping the ring's apex like a real
