@@ -1,8 +1,9 @@
 /**
- * DitherTitle — the video-game title screen: "SACHA HURLEY" as a solid
- * dithered silhouette over a live 1-bit ordered-dither scene, drawn at an
- * exact integer pixel scale for any viewport and coloured from the page's
- * CSS variables each beat, so egg themes recolor it live.
+ * DitherTitle — the video-game title screen: "SACHA HURLEY" as a live
+ * 1-bit dithered silhouette (boiling letters, dripping tails) on empty
+ * ground, drawn at an exact integer pixel scale for any viewport and
+ * coloured from the page's CSS variables each beat, so egg themes recolor
+ * it live.
  *
  * Rendering rules come from the sibling dither-studio repo's style guide:
  * grid 150-250 px wide, integer nearest-neighbour upscale only (never CSS
