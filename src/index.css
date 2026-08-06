@@ -19,12 +19,10 @@
   --body: var(--text-secondary);    /* descriptions, paragraphs */
   --mut: var(--text-tertiary);      /* dates, meta, role */
   --mut2: var(--border-muted);      /* faint arrows */
-  /* Warm sepia-gold highlight for links / See all / active nav / XP bar / focus
-     + selection. Known gap: scorp-ds has no muted warm-gold accent token — the
-     amber steps are too bright (amber-400) or too orange (amber-600) and the
-     sepia steps are neutral grays — so this is a scoped one-off (the gold the
-     Minimal prototype was designed around). Reconcile into the DS later. */
-  --accent: #e0a33d;
+  /* Highlight for links / See all / active nav / XP bar / focus + selection.
+     Light warm sepia straight from the scorp-ds scale (previously a one-off
+     prototype gold, #e0a33d). */
+  --accent: var(--color-sepia-300, #f0ebe4);
   --hover: var(--surface-muted);    /* row / control hover */
   --ring: var(--border-focus);      /* focus ring */
 
@@ -48,6 +46,6 @@
   );
 }
 
-/* Amber selection + focus ring, per the Minimal spec */
+/* Accent selection + focus ring, per the Minimal spec */
 ::selection { background: var(--accent); color: var(--bg); }
 :focus-visible { outline: 1.5px solid var(--accent); outline-offset: 3px; border-radius: 2px; }

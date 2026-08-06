@@ -27,7 +27,7 @@ const PALETTE = ['transparent', '#4A3C2C', '#968A75'] as const
 // Sparse brighter specks, scattered deterministically across the body so the
 // scorpion reads with a bit more detail instead of two flat tones.
 const SPEC_WHITE = '#fdfbf5' // bright warm white highlight
-const SPEC_GOLD = '#e0a33d' // gold fleck (matches the site accent)
+const SPEC_GOLD = '#f0ebe4' // light fleck (matches the site accent, sepia-300)
 const rand = (n: number): number => {
   const x = Math.sin(n) * 43758.5453
   return x - Math.floor(x)

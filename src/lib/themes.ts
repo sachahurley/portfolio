@@ -36,11 +36,11 @@ export const THEMES: Record<ThemeId, Theme> = {
   // not the prototype's grays. fire = representative hues pulled from
   // DEFAULT_FIRE_PALETTE below, used by the impact effects.
   default: {
-    name: 'Amber',
-    base: '#e0a33d',
-    mark: '#9c6e1e',
+    name: 'Sepia',
+    base: '#f0ebe4',
+    mark: '#bfb4a3',
     pattern: 'speckle',
-    accent: '#e0a33d',
+    accent: '#f0ebe4',
     head: '#fdfcfb',
     text: '#e0dace',
     fire: ['#FDE68A', '#F59E0B', '#B45309'],

@@ -93,7 +93,7 @@ export default function PixelPortrait({
     canvas.width = N * px
     canvas.height = N * px
     const accent =
-      getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#e0a33d'
+      getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#f0ebe4'
     const g = portraitCells(seed)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     for (let r = 0; r < N; r++) {

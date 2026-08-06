@@ -79,7 +79,7 @@ export default function DitherTitle({
       colors = {
         ground: get('--bg', '#0a0704'),
         ink: get('--fg', '#f0f0f0'),
-        lit: get('--accent', '#e0a33d'),
+        lit: get('--accent', '#f0ebe4'),
       }
     }
 
