@@ -1,0 +1,32 @@
+/* Prompt for the DitherTitle screen. The blink is stepped, arcade-style,
+   matching the site's no-easing pixel animations; it parks solid when the
+   visitor prefers reduced motion. */
+.dither-prompt {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 16%;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--fg, #f0f0f0);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dither-prompt {
+    animation: dither-prompt-blink 1.1s steps(1, end) infinite;
+  }
+  @keyframes dither-prompt-blink {
+    0%,
+    59% {
+      opacity: 1;
+    }
+    60%,
+    100% {
+      opacity: 0;
+    }
+  }
+}
