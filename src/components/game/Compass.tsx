@@ -15,14 +15,14 @@ export default function Compass() {
   const here = locationFor(pathname)
 
   return (
-    <nav className="gf-panel gf-compass" aria-label="Compass">
-      <div className="gf-label">compass</div>
+    <nav className="gf-panel gf-compass" aria-label="Menu">
+      <div className="gf-label">menu</div>
       <ul>
         {LOCATIONS.map((loc) => {
           const locked = loc.minLevel != null && displayLevel < loc.minLevel
           const active = here?.path === loc.path
           return (
-            <li key={loc.path}>
+            <li key={loc.path} className={active ? 'sel' : undefined}>
               {locked ? (
                 <span className="gf-dest locked" aria-label="Sealed location">
                   <span className="gf-ic">?</span> ??? <span className="gf-lock">sealed</span>
@@ -32,9 +32,8 @@ export default function Compass() {
                   className={`gf-dest${active ? ' active' : ''}`}
                   to={loc.path}
                   aria-current={active ? 'page' : undefined}
-                  title={loc.real}
                 >
-                  <span className="gf-ic">{loc.icon}</span> {loc.name}
+                  <span className="gf-ic">{loc.icon}</span> {loc.real}
                 </Link>
               )}
             </li>

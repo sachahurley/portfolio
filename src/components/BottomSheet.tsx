@@ -2,17 +2,17 @@
  * BottomSheet — the iOS-style sheet (all screen sizes), opened by the dock's
  * Menu button or the game frame's character strip.
  *
- * Contents: nav from the world-map registry (icon + game name + plain name,
- * Vault sealed until Level 2), the full character sheet (avatar, name, XP,
- * banners), and the contact links ("dispatch a raven"). Drag the grab handle
- * down to dismiss; also closes on scrim tap, Esc, or selecting a nav link.
+ * Contents: nav from the world-map registry (Lab sealed until Level 2), a
+ * compact character row linking to the /character screen (the full sheet
+ * lives there), and the contact links ("dispatch a raven"). Drag the grab
+ * handle down to dismiss; also closes on scrim tap, Esc, or a nav link.
  */
 
 import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
-import CharacterPanel from './game/CharacterPanel'
+import PixelPortrait from './game/PixelPortrait'
 import PixelStoneBorder from './PixelStoneBorder'
 import { ArrowUpRight } from './icons'
 
@@ -24,7 +24,7 @@ export default function BottomSheet({
   onClose: () => void
 }) {
   const location = useLocation()
-  const { level, award } = useXp()
+  const { level, award, name, avatarSeed, pendingLevels, chests } = useXp()
   const displayLevel = level.level + 1
   const sheetRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
@@ -100,7 +100,7 @@ export default function BottomSheet({
             return locked ? (
               <span key={loc.path} className="nav-sealed" aria-label="Sealed location">
                 <span className="gf-ic">?</span> ???
-                <span className="nav-real">sealed</span>
+                <span className="nav-flavor">sealed</span>
               </span>
             ) : (
               <Link
@@ -109,14 +109,36 @@ export default function BottomSheet({
                 className={isActive(loc.path) ? 'active' : undefined}
                 onClick={onClose}
               >
-                <span className="gf-ic">{loc.icon}</span> {loc.name}
-                <span className="nav-real">{loc.real}</span>
+                <span className="gf-ic">{loc.icon}</span> {loc.real}
               </Link>
             )
           })}
         </nav>
 
-        <CharacterPanel />
+        {/* Compact character row: the full sheet lives at /character. */}
+        <Link
+          className="sheet-char"
+          to="/character"
+          onClick={onClose}
+          aria-label={`Character: ${name}. Open character screen.`}
+        >
+          <PixelPortrait seed={avatarSeed} cell={3} />
+          <span className="sheet-char-main">
+            <span className="sheet-char-name">{name}</span>
+            <span className="sheet-char-lvl">
+              Lv {level.level + 1} — {level.title}
+            </span>
+          </span>
+          {pendingLevels.length > 0 ? (
+            <span className="gf-cs-badge">▴ level up</span>
+          ) : chests.length > 0 ? (
+            <span className="gf-cs-badge chest">
+              ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
+            </span>
+          ) : (
+            <span className="sheet-char-go">›</span>
+          )}
+        </Link>
 
         {/* Contact — sheet-only by design; no dedicated page, no email. */}
         <div className="sheet-contact">

@@ -62,7 +62,7 @@ export default function LevelUpModal() {
         <div className="em-title">{`Level ${shown + 1}!`}</div>
         <div className="em-text">
           You earned the <b>{THEMES[egg].name}</b> egg. Drop it into the fire on the home page to
-          recolor the site.
+          recolor the site. A chest also waits on your character page.
         </div>
         <button className="em-btn" ref={btnRef} onClick={dismissModal}>
           Add to your eggs

@@ -1,24 +1,24 @@
 /**
  * CharacterStrip — the compact profile at the bottom of the game frame's
- * right column: avatar, name, level + title, mini XP bar, and a ▴ LEVEL UP
- * badge when a celebration is waiting. Clicking opens the bottom sheet
- * (the full character sheet). Progress saves automatically; this is a
- * readout, never a save button.
+ * right column: avatar, name, level + title, mini XP bar, and badges for a
+ * waiting ▴ LEVEL UP or unopened chests. Clicking navigates to /character
+ * (the character management screen). Progress saves automatically; this is
+ * a readout, never a save button.
  */
 
+import { useNavigate } from 'react-router-dom'
 import { useXp } from '../../context/XpProvider'
 import PixelPortrait from './PixelPortrait'
 
-export default function CharacterStrip({ onOpen }: { onOpen: () => void }) {
-  const { name, avatarSeed, level, pendingLevels } = useXp()
+export default function CharacterStrip() {
+  const { name, avatarSeed, level, pendingLevels, chests } = useXp()
+  const navigate = useNavigate()
 
   return (
     <button
       className="gf-charstrip"
-      onClick={onOpen}
-      aria-haspopup="dialog"
-      aria-controls="sheet"
-      aria-label={`Character: ${name}, level ${level.level + 1} ${level.title}. Open character sheet.`}
+      onClick={() => navigate('/character')}
+      aria-label={`Character: ${name}, level ${level.level + 1} ${level.title}. Open character screen.`}
     >
       <PixelPortrait seed={avatarSeed} cell={3} />
       <span className="gf-cs-main">
@@ -31,6 +31,11 @@ export default function CharacterStrip({ onOpen }: { onOpen: () => void }) {
         </span>
       </span>
       {pendingLevels.length > 0 && <span className="gf-cs-badge">▴ level up</span>}
+      {pendingLevels.length === 0 && chests.length > 0 && (
+        <span className="gf-cs-badge chest">
+          ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
+        </span>
+      )}
     </button>
   )
 }

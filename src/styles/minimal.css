@@ -57,12 +57,30 @@ strong, b { font-weight: 400; }
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
   z-index: 72; display: flex; align-items: center;
 }
+/* wrapper exists because clip-path clips everything on the button itself:
+   its border, box-shadow, and children (MenuFire hangs above the button
+   box). So the button only carries the notched clip; the outline (four
+   1px drop-shadows) and the soft shadow live here as filters, which trace
+   the clipped silhouette, and MenuFire is a sibling of the button. */
+.menuwrap {
+  position: relative; display: inline-flex;
+  filter:
+    drop-shadow(1px 0 0 rgba(255, 255, 255, 0.14)) drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.14))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.14)) drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.14))
+    drop-shadow(0 8px 26px rgba(0,0,0,.45));
+}
+/* notched square: right-angle corners cut 8px inward, pixel-RPG style */
 .menubtn {
   position: relative; font-family: var(--mono); font-size: 15px;
-  background: #181818; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 999px;
-  padding: 14px 24px; cursor: pointer; color: var(--fg);
+  background: #181818; border: 0;
+  padding: 14px 20px; cursor: pointer; color: var(--fg);
   display: flex; align-items: center; gap: 10px;
-  box-shadow: 0 8px 26px rgba(0,0,0,.45);
+  clip-path: polygon(
+    0 8px, 8px 8px, 8px 0,
+    calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px,
+    100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%,
+    8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px)
+  );
   isolation: isolate; /* contain the heat-glow pseudo below the label */
 }
 .menubtn:hover { background: #222; }
@@ -76,11 +94,11 @@ strong, b { font-weight: 400; }
   }
   .menubtn.lit::after { opacity: 1; }
 }
-/* short doom-fire burning along the top of the Menu pill (see MenuFire.tsx);
-   replaces the old on-load gold stroke sweep. Extinguished on first tap. */
+/* short doom-fire burning along the top of the Menu button (see MenuFire.tsx);
+   anchored to .menuwrap. Extinguished on first tap. */
 .menufire { position: absolute; left: 50%; transform: translateX(-50%); width: 50%; bottom: calc(100% + 1px); pointer-events: none; }
-.menubtn .ic { display: inline-flex; flex-direction: column; gap: 4px; }
-.menubtn .ic span { display: block; width: 18px; height: 2px; background: var(--fg); border-radius: 2px; }
+/* ⌂ renders via font fallback (Fragment Mono lacks it), like the compass icons */
+.menubtn .ic-home { font-size: 18px; line-height: 1; }
 .backbtn {
   position: absolute; right: calc(100% + 10px); top: 50%;
   width: 50px; height: 50px; border-radius: 999px;
@@ -377,8 +395,8 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 
 /* ==== game frame (RPG chrome) ====================================
    Desktop: a fixed single-screen frame in the M&M tradition — the
-   adventure viewport scrolls internally; character panel + compass on
-   the right; message log along the bottom. Below 960px the chrome
+   adventure viewport scrolls internally; the right column stacks
+   compass, message log, and character strip. Below 960px the chrome
    hides and the page scrolls normally (the "handheld port"): dock,
    sheet, and toasts take over, exactly the pre-RPG mobile experience. */
 .gframe { min-height: 100vh; overflow-x: hidden; }
@@ -401,8 +419,10 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
   /* log lives beneath the compass: fills the leftover column height,
      scrolls internally, newest line pinned by MessageLog's auto-scroll */
   .gf-log { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 16px 20px; }
-  /* the log replaces toasts on desktop (the dock + campfire stay) */
+  /* the log replaces toasts on desktop, and the compass replaces the
+     floating dock: one nav surface per breakpoint */
   #toaster { display: none; }
+  .dock { display: none; }
 }
 
 /* right column panels */
@@ -420,26 +440,74 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 
 /* compass */
 .gf-compass ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-.gf-dest { display: flex; align-items: baseline; gap: 10px; font-family: var(--mono); font-size: 14px; color: var(--body); padding: 7px 8px; text-decoration: none; border: 1px solid transparent; transition: color .15s ease, border-color .15s ease; }
-.gf-dest:hover { color: var(--fg); }
-.gf-dest.active { color: var(--fg); border-color: var(--border); }
+/* every row carries the 4px notched polygon; it's invisible while the
+   background is transparent, and shapes the hover/active plates */
+.gf-dest {
+  display: flex; align-items: baseline; gap: 10px; font-family: var(--mono); font-size: 14px; color: var(--body); padding: 7px 8px; text-decoration: none; border: 1px solid transparent; transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+  clip-path: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+  );
+}
+/* greyish plate on hover (links only — the sealed span doesn't react) */
+a.gf-dest:hover { color: var(--fg); background: var(--hover); }
+/* active row: accent text on a filled, notch-cornered plate. The 1px accent
+   ring is real geometry, not filters: the <li> is clipped to the notched
+   polygon, filled accent, with 1px padding; the link inside carries the same
+   polygon, so its notches land 1px inside the li's and a uniform ring of the
+   accent shows through. (The previous four-drop-shadow trace composed
+   shadows-of-shadows and stair-stepped at the notch corners.) The link's
+   spacer border drops to 0 so the 1px padding keeps row size unchanged. */
+.gf-compass li.sel {
+  background: var(--accent); padding: 1px;
+  clip-path: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+  );
+}
+.gf-dest.active {
+  color: var(--accent); background: var(--hover); border: 0;
+  /* no background transition: it would fade from transparent and flash the
+     accent underlay through the link for a beat on selection */
+  transition: color .15s ease;
+}
+.gf-dest.active .gf-ic { opacity: 1; }
 .gf-dest.locked { color: var(--body); opacity: .55; cursor: not-allowed; }
 .gf-lock { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin-left: auto; opacity: .8; }
+/* icons run 1px larger than the 14px labels so the fallback-font glyphs
+   hold their own visually */
+.gf-compass .gf-ic { font-size: 15px; }
 
-/* message log */
+/* message log: the newest line reads at full strength (white for plain
+   lines; xp/level kinds keep their colour), older lines fade back so the
+   latest event always pops. New arrivals push the previous line into the
+   dim state via the opacity transition. */
 .gf-log .gf-label { margin: 0 0 8px; }
 .gf-logscroll { flex: 1; min-height: 0; overflow-y: auto; font-family: var(--mono); font-size: 13px; line-height: 1.7; }
-.gf-logline { color: var(--body); }
+.gf-logline { display: flex; flex-direction: column; color: var(--body); opacity: .5; transition: opacity .4s ease; }
+.gf-logline + .gf-logline { margin-top: 6px; }
+/* HH:MM stamp stacked above each line; stays meta-grey whatever the line's
+   kind colour, and dims with the line via the parent opacity */
+.gf-logtime { font-size: 11px; line-height: 1.4; color: var(--mut); }
+.gf-logline:last-child { color: var(--fg); opacity: 1; }
+/* kind colours are declared after :last-child so, at equal specificity,
+   the newest line keeps its kind colour (gold xp) rather than going white */
 .gf-logline.is-xp { color: var(--accent); }
 .gf-logline.is-level { color: var(--fg); }
 .gf-logline.is-arrive { color: var(--fg); }
 .gf-logline.is-hint { font-style: italic; }
+/* empty-state placeholder stays quiet even though it is :last-child */
+.gf-logline.gf-dim { color: var(--body); opacity: .7; }
 
 /* compass icon column */
 .gf-ic { min-width: 16px; text-align: center; opacity: .9; }
 
 /* character strip: profile readout at the foot of the right column;
-   opens the sheet. Never a save button — saving is automatic. */
+   navigates to /character. Never a save button — saving is automatic. */
 .gf-charstrip {
   display: flex; align-items: center; gap: 12px; width: 100%;
   padding: 14px 20px; border: 0; border-top: 2px solid var(--border);
@@ -456,10 +524,23 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
   font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
   color: var(--bg); background: var(--accent); padding: 3px 6px;
 }
+/* chest badge: same chip, tier-neutral bone tint (loot never rides accent) */
+.gf-cs-badge.chest { background: var(--rar-common); }
 @media (prefers-reduced-motion: no-preference) {
   .gf-cs-badge { animation: gf-pulse 1.6s ease-in-out infinite; }
   @keyframes gf-pulse { 50% { opacity: .55; } }
 }
+
+/* sheet: compact character row linking to /character (full sheet there) */
+.sheet-char {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 16px; padding: 12px 0 0; border-top: 1px solid var(--border);
+  font-family: var(--mono); color: var(--fg);
+}
+.sheet-char-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.sheet-char-name { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sheet-char-lvl { font-size: 12px; color: var(--body); }
+.sheet-char-go { font-size: 18px; color: var(--mut); }
 
 /* ---- title-screen save readout (NEW GAME / CONTINUE) ---- */
 .title-save {
@@ -477,13 +558,12 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 @media (max-width: 600px) { .title-save { left: 24px; right: 24px; bottom: 40px; } }
 
 /* ---- sheet: registry nav extras, character sheet, contact ---- */
-.menu-nav .gf-ic { font-size: 16px; margin-right: 8px; }
-.menu-nav .nav-real { margin-left: auto; font-size: 13px; color: var(--mut2); text-transform: lowercase; }
+.menu-nav .gf-ic { font-size: 17px; margin-right: 8px; }
 .nav-sealed {
   display: flex; align-items: baseline; font-size: 20px; padding: 9px 0;
   color: var(--mut2); opacity: .6; cursor: not-allowed;
 }
-.nav-sealed .nav-real { margin-left: auto; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.nav-sealed .nav-flavor { margin-left: auto; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
 
 .cs { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
 .cs-head { display: flex; align-items: flex-start; gap: 14px; }
@@ -536,3 +616,89 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 }
 .dotloader-label { font-size: 14px; color: var(--body); }
 .dotloader-time { font-size: 14px; color: var(--body); font-variant-numeric: tabular-nums; }
+
+/* ==== character screen (/character): loot, paperdoll, stats ==== */
+/* Rarity tiers get their own vars: --accent belongs to the active banner
+   and loot never re-themes with it. */
+:root {
+  --rar-common: #dcd8cc;
+  --rar-magic: #7f8ff5;
+  --rar-rare: #e8d44d;
+  --rar-unique: #c7883d;
+  /* the site's 4px notched-corner polygon, shared by slot/inventory chrome */
+  --notch4: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+  );
+}
+.rar-common { color: var(--rar-common); }
+.rar-magic { color: var(--rar-magic); }
+.rar-rare { color: var(--rar-rare); }
+.rar-unique { color: var(--rar-unique); }
+.bg-rar-common { background: var(--rar-common); }
+.bg-rar-magic { background: var(--rar-magic); }
+.bg-rar-rare { background: var(--rar-rare); }
+.bg-rar-unique { background: var(--rar-unique); }
+
+.ch-main { max-width: 880px; margin: 0 auto; padding: 96px 24px 160px; font-family: var(--mono); }
+.ch-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+@media (min-width: 720px) { .ch-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 4fr); align-items: start; } }
+.ch-panel { border: 2px solid var(--border); padding: 20px; }
+/* CharacterPanel ships sheet spacing (top border for the stack); flush here */
+.ch-panel .cs { margin-top: 0; padding-top: 0; border-top: 0; }
+.ch-sectlabel { margin: 24px 0 12px; }
+
+/* paperdoll: 3x3 grid around the portrait; slots are the li.sel ring trick
+   (clipped wrapper filled with the rarity color, 1px padding, child clipped
+   to the same polygon, so a uniform ring of tier color shows through) */
+.ch-doll { display: grid; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); gap: 10px; justify-content: center; }
+.ch-dollface { display: flex; align-items: center; justify-content: center; background: var(--hover); clip-path: var(--notch4); }
+.ch-slotwrap { padding: 1px; clip-path: var(--notch4); }
+.ch-slot {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: var(--hover); border: 0; clip-path: var(--notch4); cursor: pointer;
+  font-family: var(--mono); padding: 0;
+}
+.ch-slot:hover { background: #222; }
+.ch-slotname { font-size: 10px; color: var(--mut2); text-transform: lowercase; opacity: .8; }
+
+/* chest row */
+.ch-chests { display: flex; flex-wrap: wrap; gap: 10px; }
+.ch-chestbtn {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 10px 12px; background: var(--hover); border: 0; clip-path: var(--notch4);
+  cursor: pointer; font-family: var(--mono); font-size: 10px; color: var(--body);
+}
+.ch-chestbtn:hover { background: #222; }
+
+/* inventory grid */
+.ch-inv { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px; }
+.ch-invwrap { padding: 1px; clip-path: var(--notch4); }
+.ch-invbtn {
+  width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  background: var(--hover); border: 0; clip-path: var(--notch4); cursor: pointer; padding: 0;
+}
+.ch-invbtn:hover { background: #222; }
+
+/* stats block: two columns of name/value rows, bonuses in the accent */
+.ch-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; font-size: 14px; }
+.ch-stat { display: flex; justify-content: space-between; gap: 10px; color: var(--body); }
+.ch-bonus { color: var(--accent); }
+
+/* item card */
+.ch-card { grid-column: 1 / -1; position: relative; border: 2px solid var(--border); padding: 20px; display: flex; gap: 16px; align-items: flex-start; }
+.ch-card-name { font-size: 16px; }
+.ch-card-meta { font-size: 12px; color: var(--mut2); margin: 4px 0 10px; }
+.ch-card-stats { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--body); }
+.ch-card-actions { margin-top: 14px; }
+.ch-btn { font-family: var(--mono); font-size: 13px; padding: 8px 14px; background: var(--hover); color: var(--fg); border: 1px solid var(--border); cursor: pointer; }
+.ch-btn:hover { background: #222; }
+.ch-card-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; color: var(--mut); cursor: pointer; font-size: 16px; font-family: var(--mono); }
+.ch-card-close:hover { color: var(--fg); }
+
+/* chest reveal modal: item pops like the egg award; stat lines stack */
+.em-item { animation: mn-eggpop .45s cubic-bezier(.34,1.3,.5,1) both; display: flex; justify-content: center; }
+.em-text .ch-card-stats { margin-top: 10px; }
+@media (prefers-reduced-motion: reduce) { .em-item { animation: none; } }

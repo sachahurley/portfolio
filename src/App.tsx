@@ -17,6 +17,7 @@ import NotePost from './pages/NotePost'
 import Lab from './pages/Lab'
 import LabItem from './pages/LabItem'
 import About from './pages/About'
+import Character from './pages/Character'
 import NotFound from './pages/NotFound'
 
 import { locationFor } from './game/locations'
@@ -39,7 +40,7 @@ function RouteEffects() {
       prevLocRef.current = loc.path
       logLine(loc.arrive, 'arrive')
     }
-    award(XP_AWARDS.visit, `discovered ${loc.name}`, `visit:${loc.path}`)
+    award(XP_AWARDS.visit, `discovered ${loc.real}`, `visit:${loc.path}`)
   }, [location.pathname, award, logLine])
 
   return null
@@ -73,6 +74,9 @@ function App() {
 
               {/* About */}
               <Route path="/about" element={<About />} />
+
+              {/* Character management (not a world location: no visit XP) */}
+              <Route path="/character" element={<Character />} />
 
               {/* 404 - any unmatched route */}
               <Route path="*" element={<NotFound />} />

@@ -1,17 +1,15 @@
 /**
- * The world map — every portfolio section as an RPG location.
+ * The world map — every portfolio section as a location.
  *
- * The registry drives the Compass (navigation), arrival lines in
- * the message log, and the Vault's level gate. Paths keep their original
- * URLs so existing deep links and SEO survive the RPG framing; the game
- * names are presentation only.
+ * The registry drives the menu (navigation), arrival lines in the
+ * message log, and the Lab's level gate. Paths keep their original
+ * URLs so existing deep links and SEO survive the RPG framing; the
+ * log lines keep an RPG tone but name pages by their real names.
  */
 
 export interface GameLocation {
   path: string
-  /** In-world name shown in the compass and log. */
-  name: string
-  /** Plain-language name (tooltips, page titles, accessibility). */
+  /** Page name — the label in both nav surfaces and in log lines. */
   real: string
   /** Unicode glyph shown left of the name (compass + sheet). Rendered via
    *  font fallback — Fragment Mono lacks these; pixel icons come later. */
@@ -25,39 +23,34 @@ export interface GameLocation {
 export const LOCATIONS: GameLocation[] = [
   {
     path: '/',
-    name: 'The Crossroads',
     real: 'Home',
     icon: '⌂',
-    arrive: 'You stand at the Crossroads. Signposts point everywhere.',
+    arrive: 'You arrive at Home. Signposts point everywhere.',
   },
   {
     path: '/projects',
-    name: 'Quest Log',
     real: 'Projects',
     icon: '⚔',
-    arrive: 'You arrive at the Quest Log. Completed quests await review.',
-  },
-  {
-    path: '/notes',
-    name: 'The Library',
-    real: 'Notes',
-    icon: '✎',
-    arrive: 'You enter the Library. The shelves hum quietly.',
-  },
-  {
-    path: '/about',
-    name: 'Hall of Records',
-    real: 'About',
-    icon: '◈',
-    arrive: 'You enter the Hall of Records.',
+    arrive: 'You arrive at Projects. Completed quests await review.',
   },
   {
     path: '/lab',
-    name: 'The Vault',
     real: 'Lab',
     icon: '✦',
-    arrive: 'The Vault door grinds open.',
+    arrive: 'The Lab door grinds open.',
     minLevel: 2,
+  },
+  {
+    path: '/notes',
+    real: 'Notes',
+    icon: '✎',
+    arrive: 'You enter Notes. The shelves hum quietly.',
+  },
+  {
+    path: '/about',
+    real: 'About',
+    icon: '◈',
+    arrive: 'You enter About.',
   },
 ]
 

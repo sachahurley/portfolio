@@ -24,6 +24,21 @@ import {
 import { applyTheme, LEVEL_EGGS, type EggId, type ThemeId } from '../lib/themes'
 import { levelInfo, LEVEL_TITLES, type LevelInfo } from '../lib/levels'
 import { generateName, randomSeed } from '../game/names'
+import {
+  BASES,
+  chestChance,
+  chestSeedFor,
+  hashString,
+  isChestKey,
+  RARITIES,
+  resolveItem,
+  rollItem,
+  SLOTS,
+  type Item,
+  type SavedChest,
+  type SavedItem,
+  type Slot,
+} from '../game/loot'
 
 // XP awarded per action (each de-duped by key), tuned to the RPG doc's
 // economy. `subscribe` is unused since the newsletter was removed, but kept
@@ -51,6 +66,8 @@ export interface LogEntry {
   id: number
   msg: string
   kind: LogKind
+  /** Epoch ms when the line was logged; rendered as HH:MM in the log. */
+  at: number
 }
 
 const LOG_LIMIT = 80
@@ -84,6 +101,17 @@ interface XpValue {
   celebrating: boolean
   celebrateLevel: () => void
   dismissModal: () => void
+  /** Loot: unopened chests, all owned items, and slot -> item id. Items
+   *  referenced by `equipment` are worn; the rest are the inventory. */
+  chests: SavedChest[]
+  items: SavedItem[]
+  equipment: Partial<Record<Slot, number>>
+  /** Roll the chest's item, move it to items, and return it resolved (for
+   *  the reveal). Null if the chest id is unknown. */
+  openChest: (chestId: number) => Item | null
+  /** Equip an owned item into its slot; a displaced item stays owned. */
+  equipItem: (itemId: number) => void
+  unequipSlot: (slot: Slot) => void
 }
 
 const XpContext = createContext<XpValue | null>(null)
@@ -99,6 +127,30 @@ interface PersistedState {
   name: string
   avatarSeed: number
   pendingLevels: number[]
+  /** Per-save salt for chest-drop rolls (which content drops differs per
+   *  visitor, but is fixed for a given save). */
+  lootSeed: number
+  chests: SavedChest[]
+  items: SavedItem[]
+  equip: Partial<Record<Slot, number>>
+}
+
+const isSavedItem = (v: unknown): v is SavedItem => {
+  if (!v || typeof v !== 'object') return false
+  const i = v as Record<string, unknown>
+  return (
+    typeof i.id === 'number' && Number.isFinite(i.id) &&
+    SLOTS.includes(i.slot as Slot) &&
+    typeof i.base === 'number' && Number.isInteger(i.base) &&
+    i.base >= 0 && i.base < BASES[i.slot as Slot].length &&
+    RARITIES.includes(i.rarity as SavedItem['rarity'])
+  )
+}
+
+const isSavedChest = (v: unknown): v is SavedChest => {
+  if (!v || typeof v !== 'object') return false
+  const c = v as Record<string, unknown>
+  return typeof c.id === 'number' && Number.isFinite(c.id) && typeof c.src === 'string'
 }
 
 /**
@@ -118,6 +170,10 @@ function load(): { state: PersistedState; existed: boolean } {
     name: generateName(seed),
     avatarSeed: seed,
     pendingLevels: [],
+    lootSeed: randomSeed(),
+    chests: [],
+    items: [],
+    equip: {},
   }
   let existed = false
   try {
@@ -148,6 +204,29 @@ function load(): { state: PersistedState; existed: boolean } {
         (n): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= LEVEL_EGGS.length
       )
     }
+    if (typeof s.lootSeed === 'number' && Number.isFinite(s.lootSeed)) {
+      state.lootSeed = Math.floor(s.lootSeed)
+    }
+    if (Array.isArray(s.chests)) state.chests = s.chests.filter(isSavedChest)
+    if (Array.isArray(s.items)) {
+      const seen = new Set<number>()
+      state.items = s.items.filter((i): i is SavedItem => {
+        if (!isSavedItem(i) || seen.has(i.id)) return false
+        seen.add(i.id)
+        return true
+      })
+    }
+    // Rebuild equip keeping only references to owned items of the right slot;
+    // a corrupt save can never render a sword in the helm slot.
+    if (s.equip && typeof s.equip === 'object') {
+      const eq = s.equip as Record<string, unknown>
+      for (const slot of SLOTS) {
+        const id = eq[slot]
+        if (typeof id === 'number' && state.items.some((i) => i.id === id && i.slot === slot)) {
+          state.equip[slot] = id
+        }
+      }
+    }
   } catch {
     /* ignore malformed storage */
   }
@@ -164,6 +243,14 @@ export function XpProvider({ children }: { children: ReactNode }) {
     for (let l = 1; l <= levelInfo(s.xp).level; l++) {
       const egg = LEVEL_EGGS[l - 1]
       if (egg && !s.eggs.includes(egg)) s.eggs.push(egg)
+      // Guaranteed level chests, granted retroactively for saves that passed
+      // thresholds before loot existed. The earned marker keeps this
+      // idempotent across visits and mirrors award()'s bookkeeping.
+      const marker = `chest:level:${l}`
+      if (!s.earned.includes(marker)) {
+        s.earned.push(marker)
+        s.chests.push({ id: chestSeedFor(`level:${l}`, s.lootSeed), src: `level:${l}` })
+      }
     }
     return { ...s, existed }
   })
@@ -174,6 +261,9 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const [name, setNameState] = useState(initial.name)
   const [avatarSeed, setAvatarSeedState] = useState(initial.avatarSeed)
   const [pendingLevels, setPendingLevels] = useState<number[]>(initial.pendingLevels)
+  const [chests, setChests] = useState<SavedChest[]>(initial.chests)
+  const [items, setItems] = useState<SavedItem[]>(initial.items)
+  const [equipment, setEquipment] = useState<Partial<Record<Slot, number>>>(initial.equip)
   const [celebrating, setCelebrating] = useState(false)
   const [toasts, setToasts] = useState<ToastItem[]>([])
   const [log, setLog] = useState<LogEntry[]>([])
@@ -185,6 +275,10 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const nameRef = useRef(initial.name)
   const avatarSeedRef = useRef(initial.avatarSeed)
   const pendingRef = useRef<number[]>(initial.pendingLevels)
+  const lootSeedRef = useRef(initial.lootSeed)
+  const chestsRef = useRef<SavedChest[]>(initial.chests)
+  const itemsRef = useRef<SavedItem[]>(initial.items)
+  const equipRef = useRef<Partial<Record<Slot, number>>>(initial.equip)
   const idRef = useRef(0)
 
   const persist = useCallback(() => {
@@ -199,6 +293,10 @@ export function XpProvider({ children }: { children: ReactNode }) {
           name: nameRef.current,
           avatarSeed: avatarSeedRef.current,
           pendingLevels: pendingRef.current,
+          lootSeed: lootSeedRef.current,
+          chests: chestsRef.current,
+          items: itemsRef.current,
+          equip: equipRef.current,
         })
       )
     } catch {
@@ -225,7 +323,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
 
   const logLine = useCallback((msg: string, kind: LogKind = 'system') => {
     const id = ++idRef.current
-    setLog((l) => [...l.slice(-(LOG_LIMIT - 1)), { id, msg, kind }])
+    setLog((l) => [...l.slice(-(LOG_LIMIT - 1)), { id, msg, kind, at: Date.now() }])
   }, [])
 
   const removeToast = useCallback((id: number) => {
@@ -244,6 +342,13 @@ export function XpProvider({ children }: { children: ReactNode }) {
       setXp(xpRef.current)
       toast(`+${amount} xp · ${reason}`)
       logLine(`+${amount} XP — ${reason}`, 'xp')
+      // Chest drops ride the same dedup guard as the XP (StrictMode-safe):
+      // eligible first-time content interactions roll a per-save seeded
+      // chance; level-ups below always add a guaranteed chest.
+      const chestSrcs: string[] = []
+      if (key && isChestKey(key) && chestChance(key, lootSeedRef.current)) {
+        chestSrcs.push(key)
+      }
       // Each threshold crossed grants its egg immediately (the ritual never
       // waits) and queues a PENDING level-up: the celebration modal opens
       // only when the visitor taps the badge, never auto-pops.
@@ -255,11 +360,30 @@ export function XpProvider({ children }: { children: ReactNode }) {
           queued.push(l)
         }
         logLine(`You have reached Level ${l + 1} — ${LEVEL_TITLES[l] ?? ''}`.trim(), 'level')
+        const marker = `chest:level:${l}`
+        if (!earnedRef.current.has(marker)) {
+          earnedRef.current.add(marker)
+          chestSrcs.push(`level:${l}`)
+        }
       }
       if (queued.length) {
         pendingRef.current = [...pendingRef.current, ...queued]
         setEggs([...eggsRef.current])
         setPendingLevels(pendingRef.current)
+      }
+      if (chestSrcs.length) {
+        chestsRef.current = [
+          ...chestsRef.current,
+          ...chestSrcs.map((src) => ({ id: chestSeedFor(src, lootSeedRef.current), src })),
+        ]
+        setChests(chestsRef.current)
+        logLine(
+          chestSrcs.length === 1
+            ? 'Something rattles: you found a chest.'
+            : `Something rattles: you found ${chestSrcs.length} chests.`,
+          'hint'
+        )
+        toast('found a chest · open it on your character page')
       }
       persist()
     },
@@ -277,6 +401,50 @@ export function XpProvider({ children }: { children: ReactNode }) {
     if (pendingRef.current.length === 0) setCelebrating(false)
     persist()
   }, [persist])
+
+  const openChest = useCallback(
+    (chestId: number): Item | null => {
+      const chest = chestsRef.current.find((c) => c.id === chestId)
+      if (!chest) return null
+      let saved = rollItem(chest.id)
+      // Vanishingly unlikely id collision with an owned item: rehash forward.
+      while (itemsRef.current.some((i) => i.id === saved.id)) {
+        saved = { ...saved, id: hashString(`item:${saved.id + 1}`) }
+      }
+      chestsRef.current = chestsRef.current.filter((c) => c.id !== chestId)
+      itemsRef.current = [...itemsRef.current, saved]
+      setChests(chestsRef.current)
+      setItems(itemsRef.current)
+      const item = resolveItem(saved)
+      logLine(`You open a chest: ${item.name}.`, 'hint')
+      persist()
+      return item
+    },
+    [persist, logLine]
+  )
+
+  const equipItem = useCallback(
+    (itemId: number) => {
+      const it = itemsRef.current.find((i) => i.id === itemId)
+      if (!it || equipRef.current[it.slot] === itemId) return
+      equipRef.current = { ...equipRef.current, [it.slot]: itemId }
+      setEquipment(equipRef.current)
+      persist()
+    },
+    [persist]
+  )
+
+  const unequipSlot = useCallback(
+    (slot: Slot) => {
+      if (equipRef.current[slot] == null) return
+      const next = { ...equipRef.current }
+      delete next[slot]
+      equipRef.current = next
+      setEquipment(next)
+      persist()
+    },
+    [persist]
+  )
 
   const setName = useCallback(
     (n: string) => {
@@ -322,6 +490,10 @@ export function XpProvider({ children }: { children: ReactNode }) {
     nameRef.current = generateName(seed)
     avatarSeedRef.current = seed
     pendingRef.current = []
+    lootSeedRef.current = randomSeed()
+    chestsRef.current = []
+    itemsRef.current = []
+    equipRef.current = {}
     persist()
     setXp(0)
     setEggs([])
@@ -329,6 +501,9 @@ export function XpProvider({ children }: { children: ReactNode }) {
     setNameState(nameRef.current)
     setAvatarSeedState(seed)
     setPendingLevels([])
+    setChests([])
+    setItems([])
+    setEquipment({})
     setCelebrating(false)
     toast('progress reset')
   }, [persist, toast])
@@ -356,6 +531,12 @@ export function XpProvider({ children }: { children: ReactNode }) {
     celebrating,
     celebrateLevel,
     dismissModal,
+    chests,
+    items,
+    equipment,
+    openChest,
+    equipItem,
+    unequipSlot,
   }
 
   return <XpContext.Provider value={value}>{children}</XpContext.Provider>

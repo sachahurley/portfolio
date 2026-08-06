@@ -5,9 +5,9 @@
  * content) on the left; compass, message log, and the character strip
  * stacked in the right column. On desktop the frame is fixed and the
  * viewport scrolls internally; below 960px the frame chrome hides and the
- * page scrolls normally (the "handheld port"). The bottom sheet (character
- * sheet + nav + contact) is owned here so both the dock's Menu button and
- * the character strip can open it.
+ * page scrolls normally (the "handheld port"). The bottom sheet (nav +
+ * character row + contact) is owned here and opened by the dock's Menu
+ * button; the character strip navigates to /character instead.
  */
 
 import { useState, type ReactNode } from 'react'
@@ -34,7 +34,7 @@ export default function Layout({ children }: LayoutProps) {
       <aside className="gf-side">
         <Compass />
         <MessageLog />
-        <CharacterStrip onOpen={() => setSheetOpen(true)} />
+        <CharacterStrip />
       </aside>
 
       {/* Loader (title screen), dock (Menu + campfire), sheet, toasts, modal */}

@@ -8,6 +8,11 @@
 import { useEffect, useRef } from 'react'
 import { useXp } from '../../context/XpProvider'
 
+function fmtTime(at: number) {
+  const d = new Date(at)
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 export default function MessageLog() {
   const { log } = useXp()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -26,7 +31,8 @@ export default function MessageLog() {
         ) : (
           log.map((l) => (
             <div key={l.id} className={`gf-logline is-${l.kind}`}>
-              {l.msg}
+              <span className="gf-logtime">{fmtTime(l.at)}</span>
+              <span className="gf-logmsg">{l.msg}</span>
             </div>
           ))
         )}
