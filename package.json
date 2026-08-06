@@ -7,6 +7,7 @@
     "dev": "bash dev.sh",
     "dev:portfolio-only": "vite",
     "vendor:ds": "bash scripts/vendor-ds.sh",
+    "vendor:icons": "node scripts/vendor-icons.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
