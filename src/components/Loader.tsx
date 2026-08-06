@@ -3,17 +3,19 @@
  * Stays up until the visitor taps, clicks, or presses a key, then fades
  * out and unmounts.
  *
- * Three renderers of the same name art exist: 'pixel' (8-bit canvas,
- * PixelName), 'ascii' (text characters, AsciiName), and 'dither' (live
- * 1-bit ordered-dither title screen, DitherTitle). Flip VERSION to switch.
+ * Four renderers of the name art exist: 'pixel' (8-bit canvas, PixelName),
+ * 'ascii' (text characters, AsciiName), 'dither' (live 1-bit ordered-dither
+ * title screen, DitherTitle), and 'asset' (a studio-exported dither loop,
+ * DitherAsset). Flip VERSION to switch.
  */
 
 import { useEffect, useState } from 'react'
 import AsciiName from './AsciiName'
+import DitherAsset from './DitherAsset'
 import DitherTitle from './DitherTitle'
 import PixelName from './PixelName'
 
-const VERSION: 'pixel' | 'ascii' | 'dither' = 'dither'
+const VERSION: 'pixel' | 'ascii' | 'dither' | 'asset' = 'asset'
 
 export default function Loader() {
   const [hidden, setHidden] = useState(false)
@@ -41,7 +43,9 @@ export default function Loader() {
     // overlay's pointer-events mid-tap, so the tap's pointerup/click would
     // fall through and activate whatever sits underneath on the page.
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
-      {VERSION === 'dither' ? (
+      {VERSION === 'asset' ? (
+        <DitherAsset />
+      ) : VERSION === 'dither' ? (
         <DitherTitle fillContainer />
       ) : VERSION === 'pixel' ? (
         <PixelName fillContainer />
