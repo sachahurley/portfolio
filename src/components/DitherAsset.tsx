@@ -20,8 +20,8 @@ export interface DitherAssetProps {
 }
 
 export default function DitherAsset({
-  src = '/dither/sacha-hurley-loop.webp',
-  stillSrc = '/dither/sacha-hurley.webp',
+  src = '/dither/sacha-hurley-wild.webp',
+  stillSrc = '/dither/sacha-hurley-wild.webp',
   prompt = 'PRESS START',
   className,
 }: DitherAssetProps) {

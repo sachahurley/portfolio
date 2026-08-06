@@ -22,7 +22,9 @@ strong, b { font-weight: 400; }
 
 /* ---- loading screen (AsciiName welcome art) ---- */
 #loader {
-  position: fixed; inset: 0; z-index: 90; background: var(--bg);
+  /* sepia-950, matching the baked background of the dither welcome asset so
+     the letterbox around the integer-scaled image is invisible */
+  position: fixed; inset: 0; z-index: 90; background: var(--color-sepia-950, #1a150f);
   display: flex; align-items: center; justify-content: center;
   padding: 48px; cursor: pointer; /* clears the 32px jeweled frame */
   transition: opacity .4s ease;

@@ -3,19 +3,19 @@
  * Stays up until the visitor taps, clicks, or presses a key, then fades
  * out and unmounts.
  *
- * The title is DitherAsset (a studio-exported dither loop from the sibling
- * dither-studio repo: SACHA HURLEY, amber on sepia, boiling edges, shown at
- * an exact integer pixel scale); over its bottom edge, the save-file
- * readout: NEW GAME for first-time visitors, CONTINUE plus the character
- * (portrait, name, level, banners) for returning ones — saving itself is
- * automatic, this is just where the save shows. The readout carries the
- * press-any-key prompt, so the title's built-in PRESS START is suppressed.
- * The older DitherTitle/DripTitle/PixelName/AsciiName renderers still exist
- * in the repo but are unused.
+ * The title is DitherLive (the "wild" lettering exported from the sibling
+ * dither-studio repo: SACHA HURLEY, sepia-100 on sepia-950, re-thresholded
+ * live at a slow beat so the drips and letter rims boil, with a Bayer
+ * dissolve entrance); over its bottom edge, the save-file readout: NEW GAME
+ * for first-time visitors, CONTINUE plus the character (portrait, name,
+ * level, banners) for returning ones — saving itself is automatic, this is
+ * just where the save shows. The readout carries the press-any-key prompt.
+ * The older DitherAsset/DitherTitle/DripTitle/PixelName/AsciiName renderers
+ * still exist in the repo but are unused.
  */
 
 import { useEffect, useState } from 'react'
-import DitherAsset from './DitherAsset'
+import DitherLive from './DitherLive'
 import JeweledFrame from './JeweledFrame'
 import PixelPortrait from './game/PixelPortrait'
 import { useXp } from '../context/XpProvider'
@@ -47,7 +47,7 @@ export default function Loader() {
     // overlay's pointer-events mid-tap, so the tap's pointerup/click would
     // fall through and activate whatever sits underneath on the page.
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
-      <DitherAsset prompt="" />
+      <DitherLive />
       <div className="title-save">
         {isReturning ? (
           <>
