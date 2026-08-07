@@ -69,6 +69,17 @@ strong, b { font-weight: 400; }
 @media (max-width: 959px) {
   .jewel-frame-bg { border-width: 8px; }
 }
+/* Mobile browser chrome: fixed elements attach to the layout viewport,
+   but when the toolbar collapses the page keeps painting into the strips
+   above/below it (behind the status bar and the home-indicator/URL-bar),
+   so scrolled content showed outside the frame. Solid bg-colored aprons
+   extend the backing ring past both edges to cover those regions. */
+.jewel-frame-bg::before, .jewel-frame-bg::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 40vh;
+  background: var(--bg);
+}
+.jewel-frame-bg::before { bottom: 100%; }
+.jewel-frame-bg::after { top: 100%; }
 
 /* ---- floating bottom-center dock: menu button + sliding back chevron ---- */
 .dock {
@@ -243,7 +254,7 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 .seebtn {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; flex: none;
-  background: var(--color-sepia-950, #1a150f); color: var(--accent);
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
 }
@@ -254,22 +265,22 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 .pageback {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; flex: none; padding: 0; border: 0; cursor: pointer;
-  background: var(--color-sepia-950, #1a150f); color: var(--accent);
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
   margin: 0 0 20px;
 }
 .pageback:hover { background: var(--accent); color: var(--bg); }
 /* detail-page prev/next pager: richer cousins of the menu buttons — the
-   same pixel-round plate silhouette with a sepia-950 fill (no outline),
-   barely parting from the page; carrying the destination's thumbnail, a
-   section kicker, and its title.
+   same pixel-round plate silhouette with a sepia-925 fill (no outline),
+   one step above the sepia-950 page bg so it barely parts from the page;
+   carrying the destination's thumbnail, a section kicker, and its title.
    Next mirrors prev (row-reverse) so each arrow sits on its outer edge;
    at the ends of the chain the lone button stretches full width. */
 .pager { display: flex; gap: 12px; margin-top: 64px; }
 .pgbtn {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px;
-  padding: 12px; background: var(--color-sepia-950, #1a150f);
+  padding: 12px; background: var(--color-sepia-925, #221e13);
   clip-path: var(--plate-round);
   transition: background-color .12s;
 }
@@ -351,7 +362,7 @@ a.item .t { color: var(--accent); }
   display: inline-flex; align-items: center; gap: 8px;
   font-family: var(--mono); font-size: 14px; line-height: 16px;
   border: 0; padding: 6px 10px; cursor: pointer;
-  background: var(--color-sepia-950, #1a150f); color: var(--accent);
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
 }
@@ -879,7 +890,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   position: fixed; top: 16px; right: 16px; z-index: 65;
   display: inline-flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; padding: 0; border: 0; cursor: pointer;
-  background: var(--color-sepia-950, #1a150f); color: var(--accent);
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
 }
