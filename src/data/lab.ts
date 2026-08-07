@@ -11,8 +11,9 @@ export interface LabItem {
   title: string    // Display name
   desc: string     // Short description (shown on row lists and as the lead)
   img?: boolean    // Show a 16:9 thumbnail on the row
-  demo?: 'reactive-grid' | 'dot-loader' // Which live demo to render, if any
-  body?: string    // Longer write-up for the detail page (no live demo)
+  demo?: 'reactive-grid' | 'dot-loader' | 'dither-toy' // Which live demo to render, if any
+  body?: string    // Longer write-up for the detail page (can accompany a demo)
+  externalUrl?: string // Link out (repo or live tool), rendered as a CTA on the detail page
 }
 
 export const lab: LabItem[] = [
@@ -28,6 +29,15 @@ export const lab: LabItem[] = [
     title: 'Dot loader',
     desc: 'A twinkling dot-matrix loading glyph with an elapsed-time readout.',
     demo: 'dot-loader',
+  },
+  {
+    slug: 'dither-studio',
+    title: 'Dither Studio',
+    desc: 'The workshop where this site’s 1-bit art gets made, plus a pocket version to play with.',
+    demo: 'dither-toy',
+    externalUrl: 'https://github.com/sachahurley/dither-studio',
+    body:
+      'Dither Studio is a small authoring toolchain (Python plus a browser studio) for 1-bit dithered pixel art: the MacPaint-style "dither punk" look behind this site’s welcome title, the dungeon-gate hero, and the sepia threshold-dither doctrine everywhere else. It is deliberately a workshop, not a dependency: assets are authored there and exported into the portfolio as flat files. The toy above is a portfolio-native miniature that runs the same ordered-dither threshold the site itself uses.',
   },
 ]
 
