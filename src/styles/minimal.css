@@ -542,9 +542,22 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
    Desktop: a fixed single-screen frame in the M&M tradition — the
    adventure viewport scrolls internally; the right column stacks
    compass, message log, and character strip. Below 960px the chrome
-   hides and the page scrolls normally (the "handheld port"): dock,
-   sheet, and toasts take over, exactly the pre-RPG mobile experience. */
-.gframe { min-height: 100vh; overflow-x: hidden; }
+   hides (the "handheld port"): dock, sheet, and toasts take over.
+   The page scrolls INSIDE the frame at every size, never the document:
+   mobile Safari shifts fixed elements while its toolbar animates, so
+   document scroll let content slip out past the stonework mid-scroll.
+   With no document scroll the toolbar never collapses and the frame's
+   geometry is static. Padding clears the stone band + safe areas so
+   content clips at the band's inner edge. */
+.gframe {
+  position: fixed; inset: 0; overflow: hidden; background: var(--bg);
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 0 calc(8px + env(safe-area-inset-bottom, 0px));
+}
+.gf-viewport {
+  height: 100%; overflow-y: auto; overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
 .gf-side, .gf-log { display: none; }
 
 .gf-label { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--body); margin: 0 0 12px; }
