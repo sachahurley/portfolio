@@ -5,6 +5,7 @@
  */
 
 import MinimalPage from '../components/MinimalPage'
+import BackButton from '../components/BackButton'
 import { Item, List } from '../components/Item'
 import { getSortedPosts } from '../data/posts'
 import { formatDate } from '../lib/date'
@@ -16,6 +17,7 @@ export default function Notes() {
 
   return (
     <MinimalPage>
+      <BackButton fallback="/" />
       <h1 className="page">Notes</h1>
       <p className="lead">Short notes &amp; things I'm learning.</p>
 

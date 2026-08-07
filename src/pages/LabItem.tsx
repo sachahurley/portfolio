@@ -8,6 +8,8 @@
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
+import BackButton from '../components/BackButton'
+import PagerNav from '../components/PagerNav'
 import DotLoader from '../components/DotLoader'
 import DitherToy from '../components/DitherToy'
 import { getLabBySlug } from '../data/lab'
@@ -98,6 +100,7 @@ export default function LabItem() {
 
   return (
     <MinimalPage>
+      <BackButton fallback="/lab" />
       <h1 className="page">{item.title}</h1>
       <p className="lead">
         {item.desc}
@@ -130,11 +133,13 @@ export default function LabItem() {
         </>
       ) : null}
 
+      {item.image && <img className="lab-art" src={item.image} alt={item.imageAlt ?? ''} />}
+
       {item.body && <p style={{ marginTop: 18 }}>{item.body}</p>}
 
       {item.externalUrl && (
         <a
-          className="btn outline"
+          className="platebtn"
           href={item.externalUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -149,6 +154,8 @@ export default function LabItem() {
           Placeholder — this experiment isn't wired up yet.
         </p>
       )}
+
+      <PagerNav section="lab" slug={item.slug} />
     </MinimalPage>
   )
 }

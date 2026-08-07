@@ -7,9 +7,16 @@
  * chests open in place with an impact burst and a reveal modal. Not a
  * "location": it isn't in the world registry, awards no visit XP, and gets
  * a flavor log line instead of an arrival.
+ *
+ * Renders as a full-page modal: Layout drops the right column and locks
+ * the viewport scroll (gf-full); the fixed close plate in the top-right
+ * corner (or Esc) is the way back — history back when the visitor came
+ * from within the site, home on a deep link.
  */
 
-import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
+import DitherIcon from '../components/DitherIcon'
 import { useXp } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 import { runImpact } from '../lib/impactFx'
@@ -52,6 +59,15 @@ export default function Character() {
   } = useXp()
   const [selected, setSelected] = useState<number | null>(null)
   const [revealed, setRevealed] = useState<Item | null>(null)
+  const navigate = useNavigate()
+
+  // Close the screen: back in history when the visitor navigated here from
+  // within the site; deep links have no in-app history, so go home.
+  const closePage = useCallback(() => {
+    const state = window.history.state as { idx?: number } | null
+    if (state?.idx && state.idx > 0) navigate(-1)
+    else navigate('/')
+  }, [navigate])
 
   // Flavor line once per visit (ref-guarded against StrictMode's double run).
   const greetedRef = useRef(false)
@@ -84,6 +100,16 @@ export default function Character() {
     return () => document.removeEventListener('keydown', onKey)
   }, [selected, revealed])
 
+  // With nothing open above it, Esc closes the screen itself.
+  useEffect(() => {
+    if (selected != null || revealed) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closePage()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [selected, revealed, closePage])
+
   const onOpenChest = (chest: SavedChest, e: MouseEvent<HTMLButtonElement>) => {
     const el = e.currentTarget
     const item = openChest(chest.id)
@@ -94,6 +120,15 @@ export default function Character() {
 
   return (
     <div className="ch-main">
+      <button
+        type="button"
+        className="ch-close"
+        onClick={closePage}
+        aria-label="Close character screen"
+      >
+        <DitherIcon name="close" size={16} />
+      </button>
+
       <div className="ch-grid">
         <section className="ch-panel" aria-label="Character">
           <CharacterPanel />

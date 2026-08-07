@@ -13,10 +13,8 @@ export interface Tool {
 }
 
 export const tools: Tool[] = [
+  { name: 'Conductor', use: 'Parallel Claude Code agents', tier: 'daily', url: 'https://conductor.build' },
   { name: 'Claude Code', use: 'AI pair for building', tier: 'daily', url: 'https://www.anthropic.com/claude-code' },
-  { name: 'Figma', use: 'Design & prototyping', tier: 'daily', url: 'https://figma.com' },
-  { name: 'Next.js', use: 'App framework', tier: 'daily', url: 'https://nextjs.org' },
-  { name: 'React Three Fiber', use: '3D / WebGL in React', tier: 'often', url: 'https://docs.pmnd.rs/react-three-fiber' },
-  { name: 'Tailwind CSS', use: 'Styling', tier: 'daily', url: 'https://tailwindcss.com' },
-  { name: 'Vercel', use: 'Hosting & deploys', tier: 'deploy', url: 'https://vercel.com' },
+  { name: 'Notion', use: 'Docs & planning', tier: 'daily', url: 'https://notion.so' },
+  { name: 'Figma', use: 'Design & prototyping', tier: 'not often', url: 'https://figma.com' },
 ]

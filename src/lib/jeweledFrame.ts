@@ -13,17 +13,18 @@
  *  - light source is top-left: blocks are embossed (light top-left, dark
  *    mortar bottom-right), the carved inset inverts the bevel so it reads
  *    as engraved
- *  - pixel-perfect scaling only (border-image repeat + image-rendering:
+ *  - pixel-perfect scaling only (integer drawImage scale + image-rendering:
  *    pixelated; never stretch the edge tiles)
  */
 
 import { oneBitImageData } from './dither/oneBit'
 
 export const FRAME_SRC = 48 // nine-slice source size (exact 9-slice frame)
-export const FRAME_SLICE = 16 // slice inset for border-image
+export const FRAME_TILE = 8 // edge stone tile (repeats along the runs)
+export const FRAME_CORNER = 16 // corner boss (stays fixed)
 
-const TILE = 8
-const CORNER = 16
+const TILE = FRAME_TILE
+const CORNER = FRAME_CORNER
 
 type RGB = readonly [number, number, number]
 
@@ -212,16 +213,18 @@ export function buildFramePixels(width = FRAME_SRC, height = FRAME_SRC): Buf {
   return img
 }
 
-// Browser-only: render the nine-slice source to a data URL for border-image.
-// Strict 1-bit: the embossed stone/garnet ramps collapse to ink-density
-// dither before the tile is baked.
-export function buildFrameDataUrl(): string {
+// Browser-only: the nine-slice source as an offscreen canvas, for drawImage
+// compositing (JeweledFrame). Strict 1-bit: the embossed stone/garnet ramps
+// collapse to ink-density dither before the tile is baked. A canvas rather
+// than a data-URL border-image: some embedded webviews refuse data: image
+// URLs in CSS, while drawImage from a canvas renders everywhere.
+export function buildFrameSourceCanvas(ink?: string): HTMLCanvasElement {
   const { w, h, data } = buildFramePixels()
   const img = new ImageData(data, w, h)
-  oneBitImageData(img)
+  oneBitImageData(img, ink)
   const canvas = document.createElement('canvas')
   canvas.width = w
   canvas.height = h
   canvas.getContext('2d')!.putImageData(img, 0, 0)
-  return canvas.toDataURL('image/png')
+  return canvas
 }

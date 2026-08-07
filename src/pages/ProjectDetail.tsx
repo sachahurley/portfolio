@@ -1,13 +1,15 @@
 /**
  * Project detail (/projects/:slug)
  *
- * Title + role meta + prose body (problem / outcome subheads). External
- * projects keep a "View project ↗" CTA. No back button - the dock handles it.
+ * Back button + title + role meta + prose body (problem / outcome subheads).
+ * External projects keep a "View project ↗" CTA.
  */
 
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
+import BackButton from '../components/BackButton'
+import PagerNav from '../components/PagerNav'
 import { getProjectBySlug } from '../data/projects'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
@@ -36,6 +38,7 @@ export default function ProjectDetail() {
 
   return (
     <MinimalPage>
+      <BackButton fallback="/projects" />
       <h1 className="page">{project.title}</h1>
       {project.role && <div className="meta" style={{ marginTop: 4 }}>{project.role}</div>}
 
@@ -59,18 +62,11 @@ export default function ProjectDetail() {
           </a>{' '}
           are amber and underlined.
         </p>
-        {project.externalUrl && (
-          <p>
-            <a href={project.externalUrl} target="_blank" rel="noopener noreferrer">
-              View project <ArrowUpRight />
-            </a>
-          </p>
-        )}
       </div>
 
       {project.externalUrl && (
         <a
-          className="btn"
+          className="platebtn"
           href={project.externalUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -79,6 +75,8 @@ export default function ProjectDetail() {
           view project <ArrowUpRight />
         </a>
       )}
+
+      <PagerNav section="projects" slug={project.slug} />
 
       {/* read-to-end sentinel (quest completion XP) */}
       <div ref={endRef} aria-hidden="true" />
