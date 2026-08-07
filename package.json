@@ -9,7 +9,8 @@
     "vendor:ds": "bash scripts/vendor-ds.sh",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "vendor:icons": "node scripts/vendor-icons.mjs"
   },
   "dependencies": {
     "@fontsource/fragment-mono": "^5.2.8",
