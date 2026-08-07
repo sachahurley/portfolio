@@ -1,39 +1,27 @@
 /**
  * PixelStalactites Component
  *
- * A pixel-art rock ceiling along the top of the page from which stalactites of
- * varying lengths hang downward. Companion to PixelFire at the bottom; replaces
- * the older drifting PixelClouds band.
+ * A dithered rock ceiling along the top of the page from which stalactites
+ * of varying lengths hang. Rendered in the same register as the welcome
+ * title and the dungeon-gate hero: shapes are built from Bayer-ordered
+ * dot density in the mid sepia (no solid fills or outlines), denser near
+ * the ceiling and sparser toward the tips, with a slow travelling-wave
+ * modulation so the dots quietly seethe. Each spike sheds a bright
+ * sepia-100 water drip, the one solid accent, matching the welcome ink.
  *
- * The silhouette is procedural but anchored (stalactites are fixed to the
- * ceiling, so they don't drift sideways): a deterministic generator lays out a
- * row of tapering spikes across the full width, each with its own width, length
- * and slightly jagged edges. A lighter outline traces every spike so the shape
- * reads, while the interior shimmers with a slow animated dither so the band
- * stays alive like the fire and the old clouds did.
- *
- * - Full page width (edge to edge), pixelated rendering
- * - Warm stone palette tuned to sit just above the page background (#0A0704)
+ * The silhouette is procedural but anchored (deterministic per width):
+ * spikes never drift, only the dither breathes.
  */
 
 import { useEffect, useRef, useState } from 'react'
+import { bayerThreshold } from '../lib/dither/oneBit'
 
-// Warm stone tones, dark → light (index 1 → 5). Tuned to sit just above the
-// page background (#0A0704, a warm near-black): the body hides into the bg while
-// the outline (2) and rare highlight (5) keep the spikes legible.
-const PALETTE = [
-  'transparent',  // 0: empty
-  '#1C1611',      // 1: warm near-bg (ceiling top edge line)
-  '#282119',      // 2: outline — edges, tips, ceiling lip (defines the shape)
-  '#201A14',      // 3: base slab / mid churn
-  '#18130F',      // 4: body (closest to the background)
-  '#7C93A1',      // 5: desaturated-blue glint (the dripping-water highlight)
-]
+const INK = '#695F4D'  // sepia-700: the welcome dark drip tone (the base dots)
+const DRIP = '#FCFBFA' // sepia-100: the welcome ink, for the falling glint
 
-const PIXEL_SIZE = 4    // Each "pixel" is 4x4 real pixels
-const CEILING_ROWS = 2  // Solid rock band at the very top
-const MAX_LEN = 12      // Longest a spike reaches down (grid rows)
-const TOTAL_ROWS = CEILING_ROWS + MAX_LEN
+const PIXEL_SIZE = 4 // each art cell is 4x4 CSS px
+const MAX_LEN = 12   // longest a spike reaches down (grid rows)
+const TOTAL_ROWS = MAX_LEN
 
 // Deterministic pseudo-random in [0, 1) from a seed — stable across resizes and
 // remounts so the cave doesn't reshuffle every render.
@@ -48,18 +36,18 @@ interface Spike {
   length: number      // how many rows it hangs down
 }
 
-// Lay out a packed row of stalactites across the width, each with its own width,
-// length and spacing. Walks left → right so the same seed yields the same cave.
+// Lay out a packed row of stalactites across the width. Narrower teeth than
+// the old solid version (3..5 cells wide) so the band reads light.
 function buildSpikes(gridWidth: number): Spike[] {
   const spikes: Spike[] = []
   let x = 0
   let i = 0
   while (x < gridWidth + MAX_LEN) {
-    const halfWidth = 2 + Math.floor(rand(i * 1.7 + 0.3) * 2) // 2..3 → 4..6 wide
-    const length = 3 + Math.floor(rand(i * 2.3 + 1.1) * 10) // 3..12 — dynamic mix, tallest unchanged
+    const halfWidth = 1 + Math.floor(rand(i * 1.7 + 0.3) * 2) // 1..2 → 3..5 wide
+    const length = 3 + Math.floor(rand(i * 2.3 + 1.1) * 10) // 3..12
     // Squared random → most teeth cluster close together, with occasional wider
     // openings, for irregular spacing rather than an even comb.
-    const gap = 1 + Math.floor(Math.pow(rand(i * 3.1 + 2.7), 2) * 6) // 1..7 cells, biased small
+    const gap = 1 + Math.floor(Math.pow(rand(i * 3.1 + 2.7), 2) * 6) // 1..7 cells
     const center = x + halfWidth
     spikes.push({ center, halfWidth, length })
     x = center + halfWidth + gap
@@ -68,16 +56,15 @@ function buildSpikes(gridWidth: number): Spike[] {
   return spikes
 }
 
-// Animated interior field — a few travelling waves interfere into a slow,
-// gentle churn inside the spikes so the stone shimmers without the silhouette
-// moving. Returns ~[-4, 4], mapped to a couple of tones in the render loop.
+// Slow travelling-wave interference: returns ~[-1, 1], used to modulate the
+// dot density so the stone shimmers without the silhouette moving.
 function flow(c: number, r: number, f: number): number {
   return (
     Math.sin(c * 0.35 + r * 0.5 - f * 0.8) +
     Math.sin(r * 0.9 - f * 0.5) +
     Math.sin((c * 0.6 + r * 0.4) - f * 0.6) +
     Math.sin(c * 0.2 - f * 0.3)
-  )
+  ) / 4
 }
 
 export default function PixelStalactites() {
@@ -86,14 +73,18 @@ export default function PixelStalactites() {
   const animFrameRef = useRef<number | null>(null)
   const [gridWidth, setGridWidth] = useState(0)
 
-  // Track grid width based on full window width
+  // Grid width from the rendered canvas (w-full, so it tracks its container;
+  // inside the game frame that is the viewport column, not the window).
   useEffect(() => {
+    const canvas = canvasRef.current
     const updateWidth = () => {
-      setGridWidth(Math.floor(window.innerWidth / PIXEL_SIZE))
+      const w = canvas?.clientWidth || window.innerWidth
+      setGridWidth(Math.floor(w / PIXEL_SIZE))
     }
     updateWidth()
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
+    const ro = new ResizeObserver(updateWidth)
+    if (canvas) ro.observe(canvas)
+    return () => ro.disconnect()
   }, [])
 
   // Main animation loop
@@ -107,33 +98,25 @@ export default function PixelStalactites() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // Geometry is fixed; only the interior shimmer animates.
+    // Geometry is fixed; only the dither breathes.
     spikesRef.current = buildSpikes(gridWidth)
 
-    const paint = (col: number, row: number, tone: number) => {
-      ctx.fillStyle = PALETTE[tone]
+    const paint = (col: number, row: number, color: string) => {
+      ctx.fillStyle = color
       ctx.fillRect(col * PIXEL_SIZE, row * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE)
     }
 
     const animate = (timestamp: number) => {
-      const f = timestamp * 0.0022 // slow interior phase
+      const f = timestamp * 0.0022 // slow phase
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Solid rock ceiling: a lit lip on top, base slab beneath.
-      for (let col = 0; col < gridWidth; col++) {
-        paint(col, 0, 2)
-        for (let row = 1; row < CEILING_ROWS; row++) paint(col, row, 3)
-      }
-
-      // Hang each stalactite from the ceiling, tapering to a point.
       for (const spike of spikesRef.current) {
-        // One blue water drip per spike: it forms at the top, descends slowly,
-        // then disappears at the tip with a short pause before the next forms.
-        // Per-spike phase + speed so the drips aren't synchronised.
+        // One water drip per spike: forms at the top, descends slowly, then
+        // disappears at the tip with a pause before the next forms.
         const dripPhase = rand(spike.center * 0.917)
-        const dripSpeed = 1.2 + rand(spike.center * 1.31) * 1.2 // rows/sec (slow)
-        const dripCycle = spike.length + 1 + 14 // travel length + a long pause before respawn
+        const dripSpeed = 1.2 + rand(spike.center * 1.31) * 1.2 // rows/sec
+        const dripCycle = spike.length + 1 + 14
         const dripPos = (timestamp * 0.001 * dripSpeed + dripPhase * dripCycle) % dripCycle
 
         for (let r = 0; r <= spike.length; r++) {
@@ -145,29 +128,25 @@ export default function PixelStalactites() {
           const jagR = rand(spike.center * 2.7 + r * 1.9) < 0.12 ? 1 : 0
           const hwL = Math.max(0, Math.round(base) - jagL)
           const hwR = Math.max(0, Math.round(base) - jagR)
-          const row = CEILING_ROWS + r
-          // This row carries the drip while it's passing through it.
           const isDrip = dripPos <= spike.length && Math.abs(r - dripPos) < 0.6
-          // The drip core wanders slightly off-axis as it falls, so the cluster
-          // stays slim and asymmetric instead of a wide, centred band.
           const dripCenter = spike.center + Math.round(Math.sin(r * 0.8 + dripPhase * 6.283))
 
           for (let col = spike.center - hwL; col <= spike.center + hwR; col++) {
             if (col < 0 || col >= gridWidth) continue
+            // The falling drip is the one solid mark: welcome-ink bright.
+            if (isDrip && col === dripCenter) {
+              paint(col, r, DRIP)
+              continue
+            }
+            // Dot density: dense at the ceiling, sparse toward the tip, a
+            // touch heavier along the edges so the shape still reads, all
+            // gently modulated by the travelling waves.
             const isEdge = col === spike.center - hwL || col === spike.center + hwR
             const isTip = r === spike.length
-            let tone: number
-            if (isEdge || isTip) {
-              tone = 2 // outline + tip
-            } else {
-              const n = flow(spike.center + col, r, f)
-              // Slim, ragged, asymmetric drip: a solid core plus flow-picked side
-              // cells within one column of the wandering centre.
-              const inDrip = isDrip && Math.abs(col - dripCenter) <= 1
-              if (inDrip && (col === dripCenter || n > -0.3)) tone = 5
-              else tone = n > 0.8 ? 3 : 4
-            }
-            paint(col, row, tone)
+            let v = 0.68 - 0.45 * t
+            if (isEdge || isTip) v += 0.14
+            v += flow(spike.center + col, r, f) * 0.12
+            if (v > bayerThreshold(col, r)) paint(col, r, INK)
           }
         }
       }

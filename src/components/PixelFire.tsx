@@ -17,6 +17,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback, useMemo } from 'react'
 import { useXp } from '../context/XpProvider'
 import { DEFAULT_FIRE_PALETTE, firePaletteFor } from '../lib/themes'
+import { bayerThreshold } from '../lib/dither/oneBit'
 
 // Dark mode palette lives in lib/themes (DEFAULT_FIRE_PALETTE) so the egg
 // theme system can keep the stock look pixel-identical while generating
@@ -41,12 +42,12 @@ const LIGHT_PALETTE = [
   '#78350F',            // 13: amber-900 (deep core)
 ]
 
-const PIXEL_SIZE = 4          // Each "pixel" is 4x4 real pixels
+const PIXEL_SIZE = 4          // 4x4 cells, the same dot size as the stalactites
 // The sim grid is taller than the fire's visual band: the extra rows are
 // headroom so surged flames taper off naturally instead of being sliced
 // flat at the canvas ceiling. The footer keeps the original 60px footprint;
 // the canvas bottom-aligns inside it and extends (transparently) upward.
-const FIRE_HEIGHT = 21        // Grid rows (84px canvas, ~60px typical flames)
+const FIRE_HEIGHT = 14        // Grid rows (56px canvas; flames peak lower than before)
 const VISUAL_HEIGHT = 60      // Footer band height (layout footprint)
 const ANIMATION_SPEED = 150   // ms between frames (slower crackle)
 const SURGE_MS = 850
@@ -129,30 +130,44 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
   const palette = activeEgg !== 'default' ? themePalette : isDark ? DARK_PALETTE : LIGHT_PALETTE
   const paletteMax = palette.length - 1
 
-  // Detect when user scrolls to the bottom of the page
+  // Detect when the user scrolls near the bottom - of the game frame's
+  // internal viewport when it scrolls (desktop), else of the page (mobile).
   useEffect(() => {
+    const scroller = document.getElementById('gf-viewport')
     const handleScroll = () => {
-      const scrollBottom = window.innerHeight + window.scrollY
-      const pageHeight = document.documentElement.scrollHeight
-      // Trigger when within 100px of the bottom
-      setIsVisible(scrollBottom >= pageHeight - 100)
+      if (scroller && scroller.scrollHeight > scroller.clientHeight + 1) {
+        setIsVisible(scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 100)
+      } else {
+        const scrollBottom = window.innerHeight + window.scrollY
+        const pageHeight = document.documentElement.scrollHeight
+        // Trigger when within 100px of the bottom
+        setIsVisible(scrollBottom >= pageHeight - 100)
+      }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
+    scroller?.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll()
 
-    return () => window.removeEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      scroller?.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
-  // Calculate fire grid width based on full window width
+  // Fire grid width from the rendered footer, not the window: inside the
+  // game frame the fire spans the viewport column, not the screen.
   useEffect(() => {
+    const el = footerRef.current
     const updateWidth = () => {
-      setFireWidth(Math.floor(window.innerWidth / PIXEL_SIZE))
+      const w = el?.clientWidth || window.innerWidth
+      setFireWidth(Math.floor(w / PIXEL_SIZE))
     }
 
     updateWidth()
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
+    const ro = new ResizeObserver(updateWidth)
+    if (el) ro.observe(el)
+    return () => ro.disconnect()
   }, [])
 
   // Initialize fire array when dimensions change
@@ -175,10 +190,11 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
         if (srcVal === 0) {
           fire[(y - 1) * fireWidth + x] = 0
         } else {
-          // Random decay (0-2; hotter while surging) + random wind (-1 to 1).
-          // Surge decay averages ~0.7 so peaks stay inside the headroom rows.
+          // Random decay + random wind (-1 to 1). Tuned for the 11-row grid:
+          // avg ~1.5 keeps typical flames around 8 rows; surge (~0.5 avg)
+          // roughly doubles them without pinning the canvas top.
           const surging = performance.now() < surgeUntilRef.current
-          const decay = surging ? (Math.random() < 0.7 ? 1 : 0) : Math.floor(Math.random() * 3)
+          const decay = surging ? (Math.random() < 0.5 ? 1 : 0) : Math.floor(Math.random() * 4)
           const wind = Math.floor(Math.random() * 3) - 1
           const destX = Math.min(Math.max(x + wind, 0), fireWidth - 1)
           const destIdx = (y - 1) * fireWidth + destX
@@ -223,19 +239,25 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
     const fire = fireArrayRef.current
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+    // Posterized to three tones from the active palette (hot tip, flame
+    // body, dark ember) so the smooth gradient is gone; the low-intensity
+    // fringe renders as sparse Bayer dots, feathering the flames into the
+    // page the way the stalactite tips dissolve. Same sim, chunkier skin.
+    const paletteMax = palette.length - 1
+    const tip = palette[Math.round(paletteMax * 0.92)]
+    const body = palette[Math.round(paletteMax * 0.69)]
+    const ember = palette[Math.round(paletteMax * 0.38)]
     for (let y = 0; y < FIRE_HEIGHT; y++) {
       for (let x = 0; x < fireWidth; x++) {
         const idx = y * fireWidth + x
         const colorIdx = fire[idx]
         if (colorIdx === 0) continue
-
-        ctx.fillStyle = palette[colorIdx]
-        ctx.fillRect(
-          x * PIXEL_SIZE,
-          y * PIXEL_SIZE,
-          PIXEL_SIZE,
-          PIXEL_SIZE
-        )
+        const v = colorIdx / paletteMax
+        if (v >= 0.6) ctx.fillStyle = tip
+        else if (v >= 0.33) ctx.fillStyle = body
+        else if (v * 1.6 > bayerThreshold(x, y)) ctx.fillStyle = ember
+        else continue
+        ctx.fillRect(x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE)
       }
     }
   }, [fireWidth, palette])

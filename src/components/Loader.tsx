@@ -1,20 +1,27 @@
 /**
- * Loader — full-screen welcome screen shown on initial load.
+ * Loader — the title screen shown on initial load.
  * Stays up until the visitor taps, clicks, or presses a key, then fades
  * out and unmounts.
  *
- * The title is DripTitle (italic molten-drip "SACHA HURLEY"); the older
- * PixelName/AsciiName letterform renderers still exist in the repo but
- * are unused.
+ * The title is DitherLive (the "wild" lettering exported from the sibling
+ * dither-studio repo: SACHA HURLEY, sepia-100 on sepia-950, re-thresholded
+ * live at a slow beat so the drips and letter rims boil, with a Bayer
+ * dissolve entrance); over its bottom edge, the save-file readout: NEW GAME
+ * for first-time visitors, CONTINUE plus the character (portrait, name,
+ * level, banners) for returning ones — saving itself is automatic, this is
+ * just where the save shows. The readout carries the press-any-key prompt.
  */
 
 import { useEffect, useState } from 'react'
-import DripTitle from './DripTitle'
+import DitherLive from './DitherLive'
 import JeweledFrame from './JeweledFrame'
+import PixelPortrait from './game/PixelPortrait'
+import { useXp } from '../context/XpProvider'
 
 export default function Loader() {
   const [hidden, setHidden] = useState(false)
   const [gone, setGone] = useState(false)
+  const { isReturning, name, level, avatarSeed, eggs } = useXp()
 
   // Once dismissed, let the 0.4s opacity fade play, then unmount.
   useEffect(() => {
@@ -38,7 +45,26 @@ export default function Loader() {
     // overlay's pointer-events mid-tap, so the tap's pointerup/click would
     // fall through and activate whatever sits underneath on the page.
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
-      <DripTitle />
+      <DitherLive />
+      <div className="title-save">
+        {isReturning ? (
+          <>
+            <div className="ts-char">
+              <PixelPortrait seed={avatarSeed} cell={3} />
+              <span className="ts-line">
+                continue — {name} · Lv {level.level + 1} {level.title}
+                {eggs.length > 0 && ` · ${eggs.length} banner${eggs.length > 1 ? 's' : ''}`}
+              </span>
+            </div>
+            <span className="ts-hint">press any key</span>
+          </>
+        ) : (
+          <>
+            <span className="ts-line">new game</span>
+            <span className="ts-hint">press any key to begin</span>
+          </>
+        )}
+      </div>
       <JeweledFrame />
     </div>
   )

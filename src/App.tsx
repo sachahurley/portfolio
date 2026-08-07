@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from '@scorp-ds/components'
 
@@ -17,27 +17,31 @@ import NotePost from './pages/NotePost'
 import Lab from './pages/Lab'
 import LabItem from './pages/LabItem'
 import About from './pages/About'
+import Character from './pages/Character'
 import NotFound from './pages/NotFound'
 
-const SECTION_LABELS: Record<string, string> = {
-  projects: 'projects',
-  lab: 'lab',
-  notes: 'notes',
-  about: 'about',
-}
+import { locationFor } from './game/locations'
 
-// Scroll to top on navigation and award "explored a section" XP once per section
+// On navigation: scroll to top (window AND the game frame's internal
+// scroller), announce the arrival in the message log when entering a new
+// location, and award discovery XP once per location (de-duped by key,
+// so returning visitors' save files keep their earlier discoveries).
 function RouteEffects() {
   const location = useLocation()
-  const { award } = useXp()
+  const { award, logLine } = useXp()
+  const prevLocRef = useRef<string | null>(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    const seg = location.pathname.split('/').filter(Boolean)[0]
-    if (seg && SECTION_LABELS[seg]) {
-      award(XP_AWARDS.visit, `explored ${SECTION_LABELS[seg]}`, `visit:/${seg}`)
+    document.getElementById('gf-viewport')?.scrollTo(0, 0)
+    const loc = locationFor(location.pathname)
+    if (!loc) return
+    if (prevLocRef.current !== loc.path) {
+      prevLocRef.current = loc.path
+      logLine(loc.arrive, 'arrive')
     }
-  }, [location.pathname, award])
+    award(XP_AWARDS.visit, `discovered ${loc.real}`, `visit:${loc.path}`)
+  }, [location.pathname, award, logLine])
 
   return null
 }
@@ -70,6 +74,9 @@ function App() {
 
               {/* About */}
               <Route path="/about" element={<About />} />
+
+              {/* Character management (not a world location: no visit XP) */}
+              <Route path="/character" element={<Character />} />
 
               {/* 404 - any unmatched route */}
               <Route path="*" element={<NotFound />} />

@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useRef } from 'react'
+import { oneBitImageData } from '../lib/dither/oneBit'
 
 // --- sprite sheet geometry (see ~/Desktop/desert-scorpion/README) ----------
 const WALK_FW = 50
@@ -28,7 +29,7 @@ const SRC = {
   idle: `${base}assets/images/scorpion/straight_tan.png`,
 }
 
-// Sepia ramp reused from PixelScorpion's palette so the two scorpions match:
+// Sepia ramp (originally shared with the baked scorpion art):
 // dark shade -> mid stone -> warm-white highlight. Source pixel luminance is
 // mapped onto this ramp; alpha is preserved so the silhouette stays intact.
 const RAMP: Array<[number, number, number]> = [
@@ -89,6 +90,8 @@ function recolor(img: HTMLImageElement): HTMLCanvasElement {
     px[i + 1] = lerp(RAMP[lo][1], RAMP[lo + 1][1], t)
     px[i + 2] = lerp(RAMP[lo][2], RAMP[lo + 1][2], t)
   }
+  // Strict 1-bit: the ramp becomes ink-density dither at sprite resolution.
+  oneBitImageData(data)
   octx.putImageData(data, 0, 0)
   return off
 }

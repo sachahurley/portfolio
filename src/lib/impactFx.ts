@@ -73,8 +73,9 @@ function pagePulse(color: string) {
   setTimeout(() => d.remove(), 640)
 }
 
-/** The whole impact moment, anchored to the fire band. */
-export function runImpact(fireWrap: HTMLElement, theme: Theme) {
+/** The whole impact moment, anchored to the fire band. Accepts anything
+ *  carrying a theme's accent + fire triple (e.g. loot rarityFx palettes). */
+export function runImpact(fireWrap: HTMLElement, theme: Pick<Theme, 'accent' | 'fire'>) {
   if (reduced()) return
   const r = fireWrap.getBoundingClientRect()
   const cx = r.left + r.width / 2

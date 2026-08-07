@@ -8,10 +8,13 @@
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
+import DotLoader from '../components/DotLoader'
+import DitherToy from '../components/DitherToy'
 import { getLabBySlug } from '../data/lab'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
 import { usePageTitle } from '../lib/usePageTitle'
+import { ArrowUpRight } from '../components/icons'
 
 export default function LabItem() {
   const { slug } = useParams<{ slug: string }>()
@@ -106,9 +109,42 @@ export default function LabItem() {
           <canvas id="labcanvas" ref={canvasRef} />
           <p className="meta">demo: a reactive dot grid — every lab toy would be its own experiment.</p>
         </>
-      ) : item.body ? (
-        <p style={{ marginTop: 18 }}>{item.body}</p>
-      ) : (
+      ) : item.demo === 'dot-loader' ? (
+        <>
+          <div style={{ marginTop: 24 }}>
+            <DotLoader label="conjuring" />
+          </div>
+          <p className="meta" style={{ marginTop: 18 }}>
+            demo: the site's loading indicator — six dots twinkling at random, and the time
+            you've spent watching them.
+          </p>
+        </>
+      ) : item.demo === 'dither-toy' ? (
+        <>
+          <div style={{ marginTop: 24 }}>
+            <DitherToy />
+          </div>
+          <p className="meta" style={{ marginTop: 18 }}>
+            demo: the site's ordered-dither pass, live. Drop in any image and slide the ink.
+          </p>
+        </>
+      ) : null}
+
+      {item.body && <p style={{ marginTop: 18 }}>{item.body}</p>}
+
+      {item.externalUrl && (
+        <a
+          className="btn outline"
+          href={item.externalUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ marginTop: 24 }}
+        >
+          view on GitHub <ArrowUpRight />
+        </a>
+      )}
+
+      {!item.demo && !item.body && (
         <p className="meta" style={{ marginTop: 18 }}>
           Placeholder — this experiment isn't wired up yet.
         </p>

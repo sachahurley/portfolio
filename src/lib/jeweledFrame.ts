@@ -17,6 +17,8 @@
  *    pixelated; never stretch the edge tiles)
  */
 
+import { oneBitImageData } from './dither/oneBit'
+
 export const FRAME_SRC = 48 // nine-slice source size (exact 9-slice frame)
 export const FRAME_SLICE = 16 // slice inset for border-image
 
@@ -211,11 +213,15 @@ export function buildFramePixels(width = FRAME_SRC, height = FRAME_SRC): Buf {
 }
 
 // Browser-only: render the nine-slice source to a data URL for border-image.
+// Strict 1-bit: the embossed stone/garnet ramps collapse to ink-density
+// dither before the tile is baked.
 export function buildFrameDataUrl(): string {
   const { w, h, data } = buildFramePixels()
+  const img = new ImageData(data, w, h)
+  oneBitImageData(img)
   const canvas = document.createElement('canvas')
   canvas.width = w
   canvas.height = h
-  canvas.getContext('2d')!.putImageData(new ImageData(data, w, h), 0, 0)
+  canvas.getContext('2d')!.putImageData(img, 0, 0)
   return canvas.toDataURL('image/png')
 }

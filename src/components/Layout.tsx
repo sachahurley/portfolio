@@ -1,25 +1,44 @@
 /**
  * Layout Component
  *
- * Wraps every page. Renders the page content plus the persistent Minimal-mode
- * chrome (loader, floating dock, bottom sheet, toasts). No header, no footer.
+ * Wraps every page in the RPG game frame: the adventure viewport (page
+ * content) on the left; compass, message log, and the character strip
+ * stacked in the right column. On desktop the frame is fixed and the
+ * viewport scrolls internally; below 960px the frame chrome hides and the
+ * page scrolls normally (the "handheld port"). The bottom sheet (nav +
+ * character row + contact) is owned here and opened by the dock's Menu
+ * button; the character strip navigates to /character instead.
  */
 
-import { type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import MinimalChrome from './MinimalChrome'
+import Compass from './game/Compass'
+import MessageLog from './game/MessageLog'
+import CharacterStrip from './game/CharacterStrip'
 
 interface LayoutProps {
   children: ReactNode
 }
 
 export default function Layout({ children }: LayoutProps) {
-  return (
-    <div className="min-h-screen bg-[var(--surface-page)] transition-colors flex flex-col overflow-x-hidden">
-      {/* Page content - this is where Home, Projects, Notes, etc. render */}
-      <main className="flex-1">{children}</main>
+  const [sheetOpen, setSheetOpen] = useState(false)
 
-      {/* The only persistent UI: floating dock + sheet + loader + toasts */}
-      <MinimalChrome />
+  return (
+    <div className="gframe bg-[var(--surface-page)] transition-colors">
+      {/* Adventure viewport - where Home, Quest Log, Library, etc. render */}
+      <main className="gf-viewport" id="gf-viewport">
+        {children}
+      </main>
+
+      {/* Right column: navigation, narration, and the visitor's character */}
+      <aside className="gf-side">
+        <Compass />
+        <MessageLog />
+        <CharacterStrip />
+      </aside>
+
+      {/* Loader (title screen), dock (Menu + campfire), sheet, toasts, modal */}
+      <MinimalChrome sheetOpen={sheetOpen} onSheetOpenChange={setSheetOpen} />
     </div>
   )
 }

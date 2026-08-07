@@ -12,6 +12,7 @@
  */
 
 import { useEffect, useRef } from 'react'
+import { oneBitCanvas } from '../lib/dither/oneBit'
 
 const PIXEL_SIZE = 4
 const ROWS = 5 // band height in cells (20px) — one short course of blocks
@@ -115,6 +116,9 @@ export default function PixelStoneBorder() {
         bx += bw + 1 // 1-cell mortar gap between blocks
         i++
       }
+
+      // Strict 1-bit: collapse the stone tones to ink-density dither.
+      oneBitCanvas(ctx!, canvas!.width, canvas!.height, PIXEL_SIZE)
     }
 
     draw()

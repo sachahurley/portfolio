@@ -36,14 +36,14 @@ export const THEMES: Record<ThemeId, Theme> = {
   // not the prototype's grays. fire = representative hues pulled from
   // DEFAULT_FIRE_PALETTE below, used by the impact effects.
   default: {
-    name: 'Amber',
-    base: '#e0a33d',
-    mark: '#9c6e1e',
+    name: 'Sepia',
+    base: '#f7f5f2',
+    mark: '#bfb4a3',
     pattern: 'speckle',
-    accent: '#e0a33d',
+    accent: '#f7f5f2',
     head: '#fdfcfb',
-    text: '#e0dace',
-    fire: ['#FDE68A', '#F59E0B', '#B45309'],
+    text: '#bfb4a3',
+    fire: ['#E0DACE', '#968A75', '#474030'],
   },
   ember: {
     name: 'Ember',
@@ -105,23 +105,25 @@ export function mix(a: string, b: string, t: number): string {
 
 /* ---- doom-fire palettes ---- */
 
-// The hand-tuned stock palette (moved verbatim from PixelFire) - index is
-// flame intensity, 0 = no fire.
+// The stock palette - index is flame intensity, 0 = no fire. The whole
+// ramp runs the sepia scale; the flame mass sits in the DARK sepias
+// (800-600), cresting at 500/400, so the fire reads as embers in the
+// welcome asset's register rather than a bright blaze.
 export const DEFAULT_FIRE_PALETTE = [
   'transparent', // 0: no fire
   '#0A0704', //  1: sepia-1000 (barely visible ember)
   '#120D09', //  2: sepia-975
   '#1A150F', //  3: sepia-950
-  '#2D1102', //  4: amber-975 (dark ember)
-  '#451A03', //  5: amber-950
-  '#78350F', //  6: amber-900
-  '#92400E', //  7: amber-800
-  '#B45309', //  8: amber-700 (warm glow)
-  '#D97706', //  9: amber-600
-  '#F59E0B', // 10: amber-500 (bright flame)
-  '#FBBF24', // 11: amber-400
-  '#FCD34D', // 12: amber-300 (hot tip)
-  '#FDE68A', // 13: white-hot
+  '#221E13', //  4: sepia-925 (dark ember)
+  '#2B2718', //  5: sepia-900
+  '#2B2718', //  6: sepia-900
+  '#474030', //  7: sepia-800
+  '#474030', //  8: sepia-800
+  '#695F4D', //  9: sepia-700 (welcome dark drip - the flame body)
+  '#695F4D', // 10: sepia-700
+  '#968A75', // 11: sepia-600 (warm glow)
+  '#BFB4A3', // 12: sepia-500 (welcome mid drip, hot tip)
+  '#E0DACE', // 13: sepia-400 (rare white-hot sparkle)
 ]
 
 // Intensity -> color anchors for generated theme palettes, chosen so the

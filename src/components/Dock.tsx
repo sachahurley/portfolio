@@ -1,13 +1,15 @@
 /**
- * Dock — the only persistent chrome.
+ * Dock — the mobile chrome (hidden at ≥960px, where the compass sidebar
+ * is the sole nav).
  *
- * A floating bottom-center container holding the Menu pill and a back chevron
- * that slides in on every page except Home. Back uses router history.
+ * A floating bottom-center container holding the Menu button and a back
+ * chevron that slides in on every page except Home. Back uses router history.
  */
 
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MenuFire from './MenuFire'
+import DitherIcon from './DitherIcon'
 
 // First tap: hold the sheet back briefly so the extinguish smoke puff is visible
 // before the sheet rises over the dock. Later taps open immediately.
@@ -63,20 +65,21 @@ export default function Dock({ onMenu }: { onMenu: () => void }) {
           <path d="M10 4 L4 11 L10 18" />
         </svg>
       </button>
-      <button
-        className={`menubtn${lit ? ' lit' : ''}`}
-        aria-haspopup="dialog"
-        aria-controls="sheet"
-        onClick={onMenuClick}
-      >
+      {/* MenuFire sits outside the button: the notched clip-path would
+          swallow it (it hangs above the button box), so it anchors to the
+          wrapper instead */}
+      <span className="menuwrap">
         <MenuFire lit={lit} />
-        <span className="ic">
-          <span />
-          <span />
-          <span />
-        </span>
-        Menu
-      </button>
+        <button
+          className={`menubtn${lit ? ' lit' : ''}`}
+          aria-haspopup="dialog"
+          aria-controls="sheet"
+          onClick={onMenuClick}
+        >
+          <DitherIcon name="home" size={16} className="ic-home" />
+          Menu
+        </button>
+      </span>
     </div>
   )
 }
