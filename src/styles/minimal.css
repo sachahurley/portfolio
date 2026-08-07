@@ -62,18 +62,27 @@ strong, b { font-weight: 400; }
    (16px at 2x; 8px below 960px, the handheld port), so page art can run
    right up to the stonework with no gap; only the 2x-band corner bosses
    reach deeper than the ring. */
+/* With viewport-fit=cover the viewport reaches the physical screen edges,
+   so the frame insets by the safe areas: the stonework sits just inside
+   the notch/status bar and home indicator, and the aprons below fill the
+   safe-area strips with opaque bg. */
 .jewel-frame-bg, .jewel-frame--site {
-  position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  position: fixed; z-index: 60; pointer-events: none;
+  top: env(safe-area-inset-top, 0px);
+  bottom: env(safe-area-inset-bottom, 0px);
+  left: 0; right: 0;
 }
 .jewel-frame-bg { border: 16px solid var(--bg); }
 @media (max-width: 959px) {
   .jewel-frame-bg { border-width: 8px; }
 }
-/* Mobile browser chrome: fixed elements attach to the layout viewport,
-   but when the toolbar collapses the page keeps painting into the strips
-   above/below it (behind the status bar and the home-indicator/URL-bar),
-   so scrolled content showed outside the frame. Solid bg-colored aprons
-   extend the backing ring past both edges to cover those regions. */
+/* Opaque bg-colored aprons extend the backing ring past the frame's top
+   and bottom edges: they fill the safe-area strips (status bar, home
+   indicator) and whatever the collapsing browser toolbar reveals, so
+   scrolled content disappears at the frame edge instead of showing
+   outside the stonework. Requires viewport-fit=cover (index.html); the
+   layout viewport must reach the physical screen edges for fixed
+   elements to paint there. */
 .jewel-frame-bg::before, .jewel-frame-bg::after {
   content: ""; position: absolute; left: 0; right: 0; height: 40vh;
   background: var(--bg);
@@ -83,7 +92,7 @@ strong, b { font-weight: 400; }
 
 /* ---- floating bottom-center dock: menu button + sliding back chevron ---- */
 .dock {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: 72; display: flex; align-items: center;
 }
 /* wrapper exists because clip-path clips everything on the button itself:
@@ -139,7 +148,7 @@ strong, b { font-weight: 400; }
 .dock.sub .backbtn { transform: translateY(-50%) translateX(0) scale(1); opacity: 1; pointer-events: auto; }
 .backbtn:hover { background: #222; }
 .tip {
-  position: fixed; left: 50%; bottom: 78px; transform: translateX(-50%);
+  position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: 72; background: var(--fg); color: var(--bg);
   font-size: 11px; padding: 6px 10px; border-radius: 6px; white-space: nowrap;
 }
@@ -887,7 +896,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    item card floats above the panels instead of stretching the page;
    below 960px the handheld port keeps its normal page scroll. */
 .ch-close {
-  position: fixed; top: 16px; right: 16px; z-index: 65;
+  position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); right: 16px; z-index: 65;
   display: inline-flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; padding: 0; border: 0; cursor: pointer;
   background: var(--color-sepia-925, #221e13); color: var(--accent);

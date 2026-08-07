@@ -4,7 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover: extend the layout viewport to the physical screen
+         edges so the fixed jeweled frame (and its opaque backing) can paint
+         behind the status bar / home-indicator strips; without it, Safari
+         clips fixed elements to the web-content area and scrolled page
+         content shows outside the frame. theme-color tints Safari's chrome
+         to the sepia-950 page bg. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1a150f" />
     <title>Sacha Hurley</title>
     <meta
       name="description"
