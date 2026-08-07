@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef } from 'react'
+import { bayerThreshold, ONE_BIT_INK, oneBitCanvas } from '../lib/dither/oneBit'
 
 const PIXEL_SIZE = 4
 
@@ -256,6 +257,9 @@ export default function PixelCastle() {
         lctx.fillStyle = gemColor(0)
         lctx.fillRect(g.x, g.y, g.size, g.size)
       }
+      // Strict 1-bit: collapse the baked scene to ink-density dither once;
+      // the frame loop only re-dithers the gem cells.
+      oneBitCanvas(lctx, layer.width, layer.height, PIXEL_SIZE)
       staticLayer = layer
     }
 
@@ -264,11 +268,21 @@ export default function PixelCastle() {
       ctx!.clearRect(0, 0, canvas!.width, canvas!.height)
       ctx!.drawImage(staticLayer, 0, 0)
       const t = Math.sin(now * 0.001 * PULSE_HZ * 2 * Math.PI) * 0.5 + 0.5
+      // Gem pulse in 1-bit: ink density breathes instead of a colour glow.
+      const density = 0.25 + 0.55 * t
+      ctx!.fillStyle = ONE_BIT_INK
       for (const g of gems) {
-        ctx!.fillStyle = `rgba(230,51,51,${0.12 + 0.22 * t})`
-        ctx!.fillRect(g.x - PIXEL_SIZE, g.y - PIXEL_SIZE, g.size + PIXEL_SIZE * 2, g.size + PIXEL_SIZE * 2)
-        ctx!.fillStyle = gemColor(t)
-        ctx!.fillRect(g.x, g.y, g.size, g.size)
+        const cells = Math.max(1, Math.round(g.size / PIXEL_SIZE))
+        const gx = Math.round(g.x / PIXEL_SIZE)
+        const gy = Math.round(g.y / PIXEL_SIZE)
+        ctx!.clearRect(g.x, g.y, g.size, g.size)
+        for (let cy = 0; cy < cells; cy++) {
+          for (let cx = 0; cx < cells; cx++) {
+            if (density > bayerThreshold(gx + cx, gy + cy)) {
+              ctx!.fillRect(g.x + cx * PIXEL_SIZE, g.y + cy * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE)
+            }
+          }
+        }
       }
       raf = requestAnimationFrame(frame)
     }

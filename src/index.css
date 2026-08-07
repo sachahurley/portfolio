@@ -16,13 +16,15 @@
 :root {
   --bg: var(--surface-page);        /* page background */
   --fg: var(--text-primary);        /* labels, names, page titles */
-  --body: var(--text-secondary);    /* descriptions, paragraphs */
+  /* One step darker than the DS dark-theme text-secondary (sepia-400) so
+     body copy sits clearly below the sepia-300 accent. */
+  --body: var(--color-sepia-500, #bfb4a3);
   --mut: var(--text-tertiary);      /* dates, meta, role */
   --mut2: var(--border-muted);      /* faint arrows */
   /* Highlight for links / See all / active nav / XP bar / focus + selection.
      Light warm sepia straight from the scorp-ds scale (previously a one-off
      prototype gold, #e0a33d). */
-  --accent: var(--color-sepia-300, #f0ebe4);
+  --accent: var(--color-sepia-200, #f7f5f2);
   --hover: var(--surface-muted);    /* row / control hover */
   --ring: var(--border-focus);      /* focus ring */
 
@@ -33,11 +35,12 @@
   --border: var(--color-sepia-950, #1a150f);
 
   /* Egg-theme flame hues [bright, mid, dim] - consumed by the impact effects
-     in the EXP system. applyTheme (src/lib/themes.ts) overrides these inline
-     on <html> when a non-default egg theme is active. */
-  --fire1: #FDE68A;
-  --fire2: #F59E0B;
-  --fire3: #B45309;
+     in the EXP system. Default matches the welcome asset's sepia dither
+     tones; applyTheme (src/lib/themes.ts) overrides these inline on <html>
+     when a non-default egg theme is active. */
+  --fire1: #E0DACE;
+  --fire2: #968A75;
+  --fire3: #474030;
 
   --col: 644px;                     /* content column width */
   --mono: var(

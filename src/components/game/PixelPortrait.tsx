@@ -1,17 +1,16 @@
 /**
- * PixelPortrait — the visitor's procedural 8-bit avatar.
+ * PixelPortrait — the visitor's procedural 8-bit avatar, strict 1-bit.
  *
  * A 12x12-cell face generated deterministically from a seed: the left half
  * is rolled from a seeded hash inside an oval mask, mirrored on X (the
  * mirror-symmetry contract that makes random pixels read as a creature),
  * outlined where filled cells meet empty ones, dithered between two skin
- * tones, with accent-colored eyes. Palette reuses the site's bone/brass/
- * mortar hexes; the eye color reads --accent at draw time, so activating a
- * banner egg re-colors every portrait.
+ * tones — then collapsed to single-ink Bayer dither (oneBitCanvas), so
+ * shading survives as ink density and the eye reads as a punched hole.
  */
 
 import { useEffect, useRef } from 'react'
-import { useXp } from '../../context/XpProvider'
+import { oneBitCanvas } from '../../lib/dither/oneBit'
 
 const N = 12
 const HALF = N / 2
@@ -83,7 +82,6 @@ export default function PixelPortrait({
   className?: string
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const { activeEgg } = useXp() // re-draw when the banner (accent) changes
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -92,19 +90,19 @@ export default function PixelPortrait({
     const px = cell * Math.min(window.devicePixelRatio || 1, 2)
     canvas.width = N * px
     canvas.height = N * px
-    const accent =
-      getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#f0ebe4'
     const g = portraitCells(seed)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     for (let r = 0; r < N; r++) {
       for (let c = 0; c < N; c++) {
         const v = g[r * N + c]
-        if (v === 0) continue
-        ctx.fillStyle = v === 4 ? accent : COLORS[v]
+        // Eyes stay unpainted: in 1-bit a dark eye is a hole in the ink.
+        if (v === 0 || v === 4) continue
+        ctx.fillStyle = COLORS[v]
         ctx.fillRect(c * px, r * px, px, px)
       }
     }
-  }, [seed, cell, activeEgg])
+    oneBitCanvas(ctx, canvas.width, canvas.height, px)
+  }, [seed, cell])
 
   return (
     <canvas

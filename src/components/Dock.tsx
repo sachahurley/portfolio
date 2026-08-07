@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MenuFire from './MenuFire'
+import DitherIcon from './DitherIcon'
 
 // First tap: hold the sheet back briefly so the extinguish smoke puff is visible
 // before the sheet rises over the dock. Later taps open immediately.
@@ -75,7 +76,7 @@ export default function Dock({ onMenu }: { onMenu: () => void }) {
           aria-controls="sheet"
           onClick={onMenuClick}
         >
-          <span className="ic-home" aria-hidden="true">⌂</span>
+          <DitherIcon name="home" size={16} className="ic-home" />
           Menu
         </button>
       </span>

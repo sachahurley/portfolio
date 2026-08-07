@@ -9,7 +9,7 @@
  * dissolve and the boil and shows the finished still.
  *
  * Displayed at the largest exact integer pixel scale that fits the
- * viewport (nearest-neighbour only, never fractional), like DitherAsset.
+ * viewport (nearest-neighbour only, never fractional).
  */
 
 import { useEffect, useRef } from 'react'
@@ -72,7 +72,7 @@ export default function DitherLive({
     let acc = 0
 
     // Persistent probe span: getComputedStyle resolves var() chains that
-    // canvas fillStyle cannot (same pattern as DitherTitle/PixelName).
+    // canvas fillStyle cannot.
     const probe = document.createElement('span')
     probe.style.display = 'none'
     wrap.appendChild(probe)

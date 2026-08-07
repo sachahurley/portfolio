@@ -14,6 +14,7 @@ import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PixelPortrait from './game/PixelPortrait'
 import PixelStoneBorder from './PixelStoneBorder'
+import DitherIcon from './DitherIcon'
 import { ArrowUpRight } from './icons'
 
 export default function BottomSheet({
@@ -99,7 +100,7 @@ export default function BottomSheet({
             const locked = loc.minLevel != null && displayLevel < loc.minLevel
             return locked ? (
               <span key={loc.path} className="nav-sealed" aria-label="Sealed location">
-                <span className="gf-ic">?</span> ???
+                <DitherIcon name="lock" size={20} className="gf-ic" /> ???
                 <span className="nav-flavor">sealed</span>
               </span>
             ) : (
@@ -109,7 +110,7 @@ export default function BottomSheet({
                 className={isActive(loc.path) ? 'active' : undefined}
                 onClick={onClose}
               >
-                <span className="gf-ic">{loc.icon}</span> {loc.real}
+                <DitherIcon name={loc.icon} size={20} className="gf-ic" /> {loc.real}
               </Link>
             )
           })}

@@ -7,6 +7,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { LOCATIONS, locationFor } from '../../game/locations'
 import { useXp } from '../../context/XpProvider'
+import DitherIcon from '../DitherIcon'
 
 export default function Compass() {
   const { level } = useXp()
@@ -22,10 +23,11 @@ export default function Compass() {
           const locked = loc.minLevel != null && displayLevel < loc.minLevel
           const active = here?.path === loc.path
           return (
-            <li key={loc.path} className={active ? 'sel' : undefined}>
+            <li key={loc.path} className={active && !locked ? 'sel' : undefined}>
               {locked ? (
                 <span className="gf-dest locked" aria-label="Sealed location">
-                  <span className="gf-ic">?</span> ??? <span className="gf-lock">sealed</span>
+                  <DitherIcon name="lock" size={16} className="gf-ic" /> ???{' '}
+                  <span className="gf-lock">sealed</span>
                 </span>
               ) : (
                 <Link
@@ -33,7 +35,7 @@ export default function Compass() {
                   to={loc.path}
                   aria-current={active ? 'page' : undefined}
                 >
-                  <span className="gf-ic">{loc.icon}</span> {loc.real}
+                  <DitherIcon name={loc.icon} size={16} className="gf-ic" /> {loc.real}
                 </Link>
               )}
             </li>

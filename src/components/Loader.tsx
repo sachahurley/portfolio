@@ -10,8 +10,6 @@
  * for first-time visitors, CONTINUE plus the character (portrait, name,
  * level, banners) for returning ones — saving itself is automatic, this is
  * just where the save shows. The readout carries the press-any-key prompt.
- * The older DitherAsset/DitherTitle/DripTitle/PixelName/AsciiName renderers
- * still exist in the repo but are unused.
  */
 
 import { useEffect, useState } from 'react'

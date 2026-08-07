@@ -13,6 +13,7 @@
 
 import { useEffect, useRef } from 'react'
 import { mix } from '../../lib/themes'
+import { oneBitCanvas } from '../../lib/dither/oneBit'
 import { RARITY_COLORS, type Rarity, type Slot } from '../../game/loot'
 
 const N = 12
@@ -198,6 +199,9 @@ export default function PixelItem({
         ctx.fillRect(c * px, r * px, px, px)
       }
     }
+    // Strict 1-bit: shading survives as ink density; rarity lives in the
+    // slot-ring chrome and the item card's text, not the icon itself.
+    oneBitCanvas(ctx, canvas.width, canvas.height, px)
   }, [kind, base, seed, rarity, cell])
 
   return (

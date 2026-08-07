@@ -91,7 +91,9 @@ export function buildLiveField(img: ImageData): LiveField {
  * Elevation banding: BFS distance from each word pixel to the nearest
  * non-word pixel, then contour the strokes inward. The wild asset's
  * strokes run 1..8 px deep, so the bands land as: rim (d<=1) keeps the
- * lightest tone, d=2 -> band 4, d=3..4 -> band 5, d>=5 -> band 6.
+ * lightest tone, d=2 -> band 4, d=3 -> band 5, d>=4 -> band 6. The
+ * darkest band starts at d=4 (not 5) so the stroke cores read wide,
+ * without pushing the dark region much closer to the rims.
  */
 function bandWordDepth(gw: number, gh: number, shade: Uint8Array): void {
   const dist = new Int16Array(gw * gh).fill(-1)
@@ -117,7 +119,7 @@ function bandWordDepth(gw: number, gh: number, shade: Uint8Array): void {
   for (let i = 0; i < gw * gh; i++) {
     if (shade[i] !== 1) continue
     const d = dist[i]
-    if (d >= 5) shade[i] = 6
+    if (d >= 4) shade[i] = 6
     else if (d >= 3) shade[i] = 5
     else if (d >= 2) shade[i] = 4
   }
