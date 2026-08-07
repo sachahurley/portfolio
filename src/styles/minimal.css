@@ -62,33 +62,34 @@ strong, b { font-weight: 400; }
    (16px at 2x; 8px below 960px, the handheld port), so page art can run
    right up to the stonework with no gap; only the 2x-band corner bosses
    reach deeper than the ring. */
-/* With viewport-fit=cover the viewport reaches the physical screen edges,
-   so the frame insets by the safe areas: the stonework sits just inside
-   the notch/status bar and home indicator, and the aprons below fill the
-   safe-area strips with opaque bg. */
-.jewel-frame-bg, .jewel-frame--site {
+/* With viewport-fit=cover (index.html) the layout viewport reaches the
+   physical screen edges. The stonework canvas insets by the safe areas
+   so it sits just inside the status bar and home indicator; the backing
+   ring instead spans the FULL screen (inset: 0) and absorbs the safe
+   areas into its border widths, so the strips behind the status bar and
+   home-indicator/URL-bar are covered by opaque bg. Everything paints
+   inside the element's own box: mobile Safari clips what fixed elements
+   try to draw outside their bounds, which is why earlier apron pseudos
+   hanging past the edges never rendered. */
+.jewel-frame--site {
   position: fixed; z-index: 60; pointer-events: none;
   top: env(safe-area-inset-top, 0px);
   bottom: env(safe-area-inset-bottom, 0px);
   left: 0; right: 0;
 }
-.jewel-frame-bg { border: 16px solid var(--bg); }
+.jewel-frame-bg {
+  position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  border: 16px solid var(--bg);
+  border-top-width: calc(16px + env(safe-area-inset-top, 0px));
+  border-bottom-width: calc(16px + env(safe-area-inset-bottom, 0px));
+}
 @media (max-width: 959px) {
-  .jewel-frame-bg { border-width: 8px; }
+  .jewel-frame-bg {
+    border-width: 8px;
+    border-top-width: calc(8px + env(safe-area-inset-top, 0px));
+    border-bottom-width: calc(8px + env(safe-area-inset-bottom, 0px));
+  }
 }
-/* Opaque bg-colored aprons extend the backing ring past the frame's top
-   and bottom edges: they fill the safe-area strips (status bar, home
-   indicator) and whatever the collapsing browser toolbar reveals, so
-   scrolled content disappears at the frame edge instead of showing
-   outside the stonework. Requires viewport-fit=cover (index.html); the
-   layout viewport must reach the physical screen edges for fixed
-   elements to paint there. */
-.jewel-frame-bg::before, .jewel-frame-bg::after {
-  content: ""; position: absolute; left: 0; right: 0; height: 40vh;
-  background: var(--bg);
-}
-.jewel-frame-bg::before { bottom: 100%; }
-.jewel-frame-bg::after { top: 100%; }
 
 /* ---- floating bottom-center dock: menu button + sliding back chevron ---- */
 .dock {
