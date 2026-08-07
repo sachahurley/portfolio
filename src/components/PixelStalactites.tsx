@@ -161,7 +161,9 @@ export default function PixelStalactites() {
   }, [gridWidth])
 
   return (
-    <header className="mb-12">
+    // 16px side insets keep the ceiling run clear of the site frame's corner
+    // bosses, which reach 16px deeper than the stone band the art sits against
+    <header className="mb-12" style={{ marginLeft: 16, marginRight: 16 }}>
       <canvas
         ref={canvasRef}
         className="w-full block"

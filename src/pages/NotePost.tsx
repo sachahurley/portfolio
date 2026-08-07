@@ -9,6 +9,8 @@
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
+import BackButton from '../components/BackButton'
+import PagerNav from '../components/PagerNav'
 import { ArrowUpRight } from '../components/icons'
 import { getPostBySlug } from '../data/posts'
 import { tools } from '../data/tools'
@@ -33,6 +35,7 @@ export default function NotePost() {
 
   return (
     <MinimalPage>
+      <BackButton fallback="/notes" />
       <div className="meta">{formatDate(post.date)}</div>
       <h1 className="page" style={{ marginTop: 2 }}>
         {post.title}
@@ -50,7 +53,7 @@ export default function NotePost() {
                 </li>
               ))}
             </ul>
-            <p>Most days that's Claude Code plus Figma, shipping straight to Vercel.</p>
+            <p>Most days that's Conductor and Claude Code, with Notion for planning.</p>
           </>
         ) : (
           <>
@@ -63,6 +66,8 @@ export default function NotePost() {
           </>
         )}
       </div>
+
+      <PagerNav section="notes" slug={post.slug} />
     </MinimalPage>
   )
 }

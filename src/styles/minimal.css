@@ -44,15 +44,31 @@ strong, b { font-weight: 400; }
 @media (max-width: 600px) { #loader { padding: 24px; } }
 
 /* jeweled stone frame on the outermost edge of the welcome viewport: a
-   nine-slice border-image generated at runtime (lib/jeweledFrame.ts).
-   Border width 32px = the 16px slice at 2x pixel scale; corners stay
-   fixed, 8px stone tiles repeat along the edges, never stretch. */
+   nine-slice canvas painted at runtime (JeweledFrame + lib/jeweledFrame.ts).
+   32px corners = the 16px bosses at 2x pixel scale; 8px stone tiles repeat
+   along the edges, never stretch. The scale drops to 1x on small screens
+   (handled in the component). */
 .jewel-frame {
-  position: absolute; inset: 0; pointer-events: none;
-  border: 32px solid transparent;
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none;
   image-rendering: pixelated;
 }
-@media (max-width: 600px) { .jewel-frame { border-width: 16px; } }
+
+/* Site-wide variant (Layout): the same frame pinned around the browser
+   viewport on every page, above page content but below the dock, sheet,
+   toasts, and modals. The dither ink is transparent between dots, so
+   .jewel-frame-bg lays a bg-colored ring underneath to hide content
+   scrolling beneath the stonework. The ring is exactly the stone band
+   (16px at 2x; 8px below 960px, the handheld port), so page art can run
+   right up to the stonework with no gap; only the 2x-band corner bosses
+   reach deeper than the ring. */
+.jewel-frame-bg, .jewel-frame--site {
+  position: fixed; inset: 0; z-index: 60; pointer-events: none;
+}
+.jewel-frame-bg { border: 16px solid var(--bg); }
+@media (max-width: 959px) {
+  .jewel-frame-bg { border-width: 8px; }
+}
 
 /* ---- floating bottom-center dock: menu button + sliding back chevron ---- */
 .dock {
@@ -198,7 +214,14 @@ strong, b { font-weight: 400; }
    (PixelCastle extends its canvas above the box); the canvases inside clip
    their own drawing, so nothing else escapes. */
 /* Sized to the dungeon-gate GIF's own aspect so the full scene shows. */
-.stage-hero { position: relative; width: 100%; aspect-ratio: 2800 / 1253; margin: 0 0 32px; overflow: hidden; border: 1px solid var(--border); background: var(--bg); }
+.stage-hero { position: relative; width: 100%; aspect-ratio: 2800 / 1253; margin: 0 0 32px; overflow: hidden; border: 1px solid var(--border); background: var(--bg); opacity: 0; animation: stage-hero-fade 1.8s ease-out forwards; }
+@keyframes stage-hero-fade { to { opacity: 1; } }
+/* On first load the title-screen overlay hides the page; hold the fade
+   until the loader starts its own dismiss fade (.hide) so the hero's
+   entrance is actually seen. Route navigations mount no loader, so the
+   fade runs immediately. (No :has support = fade plays behind the
+   loader; harmless.) */
+body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 .stage-hero__scene { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
 .pixel-castle { position: absolute; inset: 0; pointer-events: none; }
 .stage-hero .heromark--roam { height: 100%; margin: 0; }
@@ -212,8 +235,60 @@ strong, b { font-weight: 400; }
 .label { font-size: 16px; font-weight: 400; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
 .shead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 16px; }
 .shead .label { margin: 0; }
-.seeall { font-size: 15px; color: var(--accent); }
-.seeall:hover { text-decoration: underline; text-underline-offset: 3px; }
+.seeall { font-size: 15px; color: var(--accent); display: inline-flex; align-items: center; gap: 8px; }
+/* the count's icon button: a plate with the shared pixel-round silhouette
+   (same as the menu rows). Rest: mid sepia with the dither arrow inked in
+   the accent; hover: the plate fills accent and the arrow flips to --bg.
+   28px box - 16px icon = 6px padding all round, matching the corner inset. */
+.seebtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; flex: none;
+  background: var(--color-sepia-950, #1a150f); color: var(--accent);
+  clip-path: var(--plate-round);
+  transition: background-color .12s, color .12s;
+}
+.seeall:hover .seebtn { background: var(--accent); color: var(--bg); }
+/* detail-page back button: the same plate as .seebtn, but a standalone
+   <button> with its own hover, sitting above the page title. Named
+   .pageback — .backbtn is taken by the dock's sliding back chevron. */
+.pageback {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; flex: none; padding: 0; border: 0; cursor: pointer;
+  background: var(--color-sepia-950, #1a150f); color: var(--accent);
+  clip-path: var(--plate-round);
+  transition: background-color .12s, color .12s;
+  margin: 0 0 20px;
+}
+.pageback:hover { background: var(--accent); color: var(--bg); }
+/* detail-page prev/next pager: richer cousins of the menu buttons — the
+   same pixel-round plate silhouette with a sepia-950 fill (no outline),
+   barely parting from the page; carrying the destination's thumbnail, a
+   section kicker, and its title.
+   Next mirrors prev (row-reverse) so each arrow sits on its outer edge;
+   at the ends of the chain the lone button stretches full width. */
+.pager { display: flex; gap: 12px; margin-top: 64px; }
+.pgbtn {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px;
+  padding: 12px; background: var(--color-sepia-950, #1a150f);
+  clip-path: var(--plate-round);
+  transition: background-color .12s;
+}
+/* hover matches the compact buttons' accent flip; the accent-inked
+   children flip to --bg with it or they'd vanish on the accent fill */
+.pgbtn:hover { background: var(--accent); }
+.pgbtn:hover .pg-title, .pgbtn:hover .pg-kicker, .pgbtn:hover .pg-arrow { color: var(--bg); }
+.pgbtn--next { flex-direction: row-reverse; text-align: right; }
+.pg-arrow { color: var(--accent); transition: color .12s; }
+.pg-thumb {
+  flex: none; width: 56px; aspect-ratio: 16/9; object-fit: cover; display: block;
+  border: 1px solid var(--border); border-radius: 2px;
+  background: repeating-linear-gradient(45deg,#121212,#121212 8px,#181818 8px,#181818 16px);
+}
+.pg-txt { display: flex; flex-direction: column; min-width: 0; }
+.pg-kicker { font-size: 12px; color: var(--mut); transition: color .12s; }
+.pg-title { font-size: 14px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .12s; }
+/* narrow screens: stack the pair, prev above next, both full width */
+@media (max-width: 600px) { .pager { flex-direction: column; } }
 /* SVG arrow icons (see components/icons.tsx): em-sized, so .arr bumps the
    context font so the See all arrow matches the 16px-row external icon */
 /* Tailwind preflight makes svg display:block; restore inline flow for icons */
@@ -224,7 +299,9 @@ strong, b { font-weight: 400; }
 
 /* link rows: stacked title + muted description (exact emil metrics) */
 .list { display: flex; flex-direction: column; gap: 16px; margin: 0 -12px -12px; }
-.item { display: block; padding: 12px; border-radius: 8px; transition: background .12s; }
+/* hover plate shares the pixel-rounded silhouette with the compass rows;
+   the clip is invisible until the hover background fills it */
+.item { display: block; padding: 12px; clip-path: var(--plate-round); transition: background .12s; }
 .item:hover { background: var(--hover); }
 .item .nd { display: block; color: var(--mut); font-size: 14px; line-height: 20px; margin-bottom: 2px; }
 .item .t { display: block; color: var(--fg); line-height: 24px; }
@@ -232,6 +309,18 @@ strong, b { font-weight: 400; }
 a.item .t { color: var(--accent); }
 .item .d { display: block; color: var(--body); line-height: 24px; }
 .item .ext { color: inherit; line-height: 0; margin-left: 8px; }
+
+/* ---- tools (About): compact plain list, not Item rows. The row is not a
+   button; only the tool name links out, inline with the external arrow.
+   Two lines per row: the name link, then the description below it. ---- */
+.tool-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 10px; font-size: 14px;
+}
+.tool-link { color: var(--accent); }
+.tool-link:hover { text-decoration: underline; }
+.tool-link .ext { color: inherit; line-height: 0; margin-left: 4px; }
+.tool-desc { display: block; color: var(--body); margin-top: 1px; }
 .meta { color: var(--mut); font-size: 14px; }
 /* optional 16:9 thumbnail on the far right of a row */
 .item.has-img { display: flex; align-items: center; gap: 16px; }
@@ -252,20 +341,39 @@ a.item .t { color: var(--accent); }
   .item.has-img.img-right .thumbimg { width: 84px; aspect-ratio: 3 / 4; }
 }
 
-/* buttons */
-.btn {
-  display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 13px;
-  border: 1px solid var(--fg); background: var(--fg); color: var(--bg); border-radius: 5px;
-  padding: 8px 13px; cursor: pointer;
+/* buttons — the in-content plate button, part of the pixel-plate family
+   (.seebtn/.pageback icon buttons, .pgbtn rich pager). Every tier is a
+   16px content core plus a padding ring; in-content text buttons sit on
+   the compact tier: 6px ring = 28px tall (wider 10px side padding for
+   text breathing room). Same sepia rest / accent hover states as the
+   rest of the family. */
+.platebtn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 14px; line-height: 16px;
+  border: 0; padding: 6px 10px; cursor: pointer;
+  background: var(--color-sepia-950, #1a150f); color: var(--accent);
+  clip-path: var(--plate-round);
+  transition: background-color .12s, color .12s;
 }
-.btn:hover { opacity: .85; }
-.btn.outline { background: var(--bg); color: var(--fg); border-color: var(--border); }
-.btn.outline:hover { background: var(--hover); }
+.platebtn:hover { background: var(--accent); color: var(--bg); }
+/* clip-path swallows the global outside focus ring on plate-clipped
+   controls; paint an inset ring within the silhouette instead */
+.pageback:focus-visible, .platebtn:focus-visible, .pgbtn:focus-visible,
+a.item:focus-visible, .gf-dest:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
 
 /* lab demo */
 #labcanvas {
   width: 100%; height: 300px; border: 1px solid var(--border); border-radius: 6px;
   background: var(--hover); display: block; touch-action: none; margin-top: 18px;
+}
+/* lab detail artwork (studio-exported dither art with its own baked bg),
+   framed like the stage hero */
+.lab-art {
+  display: block; width: 100%; margin-top: 24px;
+  border: 1px solid var(--border); image-rendering: pixelated;
 }
 
 /* detail bits */
@@ -305,11 +413,25 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 .xp-explain { color: var(--body); font-size: 14px; margin: 0; max-width: 54ch; }
 .xp-line { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
 .xp-row { font-family: var(--mono); font-size: 14px; color: var(--accent); white-space: nowrap; }
+/* Progress bars wear the menu button's notched pixel corners, scaled to bar
+   height, plus a slight 2px checker dither. The ring is built like .gs-tab:
+   the element is the border colour clipped by the notch, and the track
+   pseudo is clipped by the same polygon 1px inside, so the border
+   stair-steps at the corners. The fill <i> is clipped by the element's
+   polygon automatically. */
 .xp-bar {
-  height: 14px; flex: 1; max-width: 240px; background: var(--hover);
-  border: 1px solid var(--border); border-radius: 999px; overflow: hidden;
+  height: 14px; flex: 1; max-width: 240px; position: relative;
+  padding: 1px; background: var(--border); clip-path: var(--notch3);
 }
-.xp-bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s ease; }
+.xp-bar::before {
+  content: ""; position: absolute; inset: 1px; clip-path: var(--notch3);
+  background: var(--dither-light) 0 0 / 4px 4px, var(--hover);
+}
+.xp-bar > i {
+  position: relative; display: block; height: 100%; width: 0;
+  background: var(--dither-dark) 0 0 / 4px 4px, var(--accent);
+  transition: width .5s ease;
+}
 
 /* ---- egg track ---- */
 .egg-track { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
@@ -415,6 +537,9 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
     grid-template-rows: minmax(0, 1fr);
     grid-template-areas: 'viewport side';
     background: var(--bg);
+    /* clear exactly the site frame's 16px stone band, so the viewport's
+       art (stalactites, fire) meets the stonework with no gap */
+    padding: 16px;
   }
   .gf-viewport { grid-area: viewport; overflow-y: auto; overflow-x: hidden; min-width: 0; }
   .gf-side { grid-area: side; display: flex; flex-direction: column; min-height: 0; border-left: 2px solid var(--border); }
@@ -431,8 +556,20 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 .gf-panel { padding: 20px; border-bottom: 2px solid var(--border); }
 .gf-charname { font-family: var(--mono); font-size: 16px; color: var(--fg); letter-spacing: .04em; }
 .gf-charlvl { font-family: var(--mono); font-size: 13px; color: var(--body); margin: 6px 0 14px; }
-.gf-xpbar { height: 10px; border: 1px solid var(--border); background: var(--hover); }
-.gf-xpfill { height: 100%; background: var(--accent); transition: width .3s ease; }
+/* notched + dithered like .xp-bar (see the comment there) */
+.gf-xpbar {
+  height: 10px; position: relative;
+  padding: 1px; background: var(--border); clip-path: var(--notch2);
+}
+.gf-xpbar::before {
+  content: ""; position: absolute; inset: 1px; clip-path: var(--notch2);
+  background: var(--dither-light) 0 0 / 4px 4px, var(--hover);
+}
+.gf-xpfill {
+  position: relative; height: 100%;
+  background: var(--dither-dark) 0 0 / 4px 4px, var(--accent);
+  transition: width .3s ease;
+}
 .gf-xpnum { font-family: var(--mono); font-size: 12px; color: var(--body); margin-top: 6px; }
 .gf-eggrow { display: flex; gap: 8px; margin-top: 14px; min-height: 16px; align-items: center; }
 .gf-egg { width: 14px; height: 16px; border: 1px solid; border-radius: 50% 50% 46% 46%; display: inline-block; }
@@ -442,34 +579,38 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 
 /* compass */
 .gf-compass ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-/* every row carries the 4px notched polygon; it's invisible while the
+/* pixel-rounded plate silhouette (RPG dialog-box style): quarter-round
+   corners built from 2px stair-step cells — top/bottom edges inset 6px,
+   with a single 2px step into the vertical edge. Defined on :root so it's
+   shared by the compass rows (hover/active plates, selected ring) and the
+   home-page .item hover plates. */
+:root {
+  --plate-round: polygon(
+    0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
+    calc(100% - 6px) 0, calc(100% - 6px) 2px, calc(100% - 2px) 2px, calc(100% - 2px) 6px, 100% 6px,
+    100% calc(100% - 6px), calc(100% - 2px) calc(100% - 6px), calc(100% - 2px) calc(100% - 2px),
+    calc(100% - 6px) calc(100% - 2px), calc(100% - 6px) 100%,
+    6px 100%, 6px calc(100% - 2px), 2px calc(100% - 2px), 2px calc(100% - 6px), 0 calc(100% - 6px)
+  );
+}
+/* every row carries the pixel-rounded polygon; it's invisible while the
    background is transparent, and shapes the hover/active plates */
 .gf-dest {
-  display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 14px; color: var(--body); padding: 7px 8px; text-decoration: none; border: 1px solid transparent; transition: color .15s ease, border-color .15s ease, background-color .15s ease;
-  clip-path: polygon(
-    0 4px, 4px 4px, 4px 0,
-    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
-    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
-    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
-  );
+  display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 14px; color: var(--body); padding: 7px 11px; text-decoration: none; border: 1px solid transparent; transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+  clip-path: var(--plate-round);
 }
 /* greyish plate on hover (links only — the sealed span doesn't react) */
 a.gf-dest:hover { color: var(--fg); background: var(--hover); }
-/* active row: accent text on a filled, notch-cornered plate. The 1px accent
-   ring is real geometry, not filters: the <li> is clipped to the notched
+/* active row: accent text on a filled, pixel-rounded plate. The 1px accent
+   ring is real geometry, not filters: the <li> is clipped to the rounded
    polygon, filled accent, with 1px padding; the link inside carries the same
-   polygon, so its notches land 1px inside the li's and a uniform ring of the
+   polygon, so its corners land 1px inside the li's and a uniform ring of the
    accent shows through. (The previous four-drop-shadow trace composed
-   shadows-of-shadows and stair-stepped at the notch corners.) The link's
+   shadows-of-shadows and stair-stepped at the corners.) The link's
    spacer border drops to 0 so the 1px padding keeps row size unchanged. */
 .gf-compass li.sel {
   background: var(--accent); padding: 1px;
-  clip-path: polygon(
-    0 4px, 4px 4px, 4px 0,
-    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
-    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
-    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
-  );
+  clip-path: var(--plate-round);
 }
 .gf-dest.active {
   color: var(--accent); background: var(--hover); border: 0;
@@ -517,8 +658,20 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gf-cs-lvl { font-size: 11px; color: var(--body); }
-.gf-cs-bar { height: 6px; border: 1px solid var(--border); background: var(--bg); }
-.gf-cs-bar > i { display: block; height: 100%; background: var(--accent); transition: width .3s ease; }
+/* notched + dithered like .xp-bar (see the comment there) */
+.gf-cs-bar {
+  height: 6px; position: relative;
+  padding: 1px; background: var(--border); clip-path: var(--notch2);
+}
+.gf-cs-bar::before {
+  content: ""; position: absolute; inset: 1px; clip-path: var(--notch2);
+  background: var(--dither-light) 0 0 / 4px 4px, var(--bg);
+}
+.gf-cs-bar > i {
+  position: relative; display: block; height: 100%;
+  background: var(--dither-dark) 0 0 / 4px 4px, var(--accent);
+  transition: width .3s ease;
+}
 .gf-cs-badge {
   font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
   color: var(--bg); background: var(--accent); padding: 3px 6px;
@@ -631,6 +784,25 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
     100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
     4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
   );
+  /* smaller notches for slim chrome (progress bars): same cut, scaled down */
+  --notch3: polygon(
+    0 3px, 3px 3px, 3px 0,
+    calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px,
+    100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%,
+    3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px)
+  );
+  --notch2: polygon(
+    0 2px, 2px 2px, 2px 0,
+    calc(100% - 2px) 0, calc(100% - 2px) 2px, 100% 2px,
+    100% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 100%,
+    2px 100%, 2px calc(100% - 2px), 0 calc(100% - 2px)
+  );
+  /* 2px-cell checkerboard, the bars' dither texture: a dark weave over the
+     accent fill, a faint light weave on the empty track */
+  --dither-dark: conic-gradient(from 90deg at 50% 50%,
+    rgba(0, 0, 0, 0.18) 25%, transparent 0 50%, rgba(0, 0, 0, 0.18) 0 75%, transparent 0);
+  --dither-light: conic-gradient(from 90deg at 50% 50%,
+    rgba(255, 255, 255, 0.05) 25%, transparent 0 50%, rgba(255, 255, 255, 0.05) 0 75%, transparent 0);
 }
 .rar-common { color: var(--rar-common); }
 .rar-magic { color: var(--rar-magic); }
@@ -697,6 +869,34 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .ch-card-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; color: var(--mut); cursor: pointer; font-size: 16px; font-family: var(--mono); }
 .ch-card-close:hover { color: var(--fg); }
 
+/* ---- character screen as a full-page modal ----
+   /character drops the right column (Layout renders gframe.gf-full) and
+   the fixed close plate below is the only way out. On desktop the
+   viewport locks (no scroll), the sheet centers in the frame, and the
+   item card floats above the panels instead of stretching the page;
+   below 960px the handheld port keeps its normal page scroll. */
+.ch-close {
+  position: fixed; top: 16px; right: 16px; z-index: 65;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0; border: 0; cursor: pointer;
+  background: var(--color-sepia-950, #1a150f); color: var(--accent);
+  clip-path: var(--plate-round);
+  transition: background-color .12s, color .12s;
+}
+.ch-close:hover { background: var(--accent); color: var(--bg); }
+@media (min-width: 960px) {
+  /* clear the 16px stone band and the 32px corner boss */
+  .ch-close { top: 40px; right: 40px; }
+  .gf-full { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'viewport'; }
+  .gf-full .gf-viewport { overflow: hidden; display: flex; }
+  .gf-full .ch-main { margin: auto; width: 100%; padding: 40px 24px; }
+  .gf-full .ch-card {
+    position: fixed; left: 50%; bottom: 48px; transform: translateX(-50%);
+    width: min(640px, calc(100vw - 96px)); margin: 0; z-index: 55;
+    background: var(--bg); box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+  }
+}
+
 /* chest reveal modal: item pops like the egg award; stat lines stack */
 .em-item { animation: mn-eggpop .45s cubic-bezier(.34,1.3,.5,1) both; display: flex; justify-content: center; }
 .em-text .ch-card-stats { margin-top: 10px; }
@@ -705,7 +905,6 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* ---- lab: dither toy (pocket dither studio) ---- */
 .dtoy-canvas { display: block; width: 100%; border: 1px solid var(--border); image-rendering: pixelated; background: var(--bg); }
 .dtoy-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-family: var(--mono); font-size: 13px; color: var(--body); }
-.dtoy-file { font-size: 13px; }
 .dtoy-slider { display: inline-flex; align-items: center; gap: 8px; }
 .dtoy-slider input[type='range'] { accent-color: var(--accent); width: 150px; }
 

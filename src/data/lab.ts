@@ -14,6 +14,8 @@ export interface LabItem {
   demo?: 'reactive-grid' | 'dot-loader' | 'dither-toy' // Which live demo to render, if any
   body?: string    // Longer write-up for the detail page (can accompany a demo)
   externalUrl?: string // Link out (repo or live tool), rendered as a CTA on the detail page
+  image?: string   // Artwork shown on the detail page (path under public/)
+  imageAlt?: string // Alt text for that artwork
 }
 
 export const lab: LabItem[] = [
@@ -21,6 +23,8 @@ export const lab: LabItem[] = [
     slug: 'dawg',
     title: 'D.A.W.G.',
     desc: 'A local knowledge base and MCP server that teaches AI agents how I work.',
+    image: '/dither/dawg.png',
+    imageAlt: 'Dithered pixel-art portrait of a wolf, the DAWG mascot',
     body:
       'DAWG is a local knowledge base plus a RAG MCP server that plugs into Cursor and Claude Code. It holds my design system decisions, working principles, corrections, and process docs, and serves them to AI agents so they pick up context the way a teammate would. Embeddings run on Ollama and vectors live in a local ChromaDB, so nothing in the pipeline needs a cloud API.',
   },

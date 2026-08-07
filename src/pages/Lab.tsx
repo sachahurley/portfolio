@@ -5,6 +5,7 @@
  */
 
 import MinimalPage from '../components/MinimalPage'
+import BackButton from '../components/BackButton'
 import { Item, List } from '../components/Item'
 import { lab } from '../data/lab'
 import { usePageTitle } from '../lib/usePageTitle'
@@ -13,6 +14,7 @@ export default function Lab() {
   usePageTitle('Lab')
   return (
     <MinimalPage>
+      <BackButton fallback="/" />
       <h1 className="page">Lab</h1>
       <p className="lead">Small interactive experiments. One live demo wired up.</p>
 

@@ -3,8 +3,9 @@
  *
  * Between the fixed pixel graphics (stalactites top / fire bottom): the
  * scorpion hero mark, name + role, bio, and preview sections for Projects,
- * Lab, and Notes, then a "Find me" section. The pixel graphics and the
- * scorpion are preserved exactly - do not replace the scorpion with a cube.
+ * Lab, and Notes, then an "About" section (social links, with a header row
+ * to the About page). The pixel graphics and the scorpion are preserved
+ * exactly - do not replace the scorpion with a cube.
  */
 
 import { useRef } from 'react'
@@ -14,7 +15,7 @@ import PixelStalactites from '../components/PixelStalactites'
 import StageHero from '../components/StageHero'
 import MinimalPage from '../components/MinimalPage'
 import { Item, List } from '../components/Item'
-import { ArrowRight } from '../components/icons'
+import DitherIcon from '../components/DitherIcon'
 import ProgressSection from '../components/progress/ProgressSection'
 import { projects } from '../data/projects'
 import { getSortedPosts } from '../data/posts'
@@ -61,59 +62,61 @@ export default function Home() {
 
         {/* ===== Projects ===== */}
         <div className="mn-block">
-          <div className="label">projects</div>
-          <List>
-            {projectItems.map((p) =>
-              p.external && p.externalUrl ? (
-                <Item
-                  key={p.slug}
-                  href={p.externalUrl}
-                  external
-                  title={p.title}
-                  desc={p.description}
-                  img={p.img}
-                  imgSrc={p.thumbnail}
-                  imgRight={p.imgRight}
-                  onClick={() => award(XP_AWARDS.project, `opened ${p.title}`, `project:${p.slug}`)}
-                />
-              ) : (
-                <Item
-                  key={p.slug}
-                  to={`/projects/${p.slug}`}
-                  title={p.title}
-                  desc={p.description}
-                  img={p.img}
-                  imgSrc={p.thumbnail}
-                  imgRight={p.imgRight}
-                />
-              )
+          <div className="shead">
+            <div className="label">projects</div>
+            {projects.length > PREVIEW && (
+              <Link className="seeall" to="/projects" aria-label={`See all ${projects.length} projects`}>
+                {projects.length}
+                <span className="seebtn"><DitherIcon name="arrow-right" size={16} /></span>
+              </Link>
             )}
+          </div>
+          <List>
+            {/* every project opens its detail page; external projects house
+                their link-out CTA there (the detail page awards the XP) */}
+            {projectItems.map((p) => (
+              <Item
+                key={p.slug}
+                to={`/projects/${p.slug}`}
+                title={p.title}
+                desc={p.description}
+                img={p.img}
+                imgSrc={p.thumbnail}
+                imgRight={p.imgRight}
+              />
+            ))}
           </List>
-          {projects.length > PREVIEW && (
-            <div className="seefoot">
-              <Link className="seeall" to="/projects">See all <span className="arr"><ArrowRight /></span></Link>
-            </div>
-          )}
         </div>
 
         {/* ===== Lab ===== */}
         <div className="mn-block">
-          <div className="label">lab</div>
+          <div className="shead">
+            <div className="label">lab</div>
+            {lab.length > PREVIEW && (
+              <Link className="seeall" to="/lab" aria-label={`See all ${lab.length} lab experiments`}>
+                {lab.length}
+                <span className="seebtn"><DitherIcon name="arrow-right" size={16} /></span>
+              </Link>
+            )}
+          </div>
           <List>
             {labItems.map((x) => (
               <Item key={x.slug} to={`/lab/${x.slug}`} title={x.title} desc={x.desc} img={x.img} />
             ))}
           </List>
-          {lab.length > PREVIEW && (
-            <div className="seefoot">
-              <Link className="seeall" to="/lab">See all <span className="arr"><ArrowRight /></span></Link>
-            </div>
-          )}
         </div>
 
         {/* ===== Notes ===== */}
         <div className="mn-block">
-          <div className="label">notes</div>
+          <div className="shead">
+            <div className="label">notes</div>
+            {allNotes.length > PREVIEW && (
+              <Link className="seeall" to="/notes" aria-label={`See all ${allNotes.length} notes`}>
+                {allNotes.length}
+                <span className="seebtn"><DitherIcon name="arrow-right" size={16} /></span>
+              </Link>
+            )}
+          </div>
           <List>
             {notes.map((n) => (
               <Item
@@ -126,16 +129,16 @@ export default function Home() {
               />
             ))}
           </List>
-          {allNotes.length > PREVIEW && (
-            <div className="seefoot">
-              <Link className="seeall" to="/notes">See all <span className="arr"><ArrowRight /></span></Link>
-            </div>
-          )}
         </div>
 
-        {/* ===== Find me ===== */}
+        {/* ===== About (social links + row to the About page) ===== */}
         <div className="mn-block">
-          <div className="label">find me</div>
+          <div className="shead">
+            <div className="label">about</div>
+            <Link className="seeall" to="/about" aria-label="Go to the About page">
+              <span className="seebtn"><DitherIcon name="arrow-right" size={16} /></span>
+            </Link>
+          </div>
           <List>
             <Item
               href="https://x.com/sacha_hurley"
@@ -143,6 +146,13 @@ export default function Home() {
               title="X"
               desc="@sacha_hurley"
               onClick={() => award(XP_AWARDS.follow, 'followed on X', 'follow')}
+            />
+            <Item
+              href="https://github.com/sachahurley"
+              external
+              title="GitHub"
+              desc="@sachahurley"
+              onClick={() => award(XP_AWARDS.follow, 'followed on GitHub', 'follow-github')}
             />
           </List>
         </div>

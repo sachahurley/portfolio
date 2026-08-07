@@ -163,7 +163,7 @@ export default function DitherToy() {
     >
       <canvas ref={canvasRef} className="dtoy-canvas" aria-label="Dithered preview" />
       <div className="dtoy-controls">
-        <label className="btn outline dtoy-file">
+        <label className="platebtn">
           choose an image
           <input
             type="file"

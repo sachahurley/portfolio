@@ -299,7 +299,13 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
     // The footer keeps the 60px layout footprint; the taller sim canvas is
     // bottom-aligned inside it so headroom rows overlap the page padding
     // above as transparent pixels (drop hit-testing uses the footer rect).
-    <footer className="mt-12" ref={footerRef} style={{ height: VISUAL_HEIGHT, position: 'relative' }}>
+    // 16px side insets keep the embers clear of the site frame's corner
+    // bosses, which reach 16px deeper than the stone band the fire sits on.
+    <footer
+      className="mt-12"
+      ref={footerRef}
+      style={{ height: VISUAL_HEIGHT, position: 'relative', marginLeft: 16, marginRight: 16 }}
+    >
       <canvas
         ref={canvasRef}
         className="w-full block"
