@@ -1,8 +1,9 @@
 /**
  * The world map — every portfolio section as a location.
  *
- * The registry drives the menu (navigation), arrival lines in the
- * message log, and the Lab's level gate. Paths keep their original
+ * The registry drives the menu (navigation) and arrival lines in the
+ * message log. No location is currently level-gated (minLevel is unused
+ * but the seal mechanism stays wired for future use). Paths keep their original
  * URLs so existing deep links and SEO survive the RPG framing; the
  * log lines keep an RPG tone but name pages by their real names.
  */
@@ -40,7 +41,6 @@ export const LOCATIONS: GameLocation[] = [
     real: 'Lab',
     icon: 'star',
     arrive: 'The Lab door grinds open.',
-    minLevel: 2,
   },
   {
     path: '/notes',

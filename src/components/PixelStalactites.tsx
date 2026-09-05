@@ -161,9 +161,10 @@ export default function PixelStalactites() {
   }, [gridWidth])
 
   return (
-    // 16px side insets keep the ceiling run clear of the site frame's corner
-    // bosses, which reach 16px deeper than the stone band the art sits against
-    <header className="mb-12" style={{ marginLeft: 16, marginRight: 16 }}>
+    // Side insets live in .stalactites (minimal.css): 16px both sides on
+    // mobile to clear the frame's corner bosses; on desktop the right inset
+    // drops so the run meets the side column's divider line flush.
+    <header className="stalactites mb-12">
       <canvas
         ref={canvasRef}
         className="w-full block"

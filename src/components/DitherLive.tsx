@@ -1,18 +1,20 @@
 /**
- * DitherLive — the welcome title as a live-boiled studio asset. Loads the
- * flat-colour "wild" lettering export, reads it back into a coverage field
- * (lib/dither/liveAsset), and re-thresholds it on canvas at a slow 7fps
- * beat: drip shades and letter rims quietly seethe, letter cores hold
- * still. Entrance is the classic Mac ordered dissolve (~1.5s of pixels
- * arriving in Bayer order). Once the dissolve lands, the inner elevation
- * bands throb: each eases toward a darker sepia and back on a slow ~5s
- * sine, deeper bands swinging further so the pulse reads from the stroke
- * cores outward. Colours resolve from the sepia tokens each beat, so token
- * changes flow through live. Reduced motion skips the dissolve, the boil,
- * and the throb and shows the finished still.
+ * DitherLive — the welcome title as a live-boiled studio asset, in one of
+ * two variants (both flat-colour exports read back into a coverage field
+ * by lib/dither/liveAsset and re-thresholded on canvas at a slow 7fps
+ * beat, entering via the classic Mac ordered dissolve):
  *
- * Displayed at the largest exact integer pixel scale that fits the
- * viewport (nearest-neighbour only, never fractional).
+ *  - 'wild': the metal drip lettering. Drip shades and letter rims quietly
+ *    seethe, letter cores hold still, and once the dissolve lands the inner
+ *    elevation bands throb toward darker sepia and back on a slow ~5s sine.
+ *  - 'block': the 1-bit Helvetica stack (SACHA over HURLEY, hard pixel
+ *    edges). Letters stay solid flat; the only life after the dissolve is
+ *    the rim boil. No banding, bridging, or patches (sculpt=false).
+ *
+ * Colours resolve from the sepia tokens each beat, so token changes flow
+ * through live. Reduced motion skips the dissolve, the boil, and the throb
+ * and shows the finished still. Displayed at the largest exact integer
+ * pixel scale that fits the viewport (nearest-neighbour only).
  */
 
 import { useEffect, useRef } from 'react'
@@ -29,8 +31,6 @@ const FRAMES = 8
 const BOIL = 0.1
 const DISSOLVE_BEATS = 10 // ~1.4s entrance at 7fps
 
-const WILD_SRC = '/dither/sacha-hurley-wild.webp'
-
 /** Repair strokes for the wild export (asset pixel coordinates): the Y at
  *  the end of HURLEY is drawn so sketchily it fell apart. Each stroke
  *  traces a speck trail as solid letter ink, so the whole letterform
@@ -42,6 +42,15 @@ const WILD_PATCHES: PatchSegment[] = [
   [311, 90, 314, 118],
   [318, 88, 320, 128],
 ]
+
+export type DitherLiveVariant = 'wild' | 'block'
+const VARIANTS: Record<
+  DitherLiveVariant,
+  { src: string; patches: readonly PatchSegment[]; sculpt: boolean }
+> = {
+  wild: { src: '/dither/sacha-hurley-wild.webp', patches: WILD_PATCHES, sculpt: true },
+  block: { src: '/dither/sacha-hurley-block.png', patches: [], sculpt: false },
+}
 
 /** [ground, word rim, mid, dark, then the word elevation bands: each
  *  contour inward of the stroke edge steps darker, hypsometric-map style,
@@ -75,10 +84,10 @@ function parseRgb(s: string): Rgb {
 }
 
 export default function DitherLive({
-  src = WILD_SRC,
+  variant = 'wild',
   className,
 }: {
-  src?: string
+  variant?: DitherLiveVariant
   className?: string
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -178,8 +187,9 @@ export default function DitherLive({
       }
     }
 
+    const art = VARIANTS[variant]
     const image = new Image()
-    image.src = src
+    image.src = art.src
     image
       .decode()
       .then(() => {
@@ -191,7 +201,7 @@ export default function DitherLive({
         read.height = gh
         const rctx = read.getContext('2d')!
         rctx.drawImage(image, 0, 0)
-        lf = buildLiveField(rctx.getImageData(0, 0, gw, gh), src === WILD_SRC ? WILD_PATCHES : [])
+        lf = buildLiveField(rctx.getImageData(0, 0, gw, gh), art.patches, art.sculpt)
         off = document.createElement('canvas')
         off.width = gw
         off.height = gh
@@ -211,7 +221,7 @@ export default function DitherLive({
       if (raf) cancelAnimationFrame(raf)
       probe.remove()
     }
-  }, [src])
+  }, [variant])
 
   return (
     <div

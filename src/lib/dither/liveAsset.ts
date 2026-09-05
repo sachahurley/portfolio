@@ -28,6 +28,10 @@
  *    dither, so fragmented strokes (the Y's tail strands) join up.
  *  - patches: caller-supplied segments in asset coordinates that force
  *    connective ink across gaps too wide for the general pass.
+ *
+ * The relief and repairs (banding + bridging) are the wild asset's look;
+ * flat 2-colour assets (the block wordmark) pass sculpt=false so their
+ * letters stay solid — dissolve and rim boil still apply.
  */
 
 import { BAYER4, hashNoise, type Rgb } from './render'
@@ -81,7 +85,11 @@ function classify(r: number, g: number, b: number): number {
   return best
 }
 
-export function buildLiveField(img: ImageData, patches: readonly PatchSegment[] = []): LiveField {
+export function buildLiveField(
+  img: ImageData,
+  patches: readonly PatchSegment[] = [],
+  sculpt = true,
+): LiveField {
   const gw = img.width
   const gh = img.height
   const field = new Float32Array(gw * gh)
@@ -105,9 +113,11 @@ export function buildLiveField(img: ImageData, patches: readonly PatchSegment[] 
         (y < gh - 1 && shade[i + gw] === 0)
       if (touchesGround) field[i] = EDGE_COVER
     }
-  bridgeGaps(gw, gh, field, shade)
-  applyPatches(gw, gh, field, shade, patches)
-  bandWordDepth(gw, gh, shade)
+  if (sculpt) {
+    bridgeGaps(gw, gh, field, shade)
+    applyPatches(gw, gh, field, shade, patches)
+    bandWordDepth(gw, gh, shade)
+  }
   return { gw, gh, field, shade }
 }
 

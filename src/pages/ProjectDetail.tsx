@@ -1,8 +1,9 @@
 /**
  * Project detail (/projects/:slug)
  *
- * Back button + title + role meta + prose body (problem / outcome subheads).
- * External projects keep a "View project ↗" CTA.
+ * Back button + title + role meta + body. Projects with a `blocks` array
+ * render the extended case-study layout (ProjectBlocks); the rest get the
+ * simple prose template. External projects keep a "View project ↗" CTA.
  */
 
 import { useEffect } from 'react'
@@ -10,6 +11,7 @@ import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
 import BackButton from '../components/BackButton'
 import PagerNav from '../components/PagerNav'
+import ProjectBlocks from '../components/ProjectBlocks'
 import { getProjectBySlug } from '../data/projects'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
@@ -42,27 +44,31 @@ export default function ProjectDetail() {
       <h1 className="page">{project.title}</h1>
       {project.role && <div className="meta" style={{ marginTop: 4 }}>{project.role}</div>}
 
-      <div className="prose">
-        <div className="thumb" />
-        <p>
-          {project.longDescription || project.description} Placeholder case study -
-          in the real build this is a full write-up with the same prose rhythm as
-          the notes pages.
-        </p>
-        <h2>The problem</h2>
-        <p>
-          What you set out to solve, and the constraints you were working within.
-          Subheadings use the same spacing rhythm as the notes pages.
-        </p>
-        <h2>The outcome</h2>
-        <p>
-          What shipped and what it changed. Inline{' '}
-          <a href="https://x.com/sacha_hurley" target="_blank" rel="noopener noreferrer">
-            links
-          </a>{' '}
-          are amber and underlined.
-        </p>
-      </div>
+      {project.blocks ? (
+        <ProjectBlocks blocks={project.blocks} />
+      ) : (
+        <div className="prose">
+          <div className="thumb" />
+          <p>
+            {project.longDescription || project.description} Placeholder case study -
+            in the real build this is a full write-up with the same prose rhythm as
+            the notes pages.
+          </p>
+          <h2>The problem</h2>
+          <p>
+            What you set out to solve, and the constraints you were working within.
+            Subheadings use the same spacing rhythm as the notes pages.
+          </p>
+          <h2>The outcome</h2>
+          <p>
+            What shipped and what it changed. Inline{' '}
+            <a href="https://x.com/sacha_hurley" target="_blank" rel="noopener noreferrer">
+              links
+            </a>{' '}
+            are amber and underlined.
+          </p>
+        </div>
+      )}
 
       {project.externalUrl && (
         <a

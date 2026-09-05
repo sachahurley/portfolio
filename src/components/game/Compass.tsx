@@ -1,7 +1,7 @@
 /**
  * Compass — the game frame's navigation and de facto sitemap. Lists every
- * reachable location; the Vault stays sealed (shown as ???) until the
- * visitor reaches Level 2.
+ * location, always visible (the ???/sealed treatment only appears if a
+ * location sets minLevel; none currently do).
  */
 
 import { Link, useLocation } from 'react-router-dom'
@@ -17,7 +17,6 @@ export default function Compass() {
 
   return (
     <nav className="gf-panel gf-compass" aria-label="Menu">
-      <div className="gf-label">menu</div>
       <ul>
         {LOCATIONS.map((loc) => {
           const locked = loc.minLevel != null && displayLevel < loc.minLevel
