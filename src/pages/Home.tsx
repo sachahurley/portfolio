@@ -12,7 +12,9 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import PixelFire, { type PixelFireHandle } from '../components/PixelFire'
 import PixelStalactites from '../components/PixelStalactites'
-import StageHero from '../components/StageHero'
+// StageHero is hidden for now (kept wired — uncomment here and below to
+// bring the stage box + roaming scorpion back above the name).
+// import StageHero from '../components/StageHero'
 import MinimalPage from '../components/MinimalPage'
 import { Item, List } from '../components/Item'
 import DitherIcon from '../components/DitherIcon'
@@ -45,8 +47,9 @@ export default function Home() {
 
       <MinimalPage flushTop>
         {/* Stage hero — a framed 200px box above the name/bio, reserved for a
-            future 8-bit pixel diorama. Only the roaming scorpion draws in it today. */}
-        <StageHero />
+            future 8-bit pixel diorama. Only the roaming scorpion draws in it
+            today. Hidden for now; uncomment (with its import) to restore. */}
+        {/* <StageHero /> */}
 
         {/* ===== Intro (hero) ===== */}
         <section className="intro">
@@ -55,8 +58,8 @@ export default function Home() {
 
         <div className="bio">
           <p>
-            Product designer building a health app at Betterfly. Before: Meta,
-            Utility (the agency I co-founded), and EA Sports.
+            Product design engineer building a health app at Betterfly. Before:
+            Meta, Utility (the agency I co-founded), and EA Sports.
           </p>
         </div>
 

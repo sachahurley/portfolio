@@ -2,7 +2,8 @@
  * BottomSheet — the iOS-style sheet (all screen sizes), opened by the dock's
  * Menu button or the game frame's character strip.
  *
- * Contents: nav from the world-map registry (Lab sealed until Level 2), a
+ * Contents: nav from the world-map registry (no location is level-gated
+ * today; the sealed treatment only appears if one sets minLevel), a
  * compact character row linking to the /character screen (the full sheet
  * lives there), and the contact links ("dispatch a raven"). Drag the grab
  * handle down to dismiss; also closes on scrim tap, Esc, or a nav link.

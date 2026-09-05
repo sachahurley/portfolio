@@ -3,20 +3,24 @@
  * Stays up until the visitor taps, clicks, or presses a key, then fades
  * out and unmounts.
  *
- * The title is DitherLive (the "wild" lettering exported from the sibling
- * dither-studio repo: SACHA HURLEY, sepia-100 on sepia-950, re-thresholded
- * live at a slow beat so the drips and letter rims boil, with a Bayer
- * dissolve entrance); over its bottom edge, the save-file readout: NEW GAME
+ * The title is DitherLive (SACHA HURLEY, sepia-100 on sepia-950, with a
+ * Bayer dissolve entrance and a quiet rim boil; WELCOME_ART below picks
+ * which lettering variant); below it, in flow so it never overlaps the
+ * art, the save-file readout: NEW GAME
  * for first-time visitors, CONTINUE plus the character (portrait, name,
  * level, banners) for returning ones — saving itself is automatic, this is
  * just where the save shows. The readout carries the press-any-key prompt.
  */
 
 import { useEffect, useState } from 'react'
-import DitherLive from './DitherLive'
+import DitherLive, { type DitherLiveVariant } from './DitherLive'
 import JeweledFrame from './JeweledFrame'
 import PixelPortrait from './game/PixelPortrait'
 import { useXp } from '../context/XpProvider'
+
+/** Which welcome lettering to show: 'block' is the 1-bit Helvetica stack,
+ *  'wild' the metal drip lettering (kept fully wired; flip to bring it back). */
+const WELCOME_ART: DitherLiveVariant = 'block'
 
 export default function Loader() {
   const [hidden, setHidden] = useState(false)
@@ -45,7 +49,10 @@ export default function Loader() {
     // overlay's pointer-events mid-tap, so the tap's pointerup/click would
     // fall through and activate whatever sits underneath on the page.
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
-      <DitherLive />
+      {/* the art takes the leftover height; its integer scaling shrinks to fit */}
+      <div className="title-art">
+        <DitherLive variant={WELCOME_ART} />
+      </div>
       <div className="title-save">
         {isReturning ? (
           <>

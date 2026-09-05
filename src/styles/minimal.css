@@ -25,7 +25,7 @@ strong, b { font-weight: 400; }
   /* sepia-950, matching the baked background of the dither welcome asset so
      the letterbox around the integer-scaled image is invisible */
   position: fixed; inset: 0; z-index: 90; background: var(--color-sepia-950, #1a150f);
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 48px; cursor: pointer; /* clears the 32px jeweled frame */
   transition: opacity .4s ease;
   /* Welcome-art theming hooks (PixelName + AsciiName), routed through the
@@ -212,7 +212,9 @@ strong, b { font-weight: 400; }
 /* ---- layout — narrow column, emil-style rhythm ---- */
 .mn-main { max-width: var(--col); margin: 0 auto; padding: 96px 24px 160px; }
 /* Home keeps the pixel graphics flush; its column needs less top padding */
-.mn-main.flush-top { padding-top: 32px; }
+/* 64px: breathing room between the stalactite strip and the name now that
+   the stage hero above the intro is hidden */
+.mn-main.flush-top { padding-top: 64px; }
 
 .intro { display: block; }
 .intro h1 { font-size: 16px; font-weight: 400; letter-spacing: -.01em; margin: 0; color: var(--accent); }
@@ -300,11 +302,6 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 .pgbtn:hover .pg-title, .pgbtn:hover .pg-kicker, .pgbtn:hover .pg-arrow { color: var(--bg); }
 .pgbtn--next { flex-direction: row-reverse; text-align: right; }
 .pg-arrow { color: var(--accent); transition: color .12s; }
-.pg-thumb {
-  flex: none; width: 56px; aspect-ratio: 16/9; object-fit: cover; display: block;
-  border: 1px solid var(--border); border-radius: 2px;
-  background: repeating-linear-gradient(45deg,#121212,#121212 8px,#181818 8px,#181818 16px);
-}
 .pg-txt { display: flex; flex-direction: column; min-width: 0; }
 .pg-kicker { font-size: 12px; color: var(--mut); transition: color .12s; }
 .pg-title { font-size: 14px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .12s; }
@@ -328,7 +325,8 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 .item .t { display: block; color: var(--fg); line-height: 24px; }
 /* link titles carry the warm sepia-gold accent (no hover underline on rows) */
 a.item .t { color: var(--accent); }
-.item .d { display: block; color: var(--body); line-height: 24px; }
+/* 4px breath between the row's title and its description */
+.item .d { display: block; color: var(--body); line-height: 24px; margin-top: 4px; }
 .item .ext { color: inherit; line-height: 0; margin-left: 8px; }
 
 /* ---- tools (About): compact plain list, not Item rows. The row is not a
@@ -415,6 +413,51 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 .prose li { margin: 0 0 8px; line-height: 1.65; color: var(--body); }
 .prose .thumb { margin: 0 0 26px; }
 .prose strong { color: var(--fg); }
+
+/* ---- extended case-study blocks (ProjectBlocks; shapes documented in
+   data/projects.ts). Type rides the .prose rhythm; these add the layouts.
+   Placeholders reuse the site's diagonal-hatch thumb texture. ---- */
+.pb-meta {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px; margin: 0 0 26px;
+}
+.pb-meta dt { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
+.pb-meta dd { margin: 4px 0 0; font-size: 14px; color: var(--body); line-height: 1.5; }
+/* explicit spacing: .prose p:last-child would zero the intro's bottom
+   margin (it's the header's last child), so the header owns the gaps.
+   Module rhythm matches the home page's sections (.mn-block 64/128px
+   between sections, 16px from a section header to its content). */
+.pb-headline { margin: 64px 0 16px; }
+@media (min-width: 640px) { .pb-headline { margin-top: 128px; } }
+.pb-headline:first-child { margin-top: 0; }
+.pb-kicker { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
+.pb-headline h2 { margin: 8px 0 0; }
+.pb-headline p { margin: 12px 0 0; }
+.pb-fig { margin: 0 0 26px; }
+.pb-img {
+  width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); border-radius: 2px;
+  background: repeating-linear-gradient(45deg, #121212, #121212 8px, #181818 8px, #181818 16px);
+}
+.pb-cap { font-size: 12px; color: var(--mut); margin-top: 8px; }
+.pb-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 0 0 26px; }
+@media (max-width: 600px) { .pb-pair { grid-template-columns: 1fr; } }
+.pb-callouts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px; margin: 0 0 26px;
+}
+.pb-ct { color: var(--fg); margin-bottom: 6px; }
+.pb-callouts p, .pb-insights p, .pb-deflist p { font-size: 14px; line-height: 1.6; margin: 0; }
+.pb-insights {
+  list-style: none; margin: 0 0 26px; padding: 0;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.pb-insights li { display: flex; gap: 14px; }
+.pb-num { color: var(--accent); font-size: 14px; line-height: 24px; flex: none; }
+.pb-quote { margin: 48px 0; padding: 0 24px; text-align: center; color: var(--fg); line-height: 1.6; }
+.pb-deflist {
+  list-style: none; margin: 0 0 26px; padding: 0;
+  display: flex; flex-direction: column; gap: 16px;
+}
 
 /* toasts — above the menu button */
 #toaster {
@@ -559,6 +602,8 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
   -webkit-overflow-scrolling: touch;
 }
 .gf-side, .gf-log { display: none; }
+/* mobile has no side column, so no collapse chrome either */
+.gf-collapse { display: none; }
 
 .gf-label { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--body); margin: 0 0 12px; }
 .gf-dim { color: var(--body); opacity: .7; font-size: 13px; }
@@ -584,7 +629,38 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
      floating dock: one nav surface per breakpoint */
   #toaster { display: none; }
   .dock { display: none; }
+  /* collapsible side column: a drawer-pull tab grown out of the seam (the
+     column's 2px left border) at mid-height — 18px wide so it covers the
+     border behind it, corners notched on its outer (left) side only, so
+     the straight side merges into the line. Clicking sets gframe.gf-noside,
+     which drops the column from the grid so the viewport takes the full
+     width; .gf-expand is the same tab waiting at the frame's right edge
+     (flush against the stone band) to pull the column back out. */
+  .gf-side { position: relative; }
+  .gf-collapse {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 56px; padding: 0; border: 0; cursor: pointer;
+    position: absolute; top: 50%; left: -16px; transform: translateY(-50%);
+    background: var(--color-sepia-800, #474030); color: var(--accent);
+    font-family: var(--mono); font-size: 13px; line-height: 1;
+    clip-path: polygon(
+      0 4px, 4px 4px, 4px 0,
+      100% 0, 100% 100%,
+      4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+    );
+    transition: background-color .12s, color .12s;
+  }
+  .gf-collapse:hover { background: var(--accent); color: var(--bg); }
+  .gf-noside { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'viewport'; }
+  .gf-expand { left: auto; right: 16px; z-index: 65; }
 }
+
+/* stalactite ceiling strip (Home): 16px side insets keep the run clear of
+   the site frame's corner bosses; on desktop the viewport column's right
+   edge is the side-panel divider (nowhere near the frame corners), so the
+   right inset drops and the run meets the divider line flush. */
+.stalactites { margin-left: 16px; margin-right: 16px; }
+@media (min-width: 960px) { .stalactites { margin-right: 0; } }
 
 /* right column panels */
 .gf-panel { padding: 20px; border-bottom: 2px solid var(--border); }
@@ -729,9 +805,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .sheet-char-go { font-size: 18px; color: var(--mut); }
 
 /* ---- title-screen save readout (NEW GAME / CONTINUE) ---- */
+/* stacked under the art (the loader is a column flex): the art's wrap
+   takes the leftover height, so the wordmark's integer scale shrinks to
+   clear the readout instead of overlapping it */
+.title-art { flex: 1 1 auto; min-height: 0; width: 100%; }
 .title-save {
-  position: absolute; left: 48px; right: 48px; bottom: 64px;
   display: flex; flex-direction: column; align-items: center; gap: 10px;
+  margin-top: 24px;
   font-family: var(--mono); pointer-events: none;
 }
 .ts-char { display: flex; align-items: center; gap: 12px; }
@@ -741,7 +821,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   .ts-hint { animation: ts-blink 1.4s steps(2, jump-none) infinite; }
   @keyframes ts-blink { 50% { opacity: .25; } }
 }
-@media (max-width: 600px) { .title-save { left: 24px; right: 24px; bottom: 40px; } }
+@media (max-width: 600px) { .title-save { margin-top: 16px; } }
 
 /* ---- sheet: registry nav extras, character sheet, contact ---- */
 .menu-nav .gf-ic { margin-right: 8px; }
