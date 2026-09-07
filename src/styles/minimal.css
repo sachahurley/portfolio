@@ -91,7 +91,7 @@ strong, b { font-weight: 400; }
   }
 }
 
-/* ---- floating bottom-center dock: menu button + sliding back chevron ---- */
+/* ---- floating bottom-center dock: the menu button ---- */
 .dock {
   position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: 72; display: flex; align-items: center;
@@ -138,21 +138,6 @@ strong, b { font-weight: 400; }
 /* short doom-fire burning along the top of the Menu button (see MenuFire.tsx);
    anchored to .menuwrap. Extinguished on first tap. */
 .menufire { position: absolute; left: 50%; transform: translateX(-50%); width: 50%; bottom: calc(100% + 1px); pointer-events: none; }
-/* back button quotes the drawer-pull directly (sepia-800 block, accent
-   chevron, notched corners) — it was the only circle in the product */
-.backbtn {
-  position: absolute; right: calc(100% + 10px); top: 50%;
-  width: 50px; height: 50px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--color-sepia-800, #474030); border: 0; color: var(--accent);
-  clip-path: var(--notch4); cursor: pointer;
-  transform: translateY(-50%) translateX(14px) scale(.85);
-  opacity: 0; pointer-events: none;
-  transition: transform .3s cubic-bezier(.34,1.15,.5,1), opacity .2s ease,
-    background-color .12s, color .12s;
-}
-.dock.sub .backbtn { transform: translateY(-50%) translateX(0) scale(1); opacity: 1; pointer-events: auto; }
-.backbtn:hover { background: var(--accent); color: var(--bg); }
 .tip {
   position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: 72; background: var(--fg); color: var(--bg);
@@ -330,8 +315,7 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 }
 .seeall:hover .seebtn { background: var(--accent); color: var(--bg); }
 /* detail-page back button: the same plate as .seebtn, but a standalone
-   <button> with its own hover, sitting above the page title. Named
-   .pageback — .backbtn is taken by the dock's sliding back chevron. */
+   <button> with its own hover, sitting above the page title. */
 .pageback {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; flex: none; padding: 0; border: 0; cursor: pointer;

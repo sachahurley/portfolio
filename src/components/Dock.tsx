@@ -2,12 +2,11 @@
  * Dock — the mobile chrome (hidden at ≥960px, where the compass sidebar
  * is the sole nav).
  *
- * A floating bottom-center container holding the Menu button and a back
- * chevron that slides in on every page except Home. Back uses router history.
+ * A floating bottom-center container holding the Menu button. In-page
+ * navigation back is handled by each page's .pageback button instead.
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import MenuFire from './MenuFire'
 import DitherIcon from './DitherIcon'
 
@@ -16,9 +15,6 @@ import DitherIcon from './DitherIcon'
 const SMOKE_DELAY = 600 // ms
 
 export default function Dock({ onMenu }: { onMenu: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const isSub = location.pathname !== '/'
   // The Menu pill burns on load; the first tap puts it out for good.
   const [lit, setLit] = useState(true)
   const openTimer = useRef<number | null>(null)
@@ -26,11 +22,6 @@ export default function Dock({ onMenu }: { onMenu: () => void }) {
   useEffect(() => () => {
     if (openTimer.current) clearTimeout(openTimer.current)
   }, [])
-
-  const onBack = () => {
-    if (window.history.length > 1) navigate(-1)
-    else navigate('/')
-  }
 
   const onMenuClick = () => {
     if (openTimer.current) {
@@ -50,21 +41,7 @@ export default function Dock({ onMenu }: { onMenu: () => void }) {
   }
 
   return (
-    <div className={`dock${isSub ? ' sub' : ''}`}>
-      <button className="backbtn" aria-label="Back" onClick={onBack}>
-        <svg
-          width="14"
-          height="22"
-          viewBox="0 0 14 22"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M10 4 L4 11 L10 18" />
-        </svg>
-      </button>
+    <div className="dock">
       {/* MenuFire sits outside the button: the notched clip-path would
           swallow it (it hangs above the button box), so it anchors to the
           wrapper instead */}
