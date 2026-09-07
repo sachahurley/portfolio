@@ -33,7 +33,7 @@ export default function PagerNav({ section, slug }: { section: DetailSection; sl
   const { prev, next } = getDetailNeighbors(section, slug)
   if (!prev && !next) return null
   return (
-    <nav className="pager" aria-label="Adjacent pages">
+    <nav className="pager" aria-label="Sequential navigation">
       {prev && <PagerButton entry={prev} dir="prev" />}
       {next && <PagerButton entry={next} dir="next" />}
     </nav>

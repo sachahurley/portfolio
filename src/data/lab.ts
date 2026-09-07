@@ -29,6 +29,12 @@ export const lab: LabItem[] = [
       'DAWG is a local knowledge base plus a RAG MCP server that plugs into Cursor and Claude Code. It holds my design system decisions, working principles, corrections, and process docs, and serves them to AI agents so they pick up context the way a teammate would. Embeddings run on Ollama and vectors live in a local ChromaDB, so nothing in the pipeline needs a cloud API.',
   },
   {
+    // Rendered by the dedicated WordmarkLab page, not the LabItem template
+    slug: 'wordmark',
+    title: 'Wordmark lab',
+    desc: 'Six tunings of the welcome title dither, straight from the Dither Studio values.',
+  },
+  {
     slug: 'dot-loader',
     title: 'Dot loader',
     desc: 'A twinkling dot-matrix loading glyph with an elapsed-time readout.',

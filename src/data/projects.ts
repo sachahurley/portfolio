@@ -37,25 +37,30 @@ export interface Project {
  * pages, rendered by components/ProjectBlocks.tsx in array order:
  *
  * - meta:      label/value facts row (role, timeline, team, skills)
- * - headline:  section header — optional uppercase kicker, title, intro text
+ * - headline:  section header — optional sentence-case kicker, title, intro text
  * - prose:     one paragraph
- * - image:     full-width hatched placeholder (real art later); css
- *              aspect-ratio string like '21 / 9', optional caption
- * - imagePair: two placeholders side by side (stack on small screens)
+ * - image:     hatched placeholder (real art later); css aspect-ratio
+ *              string like '21 / 9', optional caption. `width` breaks the
+ *              text column: 'wide' adds ~120px each side, 'full' runs out
+ *              to the page margins; omit for column width
+ * - imagePair: two placeholders side by side (stack on small screens);
+ *              same optional `width` breakout
  * - callouts:  2-3 titled blurbs in a row (opportunity pillars, directions)
  * - insights:  numbered titled blurbs (key insights)
- * - quote:     centred pull-quote / challenge statement
+ * - quote:     accent pull-quote / challenge statement; optional name,
+ *              role, image make it an attributed testimonial (image is a
+ *              src url; omit it for the hatched placeholder avatar)
  * - list:      stacked titled blurbs (core flows, reflection learnings)
  */
 export type ProjectBlock =
   | { type: 'meta'; items: { label: string; value: string }[] }
   | { type: 'headline'; kicker?: string; title: string; text?: string }
   | { type: 'prose'; text: string }
-  | { type: 'image'; aspect?: string; caption?: string }
-  | { type: 'imagePair'; captions?: [string, string] }
+  | { type: 'image'; aspect?: string; caption?: string; width?: 'wide' | 'full' }
+  | { type: 'imagePair'; captions?: [string, string]; width?: 'wide' | 'full' }
   | { type: 'callouts'; items: { title: string; text: string }[] }
   | { type: 'insights'; items: { title: string; text: string }[] }
-  | { type: 'quote'; text: string }
+  | { type: 'quote'; text: string; name?: string; role?: string; image?: string }
   | { type: 'list'; items: { title: string; text: string }[] }
 
 // ============================================
@@ -119,7 +124,7 @@ export const projects: Project[] = [
         text:
           'Placeholder problem statement: what was broken, the constraints in play, and why it mattered enough to work on.',
       },
-      { type: 'image', aspect: '21 / 9', caption: 'Full-bleed diagram placeholder (21:9)' },
+      { type: 'image', aspect: '21 / 9', caption: 'Wide diagram placeholder (21:9, breaks the column)', width: 'wide' },
       {
         type: 'headline',
         kicker: 'the opportunity',
@@ -139,7 +144,7 @@ export const projects: Project[] = [
         title: 'Meet the product.',
         text: 'Placeholder solution description: name the thing and say what it does in one breath.',
       },
-      { type: 'image', caption: 'Hero product image placeholder (16:9)' },
+      { type: 'image', caption: 'Hero product image placeholder (16:9, full page margins)', width: 'full' },
       {
         type: 'headline',
         kicker: 'core flows',
@@ -186,6 +191,12 @@ export const projects: Project[] = [
           { title: 'People trust what they can see', text: 'Placeholder insight text: the observation, then the implication for the design.' },
           { title: 'Defaults do the heavy lifting', text: 'Placeholder insight text for the second numbered finding.' },
         ],
+      },
+      {
+        type: 'quote',
+        text: 'Placeholder testimonial: one sentence a real participant or teammate actually said.',
+        name: 'Firstname Lastname',
+        role: 'Research participant',
       },
       {
         type: 'headline',
