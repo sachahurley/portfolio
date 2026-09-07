@@ -240,6 +240,161 @@ function bandWordDepth(gw: number, gh: number, shade: Uint8Array): void {
  * Boil jitters only the shaded band, keyed off the pre-jitter value, so
  * solid cores and empty ground never flicker.
  */
+/**
+ * Rising-fill render: the lettering dissolves in at `from`, then each
+ * colour in `stages` fills it bottom to top in turn as its entry in
+ * `rises` goes 0..1 (advance them sequentially for distinct passes),
+ * behind a Bayer-dithered transition band `band` asset-px tall (the same
+ * ordered pattern as the dissolve, so the moving edge speckles instead of
+ * cutting a hard line). Later stages paint over earlier ones. Ground
+ * pixels stay `ground`; the rim boil keeps working throughout.
+ */
+export function renderLiveFillFrame(
+  lf: LiveField,
+  frame: number,
+  boil: number,
+  progress: number,
+  rises: number[],
+  band: number,
+  ground: Rgb,
+  from: Rgb,
+  stages: Rgb[],
+  img: ImageData,
+): void {
+  const { gw, gh, field } = lf
+  const s = BAYER4.length
+  const bias = 1 - progress
+  const fronts = rises.map((r) => r * (gh + band))
+  const rs = new Array<number>(fronts.length)
+  const d = img.data
+  for (let y = 0; y < gh; y++) {
+    const row = BAYER4[y % s]
+    for (let k = 0; k < fronts.length; k++) rs[k] = (fronts[k] - (gh - y)) / band
+    for (let x = 0; x < gw; x++) {
+      const i = y * gw + x
+      const v0 = field[i]
+      let v = v0
+      if (boil > 0 && v0 > 0.03 && v0 < 0.97)
+        v = Math.min(1, Math.max(0, v0 + (hashNoise(x, y, frame + 1) - 0.5) * boil))
+      const t = row[x % s]
+      let c = ground
+      if (v > t + bias) {
+        c = from
+        for (let k = 0; k < stages.length; k++) if (rs[k] > t) c = stages[k]
+      }
+      const p = i * 4
+      d[p] = c[0]
+      d[p + 1] = c[1]
+      d[p + 2] = c[2]
+    }
+  }
+}
+
+/**
+ * Staged-wave render: the lettering dissolves in at waveColors[0], then
+ * each later colour sweeps over the previous one as its own ordered
+ * dissolve in the same Bayer order, fully replacing it. `progress`
+ * carries one 0..1 value per wave (advance them sequentially for
+ * distinct passes). Ground pixels stay `ground`; the boil keeps
+ * jittering rim on/off while the waves own the colour.
+ */
+export function renderLiveWaveFrame(
+  lf: LiveField,
+  frame: number,
+  boil: number,
+  progress: number[],
+  ground: Rgb,
+  waveColors: Rgb[],
+  img: ImageData,
+): void {
+  const { gw, gh, field } = lf
+  const s = BAYER4.length
+  const bias = 1 - (progress[0] ?? 0)
+  const d = img.data
+  for (let y = 0; y < gh; y++) {
+    const row = BAYER4[y % s]
+    for (let x = 0; x < gw; x++) {
+      const i = y * gw + x
+      const v0 = field[i]
+      let v = v0
+      if (boil > 0 && v0 > 0.03 && v0 < 0.97)
+        v = Math.min(1, Math.max(0, v0 + (hashNoise(x, y, frame + 1) - 0.5) * boil))
+      const t = row[x % s]
+      let c = ground
+      if (v > t + bias) {
+        c = waveColors[0]
+        for (let k = waveColors.length - 1; k > 0; k--) {
+          if (progress[k] > t) {
+            c = waveColors[k]
+            break
+          }
+        }
+      }
+      const p = i * 4
+      d[p] = c[0]
+      d[p + 1] = c[1]
+      d[p + 2] = c[2]
+    }
+  }
+}
+
+/**
+ * Dot-matrix render: identical field/threshold/dissolve logic to
+ * renderLiveFrame, but each field pixel becomes a cell x cell block
+ * holding a centred size-px square dot, so the ink reads as separated
+ * dots on the ground (halftone / LED-matrix look). `gain` scales
+ * coverage down into the Bayer midrange: solid letter interiors open
+ * into a living sparkle instead of a full grid, and, now midrange,
+ * they join the boil. img must be (gw*cell) x (gh*cell).
+ */
+export function renderLiveDotFrame(
+  lf: LiveField,
+  frame: number,
+  boil: number,
+  progress: number,
+  palette: Rgb[],
+  img: ImageData,
+  cell: number,
+  size: number,
+  gain: number,
+): void {
+  const { gw, gh, field, shade } = lf
+  const s = BAYER4.length
+  const bias = 1 - progress
+  const d = img.data
+  const iw = gw * cell
+  const inset = (cell - size) >> 1
+  const g = palette[0]
+  for (let p = 0; p < d.length; p += 4) {
+    d[p] = g[0]
+    d[p + 1] = g[1]
+    d[p + 2] = g[2]
+  }
+  for (let y = 0; y < gh; y++) {
+    const row = BAYER4[y % s]
+    for (let x = 0; x < gw; x++) {
+      const i = y * gw + x
+      const v0 = field[i] * gain
+      let v = v0
+      if (boil > 0 && v0 > 0.03 && v0 < 0.97)
+        v = Math.min(1, Math.max(0, v0 + (hashNoise(x, y, frame + 1) - 0.5) * boil))
+      if (!(v > row[x % s] + bias)) continue
+      const c = palette[shade[i]]
+      const x0 = x * cell + inset
+      const y0 = y * cell + inset
+      for (let dy = 0; dy < size; dy++) {
+        let p = ((y0 + dy) * iw + x0) * 4
+        for (let dx = 0; dx < size; dx++) {
+          d[p] = c[0]
+          d[p + 1] = c[1]
+          d[p + 2] = c[2]
+          p += 4
+        }
+      }
+    }
+  }
+}
+
 export function renderLiveFrame(
   lf: LiveField,
   frame: number,

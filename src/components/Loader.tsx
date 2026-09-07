@@ -3,17 +3,20 @@
  * Stays up until the visitor taps, clicks, or presses a key, then fades
  * out and unmounts.
  *
- * The title is DitherLive (SACHA HURLEY, sepia-100 on sepia-950, with a
- * Bayer dissolve entrance and a quiet rim boil; WELCOME_ART below picks
- * which lettering variant); below it, in flow so it never overlaps the
+ * The title is DitherLive (SACHA HURLEY on sepia-950, entering via the
+ * WELCOME_TUNING rising-fill recipe with a quiet rim boil; WELCOME_ART
+ * below picks which lettering variant); below it, in flow so it never
+ * overlaps the
  * art, the save-file readout: NEW GAME
  * for first-time visitors, CONTINUE plus the character (portrait, name,
- * level, banners) for returning ones — saving itself is automatic, this is
- * just where the save shows. The readout carries the press-any-key prompt.
+ * banners) for returning ones (currently hidden behind SHOW_SAVE_READOUT) —
+ * saving itself is automatic, this is
+ * just where the save shows. The readout carries the press-any-key prompt,
+ * boxed in an asterisk border that blinks along with the text.
  */
 
 import { useEffect, useState } from 'react'
-import DitherLive, { type DitherLiveVariant } from './DitherLive'
+import DitherLive, { type DitherLiveVariant, type DitherTuning } from './DitherLive'
 import JeweledFrame from './JeweledFrame'
 import PixelPortrait from './game/PixelPortrait'
 import { useXp } from '../context/XpProvider'
@@ -22,10 +25,39 @@ import { useXp } from '../context/XpProvider'
  *  'wild' the metal drip lettering (kept fully wired; flip to bring it back). */
 const WELCOME_ART: DitherLiveVariant = 'block'
 
+/** Welcome entrance: the wordmark lab's "09 · fill" recipe (keep the two in
+ *  sync when tuning). Dissolves in at deep sepia-700, then the body mid fill
+ *  and the bright fg fill rise bottom to top behind a dithered edge. Module
+ *  constant so its identity is stable across renders (it feeds DitherLive's
+ *  effect deps). */
+const WELCOME_TUNING: DitherTuning = {
+  fill: {
+    beats: 20,
+    band: 12,
+    from: ['--color-sepia-700', '#695f4d'],
+    via: ['--body', '#bfb4a3'],
+    to: ['--fg', '#fdfcfb'],
+  },
+}
+
+/** Feature flag: the CONTINUE save readout for returning visitors (portrait,
+ *  name, banner count). Off for now; flip to true to bring it back. Saving
+ *  still happens either way, this only hides the readout. */
+const SHOW_SAVE_READOUT: boolean = false
+
+/** The press-any-key prompt inside a border drawn from asterisks. Rendered
+ *  as three pre-wrapped monospace lines so the edge rows always match the
+ *  text row's width; the whole box shares the ts-hint blink. */
+function StarBox({ text }: { text: string }) {
+  const inner = `* ${text} *`
+  const edge = '*'.repeat(inner.length)
+  return <span className="ts-hint ts-hint-box">{`${edge}\n${inner}\n${edge}`}</span>
+}
+
 export default function Loader() {
   const [hidden, setHidden] = useState(false)
   const [gone, setGone] = useState(false)
-  const { isReturning, name, level, avatarSeed, eggs } = useXp()
+  const { isReturning, name, avatarSeed, eggs } = useXp()
 
   // Once dismissed, let the 0.4s opacity fade play, then unmount.
   useEffect(() => {
@@ -51,24 +83,26 @@ export default function Loader() {
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
       {/* the art takes the leftover height; its integer scaling shrinks to fit */}
       <div className="title-art">
-        <DitherLive variant={WELCOME_ART} />
+        <DitherLive variant={WELCOME_ART} tuning={WELCOME_TUNING} />
       </div>
       <div className="title-save">
         {isReturning ? (
           <>
-            <div className="ts-char">
-              <PixelPortrait seed={avatarSeed} cell={3} />
-              <span className="ts-line">
-                continue — {name} · Lv {level.level + 1} {level.title}
-                {eggs.length > 0 && ` · ${eggs.length} banner${eggs.length > 1 ? 's' : ''}`}
-              </span>
-            </div>
-            <span className="ts-hint">press any key</span>
+            {SHOW_SAVE_READOUT && (
+              <div className="ts-char">
+                <PixelPortrait seed={avatarSeed} cell={3} />
+                <span className="ts-line">
+                  continue — {name}
+                  {eggs.length > 0 && ` · ${eggs.length} banner${eggs.length > 1 ? 's' : ''}`}
+                </span>
+              </div>
+            )}
+            <StarBox text="press any key" />
           </>
         ) : (
           <>
             <span className="ts-line">new game</span>
-            <span className="ts-hint">press any key to begin</span>
+            <StarBox text="press any key to begin" />
           </>
         )}
       </div>

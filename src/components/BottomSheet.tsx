@@ -1,12 +1,15 @@
 /**
- * BottomSheet — the iOS-style sheet (all screen sizes), opened by the dock's
- * Menu button or the game frame's character strip.
+ * BottomSheet — the pixel-RPG bottom sheet (all screen sizes), opened by the
+ * dock's Menu button or the game frame's character strip. Speaks the same
+ * material language as the desktop compass: notched top corners, a 2px token
+ * seam, a drawer-pull tab, and --plate-round nav rows at touch scale.
  *
  * Contents: nav from the world-map registry (no location is level-gated
  * today; the sealed treatment only appears if one sets minLevel), a
  * compact character row linking to the /character screen (the full sheet
- * lives there), and the contact links ("dispatch a raven"). Drag the grab
- * handle down to dismiss; also closes on scrim tap, Esc, or a nav link.
+ * lives there), and the contact links ("dispatch a raven"). Tap the pull
+ * tab or drag it down to dismiss; also closes on scrim tap, Esc, or a
+ * nav link.
  */
 
 import { useEffect, useRef } from 'react'
@@ -30,6 +33,9 @@ export default function BottomSheet({
   const displayLevel = level.level + 1
   const sheetRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
+  // Suppresses the click that follows a real drag on the pull-tab, so a
+  // cancelled drag (released before the dismiss threshold) doesn't close
+  const draggedRef = useRef(false)
 
   const isActive = (path: string) =>
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
@@ -59,10 +65,12 @@ export default function BottomSheet({
     if (!sheet) return
     const startY = e.clientY
     let dy = 0
+    draggedRef.current = false
     sheet.classList.add('dragging')
 
     const move = (ev: PointerEvent) => {
       dy = Math.max(0, ev.clientY - startY)
+      if (dy > 8) draggedRef.current = true
       sheet.style.transform = `translateX(-50%) translateY(${dy}px)`
       if (scrim) scrim.style.opacity = String(Math.max(0, 1 - dy / 400))
     }
@@ -77,6 +85,16 @@ export default function BottomSheet({
     }
     document.addEventListener('pointermove', move)
     document.addEventListener('pointerup', up)
+  }
+
+  // Tap (or keyboard-activate) the pull-tab to close; a drag's trailing
+  // click is swallowed via draggedRef
+  const onGrabberClick = () => {
+    if (draggedRef.current) {
+      draggedRef.current = false
+      return
+    }
+    onClose()
   }
 
   return (
@@ -94,25 +112,40 @@ export default function BottomSheet({
         aria-modal="true"
         aria-label="Menu"
       >
-        <div className="grabber" onPointerDown={onGrabberDown} />
+        <div className="sheet-body">
+        {/* Drawer-pull tab: the compass's gf-collapse quoted at 90° — straight
+            edge merged into the top seam, notched free end, accent chevron
+            pointing the way it pulls. Tap or drag down to dismiss. */}
+        <button
+          type="button"
+          className="grabber"
+          aria-label="Close menu"
+          onPointerDown={onGrabberDown}
+          onClick={onGrabberClick}
+        >
+          <span aria-hidden="true">›</span>
+        </button>
 
         <nav className="menu-nav">
           {LOCATIONS.map((loc) => {
             const locked = loc.minLevel != null && displayLevel < loc.minLevel
+            const active = isActive(loc.path)
             return locked ? (
               <span key={loc.path} className="nav-sealed" aria-label="Sealed location">
                 <DitherIcon name="lock" size={20} className="gf-ic" /> ???
                 <span className="nav-flavor">sealed</span>
               </span>
             ) : (
-              <Link
-                key={loc.path}
-                to={loc.path}
-                className={isActive(loc.path) ? 'active' : undefined}
-                onClick={onClose}
-              >
-                <DitherIcon name={loc.icon} size={20} className="gf-ic" /> {loc.real}
-              </Link>
+              // .sel wrapper = the compass's accent-ring trick (gf-compass li.sel)
+              <span key={loc.path} className={`mn-row${active ? ' sel' : ''}`}>
+                <Link
+                  to={loc.path}
+                  className={active ? 'active' : undefined}
+                  onClick={onClose}
+                >
+                  <DitherIcon name={loc.icon} size={20} className="gf-ic" /> {loc.real}
+                </Link>
+              </span>
             )
           })}
         </nav>
@@ -160,6 +193,7 @@ export default function BottomSheet({
 
         {/* Carved-stone baseboard along the very bottom of the sheet. */}
         <PixelStoneBorder />
+        </div>
       </div>
     </>
   )
