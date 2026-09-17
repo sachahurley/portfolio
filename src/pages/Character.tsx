@@ -218,7 +218,6 @@ export default function Character() {
                       <PixelItem
                         kind={saved.slot}
                         base={saved.base}
-                        seed={saved.id}
                         rarity={saved.rarity}
                         cell={4}
                       />
@@ -239,7 +238,7 @@ export default function Character() {
               <div className="ch-chests">
                 {chests.map((c) => (
                   <button key={c.id} className="ch-chestbtn" onClick={(e) => onOpenChest(c, e)}>
-                    <PixelItem kind="chest" seed={c.id} rarity="common" cell={4} />
+                    <PixelItem kind="chest" rarity="common" cell={4} />
                     <span>from {chestSourceLabel(c.src)}</span>
                   </button>
                 ))}
