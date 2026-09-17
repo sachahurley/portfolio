@@ -113,13 +113,7 @@ strong, b { font-weight: 400; }
   border: 0; padding: 14px 18px; cursor: pointer;
   display: flex; align-items: center; gap: 8px;
   background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: polygon(
-    0 12px, 4px 12px, 4px 4px, 12px 4px, 12px 0,
-    calc(100% - 12px) 0, calc(100% - 12px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 12px, 100% 12px,
-    100% calc(100% - 12px), calc(100% - 4px) calc(100% - 12px), calc(100% - 4px) calc(100% - 4px),
-    calc(100% - 12px) calc(100% - 4px), calc(100% - 12px) 100%,
-    12px 100%, 12px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 12px), 0 calc(100% - 12px)
-  );
+  clip-path: var(--plate-round-lg);
   transition: background-color .12s, color .12s;
 }
 .menubtn:hover { background: var(--accent); color: var(--bg); }
@@ -291,6 +285,8 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
    Namespaced as .mn-block (NOT .block) to avoid colliding with Tailwind's
    `block` display utility, which is used by the pixel-graphic canvases. */
 .mn-block { margin-top: 64px; }
+/* wide column for grid pages (the lab tile atlas) */
+.mn-main.wide { max-width: 1040px; }
 @media (min-width: 640px) { .mn-block { margin-top: 128px; } }
 .label { font-size: 16px; font-weight: 400; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
 .shead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 16px; }
@@ -565,7 +561,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 
 /* ---- "Your Progress" section (EXP system) ---- */
 .xp-explain { color: var(--body); font-size: 14px; margin: 0; max-width: 54ch; }
-.xp-line { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.xp-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 16px; }
 .xp-row { font-family: var(--mono); font-size: 14px; color: var(--accent); white-space: nowrap; }
 /* Progress bars wear the menu button's notched pixel corners, scaled to bar
    height, plus a slight 2px checker dither. The ring is built like .gs-tab:
@@ -574,7 +570,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
    stair-steps at the corners. The fill <i> is clipped by the element's
    polygon automatically. */
 .xp-bar {
-  height: 14px; flex: 1; max-width: 240px; position: relative;
+  height: 14px; flex: 1; min-width: 120px; max-width: 240px; position: relative;
   padding: 1px; background: var(--border); clip-path: var(--notch3);
 }
 .xp-bar::before {
@@ -643,10 +639,20 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
   background: rgba(0,0,0,.62); backdrop-filter: blur(3px);
 }
 .emodal.open { display: flex; }
+/* dialog card: the large plate silhouette with a 2px border-colored ring,
+   built like .xp-bar (the element is the ring color clipped to the
+   polygon; ::before is the page ground clipped by the same polygon 2px
+   inside), so the frame stair-steps at the corners like the buttons. */
 .em-card {
-  background: var(--bg); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 16px;
-  padding: 28px 28px 24px; max-width: 320px; text-align: center;
-  box-shadow: 0 18px 60px rgba(0,0,0,.6);
+  position: relative; isolation: isolate;
+  background: var(--border); clip-path: var(--plate-round-lg);
+  padding: 28px 28px 24px; text-align: center;
+  /* one consistent width for every dialog, whatever the content length */
+  width: min(320px, calc(100vw - 32px)); box-sizing: border-box;
+}
+.em-card::before {
+  content: ""; position: absolute; inset: 2px; z-index: -1;
+  background: var(--bg); clip-path: var(--plate-round-lg);
 }
 .em-egg { animation: mn-eggpop .45s cubic-bezier(.34,1.3,.5,1) both; }
 .egg-art-lg { width: 96px; height: 122px; display: block; margin: 0 auto; }
@@ -658,12 +664,18 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 .em-title { font-size: 20px; font-weight: 400; color: var(--fg); margin-top: 16px; }
 .em-text { color: var(--body); font-size: 14px; line-height: 1.55; margin-top: 8px; }
 .em-text b { color: var(--accent); }
+/* dialog action: the plate family's large tier (same as the dock's menu
+   button): sepia plate, accent ink, accent flip on hover */
 .em-btn {
-  font-family: var(--mono); font-size: 14px; font-weight: 400; margin-top: 18px;
-  background: var(--accent); color: #0a0a0a; border: 0; border-radius: 8px;
-  padding: 10px 16px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; line-height: 16px; font-weight: 400;
+  margin-top: 20px; padding: 14px 18px; border: 0; cursor: pointer;
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s, color .12s;
 }
-.em-btn:hover { opacity: .9; }
+.em-btn:hover { background: var(--accent); color: var(--bg); }
+.em-btn:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
 
 @media (prefers-reduced-motion: reduce) {
   .em-egg { animation: none; }
@@ -788,6 +800,14 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
    shared by the compass rows (hover/active plates, selected ring) and the
    home-page .item hover plates. */
 :root {
+  /* the large floating tier's silhouette: --plate-round at 2x */
+  --plate-round-lg: polygon(
+    0 12px, 4px 12px, 4px 4px, 12px 4px, 12px 0,
+    calc(100% - 12px) 0, calc(100% - 12px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 12px, 100% 12px,
+    100% calc(100% - 12px), calc(100% - 4px) calc(100% - 12px), calc(100% - 4px) calc(100% - 4px),
+    calc(100% - 12px) calc(100% - 4px), calc(100% - 12px) 100%,
+    12px 100%, 12px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 12px), 0 calc(100% - 12px)
+  );
   --plate-round: polygon(
     0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
     calc(100% - 6px) 0, calc(100% - 6px) 2px, calc(100% - 2px) 2px, calc(100% - 2px) 6px, 100% 6px,
@@ -960,7 +980,6 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .cs-reroll:hover { color: var(--fg); border-color: var(--mut); }
 .cs .gf-eggrow { margin-top: 14px; }
-.cs-autosave { margin-top: 10px; font-size: 11px; }
 
 .sheet-contact { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
 .sheet-contact a { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--mut); padding: 4px 0; }
@@ -987,6 +1006,9 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   --rar-magic: #7f8ff5;
   --rar-rare: #e8d44d;
   --rar-unique: #c7883d;
+  /* stat comparison: gains and losses, also outside the theme cascade */
+  --stat-up: #6fcf6a;
+  --stat-down: #e5604d;
   /* the site's 4px notched-corner polygon, shared by slot/inventory chrome */
   --notch4: polygon(
     0 4px, 4px 4px, 4px 0,
@@ -1022,6 +1044,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .bg-rar-magic { background: var(--rar-magic); }
 .bg-rar-rare { background: var(--rar-rare); }
 .bg-rar-unique { background: var(--rar-unique); }
+.stat-up { color: var(--stat-up); }
+.stat-down { color: var(--stat-down); }
 
 .ch-main { max-width: 880px; margin: 0 auto; padding: 96px 24px 160px; font-family: var(--mono); }
 .ch-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
@@ -1030,12 +1054,18 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* CharacterPanel ships sheet spacing (top border for the stack); flush here */
 .ch-panel .cs { margin-top: 0; padding-top: 0; border-top: 0; }
 .ch-sectlabel { margin: 24px 0 12px; }
+/* camp card: progress on top, the egg fire along the floor. The card drops
+   its bottom padding and the fire bleeds through the side padding so the
+   flames span the frame's full inner width; the gap above keeps room for
+   an egg to be dragged down before it reaches the flames. */
+.ch-camp { margin-top: 24px; padding-bottom: 0; overflow: hidden; }
+.ch-camp .mn-block { margin-top: 0; }
+.ch-camp .pixelfire-inline { margin: 48px -20px 0; }
 
-/* paperdoll: 3x3 grid around the portrait; slots are the li.sel ring trick
+/* paperdoll: 3x3 grid of slots; slots are the li.sel ring trick
    (clipped wrapper filled with the rarity color, 1px padding, child clipped
    to the same polygon, so a uniform ring of tier color shows through) */
 .ch-doll { display: grid; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); gap: 10px; justify-content: center; }
-.ch-dollface { display: flex; align-items: center; justify-content: center; background: var(--hover); clip-path: var(--notch4); }
 .ch-slotwrap { padding: 1px; clip-path: var(--notch4); }
 .ch-slot {
   width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
@@ -1043,7 +1073,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   font-family: var(--mono); padding: 0;
 }
 .ch-slot:hover { background: #222; }
-.ch-slotname { font-size: 10px; color: var(--mut2); text-transform: lowercase; opacity: .8; }
+/* --mut (sepia-600) clears 4.5:1 on the slot surface; --mut2 did not */
+.ch-slotname { font-size: 10px; color: var(--mut); text-transform: lowercase; }
 
 /* chest row */
 .ch-chests { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -1071,13 +1102,69 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* item card */
 .ch-card { grid-column: 1 / -1; position: relative; border: 2px solid var(--border); padding: 20px; display: flex; gap: 16px; align-items: flex-start; }
 .ch-card-name { font-size: 16px; }
-.ch-card-meta { font-size: 12px; color: var(--mut2); margin: 4px 0 10px; }
+.ch-card-meta { font-size: 12px; color: var(--mut); margin: 4px 0 10px; }
 .ch-card-stats { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--body); }
 .ch-card-actions { margin-top: 14px; }
 .ch-btn { font-family: var(--mono); font-size: 13px; padding: 8px 14px; background: var(--hover); color: var(--fg); border: 1px solid var(--border); cursor: pointer; }
 .ch-btn:hover { background: #222; }
 .ch-card-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; color: var(--mut); cursor: pointer; font-size: 16px; font-family: var(--mono); }
 .ch-card-close:hover { color: var(--fg); }
+
+/* ---- character screen: compare card, slot filter, pack, stats ---- */
+/* compare card: selected item beside the worn one, action below both */
+.ch-card-v { flex-direction: column; align-items: stretch; }
+.ch-compare { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 720px) { .ch-card.is-compare .ch-compare { grid-template-columns: 1fr 1fr; } }
+.ch-cardside { display: flex; gap: 16px; align-items: flex-start; min-width: 0; }
+.ch-cardtag { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); margin-bottom: 4px; }
+.ch-card-v .ch-card-actions { margin-top: 16px; }
+
+/* slot filter: the active slot's ring turns accent; the rest dim but
+   stay focusable */
+.ch-slotwrap.is-active { background: var(--accent); padding: 2px; }
+.ch-main .is-dim { opacity: .25; }
+/* clip-path swallows the global focus outline; draw it inside instead */
+.ch-slot:focus-visible, .ch-invbtn:focus-visible {
+  outline: none; box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+/* pack: fixed 4-wide shelf with empty cells, upgrade mark, new pip */
+.ch-inv.ch-pack { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ch-packempty { aspect-ratio: 1; background: var(--hover); clip-path: var(--notch4); opacity: .45; }
+.ch-invbtn { position: relative; }
+.ch-newpip { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; background: var(--accent); }
+.ch-upmark { position: absolute; bottom: 3px; right: 6px; font-size: 10px; line-height: 1; }
+
+/* stats: gear summary, flavor line under each stat */
+.ch-gearline { font-size: 12px; color: var(--body); margin: -4px 0 12px; }
+.ch-stats .ch-statrow { min-width: 0; }
+.ch-stat > span:last-child { white-space: nowrap; }
+/* single column where two would squeeze the swap preview */
+@media (max-width: 480px), (min-width: 1000px) {
+  .ch-col-id .ch-stats { grid-template-columns: 1fr; gap: 8px; }
+}
+/* first label in a panel sits flush with the top padding */
+.ch-panel > .gf-label.ch-sectlabel:first-child { margin-top: 0; }
+.ch-statflavor { font-size: 11px; color: var(--mut); margin-top: 1px; }
+
+/* layout: tablets keep two columns (identity spans both rows beside the
+   paperdoll and the pack); wide screens go three across */
+/* helper line directly under a card title, above the card's content */
+.ch-helper { font-size: 12px; margin: -4px 0 16px; }
+.ch-col-doll .ch-doll { margin-top: 4px; }
+@media (min-width: 720px) and (max-width: 999px) {
+  .ch-grid3 .ch-col-id { grid-row: span 2; }
+}
+/* panels fill their grid area so neighbouring cards share one height
+   (the grid itself aligns panels to the top) */
+@media (min-width: 720px) {
+  .ch-grid3 > .ch-panel { align-self: stretch; }
+}
+@media (min-width: 1000px) {
+  .ch-main { max-width: 1120px; }
+  .ch-grid.ch-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ch-col-doll .ch-doll { grid-template-columns: repeat(3, 80px); grid-template-rows: repeat(3, 80px); }
+}
 
 /* ---- character screen as a full-page modal ----
    /character drops the right column (Layout renders gframe.gf-full) and

@@ -8,10 +8,12 @@ import MinimalPage from '../components/MinimalPage'
 import BackButton from '../components/BackButton'
 import { Item, List } from '../components/Item'
 import { lab } from '../data/lab'
+import { useUnlocked } from '../lib/unlocks'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function Lab() {
   usePageTitle('Lab')
+  const unlocked = useUnlocked()
   return (
     <MinimalPage>
       <BackButton fallback="/" />
@@ -20,9 +22,19 @@ export default function Lab() {
 
       <div className="mn-block">
         <List>
-          {lab.map((x) => (
-            <Item key={x.slug} to={`/lab/${x.slug}`} title={x.title} desc={x.desc} img={x.img} />
-          ))}
+          {lab.map((x) => {
+            const locked = !!x.lock && !unlocked.includes(x.slug)
+            return (
+              <Item
+                key={x.slug}
+                to={`/lab/${x.slug}`}
+                title={x.title}
+                desc={locked ? `Locked. ${x.lock!.hint}` : x.desc}
+                img={x.img}
+                locked={locked}
+              />
+            )
+          })}
         </List>
       </div>
     </MinimalPage>

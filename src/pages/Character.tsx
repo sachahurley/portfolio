@@ -1,10 +1,12 @@
 /**
  * Character, the character management screen (/character).
  *
- * Diablo-2-inspired: identity + paperdoll + stats on one side, chests and
- * inventory on the other; stacked in one column on small screens. Items are
- * equipped by tapping them (an item card shows details and the action);
- * chests open in place with an impact burst and a reveal modal. Not a
+ * Diablo-2-inspired, three columns on wide screens: identity + stats, the
+ * paperdoll, and the pack (with any unopened chests); two columns on
+ * tablets, one on phones, with the camp (progress + egg fire) below.
+ * Tapping a paperdoll slot filters the pack to that slot; tapping an item
+ * opens a card that compares it against what's worn, and the stats preview
+ * the swap. Chests open in place with an impact burst and a reveal modal. Not a
  * "location": it isn't in the world registry, awards no visit XP, and gets
  * a flavor log line instead of an arrival.
  *
@@ -24,33 +26,32 @@ import { usePageTitle } from '../lib/usePageTitle'
 import { runImpact } from '../lib/impactFx'
 import CharacterPanel from '../components/game/CharacterPanel'
 import ChestRevealModal from '../components/ChestRevealModal'
+import ItemCard from '../components/game/ItemCard'
+import PackGrid from '../components/game/PackGrid'
 import PixelItem from '../components/game/PixelItem'
-import PixelPortrait from '../components/game/PixelPortrait'
+import StatsBlock from '../components/game/StatsBlock'
 import {
   chestSourceLabel,
   rarityFx,
   resolveItem,
   SLOT_LABELS,
-  STAT_IDS,
-  STAT_NAMES,
-  sumEquippedStats,
   type Item,
   type SavedChest,
   type Slot,
 } from '../game/loot'
 
-/** Paperdoll cells in grid order; null cells frame the portrait. */
-const DOLL_GRID: Array<Slot | 'face' | null> = [
+/** Paperdoll cells in grid order: a body column (helm, armor, boots)
+ *  flanked by hands, with the ring and amulet on the bottom row. */
+const DOLL_GRID: Array<Slot | null> = [
   null, 'helm', null,
-  'weapon', 'face', 'shield',
-  'ring', 'armor', 'boots',
+  'weapon', 'armor', 'shield',
+  'ring', 'boots', 'amulet',
 ]
 
 export default function Character() {
   usePageTitle('Character')
   const {
     level,
-    avatarSeed,
     chests,
     items,
     equipment,
@@ -58,13 +59,18 @@ export default function Character() {
     equipItem,
     unequipSlot,
     logLine,
+    seenItems,
+    markItemSeen,
   } = useXp()
   const [selected, setSelected] = useState<number | null>(null)
+  const [activeSlot, setActiveSlot] = useState<Slot | null>(null)
   const [revealed, setRevealed] = useState<Item | null>(null)
   const navigate = useNavigate()
   // The camp fire below the sheet doubles as the egg drop target (same
   // pairing as the classic home page).
   const fireApiRef = useRef<PixelFireHandle>(null)
+  // Paperdoll slot elements, the anchor for the equip impact.
+  const slotRefs = useRef<Partial<Record<Slot, HTMLElement | null>>>({})
 
   // Close the screen: back in history when the visitor navigated here from
   // within the site; deep links have no in-app history, so go home.
@@ -84,9 +90,7 @@ export default function Character() {
 
   const displayLevel = level.level + 1
   const equippedIds = new Set(Object.values(equipment))
-  const inventory = items.filter((i) => !equippedIds.has(i.id))
-  const bonuses = sumEquippedStats(items, equipment)
-  const statBase = 4 + 2 * displayLevel
+  const pack = items.filter((i) => !equippedIds.has(i.id))
 
   const selectedItem = (() => {
     const saved = selected != null ? items.find((i) => i.id === selected) : undefined
@@ -94,26 +98,56 @@ export default function Character() {
   })()
   const selectedEquipped =
     selectedItem != null && equipment[selectedItem.slot] === selectedItem.id
+  const wornInSlot = (() => {
+    if (!selectedItem || selectedEquipped) return null
+    const saved = items.find((i) => i.id === equipment[selectedItem.slot])
+    return saved ? resolveItem(saved) : null
+  })()
 
-  // Esc closes the item card (the reveal modal handles its own Esc).
+  const selectItem = (id: number) => {
+    setSelected(id)
+    markItemSeen(id)
+  }
+
+  // Esc peels one layer at a time: the item card, then the slot filter,
+  // then the screen itself (the reveal modal handles its own Esc).
   useEffect(() => {
-    if (selected == null || revealed) return
+    if (revealed) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSelected(null)
+      if (e.key !== 'Escape') return
+      if (selected != null) setSelected(null)
+      else if (activeSlot != null) setActiveSlot(null)
+      else closePage()
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [selected, revealed])
+  }, [selected, activeSlot, revealed, closePage])
 
-  // With nothing open above it, Esc closes the screen itself.
-  useEffect(() => {
-    if (selected != null || revealed) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closePage()
+  const onSlotClick = (slot: Slot) => {
+    if (activeSlot === slot) {
+      setActiveSlot(null)
+      setSelected(null)
+      return
     }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [selected, revealed, closePage])
+    setActiveSlot(slot)
+    const worn = equipment[slot]
+    if (worn != null) selectItem(worn)
+    // an open card for another slot's item no longer matches the filter
+    else if (selectedItem && selectedItem.slot !== slot) setSelected(null)
+  }
+
+  const onItemAction = () => {
+    if (!selectedItem) return
+    if (selectedEquipped) {
+      unequipSlot(selectedItem.slot)
+    } else {
+      equipItem(selectedItem.id)
+      const el = slotRefs.current[selectedItem.slot]
+      if (el) runImpact(el, rarityFx(selectedItem.rarity))
+      logLine(`You equip the ${selectedItem.name}.`, 'hint')
+    }
+    setSelected(null)
+  }
 
   const onOpenChest = (chest: SavedChest, e: MouseEvent<HTMLButtonElement>) => {
     const el = e.currentTarget
@@ -134,30 +168,51 @@ export default function Character() {
         <DitherIcon name="close" size={16} />
       </button>
 
-      <div className="ch-grid">
-        <section className="ch-panel" aria-label="Character">
+      <div className="ch-grid ch-grid3">
+        <section className="ch-panel ch-col-id" aria-label="Character">
           <CharacterPanel />
+          <StatsBlock
+            items={items}
+            equipment={equipment}
+            displayLevel={displayLevel}
+            previewItem={selectedEquipped ? null : selectedItem}
+          />
+        </section>
 
-          <div className="gf-label ch-sectlabel">equipment</div>
-          <div className="ch-doll">
+        <section className="ch-panel ch-col-doll" aria-label="Equipment">
+          <div className="gf-label">equipment</div>
+          <div className="gf-dim ch-helper">
+            {activeSlot
+              ? `Showing ${SLOT_LABELS[activeSlot]}; tap again to show all`
+              : 'Tap a slot to filter your pack'}
+          </div>
+          <div className={`ch-doll${activeSlot ? ' has-active' : ''}`}>
             {DOLL_GRID.map((cellKind, i) => {
               if (cellKind === null) return <div key={i} />
-              if (cellKind === 'face') {
-                return (
-                  <div key={i} className="ch-dollface">
-                    <PixelPortrait seed={avatarSeed} cell={5} />
-                  </div>
-                )
-              }
               const slot = cellKind
               const saved = items.find((it) => it.id === equipment[slot])
+              const active = activeSlot === slot
+              const cls = [
+                'ch-slotwrap',
+                saved ? `bg-rar-${saved.rarity}` : '',
+                active ? 'is-active' : '',
+                activeSlot && !active ? 'is-dim' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
               return (
-                <div key={i} className={`ch-slotwrap${saved ? ` bg-rar-${saved.rarity}` : ''}`}>
+                <div
+                  key={i}
+                  className={cls}
+                  ref={(el) => {
+                    slotRefs.current[slot] = el
+                  }}
+                >
                   <button
                     className="ch-slot"
-                    onClick={() => saved && setSelected(saved.id)}
+                    onClick={() => onSlotClick(slot)}
+                    aria-pressed={active}
                     aria-label={saved ? `${slot}: ${resolveItem(saved).name}` : `${slot}: empty`}
-                    style={saved ? undefined : { cursor: 'default' }}
                   >
                     {saved ? (
                       <PixelItem
@@ -175,22 +230,9 @@ export default function Character() {
               )
             })}
           </div>
-
-          <div className="gf-label ch-sectlabel">stats</div>
-          <div className="ch-stats">
-            {STAT_IDS.map((s) => (
-              <div key={s} className="ch-stat">
-                <span>{STAT_NAMES[s].toLowerCase()}</span>
-                <span>
-                  {statBase}
-                  {bonuses[s] > 0 && <span className="ch-bonus"> (+{bonuses[s]})</span>}
-                </span>
-              </div>
-            ))}
-          </div>
         </section>
 
-        <section className="ch-panel" aria-label="Loot">
+        <section className="ch-panel ch-col-loot" aria-label="Pack">
           {chests.length > 0 && (
             <>
               <div className="gf-label">chests</div>
@@ -205,82 +247,37 @@ export default function Character() {
             </>
           )}
 
-          <div className="gf-label ch-sectlabel">inventory</div>
-          {inventory.length === 0 ? (
-            <div className="gf-dim">
-              {items.length === 0 && chests.length === 0
-                ? 'your pack is empty; chests drop as you explore the site'
-                : chests.length > 0
-                  ? 'nothing unequipped, but a chest waits'
-                  : 'everything you own is equipped'}
-            </div>
-          ) : (
-            <div className="ch-inv">
-              {inventory.map((it) => (
-                <div key={it.id} className={`ch-invwrap bg-rar-${it.rarity}`}>
-                  <button
-                    className="ch-invbtn"
-                    onClick={() => setSelected(it.id)}
-                    aria-label={resolveItem(it).name}
-                  >
-                    <PixelItem kind={it.slot} base={it.base} seed={it.id} rarity={it.rarity} cell={3} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <PackGrid
+            pack={pack}
+            items={items}
+            equipment={equipment}
+            hasChests={chests.length > 0}
+            activeSlot={activeSlot}
+            seenItems={seenItems}
+            onSelect={selectItem}
+          />
         </section>
 
         {selectedItem && (
-          <aside className="ch-card" aria-label="Item details">
-            <button className="ch-card-close" onClick={() => setSelected(null)} aria-label="Close">
-              ×
-            </button>
-            <PixelItem
-              kind={selectedItem.slot}
-              base={selectedItem.base}
-              seed={selectedItem.id}
-              rarity={selectedItem.rarity}
-              cell={6}
-            />
-            <div className="ch-card-body">
-              <div className={`ch-card-name rar-${selectedItem.rarity}`}>{selectedItem.name}</div>
-              <div className="ch-card-meta">
-                {selectedItem.rarity} · {selectedItem.baseName.toLowerCase()} ·{' '}
-                {SLOT_LABELS[selectedItem.slot]}
-                {selectedEquipped ? ' · equipped' : ''}
-              </div>
-              <div className="ch-card-stats">
-                {STAT_IDS.filter((s) => selectedItem.stats[s] != null).map((s) => (
-                  <span key={s} className="ch-statline">
-                    +{selectedItem.stats[s]} {STAT_NAMES[s]}
-                  </span>
-                ))}
-              </div>
-              <div className="ch-card-actions">
-                <button
-                  className="ch-btn"
-                  onClick={() => {
-                    if (selectedEquipped) unequipSlot(selectedItem.slot)
-                    else equipItem(selectedItem.id)
-                    setSelected(null)
-                  }}
-                >
-                  {selectedEquipped ? 'Unequip' : 'Equip'}
-                </button>
-              </div>
-            </div>
-          </aside>
+          <ItemCard
+            item={selectedItem}
+            equipped={wornInSlot}
+            isEquipped={selectedEquipped}
+            onAction={onItemAction}
+            onClose={() => setSelected(null)}
+          />
         )}
       </div>
 
-      {/* Camp: the progress block + the egg fire, same pairing as the
-          classic home page - earned eggs drag into the fire below to
-          activate their theme. */}
-      <ProgressSection fireApiRef={fireApiRef} />
+      {/* Camp: the progress block + the egg fire in one framed card, same
+          pairing as the classic home page - earned eggs drag into the fire
+          along the card's floor to activate their theme. */}
+      <section className="ch-panel ch-camp" aria-label="Progress">
+        <ProgressSection fireApiRef={fireApiRef} />
+        <PixelFire ref={fireApiRef} inline />
+      </section>
 
       <ChestRevealModal item={revealed} onClose={() => setRevealed(null)} />
-      <PixelFire ref={fireApiRef} />
     </div>
   )
 }

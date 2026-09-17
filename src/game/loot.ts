@@ -15,8 +15,8 @@
 
 import { mix, shade } from '../lib/themes'
 
-export type Slot = 'helm' | 'weapon' | 'armor' | 'shield' | 'ring' | 'boots'
-export const SLOTS: Slot[] = ['helm', 'weapon', 'armor', 'shield', 'ring', 'boots']
+export type Slot = 'helm' | 'weapon' | 'armor' | 'shield' | 'ring' | 'boots' | 'amulet'
+export const SLOTS: Slot[] = ['helm', 'weapon', 'armor', 'shield', 'ring', 'boots', 'amulet']
 
 export type Rarity = 'common' | 'magic' | 'rare' | 'unique'
 export const RARITIES: Rarity[] = ['common', 'magic', 'rare', 'unique']
@@ -64,6 +64,7 @@ export const BASES: Record<Slot, string[]> = {
   shield: ['Buckler', 'Kite Shield', 'Tower Shield'],
   ring: ['Band', 'Signet', 'Loop'],
   boots: ['Sandals', 'Boots', 'Greaves'],
+  amulet: ['Pendant', 'Talisman', 'Locket'],
 }
 
 export const SLOT_LABELS: Record<Slot, string> = {
@@ -73,6 +74,7 @@ export const SLOT_LABELS: Record<Slot, string> = {
   shield: 'shield',
   ring: 'ring',
   boots: 'boots',
+  amulet: 'amulet',
 }
 
 // Diablo-style tier colors. These are deliberately NOT tied to the egg/theme
@@ -211,6 +213,33 @@ export function sumEquippedStats(
     for (const s of STAT_IDS) total[s] += stats[s] ?? 0
   }
   return total
+}
+
+/** Sum of an item's stat bonuses (its "power"). */
+export function statTotal(item: Item): number {
+  return STAT_IDS.reduce((n, s) => n + (item.stats[s] ?? 0), 0)
+}
+
+/** Per-stat difference a minus b, for every stat on either item (0s dropped). */
+export function statDeltas(a: Item, b: Item | null): Partial<Record<StatId, number>> {
+  const out: Partial<Record<StatId, number>> = {}
+  for (const s of STAT_IDS) {
+    if (a.stats[s] == null && b?.stats[s] == null) continue
+    const d = (a.stats[s] ?? 0) - (b?.stats[s] ?? 0)
+    if (d !== 0) out[s] = d
+  }
+  return out
+}
+
+/** One-line stat flavor for the character screen. Flavor only: no stat
+ *  drives a mechanic yet, so none of these promise one. */
+export const STAT_FLAVOR: Record<StatId, string> = {
+  vigor: 'how far you walk before resting',
+  wit: 'quick answers at the crossroads',
+  craft: 'a steady hand with tools',
+  lore: 'you notice what others miss',
+  luck: 'chests seem to like you',
+  moxie: 'bolder words in the log',
 }
 
 /** A theme-shaped palette for runImpact: bright/mid/dim tints of the tier. */

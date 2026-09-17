@@ -1,15 +1,13 @@
 /**
- * CharacterPanel — the full character sheet, rendered inside the bottom
- * sheet (all breakpoints). Avatar (click to open the picker: 8 procedural
- * candidates + reroll), editable name (random RPG default; commits on blur
- * or Enter), level + title + XP bar, banner eggs, and the ▴ LEVEL UP badge
- * that opens the celebration modal. Progress saves automatically — the
- * microcopy says so, and nothing here is a save button.
+ * CharacterPanel, the identity block of the character screen. Avatar
+ * (click to open the picker: 8 procedural candidates + reroll), editable
+ * name (random RPG default; commits on blur or Enter), level + title + XP
+ * bar, and the ▴ LEVEL UP badge that opens the celebration modal. Progress
+ * saves automatically, so nothing here is a save button.
  */
 
 import { useState } from 'react'
 import { useXp } from '../../context/XpProvider'
-import { THEMES } from '../../lib/themes'
 import { randomSeed } from '../../game/names'
 import PixelPortrait from './PixelPortrait'
 
@@ -19,8 +17,6 @@ export default function CharacterPanel() {
   const {
     xp,
     level,
-    eggs,
-    activeEgg,
     name,
     setName,
     avatarSeed,
@@ -70,7 +66,7 @@ export default function CharacterPanel() {
             }}
           />
           <div className="cs-lvl">
-            Lv {level.level + 1} — {level.title}
+            Lv {level.level + 1} · {level.title}
           </div>
           <div
             className="gf-xpbar"
@@ -114,25 +110,6 @@ export default function CharacterPanel() {
           </button>
         </div>
       )}
-
-      {/* Banners (eggs) earned; the raised one is marked. The ritual itself
-          (dropping an egg into the fire) lives at the Crossroads. */}
-      <div className="gf-eggrow" aria-label="Banners earned">
-        {eggs.length === 0 ? (
-          <span className="gf-dim">no banners yet — level up to earn one</span>
-        ) : (
-          eggs.map((e) => (
-            <span
-              key={e}
-              className={`gf-egg${activeEgg === e ? ' active' : ''}`}
-              title={`${THEMES[e].name}${activeEgg === e ? ' (raised)' : ''}`}
-              style={{ background: THEMES[e].base, borderColor: THEMES[e].mark }}
-            />
-          ))
-        )}
-      </div>
-
-      <div className="gf-dim cs-autosave">progress saves automatically</div>
     </section>
   )
 }

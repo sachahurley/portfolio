@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { tilesDevApi } from './scripts/tilesDevApi'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tilesDevApi()], // tilesDevApi: dev-only save endpoint for /dev/tiles
   // Bind on all interfaces so both 127.0.0.1 (IPv4) and ::1 (IPv6) work
   server: {
     host: true,

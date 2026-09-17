@@ -84,6 +84,15 @@ const BOOTS_MASKS: string[][] = [
   ['      ', '   ###', '   ###', '   ##*', '   ###', '   ###', '   ###', '  ####', ' #####', '      ', '      ', '      '],
 ]
 
+const AMULET_MASKS: string[][] = [
+  // Pendant (chains are 3 cells thick: the outline pass eats thin lines)
+  ['      ', '###   ', '###   ', '####  ', ' #### ', '  ####', '   ###', '    ##', '   ###', '  ####', '  ###*', '   ###'],
+  // Talisman
+  ['      ', ' ###  ', ' ###  ', '  ### ', '  ####', '   ###', '    ##', '   ###', '  ####', ' ####*', '  ####', '   ###'],
+  // Locket
+  ['###   ', '###   ', ' ###  ', '  ####', '    ##', '   ###', '  ####', ' #####', ' ####*', ' #####', '  ####', '   ###'],
+]
+
 const CHEST_MASK: string[] = [
   '      ', '      ', '  ####', ' #####', ' #####', ' ####*', ' #####', ' #####', ' #####', '      ', '      ', '      ',
 ]
@@ -95,6 +104,7 @@ const MASKS: Record<Slot, string[][]> = {
   shield: SHIELD_MASKS,
   ring: RING_MASKS,
   boots: BOOTS_MASKS,
+  amulet: AMULET_MASKS,
 }
 
 function maskFor(kind: Slot | 'chest', base: number): string[] {

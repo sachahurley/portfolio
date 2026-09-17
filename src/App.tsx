@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from '@scorp-ds/components'
 
@@ -23,6 +23,9 @@ import VillageLab from './pages/VillageLab'
 import About from './pages/About'
 import Character from './pages/Character'
 import NotFound from './pages/NotFound'
+
+// Dev-only tools (tree-shaken out of production builds)
+const TileBrowser = import.meta.env.DEV ? lazy(() => import('./pages/dev/TileBrowser')) : null
 
 import { locationFor } from './game/locations'
 
@@ -87,6 +90,11 @@ function App() {
 
               {/* Character management (not a world location: no visit XP) */}
               <Route path="/character" element={<Character />} />
+
+              {/* Dev-only: tile asset browser */}
+              {TileBrowser && (
+                <Route path="/dev/tiles" element={<Suspense fallback={null}><TileBrowser /></Suspense>} />
+              )}
 
               {/* 404 - any unmatched route */}
               <Route path="*" element={<NotFound />} />

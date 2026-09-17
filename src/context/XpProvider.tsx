@@ -112,6 +112,9 @@ interface XpValue {
   /** Equip an owned item into its slot; a displaced item stays owned. */
   equipItem: (itemId: number) => void
   unequipSlot: (slot: Slot) => void
+  /** Item ids the visitor has inspected; the rest wear a "new" pip. */
+  seenItems: number[]
+  markItemSeen: (itemId: number) => void
 }
 
 const XpContext = createContext<XpValue | null>(null)
@@ -133,6 +136,7 @@ interface PersistedState {
   chests: SavedChest[]
   items: SavedItem[]
   equip: Partial<Record<Slot, number>>
+  seenItems: number[]
 }
 
 const isSavedItem = (v: unknown): v is SavedItem => {
@@ -174,6 +178,7 @@ function load(): { state: PersistedState; existed: boolean } {
     chests: [],
     items: [],
     equip: {},
+    seenItems: [],
   }
   let existed = false
   try {
@@ -227,6 +232,12 @@ function load(): { state: PersistedState; existed: boolean } {
         }
       }
     }
+    // Saves from before "new" pips count every owned item as seen, so a
+    // returning visitor isn't greeted by a pip on everything.
+    const owned = new Set(state.items.map((i) => i.id))
+    state.seenItems = Array.isArray(s.seenItems)
+      ? s.seenItems.filter((id): id is number => typeof id === 'number' && owned.has(id))
+      : [...owned]
   } catch {
     /* ignore malformed storage */
   }
@@ -264,6 +275,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const [chests, setChests] = useState<SavedChest[]>(initial.chests)
   const [items, setItems] = useState<SavedItem[]>(initial.items)
   const [equipment, setEquipment] = useState<Partial<Record<Slot, number>>>(initial.equip)
+  const [seenItems, setSeenItems] = useState<number[]>(initial.seenItems)
   const [celebrating, setCelebrating] = useState(false)
   const [toasts, setToasts] = useState<ToastItem[]>([])
   const [log, setLog] = useState<LogEntry[]>([])
@@ -279,6 +291,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const chestsRef = useRef<SavedChest[]>(initial.chests)
   const itemsRef = useRef<SavedItem[]>(initial.items)
   const equipRef = useRef<Partial<Record<Slot, number>>>(initial.equip)
+  const seenRef = useRef<number[]>(initial.seenItems)
   const idRef = useRef(0)
 
   const persist = useCallback(() => {
@@ -297,6 +310,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
           chests: chestsRef.current,
           items: itemsRef.current,
           equip: equipRef.current,
+          seenItems: seenRef.current,
         })
       )
     } catch {
@@ -446,6 +460,16 @@ export function XpProvider({ children }: { children: ReactNode }) {
     [persist]
   )
 
+  const markItemSeen = useCallback(
+    (itemId: number) => {
+      if (seenRef.current.includes(itemId)) return
+      seenRef.current = [...seenRef.current, itemId]
+      setSeenItems(seenRef.current)
+      persist()
+    },
+    [persist]
+  )
+
   const setName = useCallback(
     (n: string) => {
       const clean = n.trim().slice(0, 40)
@@ -494,6 +518,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
     chestsRef.current = []
     itemsRef.current = []
     equipRef.current = {}
+    seenRef.current = []
     persist()
     setXp(0)
     setEggs([])
@@ -504,6 +529,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
     setChests([])
     setItems([])
     setEquipment({})
+    setSeenItems([])
     setCelebrating(false)
     toast('progress reset')
   }, [persist, toast])
@@ -537,6 +563,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
     openChest,
     equipItem,
     unequipSlot,
+    seenItems,
+    markItemSeen,
   }
 
   return <XpContext.Provider value={value}>{children}</XpContext.Provider>

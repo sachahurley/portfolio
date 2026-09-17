@@ -3,7 +3,10 @@
  *
  * Small interactive experiments. Each has a detail page at /lab/:slug.
  * Items with a `demo` render a live toy on the detail page; items with a
- * `body` render a written description instead.
+ * `body` render a written description instead. A `lock` gates an experiment
+ * behind a code: locked rows still show in the list (padlocked, with the
+ * hint as the description) so visitors know there is something to find. The
+ * code ships in the bundle - it is a puzzle, not a password.
  */
 
 export interface LabItem {
@@ -11,14 +14,28 @@ export interface LabItem {
   title: string    // Display name
   desc: string     // Short description (shown on row lists and as the lead)
   img?: boolean    // Show a 16:9 thumbnail on the row
-  demo?: 'reactive-grid' | 'dot-loader' | 'dither-toy' // Which live demo to render, if any
+  demo?: 'reactive-grid' | 'dot-loader' | 'dither-toy' | 'tile-atlas' // Which live demo to render, if any
   body?: string    // Longer write-up for the detail page (can accompany a demo)
   externalUrl?: string // Link out (repo or live tool), rendered as a CTA on the detail page
   image?: string   // Artwork shown on the detail page (path under public/)
   imageAlt?: string // Alt text for that artwork
+  lock?: {
+    code: string   // What the visitor has to type
+    hint: string   // Shown above the input, and on the locked row
+  }
 }
 
 export const lab: LabItem[] = [
+  {
+    slug: 'tile-atlas',
+    title: 'Tile atlas',
+    desc: '5,461 named sprites from a one-bit tileset, searchable.',
+    demo: 'tile-atlas',
+    lock: {
+      code: 'urizen',
+      hint: 'Name the tileset these sprites come from.',
+    },
+  },
   {
     slug: 'dawg',
     title: 'D.A.W.G.',
