@@ -7,15 +7,13 @@
 import { Link, useLocation } from 'react-router-dom'
 import { LOCATIONS, locationFor } from '../../game/locations'
 import { useXp } from '../../context/XpProvider'
-import { homeToggleRow } from '../../lib/homeVariant'
 import DitherIcon from '../DitherIcon'
 
 export default function Compass() {
   const { level } = useXp()
-  const { pathname, search } = useLocation()
+  const { pathname } = useLocation()
   const displayLevel = level.level + 1
   const here = locationFor(pathname)
-  const toggle = homeToggleRow(search)
 
   return (
     <nav className="gf-panel gf-compass" aria-label="Menu">
@@ -43,17 +41,6 @@ export default function Compass() {
           )
         })}
       </ul>
-      {/* Home-variant toggle: deliberately smaller and plainer than the
-          nav rows - a quiet utility link, not a destination. */}
-      <div className="menu-alt">
-        <Link
-          className="home-toggle"
-          to={toggle.to}
-          aria-label={`Switch to the ${toggle.label.toLowerCase()} page`}
-        >
-          {toggle.label}
-        </Link>
-      </div>
     </nav>
   )
 }

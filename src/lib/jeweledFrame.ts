@@ -4,8 +4,8 @@
  * fixed, 8px edge tiles repeat, interior is transparent).
  *
  * Faithful port of a verified reference implementation; only the colour
- * ramps are re-tuned to the site's pixel-art palette (PixelCastle's warm
- * stone and bone, the aged-brass door pulls, the keystone's garnet gems).
+ * ramps are re-tuned to the site's pixel-art palette (the warm stone and
+ * bone family, the aged-brass door pulls, the keystone's garnet gems).
  * Rules the reference encodes:
  *  - every RGB channel is one of the 8 Sega Genesis levels
  *    (0x00 0x24 0x49 0x6D 0x92 0xB6 0xDB 0xFF)
@@ -29,7 +29,7 @@ const CORNER = FRAME_CORNER
 type RGB = readonly [number, number, number]
 
 // Light -> dark ramps, all channels on the Genesis levels.
-// Warm sepia stone: PixelCastle's bone/stone family.
+// Warm sepia stone: the site's bone/stone family.
 const STONE: RGB[] = [
   [219, 182, 146],
   [182, 146, 109],

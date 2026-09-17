@@ -91,32 +91,30 @@ strong, b { font-weight: 400; }
   }
 }
 
-/* ---- floating bottom-center dock: the menu button ---- */
-.dock {
-  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
-  z-index: 72; display: flex; align-items: center;
+/* ---- menu notch: the mobile nav, carved out of the frame's bottom band ----
+   Sibling to the desktop side panel's drawer-pull tab (.gf-collapse): the
+   same stone fill and 4px stair-stepped corners, rotated so the straight
+   edge merges into the bottom stonework and only the free (top) corners
+   are notched. It sits ON the band (bottom rides the safe area, as the
+   frame does) rather than floating, so there is no drop shadow. z-index
+   clears the sheet (75) because the notch is also the sheet's close. */
+.gf-tab {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  z-index: 76; display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 13px; line-height: 16px;
+  border: 0; padding: 10px 16px 12px; cursor: pointer;
+  background: var(--color-sepia-800, #474030); color: var(--accent);
+  clip-path: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% 100%, 0 100%
+  );
+  transition: background-color .12s, color .12s, transform .08s;
 }
-/* wrapper exists because clip-path clips everything on the button itself,
-   box-shadow included; the soft float shadow lives here as a filter, which
-   traces the clipped silhouette and keeps the plate legible over content. */
-.menuwrap {
-  position: relative; display: inline-flex;
-  filter: drop-shadow(0 8px 26px rgba(0,0,0,.45));
-}
-/* the pixel-plate family's large floating tier: the --plate-round
-   silhouette at 2x (12px corners, 4px step, matching the phone's 2x pixel
-   zoom), with the family's sepia rest / accent-flip hover recipe
-   (.seebtn/.platebtn/.pgbtn). 16px content core + 14px ring = 44px tap
-   target. */
-.menubtn {
-  position: relative; font-family: var(--mono); font-size: 14px; line-height: 16px;
-  border: 0; padding: 14px 18px; cursor: pointer;
-  display: flex; align-items: center; gap: 8px;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: var(--plate-round-lg);
-  transition: background-color .12s, color .12s;
-}
-.menubtn:hover { background: var(--accent); color: var(--bg); }
+.gf-tab:hover { background: var(--accent); color: var(--bg); }
+/* pressed into the stone: the notch sinks, keeping its centring transform */
+.gf-tab:active { transform: translateX(-50%) translateY(2px); }
 .tip {
   position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: 72; background: var(--fg); color: var(--bg);
@@ -212,15 +210,6 @@ strong, b { font-weight: 400; }
   transition: color .15s ease, background-color .15s ease;
 }
 .menu-nav a:hover { color: var(--fg); background: var(--hover); }
-/* the home-variant toggle under the nav: deliberately smaller and plainer
-   than the nav rows - a quiet mono utility link, no plate, no icon */
-.menu-alt { margin: 10px 13px 0; }
-.gf-compass .menu-alt { margin: 10px 11px 0; }
-.home-toggle {
-  font-family: var(--mono); font-size: 12px; color: var(--mut);
-  border-bottom: 1px solid var(--mut2);
-}
-.home-toggle:hover { color: var(--fg); border-color: var(--fg); }
 .menu-nav a.active {
   color: var(--accent); background: var(--hover); border: 0;
   transition: color .15s ease;
@@ -253,44 +242,18 @@ strong, b { font-weight: 400; }
   .mn-main { padding-left: 32px; padding-right: 32px; }
   .mn-main .pageback { left: 32px; }
 }
-/* Home keeps the pixel graphics flush; its column needs less top padding */
-/* 64px: breathing room between the stalactite strip and the name now that
-   the stage hero above the intro is hidden */
-.mn-main.flush-top { padding-top: 64px; }
+/* Home starts at the back-plate line (.pageback sits at top: 48px): with
+   no plate of its own, matching the plate's start keeps the top gap equal
+   across every page instead of reading as a lower start. */
+.mn-main.flush-top { padding-top: 48px; }
 
 .intro { display: block; }
 .intro h1 { font-size: 16px; font-weight: 400; letter-spacing: -.01em; margin: 0; color: var(--accent); }
-.role { color: var(--mut); font-size: 16px; font-weight: 400; margin: 2px 0 0; }
 .bio { margin: 8px 0 0; max-width: 62ch; }
 .bio p { margin: 0 0 16px; }
 .bio p:last-child { margin-bottom: 0; }
 .bio a { border-bottom: 1px solid var(--mut2); }
 .bio a:hover { border-color: var(--fg); }
-/* hero mark (scorpion) sits above the name, centered in the content column */
-.heromark { display: flex; justify-content: center; margin: 0 0 34px; }
-/* roaming variant: a full-width, fixed-height band the scorpion wanders across.
-   Fixed height keeps the name/bio from shifting; the canvas fills the band. */
-.heromark--roam { display: block; position: relative; width: 100%; height: 64px; margin: 12px 0 32px; overflow: hidden; }
-.heromark--roam canvas { display: block; position: absolute; inset: 0; pointer-events: none; }
-@media (max-width: 600px) { .heromark--roam { height: 56px; margin: 8px 0 28px; } }
-
-/* stage hero: bounded 200px box holding the pixel-castle diorama.
-   overflow stays visible so the bull skull's horns can poke above the frame
-   (PixelCastle extends its canvas above the box); the canvases inside clip
-   their own drawing, so nothing else escapes. */
-/* Sized to the dungeon-gate GIF's own aspect so the full scene shows. */
-.stage-hero { position: relative; width: 100%; aspect-ratio: 2800 / 1253; margin: 0 0 32px; overflow: hidden; border: 1px solid var(--border); background: var(--bg); opacity: 0; animation: stage-hero-fade 1.8s ease-out forwards; }
-@keyframes stage-hero-fade { to { opacity: 1; } }
-/* On first load the title-screen overlay hides the page; hold the fade
-   until the loader starts its own dismiss fade (.hide) so the hero's
-   entrance is actually seen. Route navigations mount no loader, so the
-   fade runs immediately. (No :has support = fade plays behind the
-   loader; harmless.) */
-body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
-.stage-hero__scene { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
-.pixel-castle { position: absolute; inset: 0; pointer-events: none; }
-.stage-hero .heromark--roam { height: 100%; margin: 0; }
-@media (max-width: 600px) { .stage-hero { margin: 0 0 28px; } }
 
 /* emil rhythm: 128px desktop / 64px mobile between sections.
    Namespaced as .mn-block (NOT .block) to avoid colliding with Tailwind's
@@ -298,25 +261,11 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 .mn-block { margin-top: 64px; }
 @media (min-width: 640px) { .mn-block { margin-top: 128px; } }
 .label { font-size: 16px; font-weight: 400; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
-.shead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 16px; }
-.shead .label { margin: 0; }
-.seeall { font-size: 15px; color: var(--accent); display: inline-flex; align-items: center; gap: 8px; }
-/* the count's icon button: a plate with the shared pixel-round silhouette
-   (same as the menu rows). Rest: mid sepia with the dither arrow inked in
-   the accent; hover: the plate fills accent and the arrow flips to --bg.
-   28px box - 16px icon = 6px padding all round, matching the corner inset. */
-.seebtn {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; flex: none;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: var(--plate-round);
-  transition: background-color .12s, color .12s;
-}
-.seeall:hover .seebtn { background: var(--accent); color: var(--bg); }
-/* detail-page back button: the same plate as .seebtn, but a standalone
-   <button> with its own hover. It floats in the content column's top
-   padding rather than taking a row of its own, so the page title starts at
-   the same height whether or not a page has one (Home has none). */
+/* detail-page back button: a 28px plate with the shared pixel-round
+   silhouette (16px icon + 6px padding, matching the corner inset). It
+   floats in the content column's top padding rather than taking a row of
+   its own, so the page title starts at the same height whether or not a
+   page has one (Home has none). */
 .pageback {
   position: absolute; top: 48px; left: 24px;
   display: inline-flex; align-items: center; justify-content: center;
@@ -354,9 +303,6 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
    context font so the See all arrow matches the 16px-row external icon */
 /* Tailwind preflight makes svg display:block; restore inline flow for icons */
 .icon-arrow { display: inline-block; vertical-align: -0.1em; }
-.seeall .arr { font-size: 16px; line-height: 0; }
-/* "See all" sits at the bottom of a section, aligned with the row text */
-.seefoot { margin-top: 20px; }
 
 /* link rows: stacked title + muted description (exact emil metrics) */
 .list { display: flex; flex-direction: column; gap: 16px; margin: 0 -12px -12px; }
@@ -404,7 +350,7 @@ a.item .t { color: var(--accent); }
 }
 
 /* buttons — the in-content plate button, part of the pixel-plate family
-   (.seebtn/.pageback icon buttons, .pgbtn rich pager). Every tier is a
+   (.pageback icon button, .pgbtn rich pager). Every tier is a
    16px content core plus a padding ring; in-content text buttons sit on
    the compact tier: 6px ring = 28px tall (wider 10px side padding for
    text breathing room). Same sepia rest / accent hover states as the
@@ -421,7 +367,7 @@ a.item .t { color: var(--accent); }
 /* clip-path swallows the global outside focus ring on plate-clipped
    controls; paint an inset ring within the silhouette instead */
 .pageback:focus-visible, .platebtn:focus-visible, .pgbtn:focus-visible,
-.menubtn:focus-visible, a.item:focus-visible, .gf-dest:focus-visible {
+.gf-tab:focus-visible, a.item:focus-visible, .gf-dest:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
@@ -569,7 +515,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
   margin-top: 0;
 }
 
-/* toasts — one full-width summary plate above the menu button.
+/* toasts — one full-width summary plate above the menu notch.
    16px insets clear the 8px stone band plus an 8px gap; the bottom
    inset rides the safe area so the dock button never overlaps. Sits
    BELOW the dock (z 72) so a leaving toast slides down behind the menu
@@ -578,12 +524,12 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
   position: fixed;
   left: calc(16px + env(safe-area-inset-left, 0px));
   right: calc(16px + env(safe-area-inset-right, 0px));
-  bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(66px + env(safe-area-inset-bottom, 0px));
   z-index: 70;
 }
 /* how far down the plate has to travel to clear the screen: its own
    height, plus the gap it sits above the bottom edge */
-:root { --toast-exit: calc(100% + 92px + env(safe-area-inset-bottom, 0px)); }
+:root { --toast-exit: calc(100% + 66px + env(safe-area-inset-bottom, 0px)); }
 .toast {
   box-sizing: border-box;
   font-family: var(--mono); font-size: 13px; line-height: 1.4;
@@ -606,30 +552,6 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 }
 .toast-xp { color: var(--accent); }
 .toast-more { color: var(--mut); }
-
-/* ---- "Your Progress" section (EXP system) ---- */
-.xp-explain { color: var(--body); font-size: 14px; margin: 0; max-width: 54ch; }
-.xp-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 16px; }
-.xp-row { font-family: var(--mono); font-size: 14px; color: var(--accent); white-space: nowrap; }
-/* Progress bars wear the menu button's notched pixel corners, scaled to bar
-   height, plus a slight 2px checker dither. The ring is built like .gs-tab:
-   the element is the border colour clipped by the notch, and the track
-   pseudo is clipped by the same polygon 1px inside, so the border
-   stair-steps at the corners. The fill <i> is clipped by the element's
-   polygon automatically. */
-.xp-bar {
-  height: 14px; flex: 1; min-width: 120px; max-width: 240px; position: relative;
-  padding: 1px; background: var(--border); clip-path: var(--notch3);
-}
-.xp-bar::before {
-  content: ""; position: absolute; inset: 1px; clip-path: var(--notch3);
-  background: var(--dither-light) 0 0 / 4px 4px, var(--hover);
-}
-.xp-bar > i {
-  position: relative; display: block; height: 100%; width: 0;
-  background: var(--dither-dark) 0 0 / 4px 4px, var(--accent);
-  transition: width .5s ease;
-}
 
 /* ---- egg track ---- */
 .egg-track { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
@@ -676,7 +598,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 /* ---- theme cascade (EXP system) ----
    applyTheme staggers --accent then --fg/--body; this transition is what
    makes the recolor sweep across the text instead of snapping. */
-body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose p, .menu-nav a {
+body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-nav a {
   transition: color .55s ease;
 }
 
@@ -688,7 +610,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
 }
 .emodal.open { display: flex; }
 /* dialog card: the large plate silhouette with a 2px border-colored ring,
-   built like .xp-bar (the element is the ring color clipped to the
+   built like .gf-xpbar (the element is the ring color clipped to the
    polygon; ::before is the page ground clipped by the same polygon 2px
    inside), so the frame stair-steps at the corners like the buttons. */
 .em-card {
@@ -770,7 +692,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
     grid-template-areas: 'viewport side';
     background: var(--bg);
     /* clear exactly the site frame's 16px stone band, so the viewport's
-       art (stalactites, fire) meets the stonework with no gap */
+       art (the fire) meets the stonework with no gap */
     padding: 16px;
   }
   .gf-viewport { grid-area: viewport; overflow-y: auto; overflow-x: hidden; min-width: 0; }
@@ -781,7 +703,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
   /* the log replaces toasts on desktop, and the compass replaces the
      floating dock: one nav surface per breakpoint */
   #toaster { display: none; }
-  .dock { display: none; }
+  .gf-tab { display: none; }
   /* collapsible side column: a drawer-pull tab grown out of the seam (the
      column's 2px left border) at mid-height — 18px wide so it covers the
      border behind it, corners notched on its outer (left) side only, so
@@ -808,18 +730,15 @@ body, h1, .label, .item .t, .item .d, .item .nd, .seeall, .bio p, .lead, .prose 
   .gf-expand { left: auto; right: 16px; z-index: 65; }
 }
 
-/* stalactite ceiling strip (Home): 16px side insets keep the run clear of
-   the site frame's corner bosses; on desktop the viewport column's right
-   edge is the side-panel divider (nowhere near the frame corners), so the
-   right inset drops and the run meets the divider line flush. */
-.stalactites { margin-left: 16px; margin-right: 16px; }
-@media (min-width: 960px) { .stalactites { margin-right: 0; } }
-
 /* right column panels */
 .gf-panel { padding: 20px; border-bottom: 2px solid var(--border); }
 .gf-charname { font-family: var(--mono); font-size: 16px; color: var(--fg); letter-spacing: .04em; }
 .gf-charlvl { font-family: var(--mono); font-size: 13px; color: var(--body); margin: 6px 0 14px; }
-/* notched + dithered like .xp-bar (see the comment there) */
+/* Progress bars wear the menu button's notched pixel corners, scaled to
+   bar height, plus a slight 2px checker dither: the element is the border
+   colour clipped by the notch, and the track pseudo is clipped by the same
+   polygon 1px inside, so the border stair-steps at the corners. The fill
+   child is clipped by the element's polygon automatically. */
 .gf-xpbar {
   height: 10px; position: relative;
   padding: 1px; background: var(--border); clip-path: var(--notch2);
@@ -929,7 +848,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gf-cs-lvl { font-size: 11px; color: var(--body); }
-/* notched + dithered like .xp-bar (see the comment there) */
+/* notched + dithered like .gf-xpbar (see the comment there) */
 .gf-cs-bar {
   height: 6px; position: relative;
   padding: 1px; background: var(--border); clip-path: var(--notch2);

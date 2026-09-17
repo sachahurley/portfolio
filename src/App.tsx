@@ -9,7 +9,7 @@ import Layout from './components/Layout'
 import { XpProvider, useXp, XP_AWARDS } from './context/XpProvider'
 
 // Page components - each one is a different page on your site
-import HomeGate from './pages/HomeGate'
+import VillageHome from './pages/VillageHome'
 import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
 import Notes from './pages/Notes'
@@ -64,10 +64,8 @@ function App() {
           {/* Layout provides the persistent dock/sheet/loader on every page */}
           <Layout>
             <Routes>
-              {/* Home page - the landing page at "/": the village map by
-                  default, the classic home behind the sh_home flag
-                  (?home=classic / ?home=village) */}
-              <Route path="/" element={<HomeGate />} />
+              {/* Home page - the landing page at "/": the village map */}
+              <Route path="/" element={<VillageHome />} />
 
               {/* Projects index + detail */}
               <Route path="/projects" element={<Projects />} />

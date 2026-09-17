@@ -16,7 +16,6 @@ import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
-import { homeToggleRow } from '../lib/homeVariant'
 import PixelPortrait from './game/PixelPortrait'
 import TileBand from './TileBand'
 import DitherIcon from './DitherIcon'
@@ -30,7 +29,6 @@ export default function BottomSheet({
   onClose: () => void
 }) {
   const location = useLocation()
-  const toggle = homeToggleRow(location.search)
   const { level, award, name, avatarSeed, pendingLevels, chests } = useXp()
   const displayLevel = level.level + 1
   const sheetRef = useRef<HTMLDivElement>(null)
@@ -128,8 +126,6 @@ export default function BottomSheet({
           <span aria-hidden="true">›</span>
         </button>
 
-        {/* The home-variant toggle rides under the Home row: it always
-            offers the other home (classic list <-> village map). */}
         <nav className="menu-nav">
           {LOCATIONS.map((loc) => {
             const locked = loc.minLevel != null && displayLevel < loc.minLevel
@@ -154,18 +150,6 @@ export default function BottomSheet({
           })}
         </nav>
 
-        {/* Home-variant toggle: deliberately smaller and plainer than the
-            nav rows - a quiet utility link, not a destination. */}
-        <div className="menu-alt">
-          <Link
-            className="home-toggle"
-            to={toggle.to}
-            onClick={onClose}
-            aria-label={`Switch to the ${toggle.label.toLowerCase()} page`}
-          >
-            {toggle.label}
-          </Link>
-        </div>
 
         {/* Compact character row: the full sheet lives at /character. */}
         <Link

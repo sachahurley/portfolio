@@ -35,10 +35,12 @@ export default function NotePost() {
   return (
     <MinimalPage>
       <BackButton fallback="/notes" />
-      <div className="meta">{formatDate(post.date)}</div>
-      <h1 className="page" style={{ marginTop: 2 }}>
-        {post.title}
-      </h1>
+      {/* title first so every page's h1 sits on the same 96px line; the
+          date drops to a meta line below it */}
+      <h1 className="page">{post.title}</h1>
+      <div className="meta" style={{ marginTop: 8 }}>
+        {formatDate(post.date)}
+      </div>
 
       <div className="prose">
         {isUses ? (
