@@ -31,7 +31,7 @@ function ItemSide({
 }) {
   return (
     <div className="ch-cardside">
-      <PixelItem kind={item.slot} base={item.base} seed={item.id} rarity={item.rarity} cell={6} />
+      <PixelItem kind={item.slot} base={item.base} rarity={item.rarity} cell={6} />
       <div className="ch-card-body">
         {tag && <div className="ch-cardtag">{tag}</div>}
         <div className={`ch-card-name rar-${item.rarity}`}>{item.name}</div>

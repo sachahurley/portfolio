@@ -80,7 +80,7 @@ export default function PackGrid({
                 onClick={() => onSelect(it.id)}
                 aria-label={`${it.name}${upgrade ? ', upgrade' : ''}${unseen ? ', new' : ''}`}
               >
-                <PixelItem kind={it.slot} base={it.base} seed={it.id} rarity={it.rarity} cell={3} />
+                <PixelItem kind={it.slot} base={it.base} rarity={it.rarity} cell={3} />
                 {unseen && <span className="ch-newpip" aria-hidden="true" />}
                 {upgrade && (
                   <span className="ch-upmark stat-up" aria-hidden="true">

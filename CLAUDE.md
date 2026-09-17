@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run vendor:ds` - rebuilds `@scorp-ds/components` in the sibling checkout and copies the publishable files into `vendor/scorp-ds/` so the repo stays self-contained for cloud builds. After running: review `git status vendor/`, run `npm run build`, commit `vendor/`
 - `node scripts/bake-scorpion.mjs` - regenerates `src/components/scorpionPixels.ts` from the source PNG (deterministic, safe to re-run; `--ascii` previews)
 - `node scripts/bake-avatars.mjs` - regenerates `src/game/avatarTiles.ts`, the avatar figure pool, from the Urizen tile sheet (`public/tiles/urizen.png`) and `src/data/tileIndex.ts` (deterministic, safe to re-run)
+- `node scripts/bake-gear.mjs` - regenerates `src/game/gearTiles.ts`, the character screen's item art, from the tile ids listed in the script (fails if they drift from `BASES` in `src/game/loot.ts`)
 
 There are no tests. Deploys to Vercel as an SPA (`vercel.json` rewrites everything to `index.html`).
 

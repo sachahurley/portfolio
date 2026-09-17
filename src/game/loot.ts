@@ -55,16 +55,19 @@ export interface Item extends SavedItem {
   stats: Partial<Record<StatId, number>>
 }
 
-/* ---- the loot table ---- */
+/* ---- the loot table ----
+   Base types are the Urizen sheet's gear art; the art itself is mapped in
+   src/game/gearTiles.ts (baked by scripts/bake-gear.mjs, which fails if the
+   two lists drift, since a save persists the base index). */
 
 export const BASES: Record<Slot, string[]> = {
-  helm: ['Cap', 'Helm', 'Crown'],
-  weapon: ['Dagger', 'Sword', 'Staff'],
-  armor: ['Tunic', 'Mail', 'Plate'],
-  shield: ['Buckler', 'Kite Shield', 'Tower Shield'],
-  ring: ['Band', 'Signet', 'Loop'],
-  boots: ['Sandals', 'Boots', 'Greaves'],
-  amulet: ['Pendant', 'Talisman', 'Locket'],
+  helm: ['Dome Helm', 'Horned Helm', 'Bucket Helm', 'Great Helm', 'Feathered Hat', 'Crown'],
+  weapon: ['Short Sword', 'Broadsword', 'Katana', 'Dagger', 'Battle Axe', 'Mace', 'Staff', 'Spear', 'Bow'],
+  armor: ['Tunic', 'Scale Mail', 'Chainmail', 'Plate', 'Robe', 'Mantle'],
+  shield: ['Heater Shield', 'Round Shield', 'Tower Shield'],
+  ring: ['Band', 'Signet', 'Seal Ring', 'Gemmed Ring', 'Loop'],
+  boots: ['Boots', 'Sturdy Boots', 'Tall Boots', 'Greaves'],
+  amulet: ['Amulet', 'Talisman', 'Pendant', 'Charm', 'Medallion', 'Necklace'],
 }
 
 export const SLOT_LABELS: Record<Slot, string> = {

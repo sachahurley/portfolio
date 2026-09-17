@@ -42,7 +42,7 @@ export default function ChestRevealModal({
     <div className="emodal open" role="dialog" aria-modal="true" aria-label="Chest opened">
       <div className="em-card">
         <div className="em-item">
-          <PixelItem kind={item.slot} base={item.base} seed={item.id} rarity={item.rarity} cell={8} />
+          <PixelItem kind={item.slot} base={item.base} rarity={item.rarity} cell={8} />
         </div>
         <div className="em-title" style={{ color: RARITY_COLORS[item.rarity] }}>
           {item.name}
