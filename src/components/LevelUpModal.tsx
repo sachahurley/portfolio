@@ -56,6 +56,10 @@ export default function LevelUpModal() {
   return createPortal(
     <div className="emodal open" role="dialog" aria-modal="true" aria-label="Level up">
       <div className="em-card">
+        <div className="em-head">
+          <span className="em-kicker">level up</span>
+        </div>
+        <div className="em-body">
         <div className="em-egg">
           <Egg themeId={egg} cls="egg-art-lg" />
         </div>
@@ -64,9 +68,12 @@ export default function LevelUpModal() {
           You earned the <b>{THEMES[egg].name}</b> egg. Drop it into the fire on the home page to
           recolor the site. A chest also waits on your character page.
         </div>
-        <button className="em-btn" ref={btnRef} onClick={dismissModal}>
-          Add to your eggs
-        </button>
+        </div>
+        <div className="em-foot">
+          <button className="em-btn" ref={btnRef} onClick={dismissModal}>
+            Add to your eggs
+          </button>
+        </div>
       </div>
     </div>,
     document.body

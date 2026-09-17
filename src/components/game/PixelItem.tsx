@@ -25,7 +25,7 @@ export default function PixelItem({
   /** Base-type index within the slot; ignored for 'chest'. */
   base?: number
   rarity: Rarity
-  /** Screen pixels per sheet pixel (3 pack, 4 slots, 8 reveal). */
+  /** Screen pixels per sheet pixel (3 pack, 4 slots and dialogs). */
   cell?: number
   className?: string
 }) {
