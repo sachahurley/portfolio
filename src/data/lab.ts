@@ -35,6 +35,24 @@ export const lab: LabItem[] = [
     desc: 'Six tunings of the welcome title dither, straight from the Dither Studio values.',
   },
   {
+    // Rendered by the dedicated TownLab page, not the LabItem template
+    slug: 'town',
+    title: 'Town lab',
+    desc: 'A gothic isometric town where every building is a section of the site.',
+  },
+  {
+    // Rendered by the dedicated BuilderLab page, not the LabItem template
+    slug: 'builder',
+    title: 'Builder lab',
+    desc: 'A workshop for the town’s isometric buildings: shapes, roofs, and three 1-bit styles.',
+  },
+  {
+    // Rendered by the dedicated VillageLab page, not the LabItem template
+    slug: 'village',
+    title: 'Village kit',
+    desc: 'A modular 1-bit pixel village builder with 124 parts, stackers, and recipe export.',
+  },
+  {
     slug: 'dot-loader',
     title: 'Dot loader',
     desc: 'A twinkling dot-matrix loading glyph with an elapsed-time readout.',

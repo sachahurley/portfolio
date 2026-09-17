@@ -30,6 +30,10 @@ export interface Project {
   blocks?: ProjectBlock[] // Extended case-study layout (see block shapes below);
                           // when present, the detail page renders these instead
                           // of the simple prose template
+  locked?: boolean        // Password-locked case study: the teaser (title,
+                          // description, meta) stays public, but the blocks
+                          // live encrypted in src/data/lockedBlocks.gen.ts
+                          // (see scripts/lock-projects.mjs), not here
 }
 
 /**
@@ -218,6 +222,22 @@ export const projects: Project[] = [
         ],
       },
     ],
+  },
+  {
+    // Placeholder locked project: its case-study body is encrypted in
+    // src/data/lockedBlocks.gen.ts (plaintext source: content/locked/,
+    // demo password documented in its README). Real NDA work follows the
+    // same pattern with an uncommitted password.
+    slug: 'sealed-demo',
+    title: 'Sealed Case Study (Demo)',
+    description: 'A password-protected case study. The write-up stays encrypted until unlocked.',
+    role: 'Demo',
+    tags: ['Demo'],
+    featured: false,
+    year: '2026',
+    locked: true,
+    longDescription:
+      'This project is under NDA, so the full write-up is sealed. The short version: it exists, it shipped, and the case study unlocks with a password. Ask me for the key.',
   },
 ]
 

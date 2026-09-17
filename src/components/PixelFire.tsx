@@ -44,13 +44,24 @@ const LIGHT_PALETTE = [
 
 const PIXEL_SIZE = 4          // 4x4 cells, the same dot size as the stalactites
 // The sim grid is taller than the fire's visual band: the extra rows are
-// headroom so surged flames taper off naturally instead of being sliced
+// headroom so hot-base spikes taper off naturally instead of being sliced
 // flat at the canvas ceiling. The footer keeps the original 60px footprint;
 // the canvas bottom-aligns inside it and extends (transparently) upward.
 const FIRE_HEIGHT = 14        // Grid rows (56px canvas; flames peak lower than before)
 const VISUAL_HEIGHT = 60      // Footer band height (layout footprint)
 const ANIMATION_SPEED = 150   // ms between frames (slower crackle)
 const SURGE_MS = 850
+// Each column exits the surge at its own moment, spread across this window,
+// so the fully hot base row cools back to the normal crackle in scattered
+// patches rather than dimming all at once.
+const SURGE_SETTLE_JITTER_MS = 700
+
+/** Whether column x is still surging, given the shared surge deadline. */
+function columnSurging(x: number, surgeUntil: number): boolean {
+  if (surgeUntil === 0) return false
+  const h = ((x * 2654435761) >>> 0) % 997
+  return performance.now() < surgeUntil + (h / 997) * SURGE_SETTLE_JITTER_MS
+}
 
 export interface PixelFireHandle {
   /** Hover tease while an egg is dragged over the fire. */
@@ -77,15 +88,14 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
   const applyFilter = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+    // No transform here: the surge's leap comes from the sim itself (hotter
+    // bottom row, lower decay), so the canvas never slides geometrically.
     if (performance.now() < surgeUntilRef.current) {
       canvas.style.filter = 'brightness(1.4) saturate(1.15)'
-      canvas.style.transform = 'scaleY(1.18)' // leap up; origin bottom, no clip
     } else if (flareRef.current) {
       canvas.style.filter = 'brightness(1.15)'
-      canvas.style.transform = ''
     } else {
       canvas.style.filter = ''
-      canvas.style.transform = ''
     }
   }, [])
 
@@ -190,11 +200,12 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
         if (srcVal === 0) {
           fire[(y - 1) * fireWidth + x] = 0
         } else {
-          // Random decay + random wind (-1 to 1). Tuned for the 11-row grid:
-          // avg ~1.5 keeps typical flames around 8 rows; surge (~0.5 avg)
-          // roughly doubles them without pinning the canvas top.
-          const surging = performance.now() < surgeUntilRef.current
-          const decay = surging ? (Math.random() < 0.5 ? 1 : 0) : Math.floor(Math.random() * 4)
+          // Random decay + random wind (-1 to 1). Avg ~1.5 keeps typical
+          // flames around 8 rows. The surge deliberately does NOT lower
+          // decay: taller flames would recede afterwards, and that recede
+          // reads as the whole fire drifting downward. Impact is sold by
+          // the hot base row, brightness flash, and embers instead.
+          const decay = Math.floor(Math.random() * 4)
           const wind = Math.floor(Math.random() * 3) - 1
           const destX = Math.min(Math.max(x + wind, 0), fireWidth - 1)
           const destIdx = (y - 1) * fireWidth + destX
@@ -210,9 +221,9 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
     if (fire.length === 0) return
 
     const bottomStart = (FIRE_HEIGHT - 1) * fireWidth
-    const surging = performance.now() < surgeUntilRef.current
     for (let x = 0; x < fireWidth; x++) {
       // flare keeps the base hotter; surge pins it to the ceiling
+      const surging = columnSurging(x, surgeUntilRef.current)
       const cool = surging ? 0 : Math.floor(Math.random() * (flareRef.current ? 2 : 4))
       fire[bottomStart + x] = paletteMax - cool
     }
@@ -316,8 +327,7 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
           width: '100%',
           height: `${FIRE_HEIGHT * PIXEL_SIZE}px`,
           imageRendering: 'pixelated',
-          transition: 'filter .25s ease, transform .25s ease',
-          transformOrigin: 'bottom',
+          transition: 'filter .25s ease',
         }}
       />
     </footer>

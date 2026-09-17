@@ -96,48 +96,33 @@ strong, b { font-weight: 400; }
   position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: 72; display: flex; align-items: center;
 }
-/* wrapper exists because clip-path clips everything on the button itself:
-   its border, box-shadow, and children (MenuFire hangs above the button
-   box). So the button only carries the notched clip; the outline (four
-   1px drop-shadows) and the soft shadow live here as filters, which trace
-   the clipped silhouette, and MenuFire is a sibling of the button. */
+/* wrapper exists because clip-path clips everything on the button itself,
+   box-shadow included; the soft float shadow lives here as a filter, which
+   traces the clipped silhouette and keeps the plate legible over content. */
 .menuwrap {
   position: relative; display: inline-flex;
-  /* outline trace in the seam color/weight (2px var(--border)), matching the
-     desktop panel seams; the soft drop keeps the float legible over content */
-  filter:
-    drop-shadow(2px 0 0 var(--border)) drop-shadow(-2px 0 0 var(--border))
-    drop-shadow(0 2px 0 var(--border)) drop-shadow(0 -2px 0 var(--border))
-    drop-shadow(0 8px 26px rgba(0,0,0,.45));
+  filter: drop-shadow(0 8px 26px rgba(0,0,0,.45));
 }
-/* notched square: right-angle corners cut 8px inward, pixel-RPG style */
+/* the pixel-plate family's large floating tier: the --plate-round
+   silhouette at 2x (12px corners, 4px step, matching the phone's 2x pixel
+   zoom), with the family's sepia rest / accent-flip hover recipe
+   (.seebtn/.platebtn/.pgbtn). 16px content core + 14px ring = 44px tap
+   target. */
 .menubtn {
-  position: relative; font-family: var(--mono); font-size: 15px;
-  background: var(--bg); border: 0;
-  padding: 14px 20px; cursor: pointer; color: var(--fg);
-  display: flex; align-items: center; gap: 10px;
+  position: relative; font-family: var(--mono); font-size: 14px; line-height: 16px;
+  border: 0; padding: 14px 18px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: polygon(
-    0 8px, 8px 8px, 8px 0,
-    calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px,
-    100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%,
-    8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px)
+    0 12px, 4px 12px, 4px 4px, 12px 4px, 12px 0,
+    calc(100% - 12px) 0, calc(100% - 12px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 12px, 100% 12px,
+    100% calc(100% - 12px), calc(100% - 4px) calc(100% - 12px), calc(100% - 4px) calc(100% - 4px),
+    calc(100% - 12px) calc(100% - 4px), calc(100% - 12px) 100%,
+    12px 100%, 12px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 12px), 0 calc(100% - 12px)
   );
-  isolation: isolate; /* contain the heat-glow pseudo below the label */
+  transition: background-color .12s, color .12s;
 }
-.menubtn:hover { background: var(--hover); }
-/* subtle reddish heat glow concentrated at the top-centre (below the flame)
-   while the fire burns; fades out when extinguished. Motion-allowed only. */
-@media (prefers-reduced-motion: no-preference) {
-  .menubtn::after {
-    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 70%;
-    background: radial-gradient(55% 100% at 50% 0%, rgba(204, 64, 24, 0.14), rgba(204, 64, 24, 0) 72%);
-    pointer-events: none; z-index: -1; opacity: 0; transition: opacity .9s ease;
-  }
-  .menubtn.lit::after { opacity: 1; }
-}
-/* short doom-fire burning along the top of the Menu button (see MenuFire.tsx);
-   anchored to .menuwrap. Extinguished on first tap. */
-.menufire { position: absolute; left: 50%; transform: translateX(-50%); width: 50%; bottom: calc(100% + 1px); pointer-events: none; }
+.menubtn:hover { background: var(--accent); color: var(--bg); }
 .tip {
   position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: 72; background: var(--fg); color: var(--bg);
@@ -162,7 +147,7 @@ strong, b { font-weight: 400; }
   opacity: 0; pointer-events: none; transition: opacity .3s ease;
 }
 .scrim.open { opacity: 1; pointer-events: auto; }
-/* Notched top corners (the Menu button's 8px cut) with a real 2px seam:
+/* Notched top corners (an 8px right-angle cut) with a real 2px seam:
    the li.sel ring trick at sheet scale — the outer .sheet is clipped to the
    notched polygon and filled with the seam color, with 2px top/side padding;
    .sheet-body carries the same polygon, so a uniform 2px var(--border) ring
@@ -420,7 +405,7 @@ a.item .t { color: var(--accent); }
 /* clip-path swallows the global outside focus ring on plate-clipped
    controls; paint an inset ring within the silhouette instead */
 .pageback:focus-visible, .platebtn:focus-visible, .pgbtn:focus-visible,
-a.item:focus-visible, .gf-dest:focus-visible {
+.menubtn:focus-visible, a.item:focus-visible, .gf-dest:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
@@ -1158,3 +1143,157 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   aspect-ratio: 164 / 83;
 }
 .wm-desc { font-size: 14px; color: var(--mut); margin: 8px 0 0; }
+
+/* ---- vault (password-locked case studies) ----
+   The gate borrows the site's terminal vocabulary: the Loader's asterisk
+   box (.ts-hint / .ts-hint-box), the character panel's underline input
+   recipe (.cs-name), .platebtn, and the hatch texture standing in for the
+   redacted body below the gate. Weight 400 and token colors throughout. */
+.item .lockmark { color: var(--mut); line-height: 0; margin-left: 8px; }
+.vault-gate {
+  margin-top: 32px; padding: 32px 24px;
+  border: 1px solid var(--border); border-radius: 2px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  text-align: center; font-family: var(--mono);
+}
+.vault-gate .dicon { color: var(--mut); }
+.vault-sealed { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
+.vault-form { display: flex; gap: 14px; align-items: center; justify-content: center; width: 100%; max-width: 340px; margin-top: 6px; }
+.vault-input {
+  font-family: var(--mono); font-size: 16px; color: var(--fg);
+  background: transparent; border: 1px solid transparent; border-radius: 0;
+  border-bottom-color: var(--border); padding: 2px 0; flex: 1; min-width: 0;
+}
+.vault-input:hover { border-bottom-color: var(--mut); }
+.vault-input:focus { outline: none; border-bottom-color: var(--accent); }
+.vault-err { font-size: 12px; color: var(--accent); min-height: 16px; }
+.vault-redacted { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
+.vault-hatch {
+  border: 1px solid var(--border); border-radius: 2px;
+  background: repeating-linear-gradient(45deg, #121212, #121212 8px, #181818 8px, #181818 16px);
+}
+.vault-hatch:nth-of-type(1) { height: 96px; }
+.vault-hatch:nth-of-type(2) { height: 148px; }
+.vault-hatch:nth-of-type(3) { height: 64px; }
+@media (prefers-reduced-motion: no-preference) {
+  .vault-gate.err { animation: vault-shake .3s ease-in-out; }
+  @keyframes vault-shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+}
+
+/* ---- town lab (/lab/town): the gothic isometric town ----
+   The canvas sizes itself to an exact integer pixel scale and centers in
+   this frame (fractional stretch would break the pixel grid), so the
+   frame only fixes the footprint. Full-bleed via the same container-unit
+   breakout as .wm-frame. Text lives in DOM: the hover plate and the
+   visually-hidden keyboard hotspots. */
+.town-frame {
+  position: relative; margin-top: 24px;
+  border: 1px solid var(--border); border-radius: 2px;
+  --town-bw: calc(100cqw - 48px);
+  width: min(var(--town-bw), 720px);
+  margin-left: calc((100% - min(var(--town-bw), 720px)) / 2);
+  aspect-ratio: 176 / 104;
+  overflow: hidden;
+}
+.town-hotspot {
+  position: absolute; padding: 0; margin: 0;
+  background: none; border: none; appearance: none;
+  pointer-events: none; /* canvas handles the pointer; keyboard still activates */
+}
+.town-hotspot:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.town-plate {
+  position: absolute; transform: translate(-50%, -100%);
+  font-family: var(--mono); font-size: 12px; line-height: 1;
+  color: var(--fg); background: var(--color-sepia-925, #16120c);
+  border: 1px solid var(--border); border-radius: 2px;
+  padding: 6px 8px; white-space: nowrap; pointer-events: none;
+}
+.town-plate-sub { color: var(--mut); }
+.town-hint { font-family: var(--mono); font-size: 12px; color: var(--mut); margin-top: 12px; text-align: center; }
+
+/* ---- builder lab (/lab/builder): the building workshop ----
+   Same integer-zoom centered-canvas frame as the town; control rows
+   extend the dtoy vocabulary. Option buttons are the .cs-reroll recipe
+   with an aria-pressed accent state (the repo has no checkbox/select
+   convention; pressed buttons are the house idiom). */
+.bld-frame {
+  position: relative; margin-top: 24px;
+  border: 1px solid var(--border); border-radius: 2px;
+  --bld-bw: calc(100cqw - 48px);
+  width: min(var(--bld-bw), 720px);
+  margin-left: calc((100% - min(var(--bld-bw), 720px)) / 2);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+.bld-controls { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.bld-row {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  font-family: var(--mono); font-size: 12px; color: var(--body);
+}
+.bld-row-label {
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mut); min-width: 44px;
+}
+.bld-opt {
+  font-family: var(--mono); font-size: 12px; color: var(--body);
+  background: transparent; border: 1px solid var(--border);
+  padding: 6px 10px; cursor: pointer;
+}
+.bld-opt:hover { color: var(--fg); border-color: var(--mut); }
+.bld-opt[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); }
+.bld-json {
+  font-family: var(--mono); font-size: 12px; color: var(--body);
+  border: 1px solid var(--border); padding: 12px; margin-top: 12px;
+  overflow-x: auto; white-space: pre;
+}
+
+/* ---- blocks (fresh start below the builder lab): the minimal-iso
+   foundation for the home-page map. Figures are small framed canvases;
+   the sandbox reuses .bld-frame. ---- */
+.blk-row { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 20px 0 24px; }
+.blk-fig {
+  margin: 0; padding: 14px 18px 8px;
+  border: 1px solid var(--border); border-radius: 2px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.blk-fig canvas { image-rendering: pixelated; display: block; }
+.blk-cap { font-family: var(--mono); font-size: 12px; color: var(--mut); }
+.blk-thumb {
+  padding: 6px; background: transparent; cursor: pointer;
+  border: 1px solid var(--border); line-height: 0;
+}
+.blk-thumb:hover { border-color: var(--mut); }
+.blk-thumb[aria-pressed='true'] { border-color: var(--accent); }
+.blk-stage {
+  position: relative; margin-top: 16px;
+  border: 1px solid var(--border); border-radius: 2px;
+  --blk-bw: calc(100cqw - 48px);
+  width: min(var(--blk-bw), 560px);
+  margin-left: calc((100% - min(var(--blk-bw), 560px)) / 2);
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+.blk-shop .bld-row { margin-top: 10px; }
+
+/* ---- village kit lab (/lab/village): the embedded onebit-kit builder.
+   The tool is a self-contained page with its own palette and scrolling;
+   the frame gives it a whole screen: full container width and one full
+   viewport of height (100svh minus the site frame's stone bands), so the
+   in-page embed shows the same screen the full-screen tab does. ---- */
+.vk-frame {
+  margin-top: 24px;
+  border: 1px solid var(--border); border-radius: 2px;
+  --vk-bw: 100cqw;
+  width: var(--vk-bw);
+  margin-left: calc((100% - var(--vk-bw)) / 2);
+  /* desktop gframe pads 16px top+bottom */
+  height: calc(100svh - 32px);
+  overflow: hidden;
+}
+@media (max-width: 959px) {
+  /* mobile gframe pads 8px + safe areas top+bottom */
+  .vk-frame {
+    height: calc(100svh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  }
+}
+.vk-frame iframe { display: block; width: 100%; height: 100%; border: 0; }

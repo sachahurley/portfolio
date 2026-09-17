@@ -1,7 +1,7 @@
 /**
  * Note detail (/notes/:slug)
  *
- * Date + title + prose body, ending with a "Discuss on X ↗" link. The special
+ * Date + title + prose body. The special
  * "uses" note (/notes/uses) renders the tools list instead of its HTML body -
  * this is where "What I Use" lives (it is not a standalone page).
  */
@@ -11,7 +11,6 @@ import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
 import BackButton from '../components/BackButton'
 import PagerNav from '../components/PagerNav'
-import { ArrowUpRight } from '../components/icons'
 import { getPostBySlug } from '../data/posts'
 import { tools } from '../data/tools'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
@@ -56,14 +55,7 @@ export default function NotePost() {
             <p>Most days that's Conductor and Claude Code, with Notion for planning.</p>
           </>
         ) : (
-          <>
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
-            <p>
-              <a href="https://x.com/sacha_hurley" target="_blank" rel="noopener noreferrer">
-                Discuss on X <ArrowUpRight />
-              </a>
-            </p>
-          </>
+          <div dangerouslySetInnerHTML={{ __html: post.content }} />
         )}
       </div>
 

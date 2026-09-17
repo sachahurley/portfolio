@@ -1,0 +1,371 @@
+<title>Village Kit Builder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&family=Fragment+Mono&display=swap">
+<style>
+:root{--paper:#edf6d6;--ink:#3e232c;--ink-2:color-mix(in oklab,var(--ink) 60%,var(--paper));--ink-3:color-mix(in oklab,var(--ink) 25%,var(--paper));--ink-4:color-mix(in oklab,var(--ink) 8%,var(--paper));
+  --display:"Silkscreen",ui-monospace,monospace;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#222323;--ink:#f0f6f0}}
+:root[data-theme="dark"]{--paper:#222323;--ink:#f0f6f0}
+body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:0 64px}
+h1{font:400 clamp(20px,3vw,30px) var(--display);margin:0}
+h2{font:400 12px var(--display);text-transform:uppercase;letter-spacing:.08em;margin:0 0 8px;color:var(--ink-2)}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:16px;border-bottom:2px solid var(--ink);margin-bottom:18px}
+.top .sp{flex:1}
+button,select,input{font:500 12px var(--mono);color:var(--ink);background:var(--paper);border:2px solid var(--ink);padding:5px 9px;cursor:pointer}
+button.primary{background:var(--ink);color:var(--paper)}
+button:hover{background:var(--ink-4)}button.primary:hover{background:var(--ink-2)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.cols{display:grid;grid-template-columns:300px 1fr;gap:20px}
+@media (max-width:820px){.cols{grid-template-columns:1fr}}
+.panel{border:2px solid var(--ink);padding:12px}
+.panel+.panel{margin-top:14px}
+.pal{display:flex;flex-wrap:wrap;gap:6px}
+.pal button{padding:4px;display:grid;place-items:center;min-width:34px;min-height:34px}
+.pal button canvas{image-rendering:pixelated;display:block}
+.pal button[aria-pressed="true"]{background:var(--ink-4)}
+.cat{margin-bottom:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+label{font:11px var(--mono);color:var(--ink-2)}
+.stagewrap{display:flex;justify-content:center;overflow:auto}
+#stage{max-width:100%;height:auto;display:block;touch-action:none;cursor:grab}
+#stage.dragging{cursor:grabbing}
+#stage.tap{cursor:pointer}
+#housePrev,#partPrev{image-rendering:pixelated;display:block;border:2px solid var(--ink)}
+.hint{font:12px var(--mono);color:var(--ink-2)}
+textarea{width:100%;box-sizing:border-box;font:12px var(--mono);color:var(--ink);background:var(--ink-4);border:2px solid var(--ink);padding:8px;min-height:120px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{padding:3px 8px}
+ol.storeys{list-style:none;padding:0;margin:0 0 8px;display:flex;flex-direction:column-reverse;gap:4px}
+ol.storeys li{display:flex;justify-content:space-between;align-items:center;border:1.5px solid var(--ink-3);padding:3px 6px;font:12px var(--mono)}
+ol.storeys li button{padding:1px 6px;border-width:1.5px}
+</style>
+<div class="wrap">
+<div class="top">
+  <h1>Village Kit Builder</h1>
+  <span class="hint">124 parts from little_bit_village (CC BY, under_score_lab). Pick, stack, place, save as a preset.</span>
+  <span class="sp"></span>
+  <label for="palette" class="hint">Palette</label>
+  <select id="paletteSel"><option value="site" selected>Site (#191510 / #bdb4a5 / #e0a26a)</option><option value="pixelink">Pixel Ink</option><option value="glow">Monitor Glow</option></select>
+  <button id="flip" type="button">Flip polarity</button>
+</div>
+<div class="cols">
+  <div>
+    <div class="panel">
+      <h2>House</h2>
+      <div class="row"><label for="roofSel">Roof</label><select id="roofSel"></select></div>
+      <div class="row"><label for="upSel">Upper storey</label><select id="upSel"></select><button id="addUp" type="button">Add</button></div>
+      <ol class="storeys" id="storeyList"></ol>
+      <div class="row"><label for="wallSel">Ground floor</label><select id="wallSel"></select></div>
+      <canvas id="housePrev" width="1" height="1"></canvas>
+      <div class="row" style="margin-top:8px"><button class="primary" id="addHouse" type="button">Add house to scene</button></div>
+    </div>
+    <div class="panel">
+      <h2>Tower</h2>
+      <div class="row"><label for="ttopSel">Top</label><select id="ttopSel"></select></div>
+      <div class="row"><label for="tmidSel">Mid section</label><select id="tmidSel"></select><button id="addTmid" type="button">Add</button></div>
+      <ol class="storeys" id="tmidList"></ol>
+      <div class="row"><label for="tbaseSel">Base</label><select id="tbaseSel"></select></div>
+      <canvas id="towerPrev" width="1" height="1"></canvas>
+      <div class="row" style="margin-top:8px"><button class="primary" id="addTower" type="button">Add tower to scene</button></div>
+    </div>
+    <div class="panel">
+      <h2>Castle</h2>
+      <p class="hint" style="margin:0 0 8px">Uses the Tower panel's stack for both towers, flush against a gate wall.</p>
+      <div class="row"><label for="ctopSel">Wall top</label><select id="ctopSel"></select></div>
+      <div class="row"><label for="cmidSel">Wall section</label><select id="cmidSel"></select><button id="addCmid" type="button">Add</button></div>
+      <ol class="storeys" id="cmidList"></ol>
+      <div class="row"><label for="cgateSel">Gate</label><select id="cgateSel"></select></div>
+      <canvas id="castlePrev" width="1" height="1"></canvas>
+      <div class="row" style="margin-top:8px"><button class="primary" id="addCastle" type="button">Add castle to scene</button></div>
+    </div>
+    <div class="panel">
+      <h2>Tree</h2>
+      <div class="row"><label for="canopySel">Canopy</label><select id="canopySel"></select></div>
+      <div class="row"><label for="trunkSel">Trunk</label><select id="trunkSel"></select></div>
+      <div class="row"><label for="treeH">Extra height</label><input id="treeH" type="number" min="0" max="40" value="0" style="width:60px"><label for="treeDx">Canopy dx</label><input id="treeDx" type="number" min="-16" max="16" value="0" style="width:60px"></div>
+      <canvas id="treePrev" width="1" height="1"></canvas>
+      <div class="row" style="margin-top:8px"><button class="primary" id="addTree" type="button">Add tree to scene</button></div>
+    </div>
+    <div class="panel">
+      <h2>Parts</h2>
+      <div id="palette"></div>
+      <p class="hint">Click a part to add it at the right end of the scene.</p>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <h2>Scene</h2>
+      <div class="row">
+        <label for="device">Device</label><select id="device"><option value="402x874" selected>iPhone 16 Pro 402x874</option><option value="834x1194">Tablet 834x1194</option><option value="1280x720">Laptop 1280x720</option><option value="fit">Fit this panel</option></select>
+        <label for="zoom">Pixel scale</label><select id="zoom"><option>2</option><option selected>3</option><option>4</option></select>
+        <label for="align">Rows</label><select id="align"><option value="left">left</option><option value="center" selected>center</option></select>
+        <label for="ground">Ground line</label><input id="ground" type="checkbox" checked>
+        <label for="cue">Tappable cue</label><select id="cue"><option value="none">none</option><option value="accent">accent colour</option><option value="label">label under</option><option value="marker">marker + underline</option><option value="live" selected>animated accent</option></select>
+        <input id="accent" type="color" value="#e0a26a" aria-label="Accent colour" style="padding:0;width:34px;height:28px">
+        <label for="labels">Word under</label><input id="labels" type="checkbox" checked>
+      </div>
+      <div class="row">
+        <button id="earlier" type="button">Move earlier</button><button id="later" type="button">Move later</button><button id="brk" type="button">Row break</button>
+        <button id="del" type="button">Delete</button><button id="clear" type="button">Clear</button>
+        <span class="hint">Items flow left to right and wrap into rows at the device width, like text. Drag to reorder, arrows nudge, B toggles a row break.</span>
+      </div>
+      <div class="row" id="tapRow" hidden>
+        <label><input id="tapOn" type="checkbox"> Tappable</label>
+        <label for="tapLabel">Label</label><input id="tapLabel" placeholder="Aura DS" style="width:110px">
+        <label for="tapHref">Link</label><input id="tapHref" placeholder="/aura" style="width:110px">
+        <label for="tapStyle">Hover / pressed</label><select id="tapStyle"><option value="invert">invert</option><option value="lift">lift 2px</option><option value="outline">outline</option></select>
+      </div>
+      <div class="stagewrap"><canvas id="stage" tabindex="0" aria-label="Scene inside a device frame"></canvas></div>
+      <p class="hint" id="tapStatus">Select an item to make it tappable. Hover (desktop) or press (touch) a tappable item on the phone to preview its state.</p>
+    </div>
+    <div class="panel">
+      <h2>Presets</h2>
+      <div class="row"><input id="presetName" placeholder="preset name" aria-label="Preset name"><button id="save" type="button">Save</button><span class="hint">Saved in this browser only.</span></div>
+      <div class="chips" id="presets"></div>
+    </div>
+    <div class="panel">
+      <h2>Recipe JSON</h2>
+      <p class="hint">Same format as recipes/*.json. <code>layout.width</code> is the device width in scene pixels (device px / pixel scale); the CLI reflows the same items at any width you pass. Edit here and press Load to update the scene.</p>
+      <textarea id="json" spellcheck="false"></textarea>
+      <div class="row" style="margin-top:8px"><button id="load" type="button">Load JSON into scene</button><button id="copy" type="button">Copy</button></div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const CATALOG = [{"name":"anvil","w":15,"h":14,"cat":"prop","kind":"sprite","rows":["....XXX........","....XXX........",".....X.........","...............","...............","XXXXXXXXXXXXXX.",".XXHXXX..XXXXXX","..XXXXXXXXHXXX.","....XXXXXXX....",".....XXXXX.....",".....XXHXX.....","....XXXXXXX....","...XXHXXXXXX...","..XXXXXXXXXXX.."]},{"name":"awning","w":12,"h":10,"cat":"prop","kind":"sprite","rows":["XX..........","..XX........","XX..XX......","XXXX..XX....","..X.XX..XX..","XXXX..XX..XX","X.XX..XXXX..","XX.XXXXX.X..","XXX.XXX.XX..","XXXXXXXXXX.."]},{"name":"barrel","w":7,"h":7,"cat":"prop","kind":"sprite","rows":[".XXXXX.","XXXXXXX","X.X.X.X","XXXXXXX","X.X.X.X","XXXXXXX",".XXXXX."]},{"name":"battlement","w":11,"h":5,"cat":"roof","kind":"sprite","rows":["S.S.S.S.S.S","SSSSSSSSSSS","SSSSS.SSSSS","SSSSS.SSSSS","SSSSSSSSSSS"]},{"name":"book","w":19,"h":10,"cat":"prop","kind":"sprite","rows":[".XXXXXXXX.XXXXXXXX.","X........X........X","X..XXXX..X..XXXX..X","X........X........X","X..XXX...X..XXXXX.X","X........X........X","X..XXXXX.X..XXX...X","X........X........X","XXXXXXXXXXXXXXXXXXX",".XXXXXXXXXXXXXXXXX."]},{"name":"bookstack","w":17,"h":12,"cat":"prop","kind":"sprite","rows":["...XXXXXXXXXXX...","...X.........X...","...X.XXXXXXX.X...","...XXXXXXXXXXX...",".XXXXXXXXXXXXXXX.",".X.............X.",".X.XXX...XXXXX.X.",".XXXXXXXXXXXXXXX.","XXXXXXXXXXXXXXXXX","X...............X","X.XXXXXX..XXXXX.X","XXXXXXXXXXXXXXXXX"]},{"name":"bucket","w":5,"h":4,"cat":"prop","kind":"sprite","rows":["XXXXX","X...X","X.X.X",".XXX."]},{"name":"bush","w":10,"h":6,"cat":"tree","kind":"sprite","rows":["....G.G...","..G.GGG.G.",".GGGGGGGG.","G.GGG.GGGG",".GGGGGGGG.","..GG.GGG.."]},{"name":"campfire","w":11,"h":11,"cat":"prop","kind":"sprite","rows":["......X....",".....X.....","....X.X....",".....X.....","....X.X....",".....X.....","....X.X....","..XX.X.XX..",".X..X.X..X.","X..XX.XX..X","...XXXXX..."]},{"name":"canopy_gnarled","w":13,"h":8,"cat":"tree","kind":"canopy","rows":["...G.......G.","....G.G.....G","...G.G.G.G.G.",".G....G...G..","G............",".............","..........G..",".G.........G."],"meta":{"anchor":[4,3]}},{"name":"canopy_oak","w":32,"h":22,"cat":"tree","kind":"canopy","rows":["................G...............",".................GG.G...........","...............GG.GGGG..........",".............GG.GGGGG...........","............G.GGGGGG.G.G........",".........G.G.GGGGGGGG.G.........","..........G.GGGGGGGGGG.G........",".......G..GGGG.GGGGGGGG.G...G...","........G.GGG.GGGGGGGG.G.GGG....",".........G.GGGGGGGGGG.GGGGG.G...","...G...GG.GGGGG.GGGGGGGGGGGGGG.G","....GGG.GGGGGGGG.GGGGGGGGGGGGGG.","...GGGGGGGGGG.GGG.GGGGGGGGGGGGG.","...GGGGGGGGGGG.G.GGGGGGGGGGGG.G.","...GGGGGGGGGGGGGG.G.GGGGGGGGGG..","G.G.GGGG.GGGGGGGGG.G.G.G.GGGG..G",".G.GGGGGGGGG.GGGGGGGGGG.GG.G.GG.",".GGGGGGG.GGGG....GGGGGGGGGG.G...",".GGGGGG.GGG.......GG.GGG.G...G..","..GGG.GG..................G.....","...GGG..G.......................","..G............................."],"meta":{"anchor":[15,18]}},{"name":"canopy_pine","w":11,"h":16,"cat":"tree","kind":"canopy","rows":[".....G.....","....GG.G...",".....GG....","...G.GG....","....GG.G...",".....GG....","..G.GGG.G..","...GGGGG...","....GGGG.G.","..G.GGG....","...G.GGG...",".GG.GGG.G..","...GGGGG...","....GGGG.GG","..GGGGGGG..","GG..G.GG.G."],"meta":{"anchor":[5,15]}},{"name":"canopy_round","w":12,"h":8,"cat":"tree","kind":"canopy","rows":[".....G.G....","....G.GGG...",".G.G.GGG.GG.","G.GGGGGGGG.G",".GGGGG.GG.G.","G.GGGGGGGGGG",".GGG....GGG.","...........G"],"meta":{"anchor":[5,6]}},{"name":"canopy_tall","w":12,"h":16,"cat":"tree","kind":"canopy","rows":[".....G.G....","..G.GGG.G...","...GGGGG.G..","...G.GGGG...","..G.GGGGGG..",".G.GGGGGGG..","G.G.GGGGG.G.",".GGGGGGG.G..",".G.GGGGGGG..","..GGGGGGGG.G",".G.G.GGG.GG.","..G...GGG.G.","........GG..","............","...G....G...","..G.G......."],"meta":{"anchor":[4,11]}},{"name":"castle_gate","w":19,"h":7,"cat":"wall","kind":"sprite","rows":["SSSSSSSSSSSSSSSS.SS","SSSSSSS.....SSSSSSS","SSSSSS.XXXXX.SSSSSS","S.SSSS.X.X.X.SSSSSS","SSSSSS.X.X.X.SSSSSS","SSSSSS.X.X.X.SSSS.S","SSSSSSSXXXXXSSSSSSS"]},{"name":"castle_gate_wide","w":27,"h":7,"cat":"wall","kind":"sprite","rows":["SSSSSSSSSSSSSSSSSSSSSSSS.SS","SSSSSSSSSSS.....SSSSSSSSSSS","SSSSSSSSSS.XXXXX.SSSSSSSSSS","S.SSSSSSSS.X.X.X.SSSSSSSSSS","SSSSSSSSSS.X.X.X.SSSSSSSSSS","SSSSSSSSSS.X.X.X.SSSSSSSS.S","SSSSSSSSSSSXXXXXSSSSSSSSSSS"]},{"name":"castle_top","w":19,"h":5,"cat":"roof","kind":"sprite","rows":["S.S.S.S.S.S.S.S.S.S","SSSSSSSSSSSSSSSSSSS","SSSS.SSSSSSSSS.SSSS","SSSS.SSSSSSSSS.SSSS","SSSSSSSSSSSSSSSSSSS"]},{"name":"castle_top_wide","w":27,"h":5,"cat":"roof","kind":"sprite","rows":["S.S.S.S.S.S.S.S.S.S.S.S.S.S","SSSSSSSSSSSSSSSSSSSSSSSSSSS","SSSSSSSS.SSSSSSSSS.SSSSSSSS","SSSSSSSS.SSSSSSSSS.SSSSSSSS","SSSSSSSSSSSSSSSSSSSSSSSSSSS"]},{"name":"castle_wall","w":19,"h":6,"cat":"upper","kind":"sprite","rows":["SSSSSSSSSSSSSSSSSSS","S.SSSSSSSSSSSSSSSSS","SSSSSSSSS.SSSSSSSSS","SSSSSSSSS.SSSSSSSSS","SSSSSSSSSSSSSSSSS.S","SSSSSSSSSSSSSSSSSSS"]},{"name":"castle_wall_wide","w":27,"h":6,"cat":"upper","kind":"sprite","rows":["SSSSSSSSSSSSSSSSSSSSSSSSSSS","S.SSSSSSSSSSSSSSSSSSSSSSSSS","SSSSSSSSSSSSS.SSSSSSSSSSSSS","SSSSSSSSSSSSS.SSSSSSSSSSSSS","SSSSSSSSSSSSSSSSSSSSSSSSS.S","SSSSSSSSSSSSSSSSSSSSSSSSSSS"]},{"name":"chest","w":20,"h":15,"cat":"prop","kind":"sprite","rows":["....XXXXXXXXXXXX....","...XXXXXXXXXXXXXXX..","..XXX.XXXXXXXXX.XXX.","..XX..XXXXXXXXX..XX.",".XXXXXXXXXXXXXXXXXXX",".XH...H...HH...H..X.",".X.H.....H..H.....X.","XXXXXXXXXXXXXXXXXXXX","XX..XXXXXX.XXXXX..XX","XX..XXXXX.X.XXXX..XX","XX..XXXXXX.XXXXX..XX","XX..XXXXXXXXXXXX..XX","XX..XXXXXXXXXXXX..XX","XXXXXXXXXXXXXXXXXXXX",".XXXXXXXXXXXXXXXXXX."]},{"name":"crossed_axes","w":17,"h":17,"cat":"prop","kind":"sprite","rows":["..XXXX.....XXXX..",".XXXXXX...XXXXXX.","XXX.XXXX.XXXX.XXX","XH...XXX.XXX...HX","XX...XXX.XXX...XX",".X..XXX...XXX..X.",".....XXX.XXX.....","......XXXXX......",".......XHX.......","......XX.XX......",".....XX...XX.....","....XX.....XX....","...XH.......HX...","..XX.........XX..",".XX...........XX.","XX.............XX","X...............X"]},{"name":"crossed_beams","w":9,"h":7,"cat":"prop","kind":"sprite","rows":["...X.X...","....X....","...X.X...","....X....","...X.X...",".XX.X.XX.","X...X...X"]},{"name":"crossed_combo_hammer","w":17,"h":17,"cat":"prop","kind":"sprite","rows":["...X.......XXXXX.","..XXX.....XXXXX..",".XXHXX....XXXX...","XXXXX....XXHX...X",".XXXX.....XX...XX","..X.XX....XX..XXX",".....XX....X.XXX.","......XX..XX.X...",".......XXXX......","........HX.......",".......XXXX......",".XXXX.XX..XX.....","XXXHXXX....XX....","XX..XX......HX...","XX..XX.......XX..","XXXXXX........XX.",".XXXX..........XX"]},{"name":"crossed_hammer_pick","w":17,"h":17,"cat":"prop","kind":"sprite","rows":["XXXXXX...........","XXHXXX....XXXXXXX","XXXXXX...XXXXXXXX","XXXXXX..XXXXHXXX.","...XXXX.XXXX.....","....XXX.XXX......",".....XXXXX.......","......XXX........",".......XHX.......","......XX.XX......",".....XX...XX.....","....XX.....XX....","...XH.......HX...","..XX.........XX..",".XX...........XX.","XX.............XX","X...............X"]},{"name":"crossed_hammers","w":17,"h":17,"cat":"prop","kind":"sprite","rows":["XXXXXX.....XXXXXX","XXHXXX.....XXXHXX","XXXXXX.....XXXXXX","XXXXXX.....XXXXXX","...XXXX...XXXX...","....XXX...XXX....",".....XXX.XXX.....","......XXXXX......",".......XHX.......","......XX.XX......",".....XX...XX.....","....XX.....XX....","...XH.......HX...","..XX.........XX..",".XX...........XX.","XX.............XX","X...............X"]},{"name":"crossed_keys","w":17,"h":17,"cat":"prop","kind":"sprite","rows":["XXXX.........XXXX","X.XX.........XX.X","X.XXX.......XXX.X","XXXXXX.....XXXXXX","..XXXXX...XXXXX..","...XXXX...XXXX...","....XXX...XXX....",".....XXX.XXX.....","......XXXXX......",".......XHX.......","......XX.XX......",".....XX...XX.....","....XX.....XX....","...XXX.....XXX...","..XXHXX...XXHXX..",".XX...XX.XX...XX.","..XXXXX...XXXXX.."]},{"name":"crossed_pick_shovel","w":17,"h":17,"cat":"prop","kind":"sprite","rows":["XXXXXXXX....XXXX.","XX...XXXX..XXXXXX","H.....XXX..XXXXXX","......XXX..XXHXXX",".....XXX....XXXX.","....XXX......XX..",".....XXX.XXX.....","......XXXXX......",".......XHX.......","......XX.XX......",".....XX...XX.....","....XX.....XX....","...XH.......HX...","..XX.........XX..",".XX...........XX.","XX.............XX","X...............X"]},{"name":"crossed_saw_chisel","w":17,"h":17,"cat":"prop","kind":"sprite","rows":["XXXXXXXXX......XX","XXXXXXXXXX....XXX","XHXXXXXXXXX..XXXX","X.X.X.X.XXX..XHXX",".....XXXXXX..XXX.","....XXX.XXX.XXX..",".....XXX.XXX.....","......XXXXX......",".......XHX.......","......XX.XX......",".....XX...XX.....","....XX.....XX....","...XH.......HX...","..XX.........XX..",".XX...........XX.","XX.............XX","X...............X"]},{"name":"crossed_spanners","w":17,"h":17,"cat":"prop","kind":"sprite","rows":[".XXXXX.....XXXXX.","..XXXXX...XXXXX..","...XXXX...XXXX...","X...XHXX.XXHX...X","XX...XX...XX...XX","XXX..XX...XX..XXX",".XXX.X.....X.XXX.","...X.XX...XX.X...","......XX.XX......",".......XHX.......",".......XXX.......","......XX.XX......",".....XX...XX.....","....HX.....XH....","...XX.......XX...","..XX.........XX..",".XX...........XX."]},{"name":"crossed_swords","w":17,"h":17,"cat":"prop","kind":"sprite","rows":[".X.............X.",".XX...........XX.",".XXX.........XXX.","..XXX.......XXX..","..XHX.......XHX..","...XXX.....XXX...","....XXX...XXX....",".....XXX.XXX.....","......XXXXX......",".......XHX.......","......XX.XX......","....XXXX.XXXX....","...XXXXX.XXXXX...","...X.XX...XX.X...","....XX.....XX....","...XX.......XX...","...XX.......XX..."]},{"name":"crossed_tools","w":17,"h":17,"cat":"prop","kind":"sprite","rows":["...XX......XXXXX.","..XXXX....XXXXX..",".XXHXX....XXXX...","XXXXX....XXHX...X","XXXXX.....XX...XX",".XX.XX....XX..XXX",".....XX....X.XXX.","......XX..XX.X...",".......XXXX......","........HX.......",".......XXXX......","......XX..XX.....",".....XX....XX....","....HX......HX...","...XX........XX..","..XX..........XX.",".XX............XX"]},{"name":"crossed_wrench_screwdriver","w":17,"h":17,"cat":"prop","kind":"sprite","rows":[".XXXXX..........X","..XXXXX........HX","...XXXX........X.","X...XHXX......X..","XX...XX......X...","XXX..XX.....X....",".XXX.X.....X.....","...X.XX...X......","......XXXXX......",".......XHX.......","......XXXX.......",".....XXX.XX......","....XXX...XX.....","...XHX.....XH....","..XXX.......XX...",".XXX.........XX..","XXX...........XX."]},{"name":"crystal_ball","w":17,"h":18,"cat":"prop","kind":"sprite","rows":[".......XXX.......",".....XXXXXXX.....","....XXXXXXXXX....","...XXX..XXXXXX...","..XXX..XXXXXXXX..",".XXXX.XXXXXXXXXX.",".XXXXXXXXXXHXXXX.","XXXXXXXXXXXXXXXXX","XXXXXXXXXXXXXXXXX","XXXXHXXXXXXXXXXXX",".XXXXXXXXXXXXXXX.",".XXXXXXXXXHXXXXX.","..XXXXXXXXXXXXX..","...XXXXXXXXXXX...",".....XXXXXXX.....","...XXX.....XXX...","..XXXXXXXXXXXXX..",".XXXXXXXXXXXXXXX."]},{"name":"fence_1","w":15,"h":6,"cat":"fence","kind":"sprite","rows":["X.......X......","X.X.X.X.X......","X..X.X..X......","X.X.X.X.X......","X..X.X..X......","X.X.X.X.X......"]},{"name":"fence_2","w":9,"h":6,"cat":"fence","kind":"sprite","rows":["X.X.X.X.X","XXXXXXXXX","X.X.X.X.X","X.X.X.X.X","XXXXXXXXX","X.X.X.X.X"]},{"name":"fence_3","w":8,"h":6,"cat":"fence","kind":"sprite","rows":["X.X..X.X","XXXXXXXX","X.X..X.X","X.X.X..X","XXXXXXXX","X.X.X..X"]},{"name":"fence_4","w":9,"h":6,"cat":"fence","kind":"sprite","rows":["X.X.X...X","XXXXXXXXX","X.X.X.X.X","X...X.X.X","XXXXXXXXX","X.X.X.X.X"]},{"name":"flowers","w":7,"h":5,"cat":"ground","kind":"sprite","rows":["X...X..","XX.XXX.",".X..X.X",".X..X.X","XXXXXXX"]},{"name":"forge_base","w":23,"h":7,"cat":"wall","kind":"sprite","rows":["XXXXXXXXXXXXXXXXXXXXXXX","X.......X.X.XXX.X.X...X","X.......X.XX.X.XX.X...X","X..XXX..X.XXX.XXX.X...X","X...X...X.XX.X.XX.XXXXX","X..XXX..X.X.XXX.X.XX.XX","XXXXXXXXXXXXXXXXXXXXXXX"]},{"name":"grass_1","w":2,"h":2,"cat":"ground","kind":"sprite","rows":["G.",".G"]},{"name":"grass_2","w":2,"h":3,"cat":"ground","kind":"sprite","rows":[".G","G.","G."]},{"name":"grass_3","w":2,"h":3,"cat":"ground","kind":"sprite","rows":[".G","G.","G."]},{"name":"grass_4","w":7,"h":3,"cat":"ground","kind":"sprite","rows":["G..G..G",".G.G.G.",".G.G.G."]},{"name":"grass_5","w":9,"h":3,"cat":"ground","kind":"sprite","rows":["G..G.G..G",".GG.GG.G.",".G..G..G."]},{"name":"hammer","w":15,"h":15,"cat":"prop","kind":"sprite","rows":["...XX..........","..XXXX.........",".XXHXX.........","XXXXX..........","XXXXX..........",".XX.XX.........",".....XX........","......HX.......",".......XX......","........XX.....",".........XX....","..........HX...","...........XX..","............XX.",".............XX"]},{"name":"hammer_ball_peen","w":21,"h":21,"cat":"prop","kind":"sprite","rows":[".XXX.................","XXXXX................","XXXXXX...............","XXXXXX...............",".XXXX................","..XX.................",".....XX..............","......XX.............",".......XX............","........XX...........",".........XX..........","..........XX.........","...........XX........","............XX.......",".............XX......","..............XX.....","...............XX....","................XX...",".................XX..","..................XX.","...................XX"]},{"name":"hammer_claw","w":21,"h":21,"cat":"prop","kind":"sprite","rows":["....XX...XX..........","....XXX..X...........","...XXXXX.............","..XXXXX..............",".XXXXX...............","XXXXX................",".XXX.XX..............","..X...XX.............",".......XX............","........XX...........",".........XX..........","..........XX.........","...........XX........","............XX.......",".............XX......","..............XX.....","...............XX....","................XX...",".................XX..","..................XX.","...................XX"]},{"name":"hammer_cross_peen","w":21,"h":21,"cat":"prop","kind":"sprite","rows":["...XX................","..XXX................",".XXXXX...............","XXXXXX...............","XXXXX................","..XX.................",".....XX..............","......XX.............",".......XX............","........XX...........",".........XX..........","..........XX.........","...........XX........","............XX.......",".............XX......","..............XX.....","...............XX....","................XX...",".................XX..","..................XX.","...................XX"]},{"name":"hammer_gavel","w":21,"h":21,"cat":"prop","kind":"sprite","rows":["....XXXX.............","...XXXXX.............","..XXXXXX.............",".XXXXXXX.............","XXXXXXX..............","XXXXXX...............","XXXXX................","XXXX..XX.............",".......XX............","........XX...........",".........XX..........","..........XX.........","...........XX........","............XX.......",".............XX......","..............XX.....","........XXXXXXXXXXXX.","........XXXXXXXXXXXX.","........X..........X.","........XXXXXXXXXXXX.","...................XX"]},{"name":"hammer_icon","w":18,"h":17,"cat":"prop","kind":"sprite","rows":["......XXXHXX......",".....XXXXXXXX.....",".....XX...XXHX....","...........XXXX...","..........XXXHXX..",".........X.XXXXX..","........XXX.XXXXHX",".......XXXX...XHXH","......XXXXH....XX.",".....XXXXX........","....XXXXH.........","...XXXXX..........","..XXXXH...........",".XXXXX............","XXXXH.............","XXHX..............",".XX..............."]},{"name":"hammer_mallet","w":21,"h":21,"cat":"prop","kind":"sprite","rows":["....XXXX.............","...XXXXX.............","..XXXXXX.............",".XXXXXXX.............","XXXXXXX..............","XXXXXX...............","XXXXX................","XXXX..XX.............",".......XX............","........XX...........",".........XX..........","..........XX.........","...........XX........","............XX.......",".............XX......","..............XX.....","...............XX....","................XX...",".................XX..","..................XX.","...................XX"]},{"name":"hammer_sledge","w":21,"h":21,"cat":"prop","kind":"sprite","rows":["...XXX...............","..XXXXX..............",".XXXXXXX.............","XXXXXXXXX............","XXXXXXXX.............","XXXXXXX..............",".XXXXXX..............","..XXX.XX.............","...X...XX............","........XX...........",".........XX..........","..........XX.........","...........XX........","............XX.......",".............XX......","..............XX.....","...............XX....","................XX...",".................XX..","..................XX.","...................XX"]},{"name":"hammer_upright","w":13,"h":16,"cat":"prop","kind":"sprite","rows":["XXXXXXXXXXXXX","XX.XXXXXXX.XX","XXXXXXXXXXXXX","XXXXXXXXXXXXX","XX.XXXXXXX.XX","XXXXXXXXXXXXX",".....XXX.....",".....XXX.....",".....XXX.....",".....XXX.....",".....XXX.....",".....XXX.....",".....XXX.....",".....XXX.....",".....XXX.....",".....XXX....."]},{"name":"hammer_war_hammer","w":21,"h":19,"cat":"prop","kind":"sprite","rows":["..XX.X...............",".XX.XXX..............",".X.XXXXX.............","X.XXXXXXX............",".XXXXXXX.............","..XXXXX..............","...XXX...............","....X..XXX...........","........XXX..........",".........XXX.........","..........XXX........","...........XXX.......","............XXX......",".............XXX.....","..............XXX....","...............XXX...","................XXX..",".................XXX.","..................XXX"]},{"name":"hedge","w":17,"h":5,"cat":"tree","kind":"sprite","rows":["..G.G..G.G..G.G..",".GGGGG.GGGG.GGGG.","GGGG.GGGGGGGGG.GG",".GGGGGGG.GGGGGGG.","..GGGGGGGGGGGGG.."]},{"name":"inkpot","w":13,"h":15,"cat":"prop","kind":"sprite","rows":["..........XX.",".........X.X.","........X.XX.",".......X.XX..","......X.XX...","......XXX....",".....XX......",".....X.......","...XXXXXXX...","..X.......X..","..XXXXXXXXX..",".XX.......XX.",".X.........X.",".X.........X.","..XXXXXXXXX.."]},{"name":"lamp_post","w":6,"h":15,"cat":"prop","kind":"sprite","rows":["..X...",".X.X..","..X...","..X...",".XXX..","XXXXX.","......",".X.X..",".X.X..",".XXX..",".X.X..",".XXX..",".XXX..",".XXX..","XXXXX."]},{"name":"letter","w":17,"h":11,"cat":"prop","kind":"sprite","rows":["XXXXXXXXXXXXXXXXX","XX.............XX","X.X...........X.X","X..X.........X..X","X...X.......X...X","X....X.....X....X","X.....X.XX......X","X......XXX......X","X.......X.......X","X...............X","XXXXXXXXXXXXXXXXX"]},{"name":"log","w":9,"h":3,"cat":"ground","kind":"sprite","rows":["XXXXXXXX.","X.XXXXXXX","XXXXXXXX."]},{"name":"marker","w":5,"h":6,"cat":"prop","kind":"sprite","rows":["..S..",".S.S.","..S..","..S..",".S.S.","SSSSS"]},{"name":"mushroom","w":5,"h":5,"cat":"ground","kind":"sprite","rows":[".XXX.","XX.XX","..X..","..X..",".XXX."]},{"name":"mushrooms","w":9,"h":5,"cat":"ground","kind":"sprite","rows":[".XXX.....","XX.XX.XX.","..X..X.X.","..X...X..",".XXX.XXX."]},{"name":"notice_board","w":13,"h":14,"cat":"prop","kind":"sprite","rows":["......X......",".....XXX.....","....XXXXX....","...XXX.XXX...","..XXXXXXXXX..",".XXXXXXXXXXX.",".X.........X.",".X.XXX.XXX.X.",".X.........X.",".X.XXXXX.X.X.",".X.........X.",".XXXXXXXXXXX.","..X.......X..","..X.......X.."]},{"name":"observatory_top","w":13,"h":8,"cat":"roof","kind":"sprite","rows":["..........X..",".........X...","....XXXXX....","..XXXXX.XX...",".XXXXXX.XXXX.",".XXXXXXXXXXX.","XXXXXXXXXXXXX","X.XXXXXXXXX.X"]},{"name":"pencil","w":18,"h":18,"cat":"prop","kind":"sprite","rows":["................XX","..............X.XX",".............XX.XX","............XXX.X.","...........XXXX...","..........XX.XX...",".........XX.XX....","........XX.XX.....",".......XX.XX......","......XX.XX.......",".....XX.XX........","....XX.XX.........","....XXXX..........","...XXXX...........","..XXXX............","..XXX.............",".X................","X................."]},{"name":"quill","w":16,"h":16,"cat":"prop","kind":"sprite","rows":["..........XXX...","........XXXXXXX.",".......XXXXHXXXX","......XXXXXXXXXX",".....XXXHXXXXXX.",".....XXXXXXXX...","....XX.XXHXX....","....X.XXXXX.....","...X.XHXXX......","...X.XXX........","..X.XX..........","..XXX...........","..XX............",".X..............",".X..............","X..............."]},{"name":"rock","w":5,"h":3,"cat":"ground","kind":"sprite","rows":[".XXX.","XXXXX","XX.XX"]},{"name":"rocks","w":9,"h":4,"cat":"ground","kind":"sprite","rows":["....XX...",".XX.XXXX.","XXXXXX.XX","XX.XXXXXX"]},{"name":"roof_1","w":15,"h":8,"cat":"roof","kind":"sprite","rows":[".......X.......","......XXX......",".....X.XXX.....","....XXXXXXX....","...XXXXXXX.X...","..XXXXXXXXX.X..",".XXX.XXXXXXXXX.","XXX.XXXXXXXX.XX"]},{"name":"roof_2","w":19,"h":10,"cat":"roof","kind":"sprite","rows":[".........X.........","........XXX........",".......XX.XX.......","......XXXXXXX......",".....XX.X.X.XX.....","....X.X.....X.X....","...XX.X.....X.XX...","..X.X.X.....X.X.X..",".X...............X.","X.................X"]},{"name":"roof_3","w":19,"h":10,"cat":"roof","kind":"sprite","rows":[".........X.........","........XXX........",".......XX.XX.......","......X.X.X.X......",".....XX.X.X.XX.....","....X.XXX.X.X.X....","...XX.X.X.XXX.XX...","..X.X.X.X.X.X.X.X..",".X...............X.","X.................X"]},{"name":"roof_4","w":19,"h":10,"cat":"roof","kind":"sprite","rows":[".........X.........","........X.X........",".......X.W.X.......","......X.WWW.X......",".....X.WW.WW.X.....","....X.W.WWW.W.X....","...X.WWW.W.WWW.X...","..X.WWWWW.WWWWW.X..",".X...............X.","X.................X"]},{"name":"roof_5","w":25,"h":8,"cat":"roof","kind":"sprite","rows":["...XXXXXXXXXXXXXXXXXXX...","...X.X.XXXXXXXXXXXXX.X...","..XXX.HXXXXXXXXXXXHXXXX..","..XX.XXXXXXXHXX.XXXXXXX..",".XXXXXX.X.XXXX.X.X.XXXXX.",".XXXXXXX.HXXXXX.X.XXHXXX.","XXXX.XXXXXXXXXXXXXXXXXXXX","XXXXXXXXXXXXXXXXXXXXXXXXX"]},{"name":"roof_6","w":29,"h":11,"cat":"roof","kind":"sprite","rows":["XX...........................","..XXXXXXX....................","...XXXX..XXXXXXX.............","..XXXXXXXXXX.X..XXXXXXXXXXX..","..XXXXXXXXXXXXXXXXXXXXXXXX.X.","...XXXXXXXXXXXXXXXXXXXXXXXXX.","...XXXXXXXXXXXXXXXXXXXXXXXXX.","...X.XXXXXXXX.XXXXXXXXXXXXXX.","....X.XXXXXX.XXXXXXXXXXXXXXXX","....XXXXXXXXXXXXXXXXXXXX.XXXX","....XXXXXXXXXXXXXXXX.XXXXXXXX"]},{"name":"roof_7","w":25,"h":8,"cat":"roof","kind":"sprite","rows":["...XXXXXXXXXXXXX.XXXXXXXX","...X.X.XXXXXXXXXXXXXXXXX.","..XXX.XXXXXXXXXXXXXX.XX..","..XX.XXXXXXXXXXXXXX.XX...",".XXXXXXXXXXXXXXXXXXXX....",".XXXXXXXXXXXXX.XXXXX.....","XXXX.XX.XXXXXXX.XXX......","XXXXXXXXXXXXXXXXXX......."]},{"name":"roof_tower","w":11,"h":6,"cat":"roof","kind":"sprite","rows":[".....X.....","....XXX....","...XXXXX...","..XXX.XXX..",".XXXXXXXXX.","XXXXXXX.XXX"]},{"name":"scroll","w":17,"h":13,"cat":"prop","kind":"sprite","rows":["XX.............XX","X.X...........X.X","XXXXXXXXXXXXXXXXX","XX.............XX","XX..XXXXXXXXX..XX","XX.............XX","XX..XXXXXX.....XX","XX.............XX","XX..XXXXXXXX...XX","XX.............XX","XXXXXXXXXXXXXXXXX","X.X...........X.X","XX.............XX"]},{"name":"shrub","w":7,"h":4,"cat":"tree","kind":"sprite","rows":["..G.G..",".GGGGG.","G.GGG.G",".GG.GG."]},{"name":"signpost","w":9,"h":9,"cat":"prop","kind":"sprite","rows":["XXXXXXX..",".X.X.X...",".X...XX..",".X.X.X.XX",".........","SSSSSSS..",".S.S.S...",".SS.SS...","SSSSSSS.."]},{"name":"skull","w":16,"h":19,"cat":"prop","kind":"sprite","rows":[".....XXXXXX.....","...XXXXXXXXXX...","..XXXXXXXXXXXX..",".XXXXXXXXXX.XXX.",".XXXXXXXXXXX.XX.","XXXXXXXXXXXXX.XX","XXXXXXXXXXXXXXXX","XXX....XXX....XX","XX......X......X","XX......X......X","XXX....XXX....XX",".XXXXXXXXXXXXXX.",".XXXXXX..XXXXXX.","..XXXXX..XXXXX..","..XXXXXXXXXXXX..","...X.X.X.X.X.X..","...X.X.X.X.X.X..","....XXXXXXXXXX..",".....XXXXXXXX..."]},{"name":"stone_1","w":11,"h":7,"cat":"stone","kind":"sprite","rows":["SSSSSSSSSSS",".SS.....SS.","SSSSSSSSSSS","S.SS...SSSS","SS.S...SS.S",".SSS...SSS.","SSSS...SSSS"]},{"name":"stone_2","w":15,"h":7,"cat":"stone","kind":"sprite","rows":["SSSS.SSSSSSSSSS",".SSSSSS.S.SSSS.","SS..SS.X.SS..SS","SS..SS.X.SS..SS",".SSSS.X.X.SSSSS","S.SSS.XXX.SSS..","SSSSS.XXX.SSSSS"]},{"name":"stone_3","w":19,"h":7,"cat":"stone","kind":"sprite","rows":["SSSSSSSSSSSSSSSSSSS","..SSSSS.....SSSSSS.","SSSS..SSSSSSS..SSSS","S.SS..SS...SS..S..S","SS.SSSSS...SSSS.SSS",".SSSSSSS...SSSSSS..","SSSSSSSS...SSSSSSSS"]},{"name":"stone_gate","w":13,"h":7,"cat":"stone","kind":"sprite","rows":["SSSSSSSS..SSS","..SSS.S..SSSS","SSSS.S..S.SSS",".SS.S..SSSSSS","S.SS..S.SSSSS","SSS..S.SSSSS.","SS..SSSSSSSSS"]},{"name":"stone_ground","w":10,"h":3,"cat":"stone","kind":"sprite","rows":["SS.SSSSSSS",".SSSSS.SS.","SSSSS.SSSS"]},{"name":"stone_tower","w":11,"h":18,"cat":"stone","kind":"sprite","rows":[".SSSSSSSSSS","SSSSSSSSSSS","SSSSSSSSSSS","SSSSS.SSSSS","SSSSS.SSSSS","SSSSSSSS.SS","SSSSSSSSS.S","SSSSSSSSSSS","SSSSSSSSSSS","SSSSS.SSSSS","SSSSS.SSSSS","SSSSSSSSSSS","SSSSSSSSSSS","S.SSSSSSSSS",".SSSSSSSSSS","SSSSS.SSSSS","SSSSS.SSSSS","SSSSSSSSSSS"]},{"name":"tent","w":13,"h":9,"cat":"prop","kind":"sprite","rows":["......X......",".....XXX.....","....XXXXX....","...XXX.XXX...","..XXXXXXXXX..",".XXXX...XXXX.","XXXX..X..XXXX","XXXX..X..XX.X","XXXXX.X.XXXXX"]},{"name":"tool_1","w":7,"h":10,"cat":"tool","kind":"sprite","rows":["......X","....XX.","..XX...","XX...X.",".X....X",".X.....",".X.....",".X.....",".X.....",".X....."]},{"name":"tool_2","w":4,"h":4,"cat":"tool","kind":"sprite","rows":["XXXX",".X.X",".XXX","..X."]},{"name":"tool_3","w":3,"h":5,"cat":"tool","kind":"sprite","rows":["SSS",".SS","..S","..S","..S"]},{"name":"tool_4","w":2,"h":6,"cat":"tool","kind":"sprite","rows":["SS",".S","S.","SS","SS","S."]},{"name":"tool_5","w":7,"h":4,"cat":"tool","kind":"sprite","rows":["S......","SSS....","S.SSS..","SS.S.SS"]},{"name":"toolbox","w":20,"h":14,"cat":"prop","kind":"sprite","rows":[".......XXXXX........","......XX...XX.......","..XXX.X.....X..XX...","..XXX.X.....X.X.X...","...X..X.....X.X.X...","...X.XXXXXXXXXX.X...","...X.X..........X...","XXXXXXXXXXXXXXXXXXXX","X.HXXXXXXXXHXXXXXXHX","X.XXXX.XXXXXXX.XXXXX","X.XXXX.XXXXXXX.XXXXX","X.XXXX.XXXXXXX.XXXXX","X.XXXXXXXXXXXXXXXXXX","XXXXXXXXXXXXXXXXXXXX"]},{"name":"tower_base","w":11,"h":7,"cat":"wall","kind":"sprite","rows":["S.SSSSSSSSS",".SSSSSSSSSS","SSSS...SSSS","SSS.XXX.SSS","SSS.XXX.SSS","SSS.XXX.SSS","SSSSXXXSSSS"]},{"name":"tower_mid","w":11,"h":6,"cat":"upper","kind":"sprite","rows":["SSSSSSSSSSS","SSSSSSSSSSS","SSSSS.SSSSS","SSSSS.SSSSS","SSSSSSSS.SS","SSSSSSSSS.S"]},{"name":"tower_mid_plain","w":11,"h":6,"cat":"upper","kind":"sprite","rows":["SSSSSSSSSSS","S.SSSSSSSSS",".SSSSSSSSSS","SSSSSSSSSSS","SSSSSSSSS.S","SSSSSSSSSSS"]},{"name":"tower_mid_wide","w":11,"h":6,"cat":"upper","kind":"sprite","rows":["SSSSSSSSSSS","SSS.SSS.SSS","SSS.SSS.SSS","SSSSSSSSSSS","S.SSSSSSSSS","SSSSSSSSSSS"]},{"name":"trunk_gnarled","w":8,"h":14,"cat":"tree","kind":"trunk","rows":["..X.....","X.X..X.X",".X..X..X",".X..X.X.","..XXX.X.",".XXXXX..",".XXX.XX.",".XXXX.X.","..XXXXX.","..XXXXX.","..XXXX..","...XX...","...XXX..","X.XXXXX."],"meta":{"top":2,"stretch":11}},{"name":"trunk_oak","w":13,"h":13,"cat":"tree","kind":"trunk","rows":["....X.X......",".X...XX...X..","..X..XX..X...","..XX.X.XXX...","...XXXXXX....","...XXXXX.....","...XXX.X.....","...XXX.X.....","...XXXX.X....","..XXXXXXX....","..XX.XXXX....",".XX.XXXXXX...","XXX.XXXXXXX.X"],"meta":{"top":5,"stretch":7}},{"name":"trunk_round","w":8,"h":6,"cat":"tree","kind":"trunk","rows":["...X....","X...X.X.",".XX..X..","...X.X.X","....X...","....X..."],"meta":{"top":3,"stretch":4}},{"name":"trunk_stick","w":1,"h":6,"cat":"tree","kind":"trunk","rows":["X","X","X","X","X","X"],"meta":{"top":0,"stretch":3}},{"name":"trunk_stump","w":3,"h":10,"cat":"tree","kind":"trunk","rows":[".X.",".X.",".X.",".X.",".X.",".X.",".X.",".X.",".X.","X.X"],"meta":{"top":1,"stretch":5}},{"name":"trunk_tall","w":4,"h":10,"cat":"tree","kind":"trunk","rows":["X...",".X..",".X.X","..X.","..X.",".XX.","..X.","..X.","..X.","..X."],"meta":{"top":0,"stretch":8}},{"name":"tuft","w":5,"h":3,"cat":"ground","kind":"sprite","rows":[".G.G.",".G.G.","G.G.G"]},{"name":"upper_4","w":15,"h":6,"cat":"upper","kind":"sprite","rows":["W.W.W.W.W.W.W.W","WWWWW.WWW.WWWWW","W.WWW.W.W.WWW.W","WW.WW.WWW.WW.WW","WWW.W.W.W.W.WWW","WWWWWWWWWWWWWWW"]},{"name":"upper_4_inv","w":15,"h":6,"cat":"upper","kind":"sprite","rows":[".X.X.X.X.X.X.X.",".....X...X.....",".X...X.X.X...X.","..X..X...X..X..","...X.X.X.X.X...","..............."]},{"name":"upper_5","w":17,"h":6,"cat":"upper","kind":"sprite","rows":["W.W.W.WWWWW.W.W.W","WWWWW.WW.WW.WWWWW","W.WWW.W...W.WWW.W","WW.WW.W...W.WW.WW","WWW.W.W...W.W.WWW","WWWWWWWWWWWWWWWWW"]},{"name":"upper_5_inv","w":17,"h":6,"cat":"upper","kind":"sprite","rows":[".X.X.X.....X.X.X.",".....X..X..X.....",".X...X.XXX.X...X.","..X..X.XXX.X..X..","...X.X.XXX.X.X...","................."]},{"name":"upper_6","w":17,"h":6,"cat":"upper","kind":"sprite","rows":["W.W.W.W.W.W.W.W.W","WWWWW.WWWWWWWWWWW","W.WWW.WW...W...WW","WW.WW.WW...W...WW","WWW.W.WW...W...WW","WWWWWWWWWWWWWWWWW"]},{"name":"upper_6_inv","w":17,"h":6,"cat":"upper","kind":"sprite","rows":[".X.X.X.X.X.X.X.X.",".....X...........",".X...X..XXX.XXX..","..X..X..XXX.XXX..","...X.X..XXX.XXX..","................."]},{"name":"upper_7","w":23,"h":6,"cat":"upper","kind":"sprite","rows":["W.W.W.W.W.W.W.W.W.W.W.W","WWWWW.WWWWWWWWWWW.WWWWW","W.WWW.WW...W...WW.WWW.W","WW.WW.WW...W...WW.WW.WW","WWW.W.WW...W...WW.W.WWW","WWWWWWWWWWWWWWWWWWWWWWW"]},{"name":"upper_7_inv","w":23,"h":6,"cat":"upper","kind":"sprite","rows":[".X.X.X.X.X.X.X.X.X.X.X.",".....X...........X.....",".X...X..XXX.XXX..X...X.","..X..X..XXX.XXX..X..X..","...X.X..XXX.XXX..X.X...","......................."]},{"name":"wagon","w":21,"h":14,"cat":"prop","kind":"sprite","rows":["......SSSSSSSSSSSSSSS",".......S.S.S.S.S.S.S.",".....................",".......X...........X.",".......X...........X.",".......X.X.X...X...X.",".....................",".......XXXXXXXXXXXXX.","....XX...X.......X...","...X...XX..XXXXX..XX.","..X...X..X.......X..X",".X....X..X.......X..X","X......XX.........XX.","....................."]},{"name":"wall_1","w":15,"h":7,"cat":"wall","kind":"sprite","rows":["XXXXXXXXXXXXXXX","X.X.X...X...X.X","X.XXX...X...X.X","X.X.X.X.XXXXX.X","XXX.X...X.X.XXX","X.X.X...X.X.X.X","XXXXXXXXXXXXXXX"]},{"name":"wall_2","w":15,"h":7,"cat":"wall","kind":"sprite","rows":["XXXXXXXXXXXXXXX","X.X.X.X.X.X.X.X","XXX.X.X.X.X.X.X","X.X.X.XXX.X.X.X","X.XXX.X.X.X.XXX","X.X.X.X.X.X.X.X",".XXXXXXXXXXXXX."]},{"name":"wall_3","w":23,"h":7,"cat":"wall","kind":"sprite","rows":["XXXXXXXXXXXXXXXXXXXXXXX","X.X...X.X.XXX.X.X...X.X","X.X...X.XX.X.XX.X...X.X","X.X...X.XXX.XXX.X...X.X","X.XXXXX.XX.X.XX.XXXXX.X","X.XX.XX.X.XXX.X.XX.XX.X","XXXXXXXXXXXXXXXXXXXXXXX"]},{"name":"wall_4","w":15,"h":7,"cat":"wall","kind":"sprite","rows":["XXXXXXXXXXXXXXX","X.............X","XXXXXXXXXXXXXXX","X.X.X.XXX.X.X.X","XX.XX.X.X.XX.XX","X.X.X.XXX.X.X.X","XXXXXXXXXXXXXXX"]},{"name":"wall_5","w":17,"h":7,"cat":"wall","kind":"sprite","rows":["XXXXXXXXXXXXXXXXX","X...............X","XXXXXXXXXXXXXXXXX","X.X.X.X.X.X.X.X.X","XX.XX.XX.XX.XX.XX","X.X.X.X.X.X.X.X.X","XXXXXXXXXXXXXXXXX"]},{"name":"wall_6","w":17,"h":7,"cat":"wall","kind":"sprite","rows":["XXXXXXXXXXXXXXXXX","X................","XXXXXXXXXXXXXXXXX","X.X.X.X.X.X.X.X.X","XX.XX.XX.XX.XX.XX","X.X.X.X.X.X.X.X.X","XXXXXXXXXXXXXXXXX"]},{"name":"wall_7","w":23,"h":7,"cat":"wall","kind":"sprite","rows":["XXXXXXXXXXXXXXXXXXXXXXX","X.....................X","XXXXXXXXXXXXXXXXXXXXXXX","X.X.X.X.X.X.X.X.X.X.X.X","XX.XX.XX.XX.XX.XX.XX.XX","X.X.X.X.X.X.X.X.X.X.X.X","XXXXXXXXXXXXXXXXXXXXXXX"]},{"name":"water","w":128,"h":2,"cat":"ground","kind":"sprite","rows":["...B...B...B...B...B...B...B...BB...B...B...B...B...B...B...B....B...B...B...B...B...B...B...B....B...B...B...B...B...B...B...B.","BBB.BBB.BBB.BBB.BBB.BBB.BBB.BBB..BBB.BBB.BBB.BBB.BBB.BBB.BBB.BBBB.BBB.BBB.BBB.BBB.BBB.BBB.BBB.BBBB.BBB.BBB.BBB.BBB.BBB.BBB.BBB.B"]},{"name":"well","w":9,"h":12,"cat":"prop","kind":"sprite","rows":["....X....","...XXX...","..XXXXX..",".XXX.XXX.","XXXXXXXXX",".X.....X.",".X..X..X.",".X..X..X.",".X.XXX.X.","XXXXXXXXX","X.XXXXX.X","XXXX.XXXX"]},{"name":"windmill_top","w":21,"h":19,"cat":"roof","kind":"sprite","rows":[".X.................X.","X.X...............X.X","...X.............X...","....X.....X.....X....","...X.X...XXX...X.X...","......X.XXXXX.X......",".......X.XXXXX.......","......XXXXXXXXX......",".....XXXXXXXX.XX.....","........oXoXo........",".....ooooXXXoooo.....",".....oXoXoooXoXo.....",".....ooXoo.ooXoo.....","..ooooXoo...ooXoooo..","..oXoXoo.....ooXoXo..","..ooXoo.......ooXoo..","oooXoo.........ooXooo","XoXoo...........ooXoX","oXoo.............ooXo"],"meta":{"drop":10}}];
+(function(){
+  const root=document.documentElement, mq=matchMedia('(prefers-color-scheme: dark)');
+  const isDark=()=>{const t=root.getAttribute('data-theme');return t?t==='dark':mq.matches};
+  const PAL={site:{paper:'#191510',ink:'#bdb4a5',accent:'#e0a26a'},pixelink:{paper:'#edf6d6',ink:'#3e232c',accent:'#c8843c'},glow:{paper:'#222323',ink:'#f0f6f0',accent:'#e6b872'}};   // warm accents; #e0a26a is sampled from the site
+  let flipped=false;
+  function applyPalette(){const pl=PAL[document.getElementById('paletteSel').value];const a=flipped?pl.ink:pl.paper,b=flipped?pl.paper:pl.ink;root.style.setProperty('--paper',a);root.style.setProperty('--ink',b);document.getElementById('accent').value=pl.accent;redrawAll()}
+  document.getElementById('paletteSel').onchange=()=>{flipped=false;applyPalette()};
+  document.getElementById('flip').onclick=()=>{flipped=!flipped;applyPalette()};
+  mq.addEventListener('change',redrawAll);
+  function colors(){const cs=getComputedStyle(root);const c=document.createElement('canvas').getContext('2d');const rgb=v=>{c.fillStyle=v.trim();c.fillRect(0,0,1,1);const d=c.getImageData(0,0,1,1).data;return [d[0],d[1],d[2]]};return {ink:rgb(cs.getPropertyValue('--ink')),paper:rgb(cs.getPropertyValue('--paper'))}}
+
+  // ---- parts: rows of letters. Any of XWGSB = ink, '.' = transparent
+  const parts=new Map();
+  for(const p of CATALOG){parts.set(p.name,{...p,kind:p.kind||'sprite',meta:p.meta||{}});}
+  for(const p of CATALOG) if(p.cat==='upper'){parts.set(p.name+'_inv',{name:p.name+'_inv',cat:'upper',w:p.w,h:p.h,rows:p.rows.map(r=>[...r].map(c=>c==='.'?'X':'.').join(''))})}
+  const isInk=(p,x,y)=>y>=0&&y<p.h&&x>=0&&x<p.w&&p.rows[y][x]!=='.'&&p.rows[y][x]!=='o';
+  const isPaper=(p,x,y)=>y>=0&&y<p.h&&x>=0&&x<p.w&&p.rows[y][x]==='o';   // opaque paper: erases what is under it (windmill sails over the tower)
+
+  // ---- bitmap helpers: {w,h,px:Uint8Array}
+  const blank=(w,h)=>({w,h,px:new Uint8Array(w*h)});
+  function stampPart(b,p,ox,oy){for(let y=0;y<p.h;y++)for(let x=0;x<p.w;x++){const X=ox+x,Y=oy+y;if(X<0||Y<0||X>=b.w||Y>=b.h)continue;if(isInk(p,x,y))b.px[Y*b.w+X]=p.rows[y][x]==='H'?3:1;else if(isPaper(p,x,y))b.px[Y*b.w+X]=0}}
+  function stampBmp(b,s,ox,oy,v){for(let y=0;y<s.h;y++)for(let x=0;x<s.w;x++){const sv=s.px[y*s.w+x];if(sv){const X=ox+x,Y=oy+y;if(X>=0&&Y>=0&&X<b.w&&Y<b.h)b.px[Y*b.w+X]=v||sv}}}   // v unset keeps the source value (3 = manual highlight)
+  function house(h){ // {storeys:[bottom..top], roof}
+    const walls=h.storeys.map(n=>parts.get(n)).filter(Boolean), roof=parts.get(h.roof);
+    const W=Math.max(roof?roof.w:0,...walls.map(w=>w.w),1), wallH=walls.reduce((a,w)=>a+w.h-1,1);
+    const b=blank(W,wallH+(roof?roof.h:0)); let y=b.h;
+    for(const w of walls){y-=w.h;stampPart(b,w,Math.floor((W-w.w)/2),y);y+=1}
+    if(roof)stampPart(b,roof,Math.floor((W-roof.w)/2),y-1-roof.h+(h.roofDrop!=null?h.roofDrop:+(roof.meta&&roof.meta.drop||0)));
+    return trim(b);
+  }
+  const partBmp=p=>{const b=blank(p.w,p.h);stampPart(b,p,0,0);return b};
+  function trim(b){ // drop empty rows and columns (a roof with drop leaves headroom above the house)
+    let x0=b.w,x1=-1,y0=b.h,y1=-1;for(let y=0;y<b.h;y++)for(let x=0;x<b.w;x++)if(b.px[y*b.w+x]){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+    if(x1<0)return blank(1,1);const o=blank(x1-x0+1,y1-y0+1);for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)o.px[(y-y0)*o.w+(x-x0)]=b.px[y*b.w+x];return o}
+  function draw(cv,b,scale,pad){const c=colors();pad=pad||0;cv.width=(b.w+pad*2)*scale;cv.height=(b.h+pad*2)*scale;const ctx=cv.getContext('2d');const img=ctx.createImageData(cv.width,cv.height);
+    for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++){const sx=Math.floor(x/scale)-pad,sy=Math.floor(y/scale)-pad;const on=sx>=0&&sy>=0&&sx<b.w&&sy<b.h&&b.px[sy*b.w+sx];const col=on?c.ink:c.paper;const k=(y*cv.width+x)*4;img.data[k]=col[0];img.data[k+1]=col[1];img.data[k+2]=col[2];img.data[k+3]=255}
+    ctx.putImageData(img,0,0)}
+
+  // ---- house builder
+  const roofSel=document.getElementById('roofSel'),upSel=document.getElementById('upSel'),wallSel=document.getElementById('wallSel');
+  const fill=(sel,cat,none)=>{if(none)sel.add(new Option('(none)',''));for(const p of parts.values())if(p.cat===cat)sel.add(new Option(p.name,p.name))};
+  fill(roofSel,'roof',true);fill(upSel,'upper');fill(wallSel,'wall');
+  roofSel.value='roof_2';wallSel.value='wall_5';upSel.value='upper_5_inv';
+  let storeys=['upper_5_inv'];
+  function houseSpec(){return {storeys:[wallSel.value,...storeys],roof:roofSel.value}}
+  function renderStoreys(){const ol=document.getElementById('storeyList');ol.innerHTML='';storeys.forEach((n,i)=>{const li=document.createElement('li');li.textContent=n;const b=document.createElement('button');b.type='button';b.textContent='remove';b.onclick=()=>{storeys.splice(i,1);renderStoreys();prevHouse()};li.appendChild(b);ol.appendChild(li)})}
+  function prevHouse(){draw(document.getElementById('housePrev'),house(houseSpec()),4,2)}
+  document.getElementById('addUp').onclick=()=>{storeys.push(upSel.value);renderStoreys();prevHouse()};
+  [roofSel,wallSel].forEach(s=>s.onchange=prevHouse);
+  renderStoreys();prevHouse();
+
+  // ---- tower builder: same stacking as a house, tower parts only
+  const ttopSel=document.getElementById('ttopSel'),tmidSel=document.getElementById('tmidSel'),tbaseSel=document.getElementById('tbaseSel');
+  for(const n of ['battlement','roof_tower','roof_1','windmill_top','observatory_top'])ttopSel.add(new Option(n,n));
+  for(const p of parts.values())if(p.name.startsWith('tower_mid'))tmidSel.add(new Option(p.name.replace('tower_',''),p.name));
+  for(const p of parts.values())if(p.name.startsWith('tower_base'))tbaseSel.add(new Option(p.name.replace('tower_',''),p.name));
+  let tmids=['tower_mid','tower_mid_plain','tower_mid'];
+  const towerSpec=()=>({storeys:[tbaseSel.value,...tmids],roof:ttopSel.value});
+  function renderTmids(){const ol=document.getElementById('tmidList');ol.innerHTML='';tmids.forEach((n,i)=>{const li=document.createElement('li');li.textContent=n.replace('tower_','');const b=document.createElement('button');b.type='button';b.textContent='remove';b.onclick=()=>{tmids.splice(i,1);renderTmids();prevTower()};li.appendChild(b);ol.appendChild(li)})}
+  function prevTower(){draw(document.getElementById('towerPrev'),house(towerSpec()),4,2);if(typeof prevCastle==='function'&&document.getElementById('castlePrev').width>1)prevCastle()}
+  document.getElementById('addTmid').onclick=()=>{tmids.push(tmidSel.value);renderTmids();prevTower()};
+  [ttopSel,tbaseSel].forEach(el=>el.onchange=()=>{prevTower();prevCastle()});
+  document.getElementById('addTower').onclick=()=>addItem({house:towerSpec()});
+  renderTmids();
+
+  // ---- castle builder: tower + gate wall + tower, flush and bottom-aligned
+  function castle(c){const L=house(c.left),Wl=house(c.wall),R=house(c.right||c.left);const H=Math.max(L.h,Wl.h,R.h),b=blank(L.w+Wl.w+R.w,H);stampBmp(b,L,0,H-L.h);stampBmp(b,Wl,L.w,H-Wl.h);stampBmp(b,R,L.w+Wl.w,H-R.h);return b}
+  const ctopSel=document.getElementById('ctopSel'),cmidSel=document.getElementById('cmidSel'),cgateSel=document.getElementById('cgateSel');
+  for(const p of parts.values()){if(p.name.startsWith('castle_top'))ctopSel.add(new Option(p.name.replace('castle_',''),p.name));if(p.name.startsWith('castle_wall'))cmidSel.add(new Option(p.name.replace('castle_',''),p.name));if(p.name.startsWith('castle_gate'))cgateSel.add(new Option(p.name.replace('castle_',''),p.name))}
+  let cmids=[];
+  const castleSpec=()=>({left:towerSpec(),wall:{storeys:[cgateSel.value,...cmids],roof:ctopSel.value}});
+  function renderCmids(){const ol=document.getElementById('cmidList');ol.innerHTML='';cmids.forEach((n,i)=>{const li=document.createElement('li');li.textContent=n.replace('castle_','');const b=document.createElement('button');b.type='button';b.textContent='remove';b.onclick=()=>{cmids.splice(i,1);renderCmids();prevCastle()};li.appendChild(b);ol.appendChild(li)})}
+  function prevCastle(){draw(document.getElementById('castlePrev'),castle(castleSpec()),3,2)}
+  document.getElementById('addCmid').onclick=()=>{cmids.push(cmidSel.value);renderCmids();prevCastle()};
+  [ctopSel,cgateSel].forEach(el=>el.onchange=prevCastle);
+  document.getElementById('addCastle').onclick=()=>addItem({castle:castleSpec()});
+  renderCmids();
+
+  // ---- tree builder (canopy anchor lands on trunk top; trunk repeats its stretch row)
+  function tree(t){
+    const tp=t.trunk?parts.get(t.trunk.startsWith('trunk_')?t.trunk:'trunk_'+t.trunk):null, cp=t.canopy?parts.get(t.canopy.startsWith('canopy_')?t.canopy:'canopy_'+t.canopy):null;
+    if(!tp&&!cp)return blank(1,1);
+    const extra=Math.max(0,t.height|0); let trunk=null,topX=0;
+    if(tp){const sr=+(tp.meta&&tp.meta.stretch!=null?tp.meta.stretch:Math.floor(tp.h/2));topX=+(tp.meta&&tp.meta.top!=null?tp.meta.top:Math.floor(tp.w/2));trunk=blank(tp.w,tp.h+extra);
+      for(let y=0;y<trunk.h;y++){const sy=y<=sr?y:(y-extra>sr?y-extra:sr);for(let x=0;x<tp.w;x++)if(isInk(tp,x,sy))trunk.px[y*trunk.w+x]=1}}
+    const [ax,ay]=cp&&cp.meta&&cp.meta.anchor?cp.meta.anchor:[0,0];
+    const cx=trunk?topX-ax+(t.dx|0):0, cy=trunk?-ay+(t.dy|0):0, minX=Math.min(0,cx), minY=Math.min(0,cy);
+    const W=Math.max(trunk?trunk.w:0,cp?cx+cp.w:0)-minX, H=Math.max(trunk?trunk.h:0,cp?cy+cp.h:0)-minY, b=blank(W,H);
+    if(trunk)stampBmp(b,trunk,-minX,-minY); if(cp)stampPart(b,cp,cx-minX,cy-minY); return b;
+  }
+  const canopySel=document.getElementById('canopySel'),trunkSel=document.getElementById('trunkSel'),treeH=document.getElementById('treeH'),treeDx=document.getElementById('treeDx');
+  canopySel.add(new Option('(none)',''));trunkSel.add(new Option('(none)',''));
+  for(const p of parts.values()){if(p.kind==='canopy')canopySel.add(new Option(p.name.replace('canopy_',''),p.name));if(p.kind==='trunk')trunkSel.add(new Option(p.name.replace('trunk_',''),p.name))}
+  canopySel.value='canopy_round';trunkSel.value='trunk_tall';treeH.value=4;
+  const treeSpec=()=>{const t={};if(canopySel.value)t.canopy=canopySel.value;if(trunkSel.value)t.trunk=trunkSel.value;if(+treeH.value)t.height=+treeH.value;if(+treeDx.value)t.dx=+treeDx.value;return t};
+  function prevTree(){draw(document.getElementById('treePrev'),tree(treeSpec()),4,2)}
+  [canopySel,trunkSel,treeH,treeDx].forEach(el=>{el.onchange=prevTree;el.oninput=prevTree});
+  document.getElementById('addTree').onclick=()=>addItem({tree:treeSpec()});
+
+  // ---- palette
+  const order=['roof','upper','wall','tower','stone','fence','tree','ground','prop','tool'];
+  for(const p of parts.values())if(p.name.startsWith('tower_')||p.name.startsWith('castle_')||p.name==='battlement'||p.name==='roof_tower'||p.name==='windmill_top'||p.name==='observatory_top')p.cat2='tower';
+  const pal=document.getElementById('palette');
+  for(const cat of order){const div=document.createElement('div');div.className='cat';const h=document.createElement('h2');h.textContent=cat;div.appendChild(h);const box=document.createElement('div');box.className='pal';
+    for(const p of parts.values())if(p.cat===cat||(cat==='tower'&&p.cat2==='tower')){const btn=document.createElement('button');btn.type='button';btn.title=p.name;btn.setAttribute('aria-label',p.name);const cv=document.createElement('canvas');cv.dataset.part=p.name;btn.appendChild(cv);btn.onclick=()=>addItem({part:p.name});box.appendChild(btn)}
+    div.appendChild(box);pal.appendChild(div)}
+  function drawPalette(){document.querySelectorAll('#palette canvas').forEach(cv=>{const p=parts.get(cv.dataset.part);const s=p.w>40||p.h>24?1:2;draw(cv,partBmp(p),s,1)})}
+
+  // ---- scene: items flow into rows at the device width (responsive by construction)
+  const stage=document.getElementById('stage'), zoomSel=document.getElementById('zoom'), devSel=document.getElementById('device'), alignSel=document.getElementById('align'), groundCb=document.getElementById('ground'), cueSel=document.getElementById('cue'), accentIn=document.getElementById('accent'), labelsCb=document.getElementById('labels');
+  const LABEL_FONT='12px "Fragment Mono", ui-monospace, monospace', LABEL_H=24, LABEL_GAP=2;   // gap in scene px below the ground line   // css px, independent of the pixel scale
+  // 3x5 pixel font for labels
+  const FONT={A:'010101111101101',B:'110101110101110',C:'011100100100011',D:'110101101101110',E:'111100110100111',F:'111100110100100',G:'011100101101011',H:'101101111101101',I:'111010010010111',J:'001001001101010',K:'101101110101101',L:'100100100100111',M:'101111111101101',N:'110101101101101',O:'010101101101010',P:'110101110100100',Q:'010101101110011',R:'110101110101101',S:'011100010001110',T:'111010010010010',U:'101101101101111',V:'101101101101010',W:'101101111111101',X:'101101010101101',Y:'101101010010010',Z:'111001010100111','0':'111101101101111','1':'010110010010111','2':'111001111100111','3':'111001111001111','4':'101101111001001','5':'111100111001111','6':'111100111101111','7':'111001001001001','8':'111101111101111','9':'111101111001111','-':'000000111000000','.':'000000000000010'};
+  const textW=t=>[...t].reduce((a,c)=>a+(c===' '?2:4),0)-1;
+  function drawText(b,t,x,y,v){for(const c of t.toUpperCase()){if(c===' '){x+=2;continue}const g=FONT[c];if(g){for(let i=0;i<15;i++)if(g[i]==='1'){const X=x+i%3,Y=y+(i/3|0);if(X>=0&&Y>=0&&X<b.w&&Y<b.h)b.px[Y*b.w+X]=v}}x+=4}}
+  let bob=0, frame=0;
+  function highlights(sb){ // 1 where an ink pixel touches an enclosed hole of 2+ pixels (windows, slits, doors); single-pixel specks stay ink
+    const {w,h,px}=sb,out=new Uint8Array(w*h),lab=new Int32Array(w*h).fill(0),size=[0];let n=0;
+    const fill=(k0,id)=>{const st=[k0];let c=0;while(st.length){const k=st.pop();if(lab[k]||px[k])continue;lab[k]=id;c++;const x=k%w,y=(k/w)|0;if(x>0)st.push(k-1);if(x<w-1)st.push(k+1);if(y>0)st.push(k-w);if(y<h-1)st.push(k+w)}return c};
+    for(let x=0;x<w;x++){if(!lab[x]&&!px[x])fill(x,-1);const k=(h-1)*w+x;if(!lab[k]&&!px[k])fill(k,-1)}
+    for(let y=0;y<h;y++){const a=y*w,c=y*w+w-1;if(!lab[a]&&!px[a])fill(a,-1);if(!lab[c]&&!px[c])fill(c,-1)}
+    for(let k=0;k<w*h;k++)if(!lab[k]&&!px[k]){n++;size[n]=fill(k,n)}
+    const ok=id=>id>0&&size[id]>=2;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const k=y*w+x;if(!px[k])continue;if((x>0&&ok(lab[k-1]))||(x<w-1&&ok(lab[k+1]))||(y>0&&ok(lab[k-w]))||(y<h-1&&ok(lab[k+w])))out[k]=1}
+    return out}
+  function stampHi(b,sb,ox,oy){const hi=highlights(sb);for(let y=0;y<sb.h;y++)for(let x=0;x<sb.w;x++)if(hi[y*sb.w+x]||sb.px[y*sb.w+x]===3){const X=ox+x,Y=oy+y;if(X>=0&&Y>=0&&X<b.w&&Y<b.h)b.px[Y*b.w+X]=2}}
+  let items=[], selected=-1, scale=3, hoverIdx=-1, pressedIdx=-1;
+  const GAP=4, ROWGAP=10, PAD=6, BEZEL=14;
+  const itemBmp=it=>it.part?partBmp(parts.get(it.part)):it.tree?tree(it.tree):it.castle?castle(it.castle):house(it.house);
+  function deviceSize(){if(devSel.value==='fit'){const w=Math.min(stage.parentElement.clientWidth-BEZEL*2,1400);return {w:Math.max(200,w),h:Math.round(Math.max(200,w)*9/16),phone:false}}const [w,h]=devSel.value.split('x').map(Number);return {w,h,phone:devSel.value==='402x874'}}
+  function layout(bs,W,top){ // returns {pos:[{x,y}], rows:[{top,h}], H}
+    const pos=[],rows=[];let x=PAD,rowTop=top??PAD,row=[];
+    const cue=cueSel.value,head=cue==='marker'?8:cue==='live'?4:0,foot=labelsCb.checked?Math.ceil(LABEL_H/scale):cue==='label'?8:0;
+    const flush=()=>{if(!row.length)return;const h=Math.max(...row.map(i=>bs[i].h+(items[i].lift||0)))+head;const used=row.reduce((a,i,k)=>a+bs[i].w+(k?(items[i].gap??GAP):0),0);const off=alignSel.value==='center'?Math.floor((W-PAD*2-used)/2):0;let cx=PAD+off;row.forEach((i,k)=>{if(k)cx+=items[i].gap??GAP;pos[i]={x:cx,y:rowTop+h-bs[i].h-(items[i].lift||0)};cx+=bs[i].w});rows.push({top:rowTop,h});rowTop+=h+ROWGAP+foot;row=[]};
+    items.forEach((it,i)=>{const w=bs[i].w,g=row.length?(it.gap??GAP):0;if(it.break||(row.length&&x+g+w>W-PAD)){flush();x=PAD}x+=(row.length?g:0)+w;row.push(i)});flush();
+    return {pos,rows,H:rowTop-ROWGAP+PAD};
+  }
+  let last={};
+  function drawScene(){
+    scale=+zoomSel.value;const dev=deviceSize(),dpr=Math.min(2,window.devicePixelRatio||1),c=colors();
+    const W=Math.floor(dev.w/scale),Hs=Math.floor(dev.h/scale);
+    const bs=items.map(itemBmp),lay=layout(bs,W,dev.phone?Math.ceil(60/scale):PAD);   // phone: start below the sensor cutout
+    const b=blank(W,Math.max(Hs,lay.H));
+    const active=pressedIdx>=0?pressedIdx:hoverIdx;
+    const cue=cueSel.value;
+    let tapN=0;
+    items.forEach((it,i)=>{let liftUp=(i===active&&it.tap&&it.tap.style==='lift')?2:0;const live=cue==='live'&&it.tap;const phase=live?(tapN++)*3:0;
+      if(live&&i!==active&&((frame+phase)%8)<3)liftUp+=1;                                   // slow idle bob, staggered per item
+      stampBmp(b,bs[i],lay.pos[i].x,lay.pos[i].y-liftUp,(cue==='accent'&&it.tap)?2:0);
+      if(live)stampHi(b,bs[i],lay.pos[i].x,lay.pos[i].y-liftUp);                                  // accent only on the highlights: window frames, slits, door edges
+      if(live&&i!==active){const k=(frame+phase)%14,gx=lay.pos[i].x+bs[i].w-1,gy=lay.pos[i].y-3;const put=(x,y)=>{if(x>=0&&y>=0&&x<b.w&&y<b.h)b.px[y*b.w+x]=2};
+        if(k===0||k===2)put(gx,gy);if(k===1){put(gx,gy);put(gx-1,gy);put(gx+1,gy);put(gx,gy-1);put(gx,gy+1)}
+        const k2=(frame+phase+7)%14,hx=lay.pos[i].x+1,hy=lay.pos[i].y+2;                       // second star: top-left, half a cycle later
+        if(k2===0||k2===2)put(hx,hy);if(k2===1){put(hx,hy);put(hx-1,hy);put(hx+1,hy);put(hx,hy-1);put(hx,hy+1)}}});   // glints: dot, plus, dot
+    if(cue!=='none')items.forEach((it,i)=>{if(!it.tap)return;const p=lay.pos[i],sb=bs[i],cx=p.x+(sb.w>>1),gy=p.y+sb.h+(it.lift||0);
+      if(cue==='label'&&it.tap.label){const t=it.tap.label,tw=textW(t);drawText(b,t,cx-(tw>>1),gy+3,1)}
+      if(cue==='marker'){const m=parts.get('marker');if(m)stampPart(b,m,cx-2,p.y-8-bob);for(let x=p.x;x<p.x+sb.w;x++)if(gy<b.h)b.px[gy*b.w+x]=1}});
+    if(active>=0&&items[active]&&items[active].tap){const it=items[active],p=lay.pos[active],sb=bs[active],st=it.tap.style||'invert';
+      if(st==='invert'){for(let y=p.y-1;y<p.y+sb.h+1;y++)for(let x=p.x-1;x<p.x+sb.w+1;x++)if(x>=0&&y>=0&&x<b.w&&y<b.h)b.px[y*b.w+x]=b.px[y*b.w+x]?0:1}
+      if(st==='outline'){for(let x=p.x-2;x<=p.x+sb.w+1;x++){if((x+p.y)%2===0){if(x>=0&&x<b.w){if(p.y-2>=0)b.px[(p.y-2)*b.w+x]=1;if(p.y+sb.h+1<b.h)b.px[(p.y+sb.h+1)*b.w+x]=1}}}
+        for(let y=p.y-2;y<=p.y+sb.h+1;y++){if((y+p.x)%2===0&&y>=0&&y<b.h){if(p.x-2>=0)b.px[y*b.w+p.x-2]=1;if(p.x+sb.w+1<b.w)b.px[y*b.w+p.x+sb.w+1]=1}}}}
+    if(groundCb.checked)for(const r of lay.rows){const gy=r.top+r.h;for(let gx=PAD;gx<W-PAD;gx+=2)if(gy<b.h)b.px[gy*b.w+gx]=1}
+    // scene to an offscreen 1x canvas
+    const off=document.createElement('canvas');off.width=W;off.height=Hs;const octx=off.getContext('2d');const img=octx.createImageData(W,Hs);
+    const acc=(h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)])(accentIn.value);
+    for(let y=0;y<Hs;y++)for(let x=0;x<W;x++){const on=b.px[y*W+x];const col=on===2?acc:on?c.ink:c.paper;const k=(y*W+x)*4;img.data[k]=col[0];img.data[k+1]=col[1];img.data[k+2]=col[2];img.data[k+3]=255}
+    octx.putImageData(img,0,0);
+    // device frame
+    const cw=dev.w+BEZEL*2,ch=dev.h+BEZEL*2;stage.width=cw*dpr;stage.height=ch*dpr;stage.style.width=cw+'px';stage.style.height='auto';stage.style.aspectRatio=cw+' / '+ch;
+    const ctx=stage.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;
+    const ink=`rgb(${c.ink})`,paper=`rgb(${c.paper})`,frameCol=`rgb(${c.ink.map((v,i)=>Math.round((v+c.paper[i])/2))})`;
+    ctx.clearRect(0,0,cw,ch);
+    const rr=(x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()};
+    const R=dev.phone?62:12;
+    rr(1.5,1.5,cw-3,ch-3,R);ctx.fillStyle=frameCol;ctx.fill();                              // body: midway between ink and paper
+    rr(BEZEL,BEZEL,dev.w,dev.h,dev.phone?50:4);ctx.save();ctx.clip();ctx.fillStyle=paper;ctx.fillRect(BEZEL,BEZEL,dev.w,dev.h);
+    ctx.drawImage(off,BEZEL,BEZEL,W*scale,Hs*scale);
+    if(labelsCb.checked){ctx.font=LABEL_FONT;ctx.textAlign='center';ctx.textBaseline='top';ctx.fillStyle=ink;
+      items.forEach((it,i)=>{if(!it.tap||!it.tap.label)return;const p=lay.pos[i],sb=bs[i];const row=lay.rows.find(r=>p.y>=r.top&&p.y<r.top+r.h)||{top:p.y,h:sb.h};const cx=BEZEL+(p.x+sb.w/2)*scale,gy=BEZEL+(row.top+row.h+1+LABEL_GAP)*scale;ctx.fillText(it.tap.label,Math.round(cx),Math.round(gy))})}
+    if(selected>=0&&items[selected]){const p=lay.pos[selected],sb=bs[selected];ctx.strokeStyle='rgba(128,128,128,.9)';ctx.setLineDash([4,3]);ctx.lineWidth=2;ctx.strokeRect(BEZEL+p.x*scale-2,BEZEL+p.y*scale-2,sb.w*scale+4,sb.h*scale+4);ctx.setLineDash([])}
+    if(dev.phone){rr(BEZEL+dev.w/2-62,BEZEL+11,124,36,18);ctx.fillStyle=frameCol;ctx.fill()}   // sensor pill
+    ctx.restore();
+    if(dev.phone){ctx.strokeStyle=paper;ctx.lineWidth=1;ctx.globalAlpha=.35;rr(1.5,1.5,cw-3,ch-3,R);ctx.stroke();ctx.globalAlpha=1}
+    last={lay,bs,W,Hs};updateJson();if(typeof syncTapRow==='function')syncTapRow();
+  }
+  function addItem(it){items.push(it);selected=items.length-1;drawScene()}
+  document.getElementById('addHouse').onclick=()=>addItem({house:houseSpec()});
+  [zoomSel,devSel,alignSel,groundCb,cueSel,labelsCb].forEach(el=>el.onchange=drawScene);accentIn.oninput=drawScene;
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)setInterval(()=>{const c=cueSel.value;if(c==='marker'){bob=bob?0:1;drawScene()}else if(c==='live'){frame++;drawScene()}},300);
+  addEventListener('resize',()=>{if(devSel.value==='fit')drawScene()});
+  const moveSel=d=>{if(selected<0)return;const j=selected+d;if(j<0||j>=items.length)return;[items[selected],items[j]]=[items[j],items[selected]];selected=j;drawScene()};
+  document.getElementById('earlier').onclick=()=>moveSel(-1);document.getElementById('later').onclick=()=>moveSel(1);
+  document.getElementById('brk').onclick=()=>{if(selected>=0){items[selected].break=!items[selected].break;drawScene()}};
+  document.getElementById('del').onclick=()=>{if(selected>=0){items.splice(selected,1);selected=-1;drawScene()}};
+  document.getElementById('clear').onclick=()=>{items=[];selected=-1;drawScene()};
+  // pointer: select, drag to reorder, vertical drag lifts
+  let drag=null;
+  const pos=e=>{const r=stage.getBoundingClientRect();const k=(stage.width/(window.devicePixelRatio>2?2:window.devicePixelRatio||1))/r.width;return {x:((e.clientX-r.left)*k-BEZEL)/scale,y:((e.clientY-r.top)*k-BEZEL)/scale}};
+  const hit=p=>{const {lay,bs}=last;for(let i=items.length-1;i>=0;i--){const q=lay.pos[i],sb=bs[i];if(p.x>=q.x-1&&p.x<q.x+sb.w+1&&p.y>=q.y-1&&p.y<q.y+sb.h+1)return i}return -1};
+  stage.addEventListener('pointerdown',e=>{const p=pos(e);selected=hit(p);pressedIdx=(selected>=0&&items[selected].tap)?selected:-1;tapStatusText();if(selected>=0){drag={lift0:items[selected].lift||0,y0:p.y,x0:p.x};stage.setPointerCapture(e.pointerId);stage.classList.add('dragging')}stage.focus();drawScene()});
+  stage.addEventListener('pointermove',e=>{if(!drag||selected<0){const p=pos(e);const j=hit(p);const h=(j>=0&&items[j].tap)?j:-1;if(h!==hoverIdx){hoverIdx=h;stage.classList.toggle('tap',h>=0);tapStatusText();drawScene()}return}const p=pos(e);const j=hit(p);
+    if(j>=0&&j!==selected&&Math.abs(p.x-drag.x0)>4){const it=items.splice(selected,1)[0];items.splice(j,0,it);selected=j;drag.x0=p.x}
+    const lift=Math.max(0,Math.round(drag.lift0+(drag.y0-p.y)));if(lift!==(items[selected].lift||0)){items[selected].lift=lift}drawScene()});
+  stage.addEventListener('pointerup',()=>{drag=null;pressedIdx=-1;stage.classList.remove('dragging');tapStatusText();drawScene()});
+  stage.addEventListener('pointerleave',()=>{if(hoverIdx>=0||pressedIdx>=0){hoverIdx=-1;pressedIdx=-1;stage.classList.remove('tap');tapStatusText();drawScene()}});
+  // interaction editor for the selected item
+  const tapRow=document.getElementById('tapRow'),tapOn=document.getElementById('tapOn'),tapLabel=document.getElementById('tapLabel'),tapHref=document.getElementById('tapHref'),tapStyle=document.getElementById('tapStyle'),tapStatus=document.getElementById('tapStatus');
+  function tapStatusText(){const i=pressedIdx>=0?pressedIdx:hoverIdx;if(i>=0&&items[i]&&items[i].tap){const t=items[i].tap;tapStatus.textContent=(pressedIdx>=0?'Pressed: ':'Hover: ')+(t.label||'(no label)')+(t.href?'  ->  '+t.href:'')}else tapStatus.textContent='Select an item to make it tappable. Hover (desktop) or press (touch) a tappable item on the phone to preview its state.'}
+  function syncTapRow(){const it=items[selected];tapRow.hidden=!it;if(!it)return;tapOn.checked=!!it.tap;tapLabel.value=it.tap?it.tap.label||'':'';tapHref.value=it.tap?it.tap.href||'':'';tapStyle.value=it.tap?it.tap.style||'invert':'invert';[tapLabel,tapHref,tapStyle].forEach(el=>el.disabled=!it.tap)}
+  function writeTap(){const it=items[selected];if(!it)return;if(tapOn.checked){it.tap={label:tapLabel.value,href:tapHref.value,style:tapStyle.value}}else delete it.tap;syncTapRow();drawScene()}
+  tapOn.onchange=writeTap;tapLabel.oninput=writeTap;tapHref.oninput=writeTap;tapStyle.onchange=writeTap;
+  stage.addEventListener('keydown',e=>{if(selected<0)return;const it=items[selected];if(e.key==='ArrowLeft')moveSel(-1);else if(e.key==='ArrowRight')moveSel(1);else if(e.key==='ArrowUp'){it.lift=(it.lift||0)+(e.shiftKey?8:1);drawScene()}else if(e.key==='ArrowDown'){it.lift=Math.max(0,(it.lift||0)-(e.shiftKey?8:1));drawScene()}else if(e.key==='b'||e.key==='B'){it.break=!it.break;drawScene()}else if(e.key==='Delete'||e.key==='Backspace'){items.splice(selected,1);selected=-1;drawScene()}else return;e.preventDefault()});
+
+  // ---- json + presets
+  const ta=document.getElementById('json'), nameIn=document.getElementById('presetName');
+  function recipe(){const dev=deviceSize();return {name:nameIn.value||'scene',type:'scene',layout:{mode:'flow',width:Math.floor(dev.w/scale),gap:GAP,rowGap:ROWGAP,pad:PAD,align:alignSel.value,ground:groundCb.checked,cue:cueSel.value,accent:accentIn.value,labels:labelsCb.checked?{font:'Fragment Mono',size:12,gapPx:LABEL_GAP}:false,palette:{paper:getComputedStyle(root).getPropertyValue('--paper').trim(),ink:getComputedStyle(root).getPropertyValue('--ink').trim()}},
+    items:items.map(it=>{const o={};if(it.part)o.part=it.part;else if(it.tree)o.tree=it.tree;else if(it.castle)o.castle=it.castle;else o.house=it.house;if(it.lift)o.lift=it.lift;if(it.break)o.break=true;if(it.gap!=null)o.gap=it.gap;if(it.tap)o.tap=it.tap;return o})}}
+  function updateJson(){ta.value=JSON.stringify(recipe(),null,1)}
+  document.getElementById('load').onclick=()=>{try{const r=JSON.parse(ta.value);if(r.type!=='scene'||!Array.isArray(r.items))throw 0;items=r.items.map(it=>({lift:it.lift|0,break:!!it.break,gap:it.gap,part:it.part,tree:it.tree,castle:it.castle,house:it.house,tap:it.tap}));if(r.name)nameIn.value=r.name;if(r.layout){if(r.layout.align)alignSel.value=r.layout.align;if(r.layout.ground!=null)groundCb.checked=!!r.layout.ground;if(r.layout.cue)cueSel.value=r.layout.cue;if(r.layout.labels!=null)labelsCb.checked=!!r.layout.labels;if(r.layout.accent)accentIn.value=r.layout.accent}selected=-1;drawScene()}catch{ta.value+='\n// could not parse: expected {"type":"scene","items":[...]}'}};
+  document.getElementById('copy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(ta.value)};
+  const KEY='onebit-kit-presets';
+  const loadPresets=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}};
+  function renderPresets(){const box=document.getElementById('presets');box.innerHTML='';const ps=loadPresets();const names=Object.keys(ps);if(!names.length){box.innerHTML='<span class="hint">No presets yet.</span>';return}
+    for(const n of names){const b=document.createElement('button');b.type='button';b.textContent=n;b.onclick=()=>{ta.value=JSON.stringify(ps[n],null,1);document.getElementById('load').onclick()};const x=document.createElement('button');x.type='button';x.textContent='x';x.setAttribute('aria-label','delete '+n);x.onclick=()=>{delete ps[n];try{localStorage.setItem(KEY,JSON.stringify(ps))}catch{}renderPresets()};box.appendChild(b);box.appendChild(x)}}
+  document.getElementById('save').onclick=()=>{const n=nameIn.value.trim()||('preset '+(Object.keys(loadPresets()).length+1));nameIn.value=n;const ps=loadPresets();ps[n]=recipe();try{localStorage.setItem(KEY,JSON.stringify(ps))}catch{}renderPresets()};
+  renderPresets();
+
+  // starter scene so the page opens with something on it
+  items=[{"tree":{"canopy":"canopy_oak","trunk":"trunk_oak"}},{"part":"grass_1","gap":2},{"part":"fence_1"},{"part":"grass_4","gap":2},{"house":{"storeys":["wall_3"],"roof":"roof_5"},"lift":3,"tap":{"label":"Home","href":"/","style":"invert"}},{"part":"grass_3","gap":2},{"part":"bush"},{"part":"grass_5","gap":2},{"part":"well"},{"part":"grass_5","gap":2},{"part":"wagon"},{"part":"grass_4","gap":2},{"part":"hammer_icon","lift":3,"tap":{"label":"Projects","href":"/projects","style":"invert"}},{"part":"rock","gap":2},{"house":{"storeys":["tower_base","tower_mid","tower_mid_plain"],"roof":"observatory_top"}},{"part":"grass_4","gap":2},{"tree":{"canopy":"canopy_pine","trunk":"trunk_stump","height":2}},{"part":"mushroom","gap":2},{"part":"crystal_ball","lift":3,"tap":{"label":"Labs","href":"/labs","style":"invert"}},{"part":"grass_5","gap":2},{"part":"tent"},{"part":"flowers","gap":2},{"castle":{"left":{"storeys":["tower_base","tower_mid","tower_mid"],"roof":"battlement"},"wall":{"storeys":["castle_gate"],"roof":"castle_top"}}},{"part":"grass_5","gap":2},{"part":"quill","lift":3,"tap":{"label":"Notes","href":"/notes","style":"invert"}},{"part":"shrub","gap":2},{"part":"hedge"},{"part":"grass_2","gap":2},{"house":{"storeys":["tower_base","tower_mid_plain","tower_mid","tower_mid_plain"],"roof":"windmill_top"}},{"part":"barrel","gap":2},{"part":"lamp_post"},{"part":"grass_2","gap":2},{"part":"skull","lift":3,"tap":{"label":"Profile","href":"/about","style":"invert"}},{"part":"grass_1","gap":2},{"tree":{"canopy":"canopy_round","trunk":"trunk_tall","height":6}},{"part":"grass_5","gap":2},{"part":"signpost"},{"part":"grass_3","gap":2},{"house":{"storeys":["wall_5","upper_5_inv"],"roof":"roof_2"}},{"part":"grass_4","gap":2}];
+  function redrawAll(){drawPalette();prevHouse();prevTower();prevCastle();prevTree();drawScene()}
+  applyPalette();
+  addEventListener('pageshow',applyPalette);   // form values can be restored after load; reassert the palette's accent
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(redrawAll);
+})();
+</script>

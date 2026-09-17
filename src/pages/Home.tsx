@@ -86,6 +86,7 @@ export default function Home() {
                 img={p.img}
                 imgSrc={p.thumbnail}
                 imgRight={p.imgRight}
+                locked={p.locked}
               />
             ))}
           </List>

@@ -7,12 +7,12 @@
  * WELCOME_TUNING rising-fill recipe with a quiet rim boil; WELCOME_ART
  * below picks which lettering variant); below it, in flow so it never
  * overlaps the
- * art, the save-file readout: NEW GAME
- * for first-time visitors, CONTINUE plus the character (portrait, name,
+ * art, the save-file readout: just the press-any-key prompt for
+ * first-time visitors, CONTINUE plus the character (portrait, name,
  * banners) for returning ones (currently hidden behind SHOW_SAVE_READOUT) —
  * saving itself is automatic, this is
- * just where the save shows. The readout carries the press-any-key prompt,
- * boxed in an asterisk border that blinks along with the text.
+ * just where the save shows. The prompt is boxed in an asterisk border
+ * that blinks along with the text.
  */
 
 import { useEffect, useState } from 'react'
@@ -83,7 +83,7 @@ export default function Loader() {
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
       {/* the art takes the leftover height; its integer scaling shrinks to fit */}
       <div className="title-art">
-        <DitherLive variant={WELCOME_ART} tuning={WELCOME_TUNING} />
+        <DitherLive variant={WELCOME_ART} tuning={WELCOME_TUNING} fit="fill-height" />
       </div>
       <div className="title-save">
         {isReturning ? (
@@ -100,10 +100,7 @@ export default function Loader() {
             <StarBox text="press any key" />
           </>
         ) : (
-          <>
-            <span className="ts-line">new game</span>
-            <StarBox text="press any key to begin" />
-          </>
+          <StarBox text="press any key to begin" />
         )}
       </div>
       <JeweledFrame />

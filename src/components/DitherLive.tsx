@@ -129,10 +129,17 @@ export default function DitherLive({
   variant = 'wild',
   className,
   tuning,
+  fit = 'integer',
 }: {
   variant?: DitherLiveVariant
   className?: string
   tuning?: DitherTuning
+  /** 'integer' (default): largest exact integer pixel scale that fits both
+   *  axes, letterboxed. 'fill-height': integer scale on the width, then the
+   *  canvas stretches to the wrap's full height (nearest-neighbour, so rows
+   *  go slightly uneven but edges stay hard); the lettering distorts with
+   *  the viewport, poster-style. */
+  fit?: 'integer' | 'fill-height'
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -273,11 +280,16 @@ export default function DitherLive({
       if (vw === 0 || vh === 0) return
       const pw = lf.gw * (dot?.cell ?? 1)
       const ph = lf.gh * (dot?.cell ?? 1)
-      const k = Math.max(1, Math.min(Math.floor(vw / pw), Math.floor(vh / ph)))
+      const k =
+        fit === 'fill-height'
+          ? Math.max(1, Math.floor(vw / pw))
+          : Math.max(1, Math.min(Math.floor(vw / pw), Math.floor(vh / ph)))
       canvas!.width = pw * k
       canvas!.height = ph * k
       canvas!.style.width = `${(pw * k) / dpr}px`
-      canvas!.style.height = `${(ph * k) / dpr}px`
+      // fill-height: the backing store keeps the integer-scaled asset; CSS
+      // stretches it to the wrap's height via image-rendering: pixelated.
+      canvas!.style.height = fit === 'fill-height' ? '100%' : `${(ph * k) / dpr}px`
       resolvePalette()
       draw()
     }
@@ -336,7 +348,7 @@ export default function DitherLive({
       if (raf) cancelAnimationFrame(raf)
       probe.remove()
     }
-  }, [variant, fps, frames, boil, dissolveBeats, fadeBeats, fadeFromVar, paletteVars, dot, waves, fill])
+  }, [variant, fps, frames, boil, dissolveBeats, fadeBeats, fadeFromVar, paletteVars, dot, waves, fill, fit])
 
   return (
     <div
