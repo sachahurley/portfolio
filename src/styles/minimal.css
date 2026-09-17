@@ -1094,24 +1094,84 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .ch-bonus { color: var(--accent); }
 
 /* item card */
-.ch-card { grid-column: 1 / -1; position: relative; border: 2px solid var(--border); padding: 20px; display: flex; gap: 16px; align-items: flex-start; }
+/* item card: the reward modals' chrome (.em-card) on the character
+   screen's equip / swap / unequip card, so every dialog on the site is cut
+   from the same stone: the large plate silhouette with a 2px ring drawn by
+   ::before, since a border would be sliced by the clip-path. */
+.ch-card {
+  grid-column: 1 / -1; position: relative; isolation: isolate;
+  padding: 20px; display: flex; gap: 16px; align-items: flex-start;
+  background: var(--border); clip-path: var(--plate-round-lg);
+}
+.ch-card::before {
+  content: ""; position: absolute; inset: 2px; z-index: -1;
+  background: var(--bg); clip-path: var(--plate-round-lg);
+}
 .ch-card-name { font-size: 16px; }
 .ch-card-meta { font-size: 12px; color: var(--mut); margin: 4px 0 10px; }
 .ch-card-stats { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--body); }
 .ch-card-actions { margin-top: 14px; }
-.ch-btn { font-family: var(--mono); font-size: 13px; padding: 8px 14px; background: var(--hover); color: var(--fg); border: 1px solid var(--border); cursor: pointer; }
-.ch-btn:hover { background: #222; }
-.ch-card-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; color: var(--mut); cursor: pointer; font-size: 16px; font-family: var(--mono); }
-.ch-card-close:hover { color: var(--fg); }
+/* dialog action, matching the reward modals' .em-btn */
+.ch-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; line-height: 16px;
+  padding: 12px 18px; border: 0; cursor: pointer;
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s, color .12s;
+}
+.ch-btn:hover { background: var(--accent); color: var(--bg); }
+.ch-btn:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+/* the same plate as the character screen's corner close (.ch-close) */
+.ch-card-close {
+  position: absolute; top: 12px; right: 12px; z-index: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0; border: 0; cursor: pointer;
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
+  clip-path: var(--plate-round);
+  transition: background-color .12s, color .12s;
+}
+.ch-card-close:hover { background: var(--accent); color: var(--bg); }
 
 /* ---- character screen: compare card, slot filter, pack, stats ---- */
 /* compare card: selected item beside the worn one, action below both */
 .ch-card-v { flex-direction: column; align-items: stretch; }
 .ch-compare { display: grid; grid-template-columns: 1fr; gap: 20px; }
-@media (min-width: 720px) { .ch-card.is-compare .ch-compare { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 720px) {
+  /* side by side, split by a rule rather than a gap alone */
+  .ch-card.is-compare .ch-compare { grid-template-columns: 1fr 1fr; gap: 0; }
+  .ch-card.is-compare .ch-cardside:first-child { padding-right: 24px; }
+  .ch-card.is-compare .ch-cardside + .ch-cardside {
+    border-left: 1px solid var(--border); padding-left: 24px;
+  }
+}
 .ch-cardside { display: flex; gap: 16px; align-items: flex-start; min-width: 0; }
 .ch-cardtag { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); margin-bottom: 4px; }
+/* long names keep clear of the close plate: reserve its width on whichever
+   side sits top-right (the only side when stacked, the second when split) */
+.ch-card .ch-cardside:first-child .ch-card-body { padding-right: 44px; }
+@media (min-width: 720px) {
+  .ch-card.is-compare .ch-cardside:first-child .ch-card-body { padding-right: 0; }
+  .ch-card.is-compare .ch-cardside:last-child .ch-card-body { padding-right: 44px; }
+}
 .ch-card-v .ch-card-actions { margin-top: 16px; }
+
+/* phones: the card leaves the grid and floats over the page, dimming it,
+   so equip / swap / unequip read as one deliberate act. Desktop keeps the
+   card docked above the panels (see the 960px block below), where the
+   paperdoll it acts on stays in view. */
+.ch-cardscrim {
+  position: fixed; inset: 0; z-index: 78;
+  background: rgba(0, 0, 0, .62); backdrop-filter: blur(2px);
+}
+@media (max-width: 959px) {
+  .ch-card {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: min(440px, calc(100vw - 48px)); max-height: 80vh; overflow: auto;
+    z-index: 79; margin: 0;
+  }
+}
+@media (min-width: 960px) { .ch-cardscrim { display: none; } }
 
 /* slot filter: the active slot's ring turns accent; the rest dim but
    stay focusable */
@@ -1186,7 +1246,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   .gf-full .ch-card {
     position: fixed; left: 50%; bottom: 48px; transform: translateX(-50%);
     width: min(640px, calc(100vw - 96px)); margin: 0; z-index: 55;
-    background: var(--bg); box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+    filter: drop-shadow(0 12px 40px rgba(0, 0, 0, .5));
   }
 }
 

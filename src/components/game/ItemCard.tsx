@@ -2,7 +2,11 @@
  * ItemCard, the item details card on the character screen.
  *
  * Shows the selected item and, when its slot is worn by a different item,
- * the equipped one beside it (stacked on narrow screens). The selected
+ * the equipped one beside it, split by a rule on wide screens and stacked
+ * on narrow ones. It wears the reward modals' chrome (stepped corners, a
+ * border ring, the close plate from the character screen's own corner) and
+ * on phones it rises over the page behind a scrim, so equipping, swapping
+ * and unequipping all read as the same deliberate act. The selected
  * item's stats carry a ▲/▼ delta against the equipped item, so a swap
  * reads at a glance. The action is Equip (empty slot), Swap (slot worn by
  * something else) or Unequip (viewing the worn item).
@@ -16,6 +20,7 @@ import {
   type Item,
   type StatId,
 } from '../../game/loot'
+import DitherIcon from '../DitherIcon'
 import PixelItem from './PixelItem'
 
 function ItemSide({
@@ -75,26 +80,30 @@ export default function ItemCard({
   const label = isEquipped ? 'Unequip' : equipped ? 'Swap' : 'Equip'
 
   return (
-    <aside className={`ch-card ch-card-v${equipped ? ' is-compare' : ''}`} aria-label="Item details">
-      <button className="ch-card-close" onClick={onClose} aria-label="Close">
-        ×
-      </button>
-      <div className="ch-compare">
-        <ItemSide
-          item={item}
-          tag={isEquipped ? 'equipped' : equipped ? 'in your pack' : undefined}
-          stats={isEquipped ? STAT_IDS.filter(has(item)) : selectedStats}
-          deltas={equipped ? statDeltas(item, equipped) : undefined}
-        />
-        {equipped && (
-          <ItemSide item={equipped} tag="equipped" stats={STAT_IDS.filter(has(equipped))} />
-        )}
-      </div>
-      <div className="ch-card-actions">
-        <button className="ch-btn" onClick={onAction}>
-          {label}
+    <>
+      {/* phones only (CSS): the page dims behind the card */}
+      <div className="ch-cardscrim" onClick={onClose} aria-hidden="true" />
+      <aside className={`ch-card ch-card-v${equipped ? ' is-compare' : ''}`} aria-label="Item details">
+        <button className="ch-card-close" onClick={onClose} aria-label="Close">
+          <DitherIcon name="close" size={16} />
         </button>
-      </div>
-    </aside>
+        <div className="ch-compare">
+          <ItemSide
+            item={item}
+            tag={isEquipped ? 'equipped' : equipped ? 'in your pack' : undefined}
+            stats={isEquipped ? STAT_IDS.filter(has(item)) : selectedStats}
+            deltas={equipped ? statDeltas(item, equipped) : undefined}
+          />
+          {equipped && (
+            <ItemSide item={equipped} tag="equipped" stats={STAT_IDS.filter(has(equipped))} />
+          )}
+        </div>
+        <div className="ch-card-actions">
+          <button className="ch-btn" onClick={onAction}>
+            {label}
+          </button>
+        </div>
+      </aside>
+    </>
   )
 }
