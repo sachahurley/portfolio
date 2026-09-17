@@ -29,7 +29,7 @@ export default function PixelItem({
   cell?: number
   className?: string
 }) {
-  const [x, y] = kind === 'chest' ? CHEST_TILE : (GEAR_TILES[kind][base] ?? GEAR_TILES[kind][0])
+  const [x, y, dx, dy] = kind === 'chest' ? CHEST_TILE : (GEAR_TILES[kind][base] ?? GEAR_TILES[kind][0])
 
   return (
     <TileBox
@@ -38,7 +38,9 @@ export default function PixelItem({
       scale={cell}
       tint={RARITY_COLORS[rarity]}
       className={className}
-      style={{ display: 'block' }}
+      // the baked shift centers the glyph's ink in the tile box; purely
+      // visual, so the layout box stays where the grid put it
+      style={{ display: 'block', transform: `translate(${dx * cell}px, ${dy * cell}px)` }}
     />
   )
 }
