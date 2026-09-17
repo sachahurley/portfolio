@@ -296,8 +296,6 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
    Namespaced as .mn-block (NOT .block) to avoid colliding with Tailwind's
    `block` display utility, which is used by the pixel-graphic canvases. */
 .mn-block { margin-top: 64px; }
-/* wide column for grid pages (the lab tile atlas) */
-.mn-main.wide { max-width: 1040px; }
 @media (min-width: 640px) { .mn-block { margin-top: 128px; } }
 .label { font-size: 16px; font-weight: 400; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
 .shead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 16px; }
@@ -429,6 +427,19 @@ a.item .t { color: var(--accent); }
 }
 
 /* lab demo */
+/* tile atlas (/lab/tile-atlas): the sprite grid is the only part of that
+   page that leaves the content column, using the .pb-break-full idiom
+   (sized against the adventure viewport, since 100vw lies inside the
+   desktop game frame; browsers without container units keep column
+   width). Its header stays in the column, so the title and back plate
+   land where every other detail page puts them. The 24px top margin
+   matches the other lab demos rather than a full .mn-block section gap. */
+.atlas-break {
+  --atlas-bw: calc(100cqw - 48px);
+  width: var(--atlas-bw);
+  margin-left: calc((100% - var(--atlas-bw)) / 2);
+  margin-top: 24px;
+}
 #labcanvas {
   width: 100%; height: 300px; border: 1px solid var(--border); border-radius: 6px;
   background: var(--hover); display: block; touch-action: none; margin-top: 18px;
@@ -558,19 +569,29 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
   margin-top: 0;
 }
 
-/* toasts — above the menu button */
+/* toasts — one full-width summary plate above the menu button.
+   16px insets clear the 8px stone band plus an 8px gap; the bottom
+   inset rides the safe area so the dock button never overlaps. */
 #toaster {
-  position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%);
-  display: flex; flex-direction: column; gap: 8px; z-index: 80; align-items: center;
+  position: fixed;
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  z-index: 80;
 }
 .toast {
-  /* one consistent width for every toast (not content-hugging, not full-bleed) */
-  width: min(320px, calc(100vw - 32px)); box-sizing: border-box; text-align: center;
-  background: var(--fg); color: var(--bg); font-size: 14px; padding: 11px 20px; border-radius: 5px;
+  box-sizing: border-box;
+  font-family: var(--mono); font-size: 13px; line-height: 1.4;
+  color: var(--fg);
+  background: var(--color-sepia-925, #16120c);
+  border: 1px solid var(--border); border-radius: 2px;
+  padding: 10px 12px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   opacity: 0; transform: translateY(8px); transition: .25s;
 }
 .toast.show { opacity: 1; transform: none; }
-.toast.level { background: var(--bg); color: var(--accent); border: 1px solid var(--accent); font-weight: 400; }
+.toast-xp { color: var(--accent); }
+.toast-more { color: var(--mut); }
 
 /* ---- "Your Progress" section (EXP system) ---- */
 .xp-explain { color: var(--body); font-size: 14px; margin: 0; max-width: 54ch; }

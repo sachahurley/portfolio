@@ -142,18 +142,25 @@ export default function LabItem() {
 
   if (isAtlas) {
     return (
-      <MinimalPage wide>
+      <MinimalPage>
         <BackButton fallback="/lab" />
         <h1 className="page">{item.title}</h1>
-        <p className="lead">
+        <p className="lead">{item.desc}</p>
+        <p className="meta" style={{ marginTop: 8 }}>
           Every sprite from the Urizen OneBit sheet, named and sorted. Click one to copy its id,
           the same ids the site uses to draw tiles.
         </p>
-        <div className="mn-block">
+
+        {/* The grid is the only part that breaks out of the column; the
+            header above it stays in the standard column so the title and
+            back plate line up with every other detail page. */}
+        <div className="atlas-break">
           <Suspense fallback={<p className="meta">Loading sprites...</p>}>
             <TileAtlas />
           </Suspense>
         </div>
+
+        <PagerNav section="lab" slug={item.slug} />
       </MinimalPage>
     )
   }
