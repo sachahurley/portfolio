@@ -1,7 +1,7 @@
 /**
  * Seeded RPG name generator — the visitor's random default character name.
  *
- * Deterministic for a given seed (same hash pattern as PixelStoneBorder's
+ * Deterministic for a given seed (same hash pattern as the stone band's
  * terrain: frac(sin(seed) * big)). Names are two joined syllables plus an
  * occasional epithet, e.g. "Fenwick", "Morrow the Bold". Kept short enough
  * for the character strip; always editable by the visitor.

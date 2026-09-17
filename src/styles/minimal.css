@@ -189,8 +189,12 @@ strong, b { font-weight: 400; }
 .grabber span { display: block; transform: rotate(90deg); }
 /* carved-stone baseboard: full-bleed (breaks the 24px side padding) along the
    bottom of the sheet, with a gap above it from the footer. */
-.stoneborder { margin: 16px -24px 0; line-height: 0; pointer-events: none; }
-.stoneborder canvas { display: block; width: 100%; image-rendering: pixelated; }
+/* baseboard: a stone tile repeated along the sheet's bottom edge, bleeding
+   through the body's side padding and clipped to the sheet's width */
+.sheet-baseboard {
+  display: flex; margin: 16px -24px 0; overflow: hidden; line-height: 0;
+  pointer-events: none;
+}
 /* Nav rows carry the compass's plate grammar at touch scale: the same
    --plate-round silhouette, hover plate, and accent-filled active plate +
    1px ring as .gf-compass, with larger type and padding for fingers. The
@@ -242,6 +246,13 @@ strong, b { font-weight: 400; }
 
 /* ---- layout — narrow column, emil-style rhythm ---- */
 .mn-main { position: relative; max-width: var(--col); margin: 0 auto; padding: 96px 24px 160px; }
+/* phones: wider side margins so text never runs up against the stonework.
+   The back plate is defined further down, so it needs the extra specificity
+   to follow the column in. */
+@media (max-width: 600px) {
+  .mn-main { padding-left: 32px; padding-right: 32px; }
+  .mn-main .pageback { left: 32px; }
+}
 /* Home keeps the pixel graphics flush; its column needs less top padding */
 /* 64px: breathing room between the stalactite strip and the name now that
    the stage hero above the intro is hidden */

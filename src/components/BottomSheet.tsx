@@ -18,7 +18,7 @@ import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import { homeToggleRow } from '../lib/homeVariant'
 import PixelPortrait from './game/PixelPortrait'
-import PixelStoneBorder from './PixelStoneBorder'
+import TileBand from './TileBand'
 import DitherIcon from './DitherIcon'
 import { ArrowUpRight } from './icons'
 
@@ -208,8 +208,8 @@ export default function BottomSheet({
           </a>
         </div>
 
-        {/* Carved-stone baseboard along the very bottom of the sheet. */}
-        <PixelStoneBorder />
+        {/* Stonework baseboard along the very bottom of the sheet. */}
+        <TileBand className="sheet-baseboard" />
         </div>
       </div>
     </>
