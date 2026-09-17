@@ -1255,11 +1255,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .wm-desc { font-size: 14px; color: var(--mut); margin: 8px 0 0; }
 
-/* ---- vault (password-locked case studies) ----
-   The gate borrows the site's terminal vocabulary: the Loader's asterisk
-   box (.ts-hint / .ts-hint-box), the character panel's underline input
-   recipe (.cs-name), .platebtn, and the hatch texture standing in for the
-   redacted body below the gate. Weight 400 and token colors throughout. */
+/* ---- lock gate (sealed case studies + locked lab experiments) ----
+   One barrier for both, so a lock always looks like a lock. It borrows the
+   site's terminal vocabulary: the Urizen padlock tile, the Loader's
+   asterisk box (.ts-hint / .ts-hint-box), the character panel's underline
+   input recipe (.cs-name), .platebtn, and the hatch texture standing in
+   for the redacted body below the gate (case studies only). Weight 400 and
+   token colors throughout. */
 .item .lockmark { color: var(--mut); line-height: 0; margin-left: 8px; }
 .vault-gate {
   margin-top: 32px; padding: 32px 24px;
@@ -1268,6 +1270,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   text-align: center; font-family: var(--mono);
 }
 .vault-gate .dicon { color: var(--mut); }
+/* the padlock leads, so it gets air under it */
+.vault-gate > span:first-of-type { margin-top: 4px; }
 .vault-sealed { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
 .vault-form { display: flex; gap: 14px; align-items: center; justify-content: center; width: 100%; max-width: 340px; margin-top: 6px; }
 .vault-input {

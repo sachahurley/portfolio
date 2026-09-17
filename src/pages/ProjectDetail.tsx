@@ -19,7 +19,7 @@ import { ArrowUpRight } from '../components/icons'
 import { usePageTitle } from '../lib/usePageTitle'
 import { useReadToEnd } from '../lib/useReadToEnd'
 import { useVault } from '../lib/useVault'
-import LockedGate from '../components/LockedGate'
+import LockGate from '../components/LockGate'
 
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -35,6 +35,13 @@ export default function ProjectDetail() {
   useEffect(() => {
     if (project) award(XP_AWARDS.project, `opened ${project.title}`, `project:${project.slug}`)
   }, [project, award])
+
+  // Cracking a sealed case study pays out like picking a lab lock.
+  useEffect(() => {
+    if (project?.locked && unlocked) {
+      award(XP_AWARDS.lab, 'picked a lock', `unlock:${project.slug}`)
+    }
+  }, [project, unlocked, award])
 
   // "Read a quest to the end": the bottom sentinel awards once per quest.
   // A locked page is short enough that the sentinel starts in view, so the
@@ -65,7 +72,22 @@ export default function ProjectDetail() {
                 {project.longDescription || project.description}
               </p>
             )}
-            <LockedGate vault={vault} />
+            <LockGate
+              kicker="sealed"
+              hint="enter the password to unlock"
+              inputType="password"
+              busy={vault.status === 'checking'}
+              error={vault.status === 'locked' && vault.error ? 'that\'s not it' : undefined}
+              fails={vault.fails}
+              onSubmit={vault.submit}
+            >
+              {/* the redacted body: hatched placeholder bars until unlocked */}
+              <div className="vault-redacted" aria-hidden="true">
+                <div className="vault-hatch" />
+                <div className="vault-hatch" />
+                <div className="vault-hatch" />
+              </div>
+            </LockGate>
           </>
         )
       ) : project.blocks ? (

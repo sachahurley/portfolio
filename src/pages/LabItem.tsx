@@ -7,7 +7,7 @@
  * unlocked.
  */
 
-import { lazy, Suspense, useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
 import BackButton from '../components/BackButton'
@@ -16,8 +16,8 @@ import DotLoader from '../components/DotLoader'
 import DitherToy from '../components/DitherToy'
 import { getLabBySlug } from '../data/lab'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
-import { useUnlocked } from '../lib/unlocks'
-import LockGate from '../components/lab/LockGate'
+import { tryUnlock, useUnlocked } from '../lib/unlocks'
+import LockGate from '../components/LockGate'
 import NotFound from './NotFound'
 import { usePageTitle } from '../lib/usePageTitle'
 import { ArrowUpRight } from '../components/icons'
@@ -29,9 +29,11 @@ export default function LabItem() {
   const { slug } = useParams<{ slug: string }>()
   const item = slug ? getLabBySlug(slug) : undefined
   usePageTitle(item?.title)
-  const { award } = useXp()
+  const { award, toast } = useXp()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const unlocked = useUnlocked()
+  // Failed code attempts, for the gate's message and shake.
+  const [fails, setFails] = useState(0)
   const locked = !!item?.lock && !unlocked.includes(item.slug)
   const hasDemo = item?.demo === 'reactive-grid'
   const isAtlas = item?.demo === 'tile-atlas' && !locked
@@ -39,6 +41,17 @@ export default function LabItem() {
   useEffect(() => {
     if (item && !locked) award(XP_AWARDS.lab, 'played in the lab', `lab:${item.slug}`)
   }, [item, locked, award])
+
+  // A right code stores the unlock (lib/unlocks) and pays out once.
+  const tryCode = (value: string) => {
+    if (!item?.lock) return
+    if (tryUnlock(item.slug, item.lock.code, value)) {
+      award(XP_AWARDS.lab, 'picked a lock', `unlock:${item.slug}`)
+      toast('unlocked')
+      return
+    }
+    setFails((n) => n + 1)
+  }
 
   useEffect(() => {
     if (!hasDemo) return
@@ -115,7 +128,13 @@ export default function LabItem() {
         <h1 className="page">{item.title}</h1>
         <p className="lead">{item.desc}</p>
         <div className="mn-block">
-          <LockGate slug={item.slug} code={item.lock!.code} hint={item.lock!.hint} />
+          <LockGate
+            kicker="locked"
+            hint={item.lock!.hint.toLowerCase().replace(/\.$/, '')}
+            error={fails > 0 ? "that's not it" : undefined}
+            fails={fails}
+            onSubmit={tryCode}
+          />
         </div>
       </MinimalPage>
     )
