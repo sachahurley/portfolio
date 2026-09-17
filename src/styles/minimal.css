@@ -593,16 +593,16 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
   padding: 10px 12px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   /* rises from below the bottom edge and drops back out the same way:
-     no fade, so it reads as a physical plate. The leaving transition
-     lives here (accelerating, like it is dropped) and the arriving one
-     on .show (the sheet's easing, so both bottom-edge surfaces move
-     alike). */
+     no fade, so it reads as a physical plate. The travel is stepped
+     rather than eased, so the plate hops on a pixel grid like the rest
+     of the site's art instead of gliding. The leaving transition lives
+     here and the arriving one on .show. */
   transform: translateY(var(--toast-exit));
-  transition: transform .2s cubic-bezier(.4, 0, 1, 1);
+  transition: transform .2s steps(5);
 }
 .toast.show {
   transform: none;
-  transition: transform .28s cubic-bezier(.32, .72, 0, 1);
+  transition: transform .24s steps(5);
 }
 .toast-xp { color: var(--accent); }
 .toast-more { color: var(--mut); }
