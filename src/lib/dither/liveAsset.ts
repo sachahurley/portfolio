@@ -113,9 +113,11 @@ export function buildLiveField(
         (y < gh - 1 && shade[i + gw] === 0)
       if (touchesGround) field[i] = EDGE_COVER
     }
+  // Patches are hand-authored repairs for a specific export, so they apply
+  // whatever the variant; only the automatic sculpting is opt-in.
+  applyPatches(gw, gh, field, shade, patches)
   if (sculpt) {
     bridgeGaps(gw, gh, field, shade)
-    applyPatches(gw, gh, field, shade, patches)
     bandWordDepth(gw, gh, shade)
   }
   return { gw, gh, field, shade }
