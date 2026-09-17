@@ -571,14 +571,19 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 
 /* toasts — one full-width summary plate above the menu button.
    16px insets clear the 8px stone band plus an 8px gap; the bottom
-   inset rides the safe area so the dock button never overlaps. */
+   inset rides the safe area so the dock button never overlaps. Sits
+   BELOW the dock (z 72) so a leaving toast slides down behind the menu
+   plate on its way off the screen. */
 #toaster {
   position: fixed;
   left: calc(16px + env(safe-area-inset-left, 0px));
   right: calc(16px + env(safe-area-inset-right, 0px));
   bottom: calc(92px + env(safe-area-inset-bottom, 0px));
-  z-index: 80;
+  z-index: 70;
 }
+/* how far down the plate has to travel to clear the screen: its own
+   height, plus the gap it sits above the bottom edge */
+:root { --toast-exit: calc(100% + 92px + env(safe-area-inset-bottom, 0px)); }
 .toast {
   box-sizing: border-box;
   font-family: var(--mono); font-size: 13px; line-height: 1.4;
@@ -587,9 +592,18 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
   border: 1px solid var(--border); border-radius: 2px;
   padding: 10px 12px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  opacity: 0; transform: translateY(8px); transition: .25s;
+  /* rises from below the bottom edge and drops back out the same way:
+     no fade, so it reads as a physical plate. The leaving transition
+     lives here (accelerating, like it is dropped) and the arriving one
+     on .show (the sheet's easing, so both bottom-edge surfaces move
+     alike). */
+  transform: translateY(var(--toast-exit));
+  transition: transform .2s cubic-bezier(.4, 0, 1, 1);
 }
-.toast.show { opacity: 1; transform: none; }
+.toast.show {
+  transform: none;
+  transition: transform .28s cubic-bezier(.32, .72, 0, 1);
+}
 .toast-xp { color: var(--accent); }
 .toast-more { color: var(--mut); }
 
