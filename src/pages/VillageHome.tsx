@@ -19,7 +19,7 @@ export default function VillageHome() {
   const navigate = useNavigate()
 
   return (
-    <MinimalPage flushTop>
+    <MinimalPage>
       <section className="intro">
         <h1>Sacha Hurley</h1>
       </section>

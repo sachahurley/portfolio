@@ -189,8 +189,12 @@ strong, b { font-weight: 400; }
 .grabber span { display: block; transform: rotate(90deg); }
 /* carved-stone baseboard: full-bleed (breaks the 24px side padding) along the
    bottom of the sheet, with a gap above it from the footer. */
-.stoneborder { margin: 16px -24px 0; line-height: 0; pointer-events: none; }
-.stoneborder canvas { display: block; width: 100%; image-rendering: pixelated; }
+/* baseboard: a stone tile repeated along the sheet's bottom edge, bleeding
+   through the body's side padding and clipped to the sheet's width */
+.sheet-baseboard {
+  display: flex; margin: 16px -24px 0; overflow: hidden; line-height: 0;
+  pointer-events: none;
+}
 /* Nav rows carry the compass's plate grammar at touch scale: the same
    --plate-round silhouette, hover plate, and accent-filled active plate +
    1px ring as .gf-compass, with larger type and padding for fingers. The
@@ -241,7 +245,14 @@ strong, b { font-weight: 400; }
 .menu-note { font-size: 11px; color: var(--mut2); width: 100%; text-align: center; margin-top: 10px; }
 
 /* ---- layout — narrow column, emil-style rhythm ---- */
-.mn-main { max-width: var(--col); margin: 0 auto; padding: 96px 24px 160px; }
+.mn-main { position: relative; max-width: var(--col); margin: 0 auto; padding: 96px 24px 160px; }
+/* phones: wider side margins so text never runs up against the stonework.
+   The back plate is defined further down, so it needs the extra specificity
+   to follow the column in. */
+@media (max-width: 600px) {
+  .mn-main { padding-left: 32px; padding-right: 32px; }
+  .mn-main .pageback { left: 32px; }
+}
 /* Home keeps the pixel graphics flush; its column needs less top padding */
 /* 64px: breathing room between the stalactite strip and the name now that
    the stage hero above the intro is hidden */
@@ -285,8 +296,6 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
    Namespaced as .mn-block (NOT .block) to avoid colliding with Tailwind's
    `block` display utility, which is used by the pixel-graphic canvases. */
 .mn-block { margin-top: 64px; }
-/* wide column for grid pages (the lab tile atlas) */
-.mn-main.wide { max-width: 1040px; }
 @media (min-width: 640px) { .mn-block { margin-top: 128px; } }
 .label { font-size: 16px; font-weight: 400; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
 .shead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 16px; }
@@ -305,14 +314,16 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 }
 .seeall:hover .seebtn { background: var(--accent); color: var(--bg); }
 /* detail-page back button: the same plate as .seebtn, but a standalone
-   <button> with its own hover, sitting above the page title. */
+   <button> with its own hover. It floats in the content column's top
+   padding rather than taking a row of its own, so the page title starts at
+   the same height whether or not a page has one (Home has none). */
 .pageback {
+  position: absolute; top: 48px; left: 24px;
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; flex: none; padding: 0; border: 0; cursor: pointer;
   background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
-  margin: 0 0 20px;
 }
 .pageback:hover { background: var(--accent); color: var(--bg); }
 /* detail-page prev/next pager: richer cousins of the menu buttons — the
@@ -416,6 +427,19 @@ a.item .t { color: var(--accent); }
 }
 
 /* lab demo */
+/* tile atlas (/lab/tile-atlas): the sprite grid is the only part of that
+   page that leaves the content column, using the .pb-break-full idiom
+   (sized against the adventure viewport, since 100vw lies inside the
+   desktop game frame; browsers without container units keep column
+   width). Its header stays in the column, so the title and back plate
+   land where every other detail page puts them. The 24px top margin
+   matches the other lab demos rather than a full .mn-block section gap. */
+.atlas-break {
+  --atlas-bw: calc(100cqw - 48px);
+  width: var(--atlas-bw);
+  margin-left: calc((100% - var(--atlas-bw)) / 2);
+  margin-top: 24px;
+}
 #labcanvas {
   width: 100%; height: 300px; border: 1px solid var(--border); border-radius: 6px;
   background: var(--hover); display: block; touch-action: none; margin-top: 18px;
@@ -545,19 +569,29 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
   margin-top: 0;
 }
 
-/* toasts — above the menu button */
+/* toasts — one full-width summary plate above the menu button.
+   16px insets clear the 8px stone band plus an 8px gap; the bottom
+   inset rides the safe area so the dock button never overlaps. */
 #toaster {
-  position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%);
-  display: flex; flex-direction: column; gap: 8px; z-index: 80; align-items: center;
+  position: fixed;
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  z-index: 80;
 }
 .toast {
-  /* one consistent width for every toast (not content-hugging, not full-bleed) */
-  width: min(320px, calc(100vw - 32px)); box-sizing: border-box; text-align: center;
-  background: var(--fg); color: var(--bg); font-size: 14px; padding: 11px 20px; border-radius: 5px;
+  box-sizing: border-box;
+  font-family: var(--mono); font-size: 13px; line-height: 1.4;
+  color: var(--fg);
+  background: var(--color-sepia-925, #16120c);
+  border: 1px solid var(--border); border-radius: 2px;
+  padding: 10px 12px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   opacity: 0; transform: translateY(8px); transition: .25s;
 }
 .toast.show { opacity: 1; transform: none; }
-.toast.level { background: var(--bg); color: var(--accent); border: 1px solid var(--accent); font-weight: 400; }
+.toast-xp { color: var(--accent); }
+.toast-more { color: var(--mut); }
 
 /* ---- "Your Progress" section (EXP system) ---- */
 .xp-explain { color: var(--body); font-size: 14px; margin: 0; max-width: 54ch; }
@@ -1242,11 +1276,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .wm-desc { font-size: 14px; color: var(--mut); margin: 8px 0 0; }
 
-/* ---- vault (password-locked case studies) ----
-   The gate borrows the site's terminal vocabulary: the Loader's asterisk
-   box (.ts-hint / .ts-hint-box), the character panel's underline input
-   recipe (.cs-name), .platebtn, and the hatch texture standing in for the
-   redacted body below the gate. Weight 400 and token colors throughout. */
+/* ---- lock gate (sealed case studies + locked lab experiments) ----
+   One barrier for both, so a lock always looks like a lock. It borrows the
+   site's terminal vocabulary: the Urizen padlock tile, the Loader's
+   asterisk box (.ts-hint / .ts-hint-box), the character panel's underline
+   input recipe (.cs-name), .platebtn, and the hatch texture standing in
+   for the redacted body below the gate (case studies only). Weight 400 and
+   token colors throughout. */
 .item .lockmark { color: var(--mut); line-height: 0; margin-left: 8px; }
 .vault-gate {
   margin-top: 32px; padding: 32px 24px;
@@ -1255,6 +1291,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   text-align: center; font-family: var(--mono);
 }
 .vault-gate .dicon { color: var(--mut); }
+/* the padlock leads, so it gets air under it */
+.vault-gate > span:first-of-type { margin-top: 4px; }
 .vault-sealed { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
 .vault-form { display: flex; gap: 14px; align-items: center; justify-content: center; width: 100%; max-width: 340px; margin-top: 6px; }
 .vault-input {

@@ -4,7 +4,7 @@
  * lib/jeweledFrame.ts: 16x16 garnet-jewel corner bosses stay fixed while
  * the 8x8 stone tiles repeat along the edges.
  *
- * Drawn onto a canvas (same approach as PixelStoneBorder) rather than a
+ * Drawn onto a canvas (the site's usual pixel-art approach) rather than a
  * border-image data URL: some embedded webviews refuse data: image URLs
  * in CSS, and a live canvas renders everywhere.
  *

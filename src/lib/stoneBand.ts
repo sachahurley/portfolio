@@ -4,9 +4,9 @@
  * The art is a run of irregular bevelled blocks (lit left edge, shaded
  * bottom/right, dark mortar gaps, the occasional jagged crack), rolled
  * deterministically from a seeded hash so a given width always draws the
- * same wall. Pure data: PixelStoneBorder paints the grid onto a canvas and
- * collapses it to 1-bit, and the tile baker renders the same grid into the
- * sheet, so the atlas shows exactly what the site does.
+ * same wall. Pure data: the tile baker renders the grid into the sheet and
+ * collapses it to 1-bit, so the stonework lives in the atlas as
+ * frame/band/stone_band even though no component paints it directly today.
  */
 
 export const BAND_ROWS = 5 // band height in cells - one short course of blocks

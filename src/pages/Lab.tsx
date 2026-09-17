@@ -29,7 +29,7 @@ export default function Lab() {
                 key={x.slug}
                 to={`/lab/${x.slug}`}
                 title={x.title}
-                desc={locked ? `Locked. ${x.lock!.hint}` : x.desc}
+                desc={x.desc}
                 img={x.img}
                 locked={locked}
               />

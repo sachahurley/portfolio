@@ -57,7 +57,8 @@ export const XP_AWARDS = {
 interface ToastItem {
   id: number
   msg: string
-  kind?: 'level'
+  /** XP carried by this toast; the Toaster sums simultaneous amounts. */
+  amount?: number
 }
 
 export type LogKind = 'xp' | 'arrive' | 'level' | 'hint' | 'system'
@@ -76,7 +77,7 @@ interface XpValue {
   xp: number
   level: LevelInfo
   award: (amount: number, reason: string, key?: string) => void
-  toast: (msg: string, kind?: 'level') => void
+  toast: (msg: string, amount?: number) => void
   toasts: ToastItem[]
   removeToast: (id: number) => void
   /** Message log history (session-scoped), newest last. */
@@ -330,9 +331,9 @@ export function XpProvider({ children }: { children: ReactNode }) {
     applyTheme(activeEgg)
   }, [activeEgg])
 
-  const toast = useCallback((msg: string, kind?: 'level') => {
+  const toast = useCallback((msg: string, amount?: number) => {
     const id = ++idRef.current
-    setToasts((t) => [...t, { id, msg, kind }])
+    setToasts((t) => [...t, { id, msg, amount }])
   }, [])
 
   const logLine = useCallback((msg: string, kind: LogKind = 'system') => {
@@ -354,7 +355,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
       xpRef.current += amount
       const after = levelInfo(xpRef.current).level
       setXp(xpRef.current)
-      toast(`+${amount} xp · ${reason}`)
+      toast(reason, amount)
       logLine(`+${amount} XP — ${reason}`, 'xp')
       // Chest drops ride the same dedup guard as the XP (StrictMode-safe):
       // eligible first-time content interactions roll a per-save seeded

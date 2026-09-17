@@ -1,46 +1,78 @@
 /**
  * Toaster
  *
- * Renders XP toasts above the floating menu button. Each toast slides in,
- * holds ~2.2s, then fades out and removes itself.
+ * One full-width summary plate above the floating menu button (mobile
+ * only; the message log covers desktop). Simultaneous toasts fold into
+ * a single line: XP amounts sum, the first reason shows, the first
+ * plain message (chest / unlocked) appends as a short fragment, and
+ * everything else becomes a "+N more" counter. Each new arrival
+ * extends the card's life; when it fades out, all consumed toasts are
+ * removed and the next arrival starts a fresh card.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useXp } from '../context/XpProvider'
 
-function ToastView({
-  msg,
-  kind,
-  onDone,
-}: {
-  msg: string
-  kind?: 'level'
-  onDone: () => void
-}) {
+const HOLD_MS = 2200
+const DONE_MS = 2500
+
+export default function Toaster() {
+  const { toasts, removeToast } = useXp()
   const [show, setShow] = useState(false)
 
+  // The done timer reads the toasts present when it fires (any newer
+  // arrival re-arms the timers, so in practice this equals the closure).
+  const toastsRef = useRef(toasts)
   useEffect(() => {
+    toastsRef.current = toasts
+  }, [toasts])
+
+  // Re-armed by every arrival (keyed on the newest id, not the array,
+  // so removals don't restart the clock).
+  const lastId = toasts.length ? toasts[toasts.length - 1].id : 0
+  useEffect(() => {
+    if (!lastId) return
     const raf = requestAnimationFrame(() => setShow(true))
-    const hideTimer = setTimeout(() => setShow(false), 2200)
-    const doneTimer = setTimeout(onDone, 2500)
+    const hideTimer = setTimeout(() => setShow(false), HOLD_MS)
+    const doneTimer = setTimeout(() => {
+      for (const t of toastsRef.current) removeToast(t.id)
+    }, DONE_MS)
     return () => {
       cancelAnimationFrame(raf)
       clearTimeout(hideTimer)
       clearTimeout(doneTimer)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [lastId, removeToast])
 
-  return <div className={`toast${kind ? ` ${kind}` : ''}${show ? ' show' : ''}`}>{msg}</div>
-}
+  const xp = toasts.filter((t) => t.amount != null)
+  const plain = toasts.filter((t) => t.amount == null)
+  const total = xp.reduce((sum, t) => sum + (t.amount ?? 0), 0)
+  // Fragments actually shown: the first XP reason and the first plain
+  // message (shortened to its lead clause when riding an XP line, so
+  // "found a chest · open it..." reads as "found a chest").
+  const plainMsg = plain.length ? (xp.length ? plain[0].msg.split(' · ')[0] : plain[0].msg) : null
+  const more = toasts.length - (xp.length ? 1 : 0) - (plain.length ? 1 : 0)
 
-export default function Toaster() {
-  const { toasts, removeToast } = useXp()
   return (
     <div id="toaster" aria-live="polite">
-      {toasts.map((t) => (
-        <ToastView key={t.id} msg={t.msg} kind={t.kind} onDone={() => removeToast(t.id)} />
-      ))}
+      {toasts.length > 0 && (
+        <div className={`toast${show ? ' show' : ''}`}>
+          {xp.length > 0 && (
+            <>
+              <span className="toast-xp">+{total} xp</span>
+              {' · '}
+              {xp[0].msg}
+            </>
+          )}
+          {plainMsg && (
+            <>
+              {xp.length > 0 && ' · '}
+              {plainMsg}
+            </>
+          )}
+          {more > 0 && <span className="toast-more"> · +{more} more</span>}
+        </div>
+      )}
     </div>
   )
 }
