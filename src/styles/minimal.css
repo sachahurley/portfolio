@@ -241,7 +241,7 @@ strong, b { font-weight: 400; }
 .menu-note { font-size: 11px; color: var(--mut2); width: 100%; text-align: center; margin-top: 10px; }
 
 /* ---- layout — narrow column, emil-style rhythm ---- */
-.mn-main { max-width: var(--col); margin: 0 auto; padding: 96px 24px 160px; }
+.mn-main { position: relative; max-width: var(--col); margin: 0 auto; padding: 96px 24px 160px; }
 /* Home keeps the pixel graphics flush; its column needs less top padding */
 /* 64px: breathing room between the stalactite strip and the name now that
    the stage hero above the intro is hidden */
@@ -305,14 +305,16 @@ body:has(#loader:not(.hide)) .stage-hero { animation-play-state: paused; }
 }
 .seeall:hover .seebtn { background: var(--accent); color: var(--bg); }
 /* detail-page back button: the same plate as .seebtn, but a standalone
-   <button> with its own hover, sitting above the page title. */
+   <button> with its own hover. It floats in the content column's top
+   padding rather than taking a row of its own, so the page title starts at
+   the same height whether or not a page has one (Home has none). */
 .pageback {
+  position: absolute; top: 48px; left: 24px;
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; flex: none; padding: 0; border: 0; cursor: pointer;
   background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
-  margin: 0 0 20px;
 }
 .pageback:hover { background: var(--accent); color: var(--bg); }
 /* detail-page prev/next pager: richer cousins of the menu buttons — the
