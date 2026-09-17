@@ -40,7 +40,7 @@ export const THEMES: Record<ThemeId, Theme> = {
     base: '#f7f5f2',
     mark: '#bfb4a3',
     pattern: 'speckle',
-    accent: '#f7f5f2',
+    accent: '#e0a26a', // mirrors --accent in index.css (the village gold)
     head: '#fdfcfb',
     text: '#bfb4a3',
     fire: ['#E0DACE', '#968A75', '#474030'],

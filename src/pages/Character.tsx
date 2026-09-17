@@ -17,6 +17,8 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
+import PixelFire, { type PixelFireHandle } from '../components/PixelFire'
+import ProgressSection from '../components/progress/ProgressSection'
 import { useXp } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 import { runImpact } from '../lib/impactFx'
@@ -60,6 +62,9 @@ export default function Character() {
   const [selected, setSelected] = useState<number | null>(null)
   const [revealed, setRevealed] = useState<Item | null>(null)
   const navigate = useNavigate()
+  // The camp fire below the sheet doubles as the egg drop target (same
+  // pairing as the classic home page).
+  const fireApiRef = useRef<PixelFireHandle>(null)
 
   // Close the screen: back in history when the visitor navigated here from
   // within the site; deep links have no in-app history, so go home.
@@ -269,7 +274,13 @@ export default function Character() {
         )}
       </div>
 
+      {/* Camp: the progress block + the egg fire, same pairing as the
+          classic home page - earned eggs drag into the fire below to
+          activate their theme. */}
+      <ProgressSection fireApiRef={fireApiRef} />
+
       <ChestRevealModal item={revealed} onClose={() => setRevealed(null)} />
+      <PixelFire ref={fireApiRef} />
     </div>
   )
 }
