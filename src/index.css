@@ -25,9 +25,11 @@
   --mut: var(--text-tertiary);      /* dates, meta, role */
   --mut2: var(--border-muted);      /* faint arrows */
   /* Highlight for links / See all / active nav / XP bar / focus + selection.
-     Light warm sepia straight from the scorp-ds scale (previously a one-off
-     prototype gold, #e0a33d). */
-  --accent: var(--color-sepia-200, #f7f5f2);
+     The village kit's warm gold (sampled from the builder's site palette,
+     and the village home's cue color). No scorp-ds token matches this
+     muted amber, so it's a literal like the fire hues below; mirror any
+     change into THEMES.default.accent (src/lib/themes.ts). */
+  --accent: #e0a26a;
   --hover: var(--surface-muted);    /* row / control hover */
   --ring: var(--border-focus);      /* focus ring */
 

@@ -26,7 +26,7 @@ import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { formatDate } from '../lib/date'
 import { usePageTitle } from '../lib/usePageTitle'
 
-export default function Home() {
+export default function Home({ onSwitchHome }: { onSwitchHome?: () => void }) {
   usePageTitle()
   const { award } = useXp()
   // The bottom-of-page fire doubles as the egg drop target; the progress
@@ -58,8 +58,9 @@ export default function Home() {
 
         <div className="bio">
           <p>
-            Product design engineer building a health app at Betterfly. Before:
-            Meta, Utility (the agency I co-founded), and EA Sports.
+            Product design engineer at Betterfly, working on a health app.
+            Earlier: Meta, EA Sports, and Utility, the design agency I
+            co-founded.
           </p>
         </div>
 
@@ -164,6 +165,16 @@ export default function Home() {
         {/* ===== Your progress (EXP system: level + eggs; eggs drop into
             the pixel fire at the very bottom of the page) ===== */}
         <ProgressSection fireApiRef={fireApiRef} />
+
+        {/* Rendered under the home flag (HomeGate): the way back to the
+            village-map home */}
+        {onSwitchHome && (
+          <p className="town-hint">
+            <button type="button" className="home-switch" onClick={onSwitchHome}>
+              visit the village home
+            </button>
+          </p>
+        )}
       </MinimalPage>
 
       {/* Pixel fire animation - only on the home page */}

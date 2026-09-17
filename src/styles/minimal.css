@@ -214,6 +214,15 @@ strong, b { font-weight: 400; }
   transition: color .15s ease, background-color .15s ease;
 }
 .menu-nav a:hover { color: var(--fg); background: var(--hover); }
+/* the home-variant toggle under the nav: deliberately smaller and plainer
+   than the nav rows - a quiet mono utility link, no plate, no icon */
+.menu-alt { margin: 10px 13px 0; }
+.gf-compass .menu-alt { margin: 10px 11px 0; }
+.home-toggle {
+  font-family: var(--mono); font-size: 12px; color: var(--mut);
+  border-bottom: 1px solid var(--mut2);
+}
+.home-toggle:hover { color: var(--fg); border-color: var(--fg); }
 .menu-nav a.active {
   color: var(--accent); background: var(--hover); border: 0;
   transition: color .15s ease;
@@ -1089,7 +1098,9 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   /* clear the 16px stone band and the 32px corner boss */
   .ch-close { top: 40px; right: 40px; }
   .gf-full { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'viewport'; }
-  .gf-full .gf-viewport { overflow: hidden; display: flex; }
+  /* scrolls (not locked) since the camp section - progress + the egg
+     fire - lives below the sheet; the close plate stays fixed */
+  .gf-full .gf-viewport { overflow-y: auto; overflow-x: hidden; display: block; }
   .gf-full .ch-main { margin: auto; width: 100%; padding: 40px 24px; }
   .gf-full .ch-card {
     position: fixed; left: 50%; bottom: 48px; transform: translateX(-50%);
@@ -1210,6 +1221,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .town-plate-sub { color: var(--mut); }
 .town-hint { font-family: var(--mono); font-size: 12px; color: var(--mut); margin-top: 12px; text-align: center; }
+/* the quiet home-variant switch link (HomeGate), inside a .town-hint line */
+.home-switch {
+  font-family: var(--mono); font-size: 12px; color: var(--accent);
+  background: none; border: 0; padding: 0; cursor: pointer;
+  border-bottom: 1px solid var(--mut2);
+}
+.home-switch:hover { border-color: var(--accent); }
 
 /* ---- builder lab (/lab/builder): the building workshop ----
    Same integer-zoom centered-canvas frame as the town; control rows
@@ -1274,6 +1292,29 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   overflow: hidden;
 }
 .blk-shop .bld-row { margin-top: 10px; }
+
+/* ---- village home (/): the kit scene rendered natively ----
+   Full-bleed like .town-frame; height comes from the canvas (the flow
+   layout reflows to the width, so no fixed aspect). Labels and hotspots
+   are DOM overlays positioned in canvas pixels. */
+.vg-frame {
+  position: relative; margin-top: 40px;
+  --vg-bw: calc(100cqw - 48px);
+  width: min(var(--vg-bw), 960px);
+  margin-left: calc((100% - min(var(--vg-bw), 960px)) / 2);
+}
+.vg-frame canvas { position: relative; display: block; image-rendering: pixelated; }
+.vg-label {
+  position: absolute; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 12px; line-height: 1;
+  color: var(--body); white-space: nowrap; pointer-events: none;
+}
+.vg-hotspot {
+  position: absolute; padding: 0; margin: 0;
+  background: none; border: none; appearance: none;
+  pointer-events: none; /* canvas handles the pointer; keyboard still activates */
+}
+.vg-hotspot:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
 /* ---- village kit lab (/lab/village): the embedded onebit-kit builder.
    The tool is a self-contained page with its own palette and scrolling;
