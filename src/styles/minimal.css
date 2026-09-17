@@ -83,13 +83,8 @@ strong, b { font-weight: 400; }
   border-top-width: calc(16px + env(safe-area-inset-top, 0px));
   border-bottom-width: calc(16px + env(safe-area-inset-bottom, 0px));
 }
-@media (max-width: 959px) {
-  .jewel-frame-bg {
-    border-width: 8px;
-    border-top-width: calc(8px + env(safe-area-inset-top, 0px));
-    border-bottom-width: calc(8px + env(safe-area-inset-bottom, 0px));
-  }
-}
+/* the ring is the stone band at every width: the site frame no longer
+   thins on phones */
 
 /* ---- menu notch: the mobile nav, carved out of the frame's bottom band ----
    Sibling to the desktop side panel's drawer-pull tab (.gf-collapse): the
@@ -100,7 +95,7 @@ strong, b { font-weight: 400; }
    clears the sheet (75) because the notch is also the sheet's close. */
 .gf-tab {
   position: fixed; left: 50%; transform: translateX(-50%);
-  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 76; display: flex; align-items: center; gap: 8px;
   font-family: var(--mono); font-size: 13px; line-height: 16px;
   border: 0; padding: 10px 16px 12px; cursor: pointer;
@@ -544,14 +539,14 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
    plate on its way off the screen. */
 #toaster {
   position: fixed;
-  left: calc(16px + env(safe-area-inset-left, 0px));
-  right: calc(16px + env(safe-area-inset-right, 0px));
-  bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+  left: calc(24px + env(safe-area-inset-left, 0px));
+  right: calc(24px + env(safe-area-inset-right, 0px));
+  bottom: calc(74px + env(safe-area-inset-bottom, 0px));
   z-index: 70;
 }
 /* how far down the plate has to travel to clear the screen: its own
    height, plus the gap it sits above the bottom edge */
-:root { --toast-exit: calc(100% + 66px + env(safe-area-inset-bottom, 0px)); }
+:root { --toast-exit: calc(100% + 74px + env(safe-area-inset-bottom, 0px)); }
 .toast {
   box-sizing: border-box;
   font-family: var(--mono); font-size: 13px; line-height: 1.4;
@@ -688,7 +683,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
    content clips at the band's inner edge. */
 .gframe {
   position: fixed; inset: 0; overflow: hidden; background: var(--bg);
-  padding: calc(8px + env(safe-area-inset-top, 0px)) 0 calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 0 calc(16px + env(safe-area-inset-bottom, 0px));
 }
 .gf-viewport {
   height: 100%; overflow-y: auto; overflow-x: hidden;
@@ -1171,7 +1166,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    item card floats above the panels instead of stretching the page;
    below 960px the handheld port keeps its normal page scroll. */
 .ch-close {
-  position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); right: 16px; z-index: 65;
+  position: fixed; top: calc(24px + env(safe-area-inset-top, 0px)); right: 24px; z-index: 65;
   display: inline-flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; padding: 0; border: 0; cursor: pointer;
   background: var(--color-sepia-925, #221e13); color: var(--accent);
