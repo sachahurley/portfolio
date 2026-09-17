@@ -104,7 +104,9 @@ strong, b { font-weight: 400; }
   z-index: 76; display: flex; align-items: center; gap: 8px;
   font-family: var(--mono); font-size: 13px; line-height: 16px;
   border: 0; padding: 10px 16px 12px; cursor: pointer;
-  position: relative; isolation: isolate;
+  /* isolation (not position) so the ring pseudo can sit at z-index -1
+     without dropping behind the page; the element stays fixed */
+  isolation: isolate;
   /* accent ring: a plain border would be sliced off by the clip-path, so
      the element is the ring colour and ::before paints the stone fill 1px
      inside the same polygon (the .em-card / .xp-bar trick) */
