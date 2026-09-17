@@ -17,6 +17,9 @@ import NotePost from './pages/NotePost'
 import Lab from './pages/Lab'
 import LabItem from './pages/LabItem'
 import WordmarkLab from './pages/WordmarkLab'
+import TownLab from './pages/TownLab'
+import BuilderLab from './pages/BuilderLab'
+import VillageLab from './pages/VillageLab'
 import About from './pages/About'
 import Character from './pages/Character'
 import NotFound from './pages/NotFound'
@@ -65,9 +68,12 @@ function App() {
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/:slug" element={<ProjectDetail />} />
 
-              {/* Lab index + experiment (static wordmark route wins over :slug) */}
+              {/* Lab index + experiment (static routes win over :slug) */}
               <Route path="/lab" element={<Lab />} />
               <Route path="/lab/wordmark" element={<WordmarkLab />} />
+              <Route path="/lab/town" element={<TownLab />} />
+              <Route path="/lab/builder" element={<BuilderLab />} />
+              <Route path="/lab/village" element={<VillageLab />} />
               <Route path="/lab/:slug" element={<LabItem />} />
 
               {/* Notes index + detail */}

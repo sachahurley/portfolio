@@ -10,6 +10,10 @@ lerna-debug.log*
 node_modules
 # scope to the repo-root build output so vendored scorp-ds dist stays tracked
 /dist
+
+# password-locked case-study plaintext; only the encrypted output
+# (src/data/lockedBlocks.gen.ts) is committed. See content/locked/README.md
+/content/locked/*.json
 /dist-ssr
 *.local
 

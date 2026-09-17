@@ -33,6 +33,7 @@ export default function Projects() {
               img={p.img}
               imgSrc={p.thumbnail}
               imgRight={p.imgRight}
+              locked={p.locked}
             />
           ))}
         </List>

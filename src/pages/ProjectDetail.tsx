@@ -18,6 +18,8 @@ import NotFound from './NotFound'
 import { ArrowUpRight } from '../components/icons'
 import { usePageTitle } from '../lib/usePageTitle'
 import { useReadToEnd } from '../lib/useReadToEnd'
+import { useVault } from '../lib/useVault'
+import LockedGate from '../components/LockedGate'
 
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -25,16 +27,23 @@ export default function ProjectDetail() {
   usePageTitle(project?.title)
   const { award } = useXp()
 
+  // Locked projects: decrypt state for the sealed case-study body
+  // (inert for everything else).
+  const vault = useVault(project?.locked ? project.slug : null)
+  const unlocked = vault.status === 'unlocked'
+
   useEffect(() => {
     if (project) award(XP_AWARDS.project, `opened ${project.title}`, `project:${project.slug}`)
   }, [project, award])
 
   // "Read a quest to the end": the bottom sentinel awards once per quest.
+  // A locked page is short enough that the sentinel starts in view, so the
+  // award only arms once the case study is actually readable.
   const endRef = useReadToEnd(() => {
     if (project) {
       award(XP_AWARDS.questComplete, `quest complete: ${project.title}`, `questdone:${project.slug}`)
     }
-  }, !!project)
+  }, !!project && (!project.locked || unlocked))
 
   if (!project) return <NotFound />
 
@@ -44,7 +53,22 @@ export default function ProjectDetail() {
       <h1 className="page">{project.title}</h1>
       {project.role && <div className="meta" style={{ marginTop: 4 }}>{project.role}</div>}
 
-      {project.blocks ? (
+      {project.locked ? (
+        // Explicit locked branch: a locked project has no `blocks`, so
+        // without this it would fall into the placeholder prose template.
+        vault.status === 'unlocked' ? (
+          <ProjectBlocks blocks={vault.blocks} />
+        ) : (
+          <>
+            {(project.longDescription || project.description) && (
+              <p className="lead" style={{ marginTop: 16 }}>
+                {project.longDescription || project.description}
+              </p>
+            )}
+            <LockedGate vault={vault} />
+          </>
+        )
+      ) : project.blocks ? (
         <ProjectBlocks blocks={project.blocks} />
       ) : (
         <div className="prose">

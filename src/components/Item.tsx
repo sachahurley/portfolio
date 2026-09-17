@@ -9,11 +9,13 @@
 import { type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from './icons'
+import DitherIcon from './DitherIcon'
 
 interface ItemProps {
   to?: string        // internal route (React Router)
   href?: string      // external URL
   external?: boolean // append the external-arrow icon + open in a new tab
+  locked?: boolean   // append a padlock (password-locked case study)
   date?: string      // note date (shown above the title)
   title: string
   desc?: ReactNode
@@ -39,7 +41,7 @@ function clampSentences(s: string, max = 2): string {
   return sentences.slice(0, max).join(' ').trim()
 }
 
-export function Item({ to, href, external, date, title, desc, img, imgSrc, imgRight, onClick }: ItemProps) {
+export function Item({ to, href, external, locked, date, title, desc, img, imgSrc, imgRight, onClick }: ItemProps) {
   const hasImg = !!img || !!imgSrc
   const className = `item${hasImg ? ' has-img' : ''}${hasImg && imgRight ? ' img-right' : ''}`
 
@@ -52,6 +54,7 @@ export function Item({ to, href, external, date, title, desc, img, imgSrc, imgRi
       <span className="t">
         {displayTitle}
         {external && <span className="ext"><ArrowUpRight /></span>}
+        {locked && <span className="lockmark"><DitherIcon name="lock" size={12} title="Password protected" /></span>}
       </span>
       {displayDesc && <span className="d">{displayDesc}</span>}
     </>
