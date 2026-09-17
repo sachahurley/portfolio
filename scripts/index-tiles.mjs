@@ -3,6 +3,8 @@
 //   node scripts/index-tiles.mjs          (npm run tiles)
 //
 // Reads   assets-src/tiles/urizen-onebit-v2.png + scripts/tiles/regions.mjs
+//         plus scripts/tiles/extras.mjs (the site's own generated stonework,
+//         appended below the Urizen rows so it is searchable too)
 // Writes  public/tiles/urizen.png          sheet with the black backgrounds made transparent
 //         src/data/tiles.json              full manifest (used by the /dev/tiles browser)
 //         src/data/tileSheet.ts             sheet geometry (used by <TileBox>)
@@ -17,6 +19,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { decodePng, encodePng } from './lib/png.mjs'
 import { regions, ROSTER } from './tiles/regions.mjs'
+import { buildExtras } from './tiles/extras.mjs'
 import { writeManifest, writeIndex, writeSheet, writeAtlas } from './lib/tiles-manifest.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -129,6 +132,51 @@ for (const [key, v] of owner) {
 }
 
 // ---------------------------------------------------------------------------
+// Extras: the site's generated art, laid out on fresh rows below the sheet
+// ---------------------------------------------------------------------------
+const extras = buildExtras()
+const extraPlacements = []
+let exCol = 0
+let exRow = ROWS
+let rowTall = 0
+for (const t of extras) {
+  if (exCol + t.w > COLS) {
+    exCol = 0
+    exRow += rowTall
+    rowTall = 0
+  }
+  extraPlacements.push({ ...t, x: exCol, y: exRow })
+  exCol += t.w
+  rowTall = Math.max(rowTall, t.h)
+}
+const extraRows = extras.length ? exRow + rowTall - ROWS : 0
+
+// Grow the sheet and paste each piece centred in its cell block.
+const sheetH = extraRows ? 1 + (ROWS + extraRows) * PITCH : img.height
+const sheet = { width: img.width, height: sheetH, data: new Uint8ClampedArray(img.width * sheetH * 4) }
+sheet.data.set(img.data.subarray(0, Math.min(img.data.length, sheet.data.length)))
+for (const t of extraPlacements) {
+  const blockW = t.w * PITCH - 1
+  const blockH = t.h * PITCH - 1
+  const ox = 1 + t.x * PITCH + Math.floor((blockW - t.art.width) / 2)
+  const oy = 1 + t.y * PITCH + Math.floor((blockH - t.art.height) / 2)
+  for (let j = 0; j < t.art.height; j++) {
+    for (let i = 0; i < t.art.width; i++) {
+      const sp = (j * t.art.width + i) * 4
+      if (t.art.data[sp + 3] === 0) continue
+      const dp = ((oy + j) * sheet.width + (ox + i)) * 4
+      sheet.data.set(t.art.data.subarray(sp, sp + 4), dp)
+    }
+  }
+  const [category, sub] = t.cat.split('/')
+  assets.push({
+    id: `${t.cat}/${t.name}`, name: t.name, category, sub: sub ?? '',
+    x: t.x, y: t.y, w: t.w, h: t.h,
+    sheet: sheetOf(t.x), color: '#bfb4a3', tags: t.tags ?? [],
+  })
+}
+
+// ---------------------------------------------------------------------------
 // Merge with locked (hand-edited) entries
 // ---------------------------------------------------------------------------
 let locked = []
@@ -145,7 +193,7 @@ const merged = [
 // ---------------------------------------------------------------------------
 // Outputs
 // ---------------------------------------------------------------------------
-const meta = { source: 'Urizen OneBit Tileset v2.0', src: '/tiles/urizen.png', tile: TILE, pitch: PITCH, cols: COLS, rows: ROWS, width: img.width, height: img.height }
+const meta = { source: 'Urizen OneBit Tileset v2.0', src: '/tiles/urizen.png', tile: TILE, pitch: PITCH, cols: COLS, rows: ROWS + extraRows, width: sheet.width, height: sheet.height }
 writeManifest(OUT_JSON, meta, merged)
 
 writeSheet(OUT_SHEET, meta)
@@ -154,12 +202,12 @@ fs.mkdirSync(path.dirname(OUT_ATLAS), { recursive: true })
 writeAtlas(OUT_ATLAS, meta, merged)
 
 // transparent sheet: black tile backgrounds -> alpha 0
-const out = Buffer.from(img.data)
+const out = Buffer.from(sheet.data)
 for (let i = 0; i < out.length; i += 4) if ((out[i] | out[i + 1] | out[i + 2]) === 0) out[i + 3] = 0
 fs.mkdirSync(path.dirname(OUT_PNG), { recursive: true })
-fs.writeFileSync(OUT_PNG, encodePng({ width: img.width, height: img.height, data: out }))
+fs.writeFileSync(OUT_PNG, encodePng({ width: sheet.width, height: sheet.height, data: out }))
 
 const byCat = {}
 for (const t of merged) byCat[t.category] = (byCat[t.category] || 0) + 1
-console.log(`${merged.length} tiles (${locked.length} locked), sheets split at cols ${sepCols.join(', ')}`)
+console.log(`${merged.length} tiles (${locked.length} locked, ${extras.length} generated on ${extraRows} extra rows), sheets split at cols ${sepCols.join(', ')}`)
 console.log(byCat)
