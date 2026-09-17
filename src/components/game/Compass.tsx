@@ -8,6 +8,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { LOCATIONS, locationFor } from '../../game/locations'
 import { useXp } from '../../context/XpProvider'
 import DitherIcon from '../DitherIcon'
+import VillageIcon from '../village/VillageIcon'
 
 export default function Compass() {
   const { level } = useXp()
@@ -34,7 +35,7 @@ export default function Compass() {
                   to={loc.path}
                   aria-current={active ? 'page' : undefined}
                 >
-                  <DitherIcon name={loc.icon} size={16} className="gf-ic" /> {loc.real}
+                  <VillageIcon name={loc.icon} size={16} className="gf-ic" /> {loc.real}
                 </Link>
               )}
             </li>

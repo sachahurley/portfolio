@@ -167,14 +167,15 @@ strong, b { font-weight: 400; }
   padding: 0 24px env(safe-area-inset-bottom);
   overflow: auto; min-height: 0;
 }
-/* drawer-pull tab: gf-collapse rotated 90° — straight top edge merges into
-   the sheet's top seam, free (bottom) corners notched, accent chevron
-   rotated to point down (the pull direction) */
+/* the close notch: the menu notch (.gf-tab) hung from the sheet's top seam
+   — same stone fill, type and 4px stepped corners, flipped so the straight
+   edge merges upward into the seam and the free (bottom) corners are
+   notched. Doubles as the drag handle, so it keeps cursor/touch-action. */
 .grabber {
-  display: flex; align-items: center; justify-content: center;
-  width: 56px; height: 18px; margin: 0 auto 14px; padding: 0; border: 0;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin: 0 auto 14px; padding: 10px 16px; border: 0;
   background: var(--color-sepia-800, #474030); color: var(--accent);
-  font-family: var(--mono); font-size: 13px; line-height: 1;
+  font-family: var(--mono); font-size: 13px; line-height: 16px;
   clip-path: polygon(
     0 0, 100% 0,
     100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
@@ -184,7 +185,7 @@ strong, b { font-weight: 400; }
   transition: background-color .12s, color .12s;
 }
 .grabber:hover { background: var(--accent); color: var(--bg); }
-.grabber span { display: block; transform: rotate(90deg); }
+.grabber:active { cursor: grabbing; }
 /* carved-stone baseboard: full-bleed (breaks the 24px side padding) along the
    bottom of the sheet, with a gap above it from the footer. */
 /* baseboard: a stone tile repeated along the sheet's bottom edge, bleeding
@@ -1173,6 +1174,11 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .dtoy-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-family: var(--mono); font-size: 13px; color: var(--body); }
 .dtoy-slider { display: inline-flex; align-items: center; gap: 8px; }
 .dtoy-slider input[type='range'] { accent-color: var(--accent); width: 150px; }
+
+/* ---- village kit icons (VillageIcon): the nav rows' pixel art ----
+   Inline SVG, so the art fills its box at any scale and takes its colour
+   from the row via fill: currentColor (no mask needed, unlike .dicon). */
+.vicon { display: inline-block; flex: none; vertical-align: middle; }
 
 /* ---- dither-studio icon set (DitherIcon): alpha-mask tinting ---- */
 /* The PNG is the mask; the background is the ink, so icons inherit
