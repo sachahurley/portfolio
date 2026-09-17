@@ -274,13 +274,15 @@ export default function Character() {
         )}
       </div>
 
-      {/* Camp: the progress block + the egg fire, same pairing as the
-          classic home page - earned eggs drag into the fire below to
-          activate their theme. */}
-      <ProgressSection fireApiRef={fireApiRef} />
+      {/* Camp: the progress block + the egg fire in one framed card, same
+          pairing as the classic home page - earned eggs drag into the fire
+          along the card's floor to activate their theme. */}
+      <section className="ch-panel ch-camp" aria-label="Progress">
+        <ProgressSection fireApiRef={fireApiRef} />
+        <PixelFire ref={fireApiRef} inline />
+      </section>
 
       <ChestRevealModal item={revealed} onClose={() => setRevealed(null)} />
-      <PixelFire ref={fireApiRef} />
     </div>
   )
 }

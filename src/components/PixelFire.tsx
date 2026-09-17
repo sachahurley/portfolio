@@ -12,6 +12,9 @@
  * - Recolors when an egg theme is active, and exposes an imperative handle
  *   (setFlare / surge / getElement) so the EXP system's egg drag can tease
  *   and ignite THIS fire - it is the drop target on the home page.
+ * - `inline` renders it inside a card instead (the Character camp): no page
+ *   insets, and it burns whenever it is on screen rather than only at the
+ *   bottom of the page.
  */
 
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback, useMemo } from 'react'
@@ -72,7 +75,10 @@ export interface PixelFireHandle {
   getElement(): HTMLElement | null
 }
 
-const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
+const PixelFire = forwardRef<PixelFireHandle, { inline?: boolean }>(function PixelFire(
+  { inline = false },
+  ref
+) {
   const footerRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fireArrayRef = useRef<number[]>([])
@@ -143,6 +149,14 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
   // Detect when the user scrolls near the bottom - of the game frame's
   // internal viewport when it scrolls (desktop), else of the page (mobile).
   useEffect(() => {
+    if (inline) {
+      // Inline fires burn while any part of the band is on screen.
+      const el = footerRef.current
+      if (!el) return
+      const io = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting))
+      io.observe(el)
+      return () => io.disconnect()
+    }
     const scroller = document.getElementById('gf-viewport')
     const handleScroll = () => {
       if (scroller && scroller.scrollHeight > scroller.clientHeight + 1) {
@@ -163,7 +177,7 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
       window.removeEventListener('scroll', handleScroll)
       scroller?.removeEventListener('scroll', handleScroll)
     }
-  }, [])
+  }, [inline])
 
   // Fire grid width from the rendered footer, not the window: inside the
   // game frame the fire spans the viewport column, not the screen.
@@ -312,10 +326,15 @@ const PixelFire = forwardRef<PixelFireHandle>(function PixelFire(_, ref) {
     // above as transparent pixels (drop hit-testing uses the footer rect).
     // 16px side insets keep the embers clear of the site frame's corner
     // bosses, which reach 16px deeper than the stone band the fire sits on.
+    // Inline fires take their placement from the host card's CSS.
     <footer
-      className="mt-12"
+      className={inline ? 'pixelfire-inline' : 'mt-12'}
       ref={footerRef}
-      style={{ height: VISUAL_HEIGHT, position: 'relative', marginLeft: 16, marginRight: 16 }}
+      style={
+        inline
+          ? { height: VISUAL_HEIGHT, position: 'relative' }
+          : { height: VISUAL_HEIGHT, position: 'relative', marginLeft: 16, marginRight: 16 }
+      }
     >
       <canvas
         ref={canvasRef}

@@ -565,7 +565,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 
 /* ---- "Your Progress" section (EXP system) ---- */
 .xp-explain { color: var(--body); font-size: 14px; margin: 0; max-width: 54ch; }
-.xp-line { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.xp-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 16px; }
 .xp-row { font-family: var(--mono); font-size: 14px; color: var(--accent); white-space: nowrap; }
 /* Progress bars wear the menu button's notched pixel corners, scaled to bar
    height, plus a slight 2px checker dither. The ring is built like .gs-tab:
@@ -574,7 +574,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
    stair-steps at the corners. The fill <i> is clipped by the element's
    polygon automatically. */
 .xp-bar {
-  height: 14px; flex: 1; max-width: 240px; position: relative;
+  height: 14px; flex: 1; min-width: 120px; max-width: 240px; position: relative;
   padding: 1px; background: var(--border); clip-path: var(--notch3);
 }
 .xp-bar::before {
@@ -960,7 +960,6 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .cs-reroll:hover { color: var(--fg); border-color: var(--mut); }
 .cs .gf-eggrow { margin-top: 14px; }
-.cs-autosave { margin-top: 10px; font-size: 11px; }
 
 .sheet-contact { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
 .sheet-contact a { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--mut); padding: 4px 0; }
@@ -1030,6 +1029,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* CharacterPanel ships sheet spacing (top border for the stack); flush here */
 .ch-panel .cs { margin-top: 0; padding-top: 0; border-top: 0; }
 .ch-sectlabel { margin: 24px 0 12px; }
+/* camp card: progress on top, the egg fire along the floor. The card drops
+   its bottom padding and the fire bleeds through the side padding so the
+   flames span the frame's full inner width; the gap above keeps room for
+   an egg to be dragged down before it reaches the flames. */
+.ch-camp { margin-top: 24px; padding-bottom: 0; overflow: hidden; }
+.ch-camp .mn-block { margin-top: 0; }
+.ch-camp .pixelfire-inline { margin: 48px -20px 0; }
 
 /* paperdoll: 3x3 grid around the portrait; slots are the li.sel ring trick
    (clipped wrapper filled with the rarity color, 1px padding, child clipped

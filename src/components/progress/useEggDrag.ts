@@ -3,14 +3,18 @@
  *
  * Pointer-events based (mouse + touch; the slots set touch-action: none). A
  * fixed-position DOM clone follows the pointer; the drop is hit-tested
- * against THE page-bottom PixelFire (the site's one real fire), rect extended
- * 40px below for forgiveness. Eggs are reusable, never consumed - dropping
- * just switches the active theme.
+ * against the page's PixelFire. A drop counts when the pointer is inside the
+ * fire's rect (padded HIT_PAD_ABOVE above, 40px below) OR the dragged egg
+ * itself overlaps it, so the fire can sit close under the track without a
+ * dead zone. Eggs are reusable, never consumed - dropping just switches the
+ * active theme.
  *
  * Gravity: releasing short of the fire doesn't always snap back. If the egg
- * was pulled down past GRAVITY_MIN_PULL and the fire is still below it, the
- * egg free-falls the rest of the way (duration scales with distance) and
- * lands as a normal drop. Upward/sideways releases still snap home.
+ * was pulled down past GRAVITY_MIN_PULL and sits above the fire, it
+ * free-falls the rest of the way (duration scales with distance) and lands
+ * as a normal drop. The fire flares whenever a release would land, so the
+ * visitor can see the drop is armed. Upward/sideways releases still snap
+ * home, as does a cancelled pointer.
  *
  * Drop timeline (t=0 at pointerup over fire):
  *   t=0     clone falls into the fire (.42s: shrink, spin, fade)
@@ -26,7 +30,9 @@ import { THEMES, type ThemeId } from '../../lib/themes'
 import type { PixelFireHandle } from '../PixelFire'
 
 // a release this many px below the slot hands the egg to gravity
-const GRAVITY_MIN_PULL = 60
+const GRAVITY_MIN_PULL = 20
+// the fire's hit rect reaches this far above the flame band
+const HIT_PAD_ABOVE = 24
 
 interface DragState {
   clone: HTMLDivElement
@@ -51,11 +57,25 @@ export function useEggDrag(opts: {
     return el ? el.getBoundingClientRect() : null
   }, [fireApiRef])
 
-  const overFire = useCallback(
-    (x: number, y: number) => {
+  /** Where a release at (x, y) would send the egg: into the fire, falling, or home. */
+  const dropMode = useCallback(
+    (x: number, y: number): 'hit' | 'fall' | null => {
+      const d = dragRef.current
       const fr = fireRect()
-      // hit area extends 40px below the band so dropping is forgiving
-      return !!fr && x > fr.left && x < fr.right && y > fr.top && y < fr.bottom + 40
+      if (!d || !fr) return null
+      const top = y - d.dy
+      const left = x - d.dx
+      const bottom = top + d.home.height
+      const inSpanX = x > fr.left && x < fr.right
+      // pointer in the padded band (40px below for forgiveness)
+      const pointerHit = inSpanX && y > fr.top - HIT_PAD_ABOVE && y < fr.bottom + 40
+      // or the egg body itself dipping into the band
+      const eggHit =
+        left + d.home.width > fr.left && left < fr.right && bottom > fr.top && top < fr.bottom + 40
+      if (pointerHit || eggHit) return 'hit'
+      // gravity: a real downward pull, with the fire still below the egg
+      if (inSpanX && top - d.home.top > GRAVITY_MIN_PULL && bottom <= fr.top) return 'fall'
+      return null
     },
     [fireRect]
   )
@@ -66,9 +86,9 @@ export function useEggDrag(opts: {
       if (!d) return
       d.clone.style.left = `${e.clientX - d.dx}px`
       d.clone.style.top = `${e.clientY - d.dy}px`
-      fireApiRef.current?.setFlare(overFire(e.clientX, e.clientY))
+      fireApiRef.current?.setFlare(dropMode(e.clientX, e.clientY) !== null)
     },
-    [fireApiRef, overFire]
+    [fireApiRef, dropMode]
   )
 
   const onUpRef = useRef<(e: PointerEvent) => void>(() => {})
@@ -76,9 +96,12 @@ export function useEggDrag(opts: {
     (e: PointerEvent) => {
       const d = dragRef.current
       if (!d) return
+      // a cancelled pointer (touch scroll takeover, etc.) always snaps home
+      const mode = e.type === 'pointercancel' ? null : dropMode(e.clientX, e.clientY)
       dragRef.current = null
       document.removeEventListener('pointermove', onMove)
       document.removeEventListener('pointerup', onUpRef.current)
+      document.removeEventListener('pointercancel', onUpRef.current)
       fireApiRef.current?.setFlare(false)
       const { clone, slot, id, home } = d
       const restoreSlot = () => {
@@ -91,18 +114,9 @@ export function useEggDrag(opts: {
 
       const fr = fireRect()
       const cloneTop = parseFloat(clone.style.top)
-      const hitFire = overFire(e.clientX, e.clientY)
-      // gravity handoff: released mid-air after a real downward pull, with
-      // the fire still below the egg and the release inside the fire's span
-      const gravity =
-        !hitFire &&
-        !!fr &&
-        cloneTop - home.top > GRAVITY_MIN_PULL &&
-        fr.top > cloneTop + clone.offsetHeight &&
-        e.clientX > fr.left &&
-        e.clientX < fr.right
+      const hitFire = mode === 'hit'
 
-      if (!hitFire && !gravity) {
+      if (!mode || !fr) {
         // snap back to the slot
         clone.classList.add('snap')
         clone.style.left = `${home.left}px`
@@ -124,7 +138,7 @@ export function useEggDrag(opts: {
       }
 
       busyRef.current = true
-      const fb = fr!.bottom - 18
+      const fb = fr.bottom - 18
       const finish = (impactAt: number, cleanupAt: number) => {
         setTimeout(() => {
           fireApiRef.current?.surge()
@@ -144,7 +158,9 @@ export function useEggDrag(opts: {
 
       if (hitFire) {
         // fall into the fire: shrink toward the flame base, spin, fade
-        const fc = fr!.left + fr!.width / 2
+        // land under the release point, not the fire's centre: the band
+        // spans the whole card, so a centre dive would slide sideways
+        const fc = Math.min(Math.max(e.clientX, fr.left + 12), fr.right - 12)
         const rot = (Math.random() < 0.5 ? -1 : 1) * (25 + Math.random() * 35)
         clone.classList.add('fall')
         clone.style.transform = `translate(${fc - parseFloat(clone.style.left) - clone.offsetWidth / 2}px, ${
@@ -171,7 +187,7 @@ export function useEggDrag(opts: {
       }, fallMs)
       finish(fallMs, fallMs + 200)
     },
-    [fireApiRef, fireRect, onDrop, onMove, overFire, toast]
+    [dropMode, fireApiRef, fireRect, onDrop, onMove, toast]
   )
   useEffect(() => {
     onUpRef.current = onUp
@@ -195,6 +211,7 @@ export function useEggDrag(opts: {
       dragRef.current = { clone, slot, id, dx: e.clientX - r.left, dy: e.clientY - r.top, home: r }
       document.addEventListener('pointermove', onMove)
       document.addEventListener('pointerup', onUpRef.current)
+      document.addEventListener('pointercancel', onUpRef.current)
     },
     [onMove]
   )
@@ -204,6 +221,7 @@ export function useEggDrag(opts: {
     return () => {
       document.removeEventListener('pointermove', onMove)
       document.removeEventListener('pointerup', onUpRef.current)
+      document.removeEventListener('pointercancel', onUpRef.current)
       if (dragRef.current) {
         dragRef.current.clone.remove()
         dragRef.current.slot.style.opacity = '1'

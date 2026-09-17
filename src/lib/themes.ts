@@ -37,7 +37,7 @@ export const THEMES: Record<ThemeId, Theme> = {
   // DEFAULT_FIRE_PALETTE below, used by the impact effects.
   default: {
     name: 'Sepia',
-    base: '#f7f5f2',
+    base: '#e0a26a', // egg wears the accent, like every other egg
     mark: '#bfb4a3',
     pattern: 'speckle',
     accent: '#e0a26a', // mirrors --accent in index.css (the village gold)

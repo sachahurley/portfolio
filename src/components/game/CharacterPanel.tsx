@@ -3,8 +3,8 @@
  * sheet (all breakpoints). Avatar (click to open the picker: 8 procedural
  * candidates + reroll), editable name (random RPG default; commits on blur
  * or Enter), level + title + XP bar, banner eggs, and the ▴ LEVEL UP badge
- * that opens the celebration modal. Progress saves automatically — the
- * microcopy says so, and nothing here is a save button.
+ * that opens the celebration modal. Progress saves automatically, so
+ * nothing here is a save button.
  */
 
 import { useState } from 'react'
@@ -131,8 +131,6 @@ export default function CharacterPanel() {
           ))
         )}
       </div>
-
-      <div className="gf-dim cs-autosave">progress saves automatically</div>
     </section>
   )
 }
