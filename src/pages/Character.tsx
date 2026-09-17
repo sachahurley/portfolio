@@ -20,7 +20,7 @@ import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
 import PixelFire, { type PixelFireHandle } from '../components/PixelFire'
-import ProgressSection from '../components/progress/ProgressSection'
+import EggShelf from '../components/progress/EggShelf'
 import { useXp } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 import { runImpact } from '../lib/impactFx'
@@ -268,11 +268,15 @@ export default function Character() {
         )}
       </div>
 
-      {/* Camp: the progress block + the egg fire in one framed card, same
-          pairing as the classic home page - earned eggs drag into the fire
-          along the card's floor to activate their theme. */}
-      <section className="ch-panel ch-camp" aria-label="Progress">
-        <ProgressSection fireApiRef={fireApiRef} />
+      {/* Theme: the eggs earned by levelling, and the fire that applies
+          them. Full width under the three cards; level and XP stay in the
+          character panel, so nothing here repeats them. */}
+      <section className="ch-panel ch-camp" aria-label="Site theme">
+        <div className="gf-label">theme</div>
+        <div className="gf-dim ch-helper">
+          Each egg you earn recolors the site. Drag one into the fire to wear its look.
+        </div>
+        <EggShelf fireApiRef={fireApiRef} />
         <PixelFire ref={fireApiRef} inline />
       </section>
 
