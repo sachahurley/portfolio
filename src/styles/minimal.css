@@ -104,15 +104,26 @@ strong, b { font-weight: 400; }
   z-index: 76; display: flex; align-items: center; gap: 8px;
   font-family: var(--mono); font-size: 13px; line-height: 16px;
   border: 0; padding: 10px 16px 12px; cursor: pointer;
-  background: var(--color-sepia-800, #474030); color: var(--accent);
+  position: relative; isolation: isolate;
+  /* accent ring: a plain border would be sliced off by the clip-path, so
+     the element is the ring colour and ::before paints the stone fill 1px
+     inside the same polygon (the .em-card / .xp-bar trick) */
+  background: var(--accent); color: var(--accent);
   clip-path: polygon(
     0 4px, 4px 4px, 4px 0,
     calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
     100% 100%, 0 100%
   );
-  transition: background-color .12s, color .12s, transform .08s;
+  transition: color .12s, transform .08s;
 }
-.gf-tab:hover { background: var(--accent); color: var(--bg); }
+.gf-tab::before {
+  content: ""; position: absolute; inset: 1px; z-index: -1;
+  background: var(--color-sepia-800, #474030);
+  clip-path: inherit;
+  transition: background-color .12s;
+}
+.gf-tab:hover { color: var(--bg); }
+.gf-tab:hover::before { background: var(--accent); }
 /* pressed into the stone: the notch sinks, keeping its centring transform */
 .gf-tab:active { transform: translateX(-50%) translateY(2px); }
 .tip {
@@ -174,7 +185,8 @@ strong, b { font-weight: 400; }
 .grabber {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   margin: 0 auto 14px; padding: 10px 16px; border: 0;
-  background: var(--color-sepia-800, #474030); color: var(--accent);
+  position: relative; isolation: isolate;
+  background: var(--accent); color: var(--accent);
   font-family: var(--mono); font-size: 13px; line-height: 16px;
   clip-path: polygon(
     0 0, 100% 0,
@@ -182,9 +194,16 @@ strong, b { font-weight: 400; }
     4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
   );
   cursor: grab; touch-action: none;
-  transition: background-color .12s, color .12s;
+  transition: color .12s;
 }
-.grabber:hover { background: var(--accent); color: var(--bg); }
+.grabber::before {
+  content: ""; position: absolute; inset: 1px; z-index: -1;
+  background: var(--color-sepia-800, #474030);
+  clip-path: inherit;
+  transition: background-color .12s;
+}
+.grabber:hover { color: var(--bg); }
+.grabber:hover::before { background: var(--accent); }
 .grabber:active { cursor: grabbing; }
 /* carved-stone baseboard: full-bleed (breaks the 24px side padding) along the
    bottom of the sheet, with a gap above it from the footer. */
@@ -717,16 +736,25 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
     display: inline-flex; align-items: center; justify-content: center;
     width: 18px; height: 56px; padding: 0; border: 0; cursor: pointer;
     position: absolute; top: 50%; left: -16px; transform: translateY(-50%);
-    background: var(--color-sepia-800, #474030); color: var(--accent);
+    isolation: isolate;
+    /* same accent ring as the mobile menu notch */
+    background: var(--accent); color: var(--accent);
     font-family: var(--mono); font-size: 13px; line-height: 1;
     clip-path: polygon(
       0 4px, 4px 4px, 4px 0,
       100% 0, 100% 100%,
       4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
     );
-    transition: background-color .12s, color .12s;
+    transition: color .12s;
   }
-  .gf-collapse:hover { background: var(--accent); color: var(--bg); }
+  .gf-collapse::before {
+    content: ""; position: absolute; inset: 1px; z-index: -1;
+    background: var(--color-sepia-800, #474030);
+    clip-path: inherit;
+    transition: background-color .12s;
+  }
+  .gf-collapse:hover { color: var(--bg); }
+  .gf-collapse:hover::before { background: var(--accent); }
   .gf-noside { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'viewport'; }
   .gf-expand { left: auto; right: 16px; z-index: 65; }
 }
