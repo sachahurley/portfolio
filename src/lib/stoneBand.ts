@@ -13,7 +13,7 @@ export const BAND_ROWS = 5 // band height in cells - one short course of blocks
 const BLOCK_W_MIN = 5 // cells - narrow stones
 const BLOCK_W_MAX = 15 // cells - smaller spread = more individual blocks
 
-// Warm sepia stone palette, matching the site (stalactites / scorpion tones).
+// Warm sepia stone palette, matching the site's pixel-art tones.
 export const BAND_MORTAR = '#15110c' // gaps between blocks
 const SHADOW = '#281f16' // bottom/right bevel + outline
 const HI = '#4f4331' // left bevel (subtle lit edge), kept dim

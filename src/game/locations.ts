@@ -8,15 +8,15 @@
  * log lines keep an RPG tone but name pages by their real names.
  */
 
-import type { DitherIconName } from '../lib/dither/icons'
+import type { VillageIconName } from '../components/village/VillageIcon'
 
 export interface GameLocation {
   path: string
   /** Page name — the label in both nav surfaces and in log lines. */
   real: string
-  /** Dither-studio icon shown left of the name (menu + sheet), rendered
-   *  by DitherIcon from the vendored 1-bit set. */
-  icon: DitherIconName
+  /** Village asset shown left of the name (menu + sheet), rendered by
+   *  VillageIcon from the same kit the village home page draws with. */
+  icon: VillageIconName
   /** Message-log line on first arrival and revisits. */
   arrive: string
   /** Minimum display level (1-based) before the compass reveals it. */
@@ -33,25 +33,25 @@ export const LOCATIONS: GameLocation[] = [
   {
     path: '/projects',
     real: 'Projects',
-    icon: 'folder',
+    icon: 'projects',
     arrive: 'You arrive at Projects. Completed quests await review.',
   },
   {
     path: '/lab',
     real: 'Lab',
-    icon: 'star',
+    icon: 'lab',
     arrive: 'The Lab door grinds open.',
   },
   {
     path: '/notes',
     real: 'Notes',
-    icon: 'edit',
+    icon: 'notes',
     arrive: 'You enter Notes. The shelves hum quietly.',
   },
   {
     path: '/about',
     real: 'About',
-    icon: 'user',
+    icon: 'about',
     arrive: 'You enter About.',
   },
 ]

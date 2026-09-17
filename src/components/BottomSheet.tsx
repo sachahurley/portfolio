@@ -16,10 +16,10 @@ import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
-import { homeToggleRow } from '../lib/homeVariant'
 import PixelPortrait from './game/PixelPortrait'
 import TileBand from './TileBand'
 import DitherIcon from './DitherIcon'
+import VillageIcon from './village/VillageIcon'
 import { ArrowUpRight } from './icons'
 
 export default function BottomSheet({
@@ -30,7 +30,6 @@ export default function BottomSheet({
   onClose: () => void
 }) {
   const location = useLocation()
-  const toggle = homeToggleRow(location.search)
   const { level, award, name, avatarSeed, pendingLevels, chests } = useXp()
   const displayLevel = level.level + 1
   const sheetRef = useRef<HTMLDivElement>(null)
@@ -115,21 +114,20 @@ export default function BottomSheet({
         aria-label="Menu"
       >
         <div className="sheet-body">
-        {/* Drawer-pull tab: the compass's gf-collapse quoted at 90° — straight
-            edge merged into the top seam, notched free end, accent chevron
-            pointing the way it pulls. Tap or drag down to dismiss. */}
+        {/* The close notch: the menu notch's twin, hung from the sheet's top
+            seam (straight edge merged in, free corners notched) so the same
+            stone tab that opened the sheet is what shuts it. Tap or drag
+            down to dismiss. */}
         <button
           type="button"
           className="grabber"
-          aria-label="Close menu"
           onPointerDown={onGrabberDown}
           onClick={onGrabberClick}
         >
-          <span aria-hidden="true">›</span>
+          <DitherIcon name="chevron-down" size={16} />
+          Close
         </button>
 
-        {/* The home-variant toggle rides under the Home row: it always
-            offers the other home (classic list <-> village map). */}
         <nav className="menu-nav">
           {LOCATIONS.map((loc) => {
             const locked = loc.minLevel != null && displayLevel < loc.minLevel
@@ -147,25 +145,13 @@ export default function BottomSheet({
                   className={active ? 'active' : undefined}
                   onClick={onClose}
                 >
-                  <DitherIcon name={loc.icon} size={20} className="gf-ic" /> {loc.real}
+                  <VillageIcon name={loc.icon} size={20} className="gf-ic" /> {loc.real}
                 </Link>
               </span>
             )
           })}
         </nav>
 
-        {/* Home-variant toggle: deliberately smaller and plainer than the
-            nav rows - a quiet utility link, not a destination. */}
-        <div className="menu-alt">
-          <Link
-            className="home-toggle"
-            to={toggle.to}
-            onClick={onClose}
-            aria-label={`Switch to the ${toggle.label.toLowerCase()} page`}
-          >
-            {toggle.label}
-          </Link>
-        </div>
 
         {/* Compact character row: the full sheet lives at /character. */}
         <Link

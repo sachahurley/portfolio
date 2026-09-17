@@ -1,11 +1,11 @@
 /**
- * Village home (/) — the new default home page.
+ * Village home (/) — the home page.
  *
  * The site as a 1-bit pixel village, rendered natively from the village
  * kit (VillageScene + data/villageHome.ts): name and bio up top, then
- * the village where the labeled, glinting icons are the nav. The
- * classic list home stays available through the sh_home flag: the
- * menu's "Classic home" row (BottomSheet + Compass) flips back to it.
+ * the village where the labeled, glinting icons are the nav. (The old
+ * classic list home was retired; it lives on in git history under the
+ * v4-village-and-vault tag.)
  */
 
 import { useNavigate } from 'react-router-dom'
@@ -19,7 +19,7 @@ export default function VillageHome() {
   const navigate = useNavigate()
 
   return (
-    <MinimalPage>
+    <MinimalPage flushTop>
       <section className="intro">
         <h1>Sacha Hurley</h1>
       </section>

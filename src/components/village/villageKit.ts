@@ -117,7 +117,9 @@ function stampBmp(b: Bitmap, s: Bitmap, ox: number, oy: number, v?: number) {
     }
 }
 
-function trim(b: Bitmap): Bitmap {
+/** Crop to the ink bounds. Exported for VillageIcon, which needs tight
+ *  bounds to scale a part into a fixed icon box. */
+export function trim(b: Bitmap): Bitmap {
   let minX = b.w
   let minY = b.h
   let maxX = -1

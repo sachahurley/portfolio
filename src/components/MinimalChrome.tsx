@@ -1,6 +1,6 @@
 /**
  * MinimalChrome — the persistent UI mounted once in Layout.
- * Loader (title screen), the floating dock, the bottom sheet, toasts
+ * Loader (title screen), the frame's menu notch, the bottom sheet, toasts
  * (mobile; the message log narrates on desktop), and the level-up modal.
  * Sheet state is owned by Layout so the game frame's character strip can
  * open the sheet too.
@@ -22,7 +22,7 @@ export default function MinimalChrome({
   return (
     <>
       <Loader />
-      <Dock onMenu={() => onSheetOpenChange(true)} />
+      <Dock open={sheetOpen} onToggle={() => onSheetOpenChange(!sheetOpen)} />
       <BottomSheet open={sheetOpen} onClose={() => onSheetOpenChange(false)} />
       <Toaster />
       <LevelUpModal />
