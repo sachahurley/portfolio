@@ -1054,13 +1054,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* CharacterPanel ships sheet spacing (top border for the stack); flush here */
 .ch-panel .cs { margin-top: 0; padding-top: 0; border-top: 0; }
 .ch-sectlabel { margin: 24px 0 12px; }
-/* camp card: progress on top, the egg fire along the floor. The card drops
-   its bottom padding and the fire bleeds through the side padding so the
-   flames span the frame's full inner width; the gap above keeps room for
-   an egg to be dragged down before it reaches the flames. */
+/* theme card: the earned eggs, and the fire that applies them, in a card
+   spanning the full width under the three panels. The card drops its bottom
+   padding and the fire bleeds back through the side padding so the flames
+   span the frame's full inner width; the gap above keeps room to drag an egg
+   down before it reaches the flames. */
 .ch-camp { margin-top: 24px; padding-bottom: 0; overflow: hidden; }
-.ch-camp .mn-block { margin-top: 0; }
-.ch-camp .pixelfire-inline { margin: 48px -20px 0; }
+.ch-camp .pixelfire-inline { margin: 40px -20px 0; }
 
 /* paperdoll: 3x3 grid of slots; slots are the li.sel ring trick
    (clipped wrapper filled with the rarity color, 1px padding, child clipped

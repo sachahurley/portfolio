@@ -1,36 +1,30 @@
 /**
- * ProgressSection — the home "Your Progress" block.
+ * ProgressSection — the classic home page's "Your Progress" block.
  *
  * Header, explainer, level row + XP bar, and the egg track. The explainer
  * deliberately never mentions eggs or the fire: the reward mechanic reveals
  * itself at the first level-up. Earned eggs drag into THE pixel fire at the
  * very bottom of the page (PixelFire, whose handle Home passes down) - there
  * is no separate fire here. The level copy is the shared levelLabel string
- * (same as the menu sheet).
+ * (same as the menu sheet). The character screen does NOT use this block:
+ * it carries the egg shelf and its own card-floor fire instead.
  */
 
 import type { RefObject } from 'react'
 import { useXp } from '../../context/XpProvider'
 import { levelLabel } from '../../lib/levels'
 import type { PixelFireHandle } from '../PixelFire'
-import EggTrack from './EggTrack'
-import { useEggDrag } from './useEggDrag'
+import EggShelf from './EggShelf'
 
 export default function ProgressSection({
   fireApiRef,
 }: {
   fireApiRef: RefObject<PixelFireHandle | null>
 }) {
-  const { level, setActiveEgg, toast } = useXp()
-
-  const { onPointerDown } = useEggDrag({
-    fireApiRef,
-    onDrop: setActiveEgg,
-    toast,
-  })
+  const { level } = useXp()
 
   return (
-    <div className="mn-block firesection">
+    <div className="mn-block">
       <div className="label">your progress</div>
       <p className="xp-explain">
         Earn XP as you explore. Each new level brings a surprise reward.
@@ -41,7 +35,7 @@ export default function ProgressSection({
           <i style={{ width: `${level.pct}%` }} />
         </div>
       </div>
-      <EggTrack onEggPointerDown={onPointerDown} />
+      <EggShelf fireApiRef={fireApiRef} />
     </div>
   )
 }

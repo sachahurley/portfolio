@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bash dev.sh",
     "dev:portfolio-only": "vite",
-    "tiles": "node scripts/index-tiles.mjs",
+    "tiles": "node --import ./scripts/lib/register-ts.mjs scripts/index-tiles.mjs",
     "vendor:ds": "bash scripts/vendor-ds.sh",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

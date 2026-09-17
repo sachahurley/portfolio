@@ -12,6 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `node scripts/bake-scorpion.mjs` - regenerates `src/components/scorpionPixels.ts` from the source PNG (deterministic, safe to re-run; `--ascii` previews)
 - `node scripts/bake-avatars.mjs` - regenerates `src/game/avatarTiles.ts`, the avatar figure pool, from the Urizen tile sheet (`public/tiles/urizen.png`) and `src/data/tileIndex.ts` (deterministic, safe to re-run)
 - `node scripts/bake-gear.mjs` - regenerates `src/game/gearTiles.ts`, the character screen's item art, from the tile ids listed in the script (fails if they drift from `BASES` in `src/game/loot.ts`)
+- `npm run tiles` - rebuilds the Urizen tile sheet, index and atlas data. It also bakes the site's own generated stonework (the jeweled frame and the stone baseboard, from `scripts/tiles/extras.mjs`) onto extra rows, so those tiles are searchable like the rest
 
 There are no tests. Deploys to Vercel as an SPA (`vercel.json` rewrites everything to `index.html`).
 

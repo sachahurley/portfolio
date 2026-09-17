@@ -2,7 +2,7 @@
  * StatsBlock, the character screen's gear summary and stat list.
  *
  * Every stat is the level base plus equipped bonuses, shown as
- * `base (+bonus)`. With a pack item selected, each bonus it would change
+ * `(+bonus) base`. With a pack item selected, each bonus it would change
  * previews as `(+current → +new)` in the up/down colors. Bonuses count up
  * when gear changes (instant under reduced motion). Each stat carries a
  * line of flavor.
@@ -63,15 +63,14 @@ function StatRow({
       <div className="ch-stat">
         <span>{STAT_NAMES[stat].toLowerCase()}</span>
         <span>
-          {base}
           {changes ? (
             <span className={preview > bonus ? 'stat-up' : 'stat-down'}>
-              {' '}
-              (+{bonus} → +{preview})
+              (+{bonus} → +{preview}){' '}
             </span>
           ) : (
-            shown > 0 && <span className="ch-bonus"> (+{shown})</span>
+            shown > 0 && <span className="ch-bonus">(+{shown}) </span>
           )}
+          {base}
         </span>
       </div>
       <div className="ch-statflavor">{STAT_FLAVOR[stat]}</div>

@@ -110,7 +110,7 @@ function compositeOver(dst: Buf, src: Buf, ox: number, oy: number) {
 }
 
 // 8x8 stone block: embossed block, engraved square inset with a dark pip.
-function blockTile(size = TILE): Buf {
+export function blockTile(size = TILE): Buf {
   const R = STONE
   const t = makeBuf(size, size)
   const m = size - 1
@@ -141,7 +141,7 @@ function blockTile(size = TILE): Buf {
 }
 
 // 16x16 jewel boss: garnet cabochon in a brass bezel with 4 claw prongs.
-function jewel(size = CORNER): Buf {
+export function jewel(size = CORNER): Buf {
   const S = GARNET
   const M = BRASS
   const img = makeBuf(size, size)
