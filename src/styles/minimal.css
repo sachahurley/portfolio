@@ -40,14 +40,15 @@ strong, b { font-weight: 400; }
   --ascii-gradient-to: var(--accent);
 }
 #loader.hide { opacity: 0; pointer-events: none; }
-/* mobile: thinner frame (16px), so less padding is needed to clear it */
-@media (max-width: 600px) { #loader { padding: 24px; } }
+/* mobile keeps the same 32px frame; the padding only tightens so the
+   welcome art has room to breathe on a narrow screen */
+@media (max-width: 600px) { #loader { padding: 40px; } }
 
 /* jeweled stone frame on the outermost edge of the welcome viewport: a
    nine-slice canvas painted at runtime (JeweledFrame + lib/jeweledFrame.ts).
    32px corners = the 16px bosses at 2x pixel scale; 8px stone tiles repeat
-   along the edges, never stretch. The scale drops to 1x on small screens
-   (handled in the component). */
+   along the edges, never stretch. Same 2x scale at every width, matching
+   the site frame. */
 .jewel-frame {
   position: absolute; inset: 0; width: 100%; height: 100%;
   pointer-events: none;
@@ -59,7 +60,7 @@ strong, b { font-weight: 400; }
    toasts, and modals. The dither ink is transparent between dots, so
    .jewel-frame-bg lays a bg-colored ring underneath to hide content
    scrolling beneath the stonework. The ring is exactly the stone band
-   (16px at 2x; 8px below 960px, the handheld port), so page art can run
+   (16px at every width), so page art can run
    right up to the stonework with no gap; only the 2x-band corner bosses
    reach deeper than the ring. */
 /* With viewport-fit=cover (index.html) the layout viewport reaches the

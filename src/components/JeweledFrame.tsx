@@ -36,11 +36,10 @@ export default function JeweledFrame({ site = false }: { site?: boolean }) {
       getComputedStyle(document.documentElement).getPropertyValue('--color-sepia-500').trim() ||
       '#bfb4a3'
     const src = buildFrameSourceCanvas(ink)
-    // The loader thins its frame on small screens; the site frame stays at
-    // 2x everywhere, so the stonework reads at the same weight on a phone
-    // as on a desktop (the art only scales in whole pixels, so 1x was the
-    // only thinner step and it read as a hairline).
-    const mq = window.matchMedia(site ? 'not all' : '(max-width: 600px)')
+    // Both frames stay at 2x everywhere, so the stonework reads at the same
+    // weight on a phone as on a desktop. The art only scales in whole
+    // pixels, so 1x was the only thinner step and it read as a hairline.
+    const mq = window.matchMedia('not all')
 
     const draw = () => {
       const w = canvas.clientWidth
