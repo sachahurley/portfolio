@@ -17,6 +17,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
 import TarotCardView from '../components/tarot/TarotCardView'
+import TarotScene from '../components/tarot/TarotScene'
 import Typewriter from '../components/tarot/Typewriter'
 import { SPREADS, CARD_BY_ID, type SpreadDef } from '../data/tarot'
 import { drawSpread, type DrawnCard } from '../lib/tarot/draw'
@@ -104,6 +105,9 @@ export default function TarotLab() {
   const reduced =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  // Matches the stylesheet's 600px card-size step so JS and CSS agree.
+  const handheld =
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches
 
   // Dedicated lab pages award their own visit XP (the LabItem template only
   // covers template-rendered experiments).
@@ -140,6 +144,16 @@ export default function TarotLab() {
     const iv = window.setInterval(update, 1000)
     return () => window.clearInterval(iv)
   }, [state.status])
+
+  // Keep the newest typed section in view as the reading unrolls.
+  const readingEndRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (state.status !== 'reading' && state.status !== 'done') return
+    readingEndRef.current?.scrollIntoView({
+      behavior: reduced ? 'auto' : 'smooth',
+      block: 'end',
+    })
+  }, [state.status, state.section, reduced])
 
   // First finished reading pays out (and, being a lab: key, may roll a chest).
   const paidRef = useRef(false)
@@ -225,6 +239,8 @@ export default function TarotLab() {
         <DitherIcon name="close" size={16} />
       </button>
 
+      <TarotScene />
+
       <header className="tarot-head">
         <h1 className="tarot-title">The Reader</h1>
         <p className="tarot-sub">
@@ -274,7 +290,12 @@ export default function TarotLab() {
         <section className="tarot-table" aria-label="The spread">
           <div className={`tarot-cards n${drawn.length}${status === 'shuffling' ? ' shuffling' : ''}`}>
             {drawn.map((d, i) => (
-              <TarotCardView key={d.card.id} drawn={d} faceUp={status !== 'shuffling' && i < revealed} />
+              <TarotCardView
+                key={d.card.id}
+                drawn={d}
+                faceUp={status !== 'shuffling' && i < revealed}
+                scale={handheld ? 3 : 4}
+              />
             ))}
           </div>
 
@@ -296,7 +317,7 @@ export default function TarotLab() {
                 <div key={c.position} className="tr-section">
                   {section >= i + 1 && (
                     <h2 className="tr-head">
-                      {drawn[i]?.position.label} — {cardName(c.cardId, drawn[i]?.reversed ?? false)}
+                      {drawn[i]?.position.label} · {cardName(c.cardId, drawn[i]?.reversed ?? false)}
                     </h2>
                   )}
                   <p className="tr-text">
@@ -325,6 +346,7 @@ export default function TarotLab() {
                   onDone={() => dispatch({ type: 'section-done' })}
                 />
               </p>
+              <div ref={readingEndRef} />
             </div>
           )}
 

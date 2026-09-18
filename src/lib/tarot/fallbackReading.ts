@@ -56,7 +56,7 @@ const POSITION_TEMPLATES: Record<string, string[]> = {
   ],
   past: [
     'In what has passed, {name} lies: {meaning}. The road behind was shaped by it.',
-    'The past shows {name}. There was {meaning}, whether or not it was named at the time.',
+    'The past shows {name}. In it lies {meaning}, whether or not it was named at the time.',
     'Behind stands {name}: {meaning}. It explains more than it excuses.',
   ],
   present: [
