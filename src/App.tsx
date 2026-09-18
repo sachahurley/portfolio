@@ -20,7 +20,6 @@ import WordmarkLab from './pages/WordmarkLab'
 import TownLab from './pages/TownLab'
 import BuilderLab from './pages/BuilderLab'
 import VillageLab from './pages/VillageLab'
-import TarotLab from './pages/TarotLab'
 import About from './pages/About'
 import Character from './pages/Character'
 import NotFound from './pages/NotFound'
@@ -29,6 +28,11 @@ import NotFound from './pages/NotFound'
 const TileBrowser = import.meta.env.DEV ? lazy(() => import('./pages/dev/TileBrowser')) : null
 
 import { locationFor } from './game/locations'
+import { TAROT_ENABLED } from './lib/flags'
+
+// Feature-flagged and lazy for the same reason as TileBrowser: with the
+// flag off, the parlor (deck data included) never enters the bundle.
+const TarotLab = TAROT_ENABLED ? lazy(() => import('./pages/TarotLab')) : null
 
 // On navigation: scroll to top (window AND the game frame's internal
 // scroller), announce the arrival in the message log when entering a new
@@ -78,7 +82,9 @@ function App() {
               <Route path="/lab/town" element={<TownLab />} />
               <Route path="/lab/builder" element={<BuilderLab />} />
               <Route path="/lab/village" element={<VillageLab />} />
-              <Route path="/lab/tarot" element={<TarotLab />} />
+              {TarotLab && (
+                <Route path="/lab/tarot" element={<Suspense fallback={null}><TarotLab /></Suspense>} />
+              )}
               <Route path="/lab/:slug" element={<LabItem />} />
 
               {/* Notes index + detail */}
