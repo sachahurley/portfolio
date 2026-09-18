@@ -194,8 +194,18 @@ export default function BottomSheet({
           </a>
         </div>
 
-        {/* Stonework baseboard along the very bottom of the sheet. */}
-        <TileBand className="sheet-baseboard" />
+        </div>
+
+        {/* Stonework ring: the baseboard's run continued around the whole
+            sheet seam, as an overlay so content scrolls beneath it. The top
+            run is split into two segments flanking the close notch, so the
+            tiles never overlap the tab. */}
+        <div className="sheet-tiles" aria-hidden="true">
+          <TileBand className="st-band st-top l" />
+          <TileBand className="st-band st-top r" />
+          <TileBand className="st-band st-side l" />
+          <TileBand className="st-band st-side r" />
+          <TileBand className="st-band st-bottom" />
         </div>
       </div>
     </>

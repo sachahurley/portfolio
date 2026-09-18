@@ -17,7 +17,7 @@ import { TileBox } from './TileSprite'
 const BASEBOARD_TILE: readonly [number, number] = [0, 2]
 
 const SCALE = 2 // 24px per tile
-const COVERS_PX = 720 // widest band we ever need
+const COVERS_PX = 1200 // longest run we ever need (the sheet's tall edge)
 
 export default function TileBand({
   cell = BASEBOARD_TILE,

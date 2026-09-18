@@ -18,7 +18,12 @@ export default function BackButton({ fallback = '/' }: { fallback?: string }) {
   }
   return (
     <button type="button" className="pageback" onClick={goBack} aria-label="Go back">
-      <DitherIcon name="arrow-left" size={16} />
+      {/* the plate is an inner span because clip-path clips hit-testing:
+          the silhouette on the button itself would shrink the tap target
+          back to the visible plate */}
+      <span className="pageback-plate">
+        <DitherIcon name="arrow-left" size={16} />
+      </span>
     </button>
   )
 }
