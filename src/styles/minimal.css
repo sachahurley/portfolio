@@ -176,9 +176,24 @@ strong, b { font-weight: 400; }
     0 100%, 0 8px, 8px 8px, 8px 0,
     calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px, 100% 100%
   );
-  padding: 0 24px env(safe-area-inset-bottom);
+  /* clears the 24px tile ring on the sides and bottom (plus a breath) */
+  padding: 0 36px calc(32px + env(safe-area-inset-bottom, 0px));
   overflow: auto; min-height: 0;
 }
+/* tile ring: the stone run around the whole sheet seam, an overlay inside
+   the 2px seam so the scrolling content passes beneath it. The top run is
+   two segments flanking the close notch (the tab is ~100px wide, centred),
+   so the tiles never overlap it; the side columns hang between the top and
+   bottom runs, and the bottom run rides the safe area. */
+.sheet-tiles { position: absolute; inset: 2px; pointer-events: none; }
+.st-band { position: absolute; display: flex; overflow: hidden; line-height: 0; }
+.st-top { top: 0; height: 24px; }
+.st-top.l { left: 0; width: calc(50% - 60px); }
+.st-top.r { right: 0; width: calc(50% - 60px); justify-content: flex-end; }
+.st-side { top: 24px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); width: 24px; flex-direction: column; }
+.st-side.l { left: 0; }
+.st-side.r { right: 0; }
+.st-bottom { left: 0; right: 0; height: 24px; bottom: env(safe-area-inset-bottom, 0px); }
 /* the close notch: the menu notch (.gf-tab) hung from the sheet's top seam
    — same stone fill, type and 4px stepped corners, flipped so the straight
    edge merges upward into the seam and the free (bottom) corners are
@@ -206,14 +221,6 @@ strong, b { font-weight: 400; }
 }
 .grabber:hover::before { background: var(--color-sepia-700, #695f4d); }
 .grabber:active { cursor: grabbing; }
-/* carved-stone baseboard: full-bleed (breaks the 24px side padding) along the
-   bottom of the sheet, with a gap above it from the footer. */
-/* baseboard: a stone tile repeated along the sheet's bottom edge, bleeding
-   through the body's side padding and clipped to the sheet's width */
-.sheet-baseboard {
-  display: flex; margin: 16px -24px 0; overflow: hidden; line-height: 0;
-  pointer-events: none;
-}
 /* Nav rows carry the compass's plate grammar at touch scale: the same
    --plate-round silhouette, hover plate, and accent-filled active plate +
    1px ring as .gf-compass, with larger type and padding for fingers. The
@@ -261,11 +268,13 @@ strong, b { font-weight: 400; }
    to follow the column in. */
 @media (max-width: 600px) {
   .mn-main { padding-left: 32px; padding-right: 32px; }
-  .mn-main .pageback { left: 32px; }
+  /* 26 = 32 column edge minus the tap target's 6px ring, plate stays at 32 */
+  .mn-main .pageback { left: 26px; }
 }
-/* Home starts at the back-plate line (.pageback sits at top: 48px): with
-   no plate of its own, matching the plate's start keeps the top gap equal
-   across every page instead of reading as a lower start. */
+/* Home starts at the back-plate line (the visible plate sits at 48px;
+   the .pageback button is 6px higher, that's just its transparent tap
+   ring): with no plate of its own, matching the plate's start keeps the
+   top gap equal across every page instead of reading as a lower start. */
 .mn-main.flush-top { padding-top: 48px; }
 
 .intro { display: block; }
@@ -286,16 +295,25 @@ strong, b { font-weight: 400; }
    silhouette (16px icon + 6px padding, matching the corner inset). It
    floats in the content column's top padding rather than taking a row of
    its own, so the page title starts at the same height whether or not a
-   page has one (Home has none). */
+   page has one (Home has none). The button itself is a transparent
+   40x40 tap target around the plate (clip-path clips hit-testing, so the
+   silhouette lives on the inner .pageback-plate); the 6px ring means the
+   plate still renders at the 48px/24px anchor other rules key off. */
 .pageback {
-  position: absolute; top: 48px; left: 24px;
+  position: absolute; top: 42px; left: 18px;
   display: inline-flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; flex: none; padding: 0; border: 0; cursor: pointer;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
+  width: 40px; height: 40px; flex: none; padding: 0; border: 0; cursor: pointer;
+  background: none; color: var(--accent);
+}
+.pageback-plate {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; flex: none;
+  background: var(--color-sepia-925, #221e13);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
 }
-.pageback:hover { background: var(--accent); color: var(--bg); }
+.pageback:hover { color: var(--bg); }
+.pageback:hover .pageback-plate { background: var(--accent); }
 /* detail-page prev/next pager: richer cousins of the menu buttons — the
    same pixel-round plate silhouette with a sepia-925 fill (no outline),
    one step above the sepia-950 page bg so it barely parts from the page;
@@ -387,11 +405,15 @@ a.item .t { color: var(--accent); }
 .platebtn:hover { background: var(--accent); color: var(--bg); }
 /* clip-path swallows the global outside focus ring on plate-clipped
    controls; paint an inset ring within the silhouette instead */
-.pageback:focus-visible, .platebtn:focus-visible, .pgbtn:focus-visible,
+.platebtn:focus-visible, .pgbtn:focus-visible,
 .gf-tab:focus-visible, a.item:focus-visible, .gf-dest:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
+/* the back button's ring paints on the inner plate, not the invisible
+   40px tap target, so focus reads the same as the other plate buttons */
+.pageback:focus-visible { outline: none; }
+.pageback:focus-visible .pageback-plate { box-shadow: inset 0 0 0 2px var(--accent); }
 
 /* lab demo */
 /* tile atlas (/lab/tile-atlas): the sprite grid is the only part of that
