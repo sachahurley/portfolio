@@ -28,8 +28,8 @@ React 19 + TypeScript + Vite SPA using react-router-dom and Tailwind 3.
 
 ### Theming and the XP system (the core cross-file system)
 
-- `src/context/XpProvider.tsx` holds XP, levels, eggs, and toasts; persists to localStorage key `sh_min`. `award(amount, reason, key)` is de-duped by key (award constants in `XP_AWARDS`). Crossing a level threshold grants an egg and queues the level-up modal.
-- `src/lib/themes.ts`: each earned egg carries a palette. Activating an egg re-themes the site by writing CSS custom properties inline on `<html>`. The `default` theme is special: it removes the inline overrides so the scorp-ds token aliases in `index.css` remain the stock look. The contract is the variable structure (`--accent`, `--fire1/2/3`, `--fg`, `--body`), not the hex values.
+- `src/context/XpProvider.tsx` holds XP, levels, gems, and toasts; persists to localStorage key `sh_min`. `award(amount, reason, key)` is de-duped by key (award constants in `XP_AWARDS`). Crossing a level threshold grants a theme gem and queues the level-up modal.
+- `src/lib/themes.ts`: each earned gem carries a palette. Activating a gem re-themes the site by writing CSS custom properties inline on `<html>`. The `default` theme is special: it removes the inline overrides so the scorp-ds token aliases in `index.css` remain the stock look. The contract is the variable structure (`--accent`, `--fire1/2/3`, `--fg`, `--body`), not the hex values.
 - All styling routes through these CSS variables. `src/styles/minimal.css` was ported verbatim from a prototype; layout/spacing stays as-is, colors only via token aliases. Site-wide rule: single font weight (400 everywhere); emphasis is carried by color, not weight.
 
 ### Page structure

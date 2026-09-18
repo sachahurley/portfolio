@@ -4,10 +4,10 @@
  * State persists to localStorage ('sh_min') and carries across visits: a
  * returning visitor CONTINUEs where they left off. `award()` adds XP
  * (de-duped by key), fires a toast (mobile), and writes to the message log
- * (the game frame's bottom panel); crossing a level threshold grants an
- * egg and queues the level-up modal. Earned eggs live in the character
- * panel and the home "Your Progress" egg track; dropping one into the fire
- * sets `activeEgg`, which re-themes the site (applyTheme cascade) and
+ * (the game frame's bottom panel); crossing a level threshold grants a
+ * gem and queues the level-up modal. Earned gems live in the character
+ * screen's theme card; dropping one into the fire sets `activeGem`,
+ * which re-themes the site (applyTheme cascade) and
  * recolors all three canvas fires — that ritual IS the "choose your
  * banner" unlock from the RPG structure doc.
  */
@@ -21,7 +21,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { applyTheme, LEVEL_EGGS, type EggId, type ThemeId } from '../lib/themes'
+import { applyTheme, LEVEL_GEMS, type GemId, type ThemeId } from '../lib/themes'
 import { levelInfo, LEVEL_TITLES, type LevelInfo } from '../lib/levels'
 import { generateName, randomSeed } from '../game/names'
 import {
@@ -83,9 +83,9 @@ interface XpValue {
   /** Message log history (session-scoped), newest last. */
   log: LogEntry[]
   logLine: (msg: string, kind?: LogKind) => void
-  eggs: EggId[]
-  activeEgg: ThemeId
-  setActiveEgg: (id: ThemeId) => void
+  gems: GemId[]
+  activeGem: ThemeId
+  setActiveGem: (id: ThemeId) => void
   resetLook: () => void
   resetProgress: () => void
   /** Character identity (persisted in the save). */
@@ -121,13 +121,13 @@ interface XpValue {
 const XpContext = createContext<XpValue | null>(null)
 const STORAGE_KEY = 'sh_min'
 
-const isEggId = (v: unknown): v is EggId => LEVEL_EGGS.includes(v as EggId)
+const isGemId = (v: unknown): v is GemId => LEVEL_GEMS.includes(v as GemId)
 
 interface PersistedState {
   xp: number
   earned: string[]
-  eggs: EggId[]
-  activeEgg: ThemeId
+  gems: GemId[]
+  activeGem: ThemeId
   name: string
   avatarSeed: number
   pendingLevels: number[]
@@ -159,9 +159,10 @@ const isSavedChest = (v: unknown): v is SavedChest => {
 }
 
 /**
- * Load + migrate. Tolerates: the pre-egg shape ({xp, earned} only), the
- * prototype's legacy eggsHeld/eggsDropped arrays (unioned into eggs),
- * invalid activeEgg values (must be a valid theme and an owned egg), and
+ * Load + migrate. Tolerates: the pre-gem shape ({xp, earned} only), the
+ * egg-era saves (eggs/activeEgg and the prototype's eggsHeld/eggsDropped,
+ * unioned into gems), invalid active values (must be a valid theme and an
+ * owned gem), and
  * pre-character saves (no name/avatarSeed — a character is rolled for them).
  * `existed` reports whether any save was present (CONTINUE vs NEW GAME).
  */
@@ -170,8 +171,8 @@ function load(): { state: PersistedState; existed: boolean } {
   const state: PersistedState = {
     xp: 0,
     earned: [],
-    eggs: [],
-    activeEgg: 'default',
+    gems: [],
+    activeGem: 'default',
     name: generateName(seed),
     avatarSeed: seed,
     pendingLevels: [],
@@ -190,13 +191,14 @@ function load(): { state: PersistedState; existed: boolean } {
     existed = true
     if (typeof s.xp === 'number' && Number.isFinite(s.xp)) state.xp = Math.max(0, s.xp)
     if (Array.isArray(s.earned)) state.earned = s.earned.filter((k) => typeof k === 'string')
-    const eggSources = [s.eggs, s.eggsHeld, s.eggsDropped]
-    for (const src of eggSources) {
+    const gemSources = [s.gems, s.eggs, s.eggsHeld, s.eggsDropped]
+    for (const src of gemSources) {
       if (!Array.isArray(src)) continue
-      for (const e of src) if (isEggId(e) && !state.eggs.includes(e)) state.eggs.push(e)
+      for (const e of src) if (isGemId(e) && !state.gems.includes(e)) state.gems.push(e)
     }
-    if (s.activeEgg === 'default' || (isEggId(s.activeEgg) && state.eggs.includes(s.activeEgg))) {
-      state.activeEgg = s.activeEgg
+    const act = s.activeGem ?? s.activeEgg
+    if (act === 'default' || (isGemId(act) && state.gems.includes(act))) {
+      state.activeGem = act
     }
     if (typeof s.name === 'string' && s.name.trim()) state.name = s.name.trim().slice(0, 40)
     if (typeof s.avatarSeed === 'number' && Number.isFinite(s.avatarSeed)) {
@@ -207,7 +209,7 @@ function load(): { state: PersistedState; existed: boolean } {
     }
     if (Array.isArray(s.pendingLevels)) {
       state.pendingLevels = s.pendingLevels.filter(
-        (n): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= LEVEL_EGGS.length
+        (n): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= LEVEL_GEMS.length
       )
     }
     if (typeof s.lootSeed === 'number' && Number.isFinite(s.lootSeed)) {
@@ -247,14 +249,14 @@ function load(): { state: PersistedState; existed: boolean } {
 
 export function XpProvider({ children }: { children: ReactNode }) {
   // Hydrate synchronously (lazy initializer): load + migrate, then reconcile,
-  // which grants eggs for levels a returning visitor has already achieved,
+  // which grants gems for levels a returning visitor has already achieved,
   // silently (no modal) - this also covers the threshold migration from the
   // old 5-level system.
   const [initial] = useState<PersistedState & { existed: boolean }>(() => {
     const { state: s, existed } = load()
     for (let l = 1; l <= levelInfo(s.xp).level; l++) {
-      const egg = LEVEL_EGGS[l - 1]
-      if (egg && !s.eggs.includes(egg)) s.eggs.push(egg)
+      const gem = LEVEL_GEMS[l - 1]
+      if (gem && !s.gems.includes(gem)) s.gems.push(gem)
       // Guaranteed level chests, granted retroactively for saves that passed
       // thresholds before loot existed. The earned marker keeps this
       // idempotent across visits and mirrors award()'s bookkeeping.
@@ -268,8 +270,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
   })
 
   const [xp, setXp] = useState(initial.xp)
-  const [eggs, setEggs] = useState<EggId[]>(initial.eggs)
-  const [activeEgg, setActiveEggState] = useState<ThemeId>(initial.activeEgg)
+  const [gems, setGems] = useState<GemId[]>(initial.gems)
+  const [activeGem, setActiveGemState] = useState<ThemeId>(initial.activeGem)
   const [name, setNameState] = useState(initial.name)
   const [avatarSeed, setAvatarSeedState] = useState(initial.avatarSeed)
   const [pendingLevels, setPendingLevels] = useState<number[]>(initial.pendingLevels)
@@ -283,8 +285,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
 
   const xpRef = useRef(initial.xp)
   const earnedRef = useRef<Set<string>>(new Set(initial.earned))
-  const eggsRef = useRef<EggId[]>(initial.eggs)
-  const activeEggRef = useRef<ThemeId>(initial.activeEgg)
+  const gemsRef = useRef<GemId[]>(initial.gems)
+  const activeGemRef = useRef<ThemeId>(initial.activeGem)
   const nameRef = useRef(initial.name)
   const avatarSeedRef = useRef(initial.avatarSeed)
   const pendingRef = useRef<number[]>(initial.pendingLevels)
@@ -302,8 +304,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
         JSON.stringify({
           xp: xpRef.current,
           earned: [...earnedRef.current],
-          eggs: eggsRef.current,
-          activeEgg: activeEggRef.current,
+          gems: gemsRef.current,
+          activeGem: activeGemRef.current,
           name: nameRef.current,
           avatarSeed: avatarSeedRef.current,
           pendingLevels: pendingRef.current,
@@ -325,11 +327,11 @@ export function XpProvider({ children }: { children: ReactNode }) {
     persist()
   }, [persist])
 
-  // The theme cascade follows the active egg - covers init (mount effect) and
+  // The theme cascade follows the active gem - covers init (mount effect) and
   // every drop/reset.
   useEffect(() => {
-    applyTheme(activeEgg)
-  }, [activeEgg])
+    applyTheme(activeGem)
+  }, [activeGem])
 
   const toast = useCallback((msg: string, amount?: number) => {
     const id = ++idRef.current
@@ -364,14 +366,14 @@ export function XpProvider({ children }: { children: ReactNode }) {
       if (key && isChestKey(key) && chestChance(key, lootSeedRef.current)) {
         chestSrcs.push(key)
       }
-      // Each threshold crossed grants its egg immediately (the ritual never
+      // Each threshold crossed grants its gem immediately (the ritual never
       // waits) and queues a PENDING level-up: the celebration modal opens
       // only when the visitor taps the badge, never auto-pops.
       const queued: number[] = []
       for (let l = before + 1; l <= after; l++) {
-        const egg = LEVEL_EGGS[l - 1]
-        if (egg && !eggsRef.current.includes(egg)) {
-          eggsRef.current = [...eggsRef.current, egg]
+        const gem = LEVEL_GEMS[l - 1]
+        if (gem && !gemsRef.current.includes(gem)) {
+          gemsRef.current = [...gemsRef.current, gem]
           queued.push(l)
         }
         logLine(`You have reached Level ${l + 1} — ${LEVEL_TITLES[l] ?? ''}`.trim(), 'level')
@@ -383,7 +385,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
       }
       if (queued.length) {
         pendingRef.current = [...pendingRef.current, ...queued]
-        setEggs([...eggsRef.current])
+        setGems([...gemsRef.current])
         setPendingLevels(pendingRef.current)
       }
       if (chestSrcs.length) {
@@ -491,27 +493,27 @@ export function XpProvider({ children }: { children: ReactNode }) {
     [persist]
   )
 
-  const setActiveEgg = useCallback(
+  const setActiveGem = useCallback(
     (id: ThemeId) => {
-      if (id !== 'default' && !eggsRef.current.includes(id)) return
-      activeEggRef.current = id
-      setActiveEggState(id)
+      if (id !== 'default' && !gemsRef.current.includes(id)) return
+      activeGemRef.current = id
+      setActiveGemState(id)
       persist()
     },
     [persist]
   )
 
   const resetLook = useCallback(() => {
-    setActiveEgg('default')
+    setActiveGem('default')
     toast('look reset to default')
-  }, [setActiveEgg, toast])
+  }, [setActiveGem, toast])
 
   const resetProgress = useCallback(() => {
     const seed = randomSeed()
     xpRef.current = 0
     earnedRef.current = new Set()
-    eggsRef.current = []
-    activeEggRef.current = 'default'
+    gemsRef.current = []
+    activeGemRef.current = 'default'
     nameRef.current = generateName(seed)
     avatarSeedRef.current = seed
     pendingRef.current = []
@@ -522,8 +524,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
     seenRef.current = []
     persist()
     setXp(0)
-    setEggs([])
-    setActiveEggState('default')
+    setGems([])
+    setActiveGemState('default')
     setNameState(nameRef.current)
     setAvatarSeedState(seed)
     setPendingLevels([])
@@ -544,9 +546,9 @@ export function XpProvider({ children }: { children: ReactNode }) {
     removeToast,
     log,
     logLine,
-    eggs,
-    activeEgg,
-    setActiveEgg,
+    gems,
+    activeGem,
+    setActiveGem,
     resetLook,
     resetProgress,
     name,

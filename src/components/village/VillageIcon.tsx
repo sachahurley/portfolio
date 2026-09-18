@@ -7,7 +7,7 @@
  *
  * Drawn as an inline SVG whose rects are the art's own pixels rather than a
  * canvas: the parts are 1-bit, so `fill: currentColor` inherits the row's
- * colour and keeps the hover, active-row and egg-theme recolouring the
+ * colour and keeps the hover, active-row and gem-theme recolouring the
  * dither icons got for free from their CSS mask. Vector rects also stay
  * crisp at the fractional scale each asset needs to fill its box.
  *

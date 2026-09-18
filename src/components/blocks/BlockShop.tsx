@@ -293,8 +293,8 @@ function IsoView({ field, gw, gh, zoom, ink, aria, frameClass, onTile, ghostFor 
 /* ---- the shop ---- */
 
 export default function BlockShop() {
-  const { activeEgg } = useXp()
-  const ink = THEMES[activeEgg].accent
+  const { activeGem } = useXp()
+  const ink = THEMES[activeGem].accent
 
   const [state, setState] = useState<ShopState>(() => {
     try {

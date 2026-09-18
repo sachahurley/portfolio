@@ -57,7 +57,7 @@ function StarBox({ text }: { text: string }) {
 export default function Loader() {
   const [hidden, setHidden] = useState(false)
   const [gone, setGone] = useState(false)
-  const { isReturning, name, avatarSeed, eggs } = useXp()
+  const { isReturning, name, avatarSeed, gems } = useXp()
 
   // Once dismissed, let the 0.4s opacity fade play, then unmount.
   useEffect(() => {
@@ -93,7 +93,7 @@ export default function Loader() {
                 <PixelPortrait seed={avatarSeed} cell={3} />
                 <span className="ts-line">
                   continue — {name}
-                  {eggs.length > 0 && ` · ${eggs.length} banner${eggs.length > 1 ? 's' : ''}`}
+                  {gems.length > 0 && ` · ${gems.length} banner${gems.length > 1 ? 's' : ''}`}
                 </span>
               </div>
             )}

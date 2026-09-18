@@ -9,8 +9,8 @@
  * - Max flame height ~60px with varying heights across the width
  * - Uses DS amber and sepia colors exclusively
  * - Separate palettes for light and dark mode
- * - Recolors when an egg theme is active, and exposes an imperative handle
- *   (setFlare / surge / getElement) so the EXP system's egg drag can tease
+ * - Recolors when an gem theme is active, and exposes an imperative handle
+ *   (setFlare / surge / getElement) so the EXP system's gem drag can tease
  *   and ignite THIS fire - it is the drop target on the home page.
  * - `inline` renders it inside a card instead (the Character camp): no page
  *   insets, and it burns whenever it is on screen rather than only at the
@@ -22,7 +22,7 @@ import { useXp } from '../context/XpProvider'
 import { DEFAULT_FIRE_PALETTE, firePaletteFor } from '../lib/themes'
 import { bayerThreshold } from '../lib/dither/oneBit'
 
-// Dark mode palette lives in lib/themes (DEFAULT_FIRE_PALETTE) so the egg
+// Dark mode palette lives in lib/themes (DEFAULT_FIRE_PALETTE) so the gem
 // theme system can keep the stock look pixel-identical while generating
 // matching ramps for the other themes.
 const DARK_PALETTE = DEFAULT_FIRE_PALETTE
@@ -67,9 +67,9 @@ function columnSurging(x: number, surgeUntil: number): boolean {
 }
 
 export interface PixelFireHandle {
-  /** Hover tease while an egg is dragged over the fire. */
+  /** Hover tease while a gem is dragged over the fire. */
   setFlare(on: boolean): void
-  /** The ~850ms blowup when an egg lands. */
+  /** The ~850ms blowup when a gem lands. */
   surge(): void
   /** The fire's footer element, for drop hit-testing and impact anchoring. */
   getElement(): HTMLElement | null
@@ -139,11 +139,11 @@ const PixelFire = forwardRef<PixelFireHandle, { inline?: boolean }>(function Pix
     return () => observer.disconnect()
   }, [])
 
-  // Get the active palette: an active egg theme overrides; otherwise the
+  // Get the active palette: an active gem theme overrides; otherwise the
   // stock light/dark palettes (default keeps today's exact rendering).
-  const { activeEgg } = useXp()
-  const themePalette = useMemo(() => firePaletteFor(activeEgg), [activeEgg])
-  const palette = activeEgg !== 'default' ? themePalette : isDark ? DARK_PALETTE : LIGHT_PALETTE
+  const { activeGem } = useXp()
+  const themePalette = useMemo(() => firePaletteFor(activeGem), [activeGem])
+  const palette = activeGem !== 'default' ? themePalette : isDark ? DARK_PALETTE : LIGHT_PALETTE
   const paletteMax = palette.length - 1
 
   // Detect when the user scrolls near the bottom - of the game frame's

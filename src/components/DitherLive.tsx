@@ -10,7 +10,8 @@
  *    elevation bands throb toward darker sepia and back on a slow ~5s sine.
  *  - 'block': the 1-bit Helvetica stack (SACHA over HURLEY, hard pixel
  *    edges). Letters stay solid flat; the only life after the dissolve is
- *    the rim boil. No banding, bridging, or patches (sculpt=false).
+ *    the rim boil. No banding or bridging (sculpt=false); it carries one
+ *    hand-authored patch, below.
  *
  * Colours resolve from the sepia tokens each beat, so token changes flow
  * through live. Reduced motion skips the dissolve, the boil, and the throb
@@ -44,6 +45,13 @@ const FADE_FROM: [string, string] = ['--color-sepia-700', '#695f4d']
  *  traces a speck trail as solid letter ink, so the whole letterform
  *  connects: the right fork's tip down into the junction (two segments),
  *  then both descender strands from the junction to the tail's bottom. */
+/** Repair stroke for the block export: HURLEY's E is drawn a pixel short,
+ *  its bottom bar landing on row 77 while every other letter sits on the
+ *  baseline at 78, which reads as a stunted E once the art is scaled up.
+ *  This lays the missing row in, matching the bar above it exactly (the
+ *  painter walks 2px wide, so the run ends at 128 to cover 112..129). */
+const BLOCK_PATCHES: PatchSegment[] = [[112, 78, 128, 78]]
+
 const WILD_PATCHES: PatchSegment[] = [
   [312, 32, 313, 42],
   [313, 42, 316, 58],
@@ -57,7 +65,7 @@ const VARIANTS: Record<
   { src: string; patches: readonly PatchSegment[]; sculpt: boolean }
 > = {
   wild: { src: '/dither/sacha-hurley-wild.webp', patches: WILD_PATCHES, sculpt: true },
-  block: { src: '/dither/sacha-hurley-block.png', patches: [], sculpt: false },
+  block: { src: '/dither/sacha-hurley-block.png', patches: BLOCK_PATCHES, sculpt: false },
 }
 
 /** [ground, word rim, mid, dark, then the word elevation bands: each

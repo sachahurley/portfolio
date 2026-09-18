@@ -1,12 +1,12 @@
 /**
- * Egg themes + runtime theming
+ * Gem themes + runtime theming
  *
- * Each earned egg carries a palette; dropping it into the home fire re-themes
+ * Each earned gem carries a palette; dropping it into the home fire re-themes
  * the site by writing CSS custom properties inline on <html> (inline style
  * beats the :root rules in index.css). The "default" theme is special: it
  * REMOVES the inline overrides so the stylesheet (scorp-ds token aliases)
  * stays the single source of truth for the site's stock look. That means
- * THEMES.default's accent/head/text literals are only used for egg art and
+ * THEMES.default's accent/head/text literals are only used for gem art and
  * impact effects - if the scorp-ds tokens ever change, update them here too.
  *
  * Colors on ember/tide/dusk are the placeholder art-direction set from the
@@ -14,22 +14,19 @@
  * --fire1/2/3, --fg, --body) and the Theme shape, not the hexes.
  */
 
-export type EggId = 'ember' | 'tide' | 'dusk'
-export type ThemeId = 'default' | EggId
+export type GemId = 'ember' | 'tide' | 'dusk'
+export type ThemeId = 'default' | GemId
 
 export interface Theme {
   name: string
-  base: string // egg fill
-  mark: string // egg pattern color
-  pattern: 'speckle' | 'stripe' | 'dot'
   accent: string // links / UI accent
   head: string // heading text
   text: string // body text
   fire: [string, string, string] // [bright, mid, dim] flame hues
 }
 
-// Eggs awarded at levels 1/2/3 (index = level - 1).
-export const LEVEL_EGGS: EggId[] = ['ember', 'tide', 'dusk']
+// Gems awarded at levels 1/2/3 (index = level - 1).
+export const LEVEL_GEMS: GemId[] = ['ember', 'tide', 'dusk']
 
 export const THEMES: Record<ThemeId, Theme> = {
   // Default mirrors the site's REAL stock values (index.css / scorp-ds dark),
@@ -37,9 +34,6 @@ export const THEMES: Record<ThemeId, Theme> = {
   // DEFAULT_FIRE_PALETTE below, used by the impact effects.
   default: {
     name: 'Sepia',
-    base: '#e0a26a', // egg wears the accent, like every other egg
-    mark: '#bfb4a3',
-    pattern: 'speckle',
     accent: '#e0a26a', // mirrors --accent in index.css (the village gold)
     head: '#fdfcfb',
     text: '#bfb4a3',
@@ -47,9 +41,6 @@ export const THEMES: Record<ThemeId, Theme> = {
   },
   ember: {
     name: 'Ember',
-    base: '#e0563d',
-    mark: '#8f2c1c',
-    pattern: 'speckle',
     accent: '#f0623d',
     head: '#f3e8e2',
     text: '#cbb9b2',
@@ -57,9 +48,6 @@ export const THEMES: Record<ThemeId, Theme> = {
   },
   tide: {
     name: 'Tide',
-    base: '#22a89d',
-    mark: '#bff7ef',
-    pattern: 'stripe',
     accent: '#34c7bd',
     head: '#e6f2f0',
     text: '#b4c6c3',
@@ -67,9 +55,6 @@ export const THEMES: Record<ThemeId, Theme> = {
   },
   dusk: {
     name: 'Dusk',
-    base: '#8a4ee6',
-    mark: '#e9dcff',
-    pattern: 'dot',
     accent: '#b07cf2',
     head: '#ece6f4',
     text: '#c0b9cb',

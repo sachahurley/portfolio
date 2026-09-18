@@ -128,8 +128,8 @@ function sanitize(raw: unknown): BuilderState {
 
 export default function BuilderLab() {
   usePageTitle('Builder lab')
-  const { award, logLine, activeEgg } = useXp()
-  const ink = THEMES[activeEgg].accent
+  const { award, logLine, activeGem } = useXp()
+  const ink = THEMES[activeGem].accent
 
   // Dedicated lab pages award their own visit XP (the LabItem template
   // only covers template-rendered experiments).

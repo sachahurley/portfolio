@@ -79,7 +79,7 @@ export default function CharacterPanel() {
             <div className="gf-xpfill" style={{ width: `${level.pct}%` }} />
           </div>
           <div className="gf-xpnum">
-            {level.need != null ? `${level.cur}/${level.need} XP` : `${xp} XP · MAX`}
+            {level.need != null ? `${level.cur}/${level.need} XP` : `${xp} XP · max`}
           </div>
         </div>
 
@@ -106,7 +106,7 @@ export default function CharacterPanel() {
             </button>
           ))}
           <button className="cs-reroll" onClick={() => setCandidates(rollCandidates())}>
-            ↻ reroll
+            ↻ Reroll
           </button>
         </div>
       )}

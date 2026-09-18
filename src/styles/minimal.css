@@ -103,10 +103,14 @@ strong, b { font-weight: 400; }
   /* isolation (not position) so the ring pseudo can sit at z-index -1
      without dropping behind the page; the element stays fixed */
   isolation: isolate;
-  /* accent ring: a plain border would be sliced off by the clip-path, so
+  /* stone ring: a plain border would be sliced off by the clip-path, so
      the element is the ring colour and ::before paints the stone fill 1px
-     inside the same polygon (the .em-card / .xp-bar trick) */
-  background: var(--accent); color: var(--accent);
+     inside the same polygon (the .em-card trick). The notch is part of
+     the frame asset, so ring and label wear the frame's DISPLAY ink
+     (the stonework is dithered to sepia-500, see JeweledFrame), a base
+     token themes never override: the frame never re-themes and neither
+     does its notch. */
+  background: var(--color-sepia-500, #bfb4a3); color: var(--color-sepia-500, #bfb4a3);
   clip-path: polygon(
     0 4px, 4px 4px, 4px 0,
     calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
@@ -120,8 +124,7 @@ strong, b { font-weight: 400; }
   clip-path: inherit;
   transition: background-color .12s;
 }
-.gf-tab:hover { color: var(--bg); }
-.gf-tab:hover::before { background: var(--accent); }
+.gf-tab:hover::before { background: var(--color-sepia-700, #695f4d); }
 /* pressed into the stone: the notch sinks, keeping its centring transform */
 .gf-tab:active { transform: translateX(-50%) translateY(2px); }
 .tip {
@@ -184,7 +187,8 @@ strong, b { font-weight: 400; }
   display: flex; align-items: center; justify-content: center; gap: 8px;
   margin: 0 auto 14px; padding: 10px 16px; border: 0;
   position: relative; isolation: isolate;
-  background: var(--accent); color: var(--accent);
+  /* frame-stone colours, matching .gf-tab (see the note there) */
+  background: var(--color-sepia-500, #bfb4a3); color: var(--color-sepia-500, #bfb4a3);
   font-family: var(--mono); font-size: 13px; line-height: 16px;
   clip-path: polygon(
     0 0, 100% 0,
@@ -200,8 +204,7 @@ strong, b { font-weight: 400; }
   clip-path: inherit;
   transition: background-color .12s;
 }
-.grabber:hover { color: var(--bg); }
-.grabber:hover::before { background: var(--accent); }
+.grabber:hover::before { background: var(--color-sepia-700, #695f4d); }
 .grabber:active { cursor: grabbing; }
 /* carved-stone baseboard: full-bleed (breaks the 24px side padding) along the
    bottom of the sheet, with a gap above it from the footer. */
@@ -549,11 +552,14 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
    height, plus the gap it sits above the bottom edge */
 :root { --toast-exit: calc(100% + 74px + env(safe-area-inset-bottom, 0px)); }
 .toast {
-  box-sizing: border-box;
+  box-sizing: border-box; position: relative; isolation: isolate;
   font-family: var(--mono); font-size: 13px; line-height: 1.4;
   color: var(--fg);
-  background: var(--color-sepia-925, #16120c);
-  border: 1px solid var(--border); border-radius: 2px;
+  /* the pixel-plate family's stepped corners (the button silhouette): the
+     element is the ring colour clipped to the polygon, and ::before is the
+     plate fill clipped by the same polygon 1px inside, since a border
+     would be sliced by the clip-path (the .em-card recipe) */
+  background: var(--border); clip-path: var(--plate-round);
   padding: 10px 12px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   /* rises from below the bottom edge and drops back out the same way:
@@ -564,6 +570,10 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
   transform: translateY(var(--toast-exit));
   transition: transform .2s steps(5);
 }
+.toast::before {
+  content: ""; position: absolute; inset: 1px; z-index: -1;
+  background: var(--color-sepia-925, #16120c); clip-path: var(--plate-round);
+}
 .toast.show {
   transform: none;
   transition: transform .24s steps(5);
@@ -571,35 +581,39 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 .toast-xp { color: var(--accent); }
 .toast-more { color: var(--mut); }
 
-/* ---- egg track ---- */
-.egg-track { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
-.track-egg { position: relative; cursor: grab; display: inline-flex; touch-action: none; padding: 7px; }
-.track-egg:active { cursor: grabbing; }
-.egg-wrap { display: inline-flex; }
-.egg-track .egg-art { width: 25px; height: 32px; display: block; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)); }
-/* active highlight: an egg-shaped outline floating ~1.29x around the egg */
-.egg-ring {
-  position: absolute; left: 50%; top: 50%; width: 25px; height: 32px;
-  transform: translate(-50%,-50%) scale(1.29); pointer-events: none;
+/* ---- gem track ---- */
+.gem-track { display: flex; align-items: center; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+/* socket: the paperdoll's ring trick at gem scale (a notch-clipped wrapper
+   filled with the ring colour, 1px padding, the well re-clipped inside), so
+   the active theme reads exactly like a worn equipment slot: its socket's
+   ring turns accent. Unearned levels are the same socket with the coming
+   gem's silhouette dimmed. */
+.gem-socket { position: relative; display: inline-block; flex: none; padding: 1px; background: var(--border); clip-path: var(--notch4); }
+.gem-socket-in {
+  display: flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; background: var(--hover); clip-path: var(--notch4);
 }
-.egg-ring path { fill: none; stroke: var(--accent); stroke-width: 1; stroke-linejoin: round; }
-.track-egg.empty { cursor: default; color: #3a3a3a; }
-.track-egg.empty .egg-art { filter: none; }
-/* grip: a real, grabbable 2x3 dot grid below the egg (box-shadow dots have no hit area) */
+.gem-socket.active { background: var(--accent); }
+.gem-socket.empty { cursor: default; }
+.track-gem { cursor: grab; touch-action: none; }
+.track-gem:active { cursor: grabbing; }
+.gem-art { display: block; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)); }
+.gem-socket.empty .gem-art { filter: none; }
+/* grip: a real, grabbable 2x3 dot grid below the gem (box-shadow dots have no hit area) */
 .grip {
-  position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%);
+  position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%);
   width: 12px; height: 8px; cursor: grab;
   background-image: radial-gradient(circle, var(--mut) .9px, transparent 1.3px);
   background-size: 4px 4px;
 }
-.track-egg:active .grip { cursor: grabbing; }
+.track-gem:active .grip { cursor: grabbing; }
 
-/* ---- egg drag clone + impact effects ---- */
+/* ---- gem drag clone + impact effects ---- */
 .dragclone {
   position: fixed; z-index: 96; pointer-events: none;
   display: flex; align-items: center; justify-content: center;
 }
-.dragclone .egg-art { width: 25px; height: 32px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)); }
+.dragclone .gem-art { filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)); }
 .dragclone.fall { transition: transform .42s cubic-bezier(.45,.05,.7,1), opacity .42s; }
 .dragclone.snap { transition: left .3s ease, top .3s ease; }
 .ember {
@@ -634,7 +648,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
 .em-card {
   position: relative; isolation: isolate;
   background: var(--border); clip-path: var(--plate-round-lg);
-  padding: 28px 28px 24px; text-align: center;
+  text-align: center;
   /* one consistent width for every dialog, whatever the content length */
   width: min(320px, calc(100vw - 32px)); box-sizing: border-box;
 }
@@ -642,9 +656,25 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
   content: ""; position: absolute; inset: 2px; z-index: -1;
   background: var(--bg); clip-path: var(--plate-round-lg);
 }
-.em-egg { animation: mn-eggpop .45s cubic-bezier(.34,1.3,.5,1) both; }
-.egg-art-lg { width: 96px; height: 122px; display: block; margin: 0 auto; }
-@keyframes mn-eggpop {
+/* dialog bands: every modal on the site (reward, level-up, item card) is a
+   window with a header strip for its label and a footer strip for its
+   controls. Both are full-bleed inside the card's ring, so the card's
+   clip-path cuts their outer corners into the same stepped silhouette. */
+/* sepia-900, a step lighter than the plates the bands carry (sepia-925),
+   so a control never sinks into its own band */
+.em-head, .em-foot {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 10px 8px 16px; background: var(--color-sepia-900, #2b2718);
+  font-family: var(--mono);
+}
+.em-head { justify-content: space-between; min-height: 44px; }
+.em-foot { justify-content: flex-end; padding: 12px 16px; }
+.em-kicker { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--body); }
+.em-body { padding: 24px 20px; }
+
+.em-gem { animation: mn-gempop .45s cubic-bezier(.34,1.3,.5,1) both; }
+.gem-art-lg { display: block; margin: 0 auto; filter: drop-shadow(0 6px 16px rgba(0,0,0,.5)); }
+@keyframes mn-gempop {
   from { transform: scale(.3) translateY(10px); opacity: 0; }
   to { transform: none; opacity: 1; }
 }
@@ -657,7 +687,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
 .em-btn {
   display: inline-flex; align-items: center; justify-content: center;
   font-family: var(--mono); font-size: 14px; line-height: 16px; font-weight: 400;
-  margin-top: 20px; padding: 14px 18px; border: 0; cursor: pointer;
+  padding: 12px 18px; border: 0; cursor: pointer;
   background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round-lg);
   transition: background-color .12s, color .12s;
@@ -666,7 +696,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
 .em-btn:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
 
 @media (prefers-reduced-motion: reduce) {
-  .em-egg { animation: none; }
+  .em-gem { animation: none; }
   * { transition: none !important; }
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -735,8 +765,8 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
     width: 18px; height: 56px; padding: 0; border: 0; cursor: pointer;
     position: absolute; top: 50%; left: -16px; transform: translateY(-50%);
     isolation: isolate;
-    /* same accent ring as the mobile menu notch */
-    background: var(--accent); color: var(--accent);
+    /* same frame-stone ring as the mobile menu notch (see .gf-tab) */
+    background: var(--color-sepia-500, #bfb4a3); color: var(--color-sepia-500, #bfb4a3);
     font-family: var(--mono); font-size: 13px; line-height: 1;
     clip-path: polygon(
       0 4px, 4px 4px, 4px 0,
@@ -751,8 +781,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
     clip-path: inherit;
     transition: background-color .12s;
   }
-  .gf-collapse:hover { color: var(--bg); }
-  .gf-collapse:hover::before { background: var(--accent); }
+  .gf-collapse:hover::before { background: var(--color-sepia-700, #695f4d); }
   .gf-noside { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'viewport'; }
   .gf-expand { left: auto; right: 16px; z-index: 65; }
 }
@@ -780,9 +809,6 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
   transition: width .3s ease;
 }
 .gf-xpnum { font-family: var(--mono); font-size: 12px; color: var(--body); margin-top: 6px; }
-.gf-eggrow { display: flex; gap: 8px; margin-top: 14px; min-height: 16px; align-items: center; }
-.gf-egg { width: 14px; height: 16px; border: 1px solid; border-radius: 50% 50% 46% 46%; display: inline-block; }
-.gf-egg.active { outline: 1.5px solid var(--accent); outline-offset: 2px; }
 .gf-unlock { margin-top: 14px; line-height: 1.5; }
 .gf-unlock a { color: var(--accent); }
 
@@ -973,7 +999,6 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   background: transparent; border: 1px solid var(--border); padding: 8px 12px; cursor: pointer;
 }
 .cs-reroll:hover { color: var(--fg); border-color: var(--mut); }
-.cs .gf-eggrow { margin-top: 14px; }
 
 .sheet-contact { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
 .sheet-contact a { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--mut); padding: 4px 0; }
@@ -1048,12 +1073,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* CharacterPanel ships sheet spacing (top border for the stack); flush here */
 .ch-panel .cs { margin-top: 0; padding-top: 0; border-top: 0; }
 .ch-sectlabel { margin: 24px 0 12px; }
-/* theme card: the earned eggs, and the fire that applies them, in a card
+/* theme card: the earned gems, and the fire that applies them, in a card
    spanning the full width under the three panels. The card drops its bottom
    padding and the fire bleeds back through the side padding so the flames
-   span the frame's full inner width; the gap above keeps room to drag an egg
+   span the frame's full inner width; the gap above keeps room to drag a gem
    down before it reaches the flames. */
 .ch-camp { margin-top: 24px; padding-bottom: 0; overflow: hidden; }
+.ch-wearing { color: var(--accent); }
 .ch-camp .pixelfire-inline { margin: 40px -20px 0; }
 
 /* paperdoll: 3x3 grid of slots; slots are the li.sel ring trick
@@ -1088,30 +1114,101 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .ch-invbtn:hover { background: #222; }
 
+/* loot on a plate: the paperdoll/pack cell rebuilt for the dialogs (chest
+   reveal, item card) via ItemPlate, so an item is the same size and wears
+   the same tier ring there as on the screen behind them. 62px core + the
+   1px ring = the paperdoll's 64px cell. */
+.ch-plate { display: inline-block; flex: none; padding: 1px; clip-path: var(--notch4); }
+.ch-plate-in {
+  display: flex; align-items: center; justify-content: center;
+  width: 62px; height: 62px;
+  background: var(--hover); clip-path: var(--notch4);
+}
+
 /* stats block: two columns of name/value rows, bonuses in the accent */
 .ch-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; font-size: 14px; }
 .ch-stat { display: flex; justify-content: space-between; gap: 10px; color: var(--body); }
 .ch-bonus { color: var(--accent); }
 
 /* item card */
-.ch-card { grid-column: 1 / -1; position: relative; border: 2px solid var(--border); padding: 20px; display: flex; gap: 16px; align-items: flex-start; }
+/* item card: the reward modals' chrome (.em-card) on the character
+   screen's equip / swap / unequip card, so every dialog on the site is cut
+   from the same stone: the large plate silhouette with a 2px ring drawn by
+   ::before, since a border would be sliced by the clip-path. */
+.ch-card {
+  grid-column: 1 / -1; position: relative; isolation: isolate;
+  display: flex; flex-direction: column;
+  background: var(--border); clip-path: var(--plate-round-lg);
+}
+.ch-card::before {
+  content: ""; position: absolute; inset: 2px; z-index: -1;
+  background: var(--bg); clip-path: var(--plate-round-lg);
+}
 .ch-card-name { font-size: 16px; }
 .ch-card-meta { font-size: 12px; color: var(--mut); margin: 4px 0 10px; }
 .ch-card-stats { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--body); }
-.ch-card-actions { margin-top: 14px; }
-.ch-btn { font-family: var(--mono); font-size: 13px; padding: 8px 14px; background: var(--hover); color: var(--fg); border: 1px solid var(--border); cursor: pointer; }
-.ch-btn:hover { background: #222; }
-.ch-card-close { position: absolute; top: 6px; right: 10px; background: none; border: 0; color: var(--mut); cursor: pointer; font-size: 16px; font-family: var(--mono); }
-.ch-card-close:hover { color: var(--fg); }
+/* dialog action, matching the reward modals' .em-btn */
+.ch-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; line-height: 16px;
+  padding: 12px 18px; border: 0; cursor: pointer;
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s, color .12s;
+}
+.ch-btn:hover { background: var(--accent); color: var(--bg); }
+.ch-btn:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+/* the same plate as the character screen's corner close (.ch-close), sat
+   in the header band */
+.ch-card-close {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; padding: 0; border: 0; cursor: pointer; flex: none;
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
+  clip-path: var(--plate-round);
+  transition: background-color .12s, color .12s;
+}
+.ch-card-close:hover { background: var(--accent); color: var(--bg); }
 
 /* ---- character screen: compare card, slot filter, pack, stats ---- */
 /* compare card: selected item beside the worn one, action below both */
-.ch-card-v { flex-direction: column; align-items: stretch; }
 .ch-compare { display: grid; grid-template-columns: 1fr; gap: 20px; }
-@media (min-width: 720px) { .ch-card.is-compare .ch-compare { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 720px) {
+  /* side by side, split by a rule rather than a gap alone */
+  .ch-card.is-compare .ch-compare { grid-template-columns: 1fr 1fr; gap: 0; }
+  .ch-card.is-compare .ch-cardside:first-child { padding-right: 24px; }
+  .ch-card.is-compare .ch-cardside + .ch-cardside {
+    border-left: 1px solid var(--border); padding-left: 24px;
+  }
+}
 .ch-cardside { display: flex; gap: 16px; align-items: flex-start; min-width: 0; }
-.ch-cardtag { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); margin-bottom: 4px; }
-.ch-card-v .ch-card-actions { margin-top: 16px; }
+/* state eyebrow chips (Tag.tsx): the character strip's badge grammar.
+   Outlined + muted for the quiet state ("in your pack"); .fill pops the
+   one that matters ("equipped") in the tier-neutral bone tint, since
+   loot chrome never rides the accent. */
+.ch-cardtag-row { margin-bottom: 6px; line-height: 1; }
+.ch-tag {
+  display: inline-block; font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mut); border: 1px solid var(--border); padding: 2px 6px;
+}
+.ch-tag.fill { color: var(--bg); background: var(--rar-common); border-color: var(--rar-common); }
+
+
+/* phones: the card leaves the grid and floats over the page, dimming it,
+   so equip / swap / unequip read as one deliberate act. Desktop keeps the
+   card docked above the panels (see the 960px block below), where the
+   paperdoll it acts on stays in view. */
+.ch-cardscrim {
+  position: fixed; inset: 0; z-index: 78;
+  background: rgba(0, 0, 0, .62); backdrop-filter: blur(2px);
+}
+@media (max-width: 959px) {
+  .ch-card {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: min(440px, calc(100vw - 48px)); max-height: 80vh; overflow: auto;
+    z-index: 79; margin: 0;
+  }
+}
+@media (min-width: 960px) { .ch-cardscrim { display: none; } }
 
 /* slot filter: the active slot's ring turns accent; the rest dim but
    stay focusable */
@@ -1179,19 +1276,19 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   /* clear the 16px stone band and the 32px corner boss */
   .ch-close { top: 40px; right: 40px; }
   .gf-full { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'viewport'; }
-  /* scrolls (not locked) since the camp section - progress + the egg
+  /* scrolls (not locked) since the camp section - progress + the gem
      fire - lives below the sheet; the close plate stays fixed */
   .gf-full .gf-viewport { overflow-y: auto; overflow-x: hidden; display: block; }
   .gf-full .ch-main { margin: auto; width: 100%; padding: 40px 24px; }
   .gf-full .ch-card {
     position: fixed; left: 50%; bottom: 48px; transform: translateX(-50%);
     width: min(640px, calc(100vw - 96px)); margin: 0; z-index: 55;
-    background: var(--bg); box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+    filter: drop-shadow(0 12px 40px rgba(0, 0, 0, .5));
   }
 }
 
-/* chest reveal modal: item pops like the egg award; stat lines stack */
-.em-item { animation: mn-eggpop .45s cubic-bezier(.34,1.3,.5,1) both; display: flex; justify-content: center; }
+/* chest reveal modal: item pops like the gem award; stat lines stack */
+.em-item { animation: mn-gempop .45s cubic-bezier(.34,1.3,.5,1) both; display: flex; justify-content: center; }
 .em-text .ch-card-stats { margin-top: 10px; }
 @media (prefers-reduced-motion: reduce) { .em-item { animation: none; } }
 

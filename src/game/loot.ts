@@ -80,7 +80,7 @@ export const SLOT_LABELS: Record<Slot, string> = {
   amulet: 'amulet',
 }
 
-// Diablo-style tier colors. These are deliberately NOT tied to the egg/theme
+// Diablo-style tier colors. These are deliberately NOT tied to the gem/theme
 // system (--accent belongs to the active banner); loot never re-themes.
 export const RARITY_COLORS: Record<Rarity, string> = {
   common: '#dcd8cc',
@@ -89,11 +89,12 @@ export const RARITY_COLORS: Record<Rarity, string> = {
   unique: '#c7883d',
 }
 
+// Sentence case: these open the copy fragments that use them.
 export const RARITY_LABELS: Record<Rarity, string> = {
-  common: 'common',
-  magic: 'magic',
-  rare: 'rare',
-  unique: 'unique',
+  common: 'Common',
+  magic: 'Magic',
+  rare: 'Rare',
+  unique: 'Unique',
 }
 
 // Cumulative weights out of 100: common 50, magic 30, rare 15, unique 5.
@@ -118,9 +119,9 @@ const PREFIXES = [
   'Curious', 'Gilded', 'Quiet', 'Stubborn', 'Fabled', 'Homespun',
 ]
 const SUFFIXES = [
-  'of the Fox', 'of Long Nights', 'of the Vale', 'of Shipping',
-  'of the Unread', 'of Quiet Craft', 'of the Wanderer', 'of Second Drafts',
-  'of Small Wins', 'of the Backlog', 'of Fresh Eyes', 'of the Deep Dive',
+  'of the fox', 'of long nights', 'of the vale', 'of shipping',
+  'of the unread', 'of quiet craft', 'of the wanderer', 'of second drafts',
+  'of small wins', 'of the backlog', 'of fresh eyes', 'of the deep dive',
 ]
 const UNIQUE_NAMES = [
   "Deadline's Bane", 'The Patient Hand', 'Scope Creep', 'Vale-Warden',
@@ -175,16 +176,21 @@ export function rollItem(seed: number): SavedItem {
 /** Derive name and stats from the persisted record. Pure and deterministic. */
 export function resolveItem(saved: SavedItem): Item {
   const { id, slot, base, rarity } = saved
-  const baseName = BASES[slot][base] ?? BASES[slot][0]
+  // BASES stays Title Case (bake-gear.mjs string-matches it against the tile
+  // sheet); display copy is sentence case, so lower the base and cap the name.
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+  const lowerBase = (BASES[slot][base] ?? BASES[slot][0]).toLowerCase()
+  const baseName = cap(lowerBase)
 
   let name = baseName
   if (rarity === 'magic') {
-    name = rand(id + 5) < 0.5
-      ? `${PREFIXES[Math.floor(rand(id + 6) * PREFIXES.length)]} ${baseName}`
-      : `${baseName} ${SUFFIXES[Math.floor(rand(id + 7) * SUFFIXES.length)]}`
+    name = cap(rand(id + 5) < 0.5
+      ? `${PREFIXES[Math.floor(rand(id + 6) * PREFIXES.length)]} ${lowerBase}`
+      : `${lowerBase} ${SUFFIXES[Math.floor(rand(id + 7) * SUFFIXES.length)]}`)
   } else if (rarity === 'rare') {
-    name = `${PREFIXES[Math.floor(rand(id + 6) * PREFIXES.length)]} ${baseName} ${SUFFIXES[Math.floor(rand(id + 7) * SUFFIXES.length)]}`
+    name = cap(`${PREFIXES[Math.floor(rand(id + 6) * PREFIXES.length)]} ${lowerBase} ${SUFFIXES[Math.floor(rand(id + 7) * SUFFIXES.length)]}`)
   } else if (rarity === 'unique') {
+    // Uniques are proper names; they keep their capitals.
     name = UNIQUE_NAMES[Math.floor(rand(id + 8) * UNIQUE_NAMES.length)]
   }
 
@@ -237,12 +243,12 @@ export function statDeltas(a: Item, b: Item | null): Partial<Record<StatId, numb
 /** One-line stat flavor for the character screen. Flavor only: no stat
  *  drives a mechanic yet, so none of these promise one. */
 export const STAT_FLAVOR: Record<StatId, string> = {
-  vigor: 'how far you walk before resting',
-  wit: 'quick answers at the crossroads',
-  craft: 'a steady hand with tools',
-  lore: 'you notice what others miss',
-  luck: 'chests seem to like you',
-  moxie: 'bolder words in the log',
+  vigor: 'How far you walk before resting',
+  wit: 'Quick answers at the crossroads',
+  craft: 'A steady hand with tools',
+  lore: 'You notice what others miss',
+  luck: 'Chests seem to like you',
+  moxie: 'Bolder words in the log',
 }
 
 /** A theme-shaped palette for runImpact: bright/mid/dim tints of the tier. */
