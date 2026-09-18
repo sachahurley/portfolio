@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bash dev.sh",
     "dev:portfolio-only": "vite",
-    "tiles": "node --import ./scripts/lib/register-ts.mjs scripts/index-tiles.mjs",
+    "tiles": "node --import ./scripts/lib/register-ts.mjs scripts/index-tiles.mjs && node scripts/bake-tarot.mjs",
     "vendor:ds": "bash scripts/vendor-ds.sh",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -14,13 +14,15 @@
     "vendor:icons": "node scripts/vendor-icons.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
     "@fontsource/fragment-mono": "^5.2.8",
     "@scorp-ds/components": "file:./vendor/scorp-ds/packages/components",
     "@scorp-ds/tokens": "file:./vendor/scorp-ds/packages/tokens",
     "lucide-react": "^0.564.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.13.0"
+    "react-router-dom": "^7.13.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

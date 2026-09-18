@@ -39,7 +39,9 @@ export default function Layout({ children }: LayoutProps) {
       return false
     }
   })
-  const fullPage = useLocation().pathname === '/character'
+  // Pages that take the whole frame: no side column, single grid area.
+  const FULL_PAGES = ['/character', '/lab/tarot']
+  const fullPage = FULL_PAGES.includes(useLocation().pathname)
 
   const toggleSide = () => {
     setSideCollapsed((collapsed) => {

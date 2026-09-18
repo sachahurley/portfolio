@@ -20,6 +20,7 @@ import WordmarkLab from './pages/WordmarkLab'
 import TownLab from './pages/TownLab'
 import BuilderLab from './pages/BuilderLab'
 import VillageLab from './pages/VillageLab'
+import TarotLab from './pages/TarotLab'
 import About from './pages/About'
 import Character from './pages/Character'
 import NotFound from './pages/NotFound'
@@ -77,6 +78,7 @@ function App() {
               <Route path="/lab/town" element={<TownLab />} />
               <Route path="/lab/builder" element={<BuilderLab />} />
               <Route path="/lab/village" element={<VillageLab />} />
+              <Route path="/lab/tarot" element={<TarotLab />} />
               <Route path="/lab/:slug" element={<LabItem />} />
 
               {/* Notes index + detail */}

@@ -1547,3 +1547,114 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   }
 }
 .vk-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* ---- tarot reader (/lab/tarot) ----
+   Full-page parlor (gframe.gf-full, like /character). The card flip is the
+   site's one piece of 3D: a rotateY on .tc-inner, with reversed cards
+   landing rotated 180 so the orientation is legible before a word types.
+   All colors via tokens; the card face is typographic until the baked
+   tarot/* tiles land. */
+.tarot-page {
+  min-height: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 72px 24px calc(48px + env(safe-area-inset-bottom, 0px));
+  font-family: var(--mono);
+}
+.tarot-head { text-align: center; max-width: 560px; }
+.tarot-title { font-size: 22px; line-height: 28px; color: var(--fg); font-weight: 400; }
+.tarot-sub { margin-top: 8px; font-size: 13px; line-height: 20px; color: var(--body); }
+
+/* choosing: two spread plates, the question line, the draw button */
+.tarot-setup {
+  margin-top: 32px; width: 100%; max-width: 480px;
+  display: flex; flex-direction: column; gap: 20px; align-items: center;
+}
+.tarot-spreads { display: flex; gap: 12px; width: 100%; }
+.tarot-spread {
+  flex: 1; display: flex; flex-direction: column; gap: 6px; text-align: left;
+  font-family: var(--mono); padding: 14px 14px 12px; border: 0; cursor: pointer;
+  background: var(--color-sepia-925, #221e13); color: var(--body);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s, color .12s, box-shadow .12s;
+}
+.tarot-spread:hover { color: var(--fg); }
+.tarot-spread.sel { color: var(--fg); box-shadow: inset 0 0 0 1px var(--accent); }
+.tarot-spread:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.tarot-spread .ts-name { font-size: 14px; color: var(--accent); }
+.tarot-spread .ts-desc { font-size: 12px; line-height: 17px; }
+.tarot-ask { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+.tarot-ask .ta-label { font-size: 12px; color: var(--mut); }
+.tarot-ask input {
+  font-family: var(--mono); font-size: 14px; color: var(--fg);
+  background: transparent; border: 1px solid transparent; border-radius: 0;
+  border-bottom-color: var(--border); padding: 6px 0;
+}
+.tarot-ask input::placeholder { color: var(--mut); }
+.tarot-ask input:hover { border-bottom-color: var(--mut); }
+.tarot-ask input:focus { outline: none; border-bottom-color: var(--accent); }
+.tarot-draw {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; line-height: 16px;
+  padding: 12px 22px; border: 0; cursor: pointer;
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s, color .12s;
+}
+.tarot-draw:hover:not(:disabled) { background: var(--accent); color: var(--bg); }
+.tarot-draw:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.tarot-draw:disabled { color: var(--mut); cursor: default; }
+.tarot-note { font-size: 11px; color: var(--mut); }
+
+/* the table: spread slots, then the typed reading */
+.tarot-table { margin-top: 36px; width: 100%; max-width: 640px; display: flex; flex-direction: column; align-items: center; }
+.tarot-cards { display: flex; gap: 24px; justify-content: center; perspective: 900px; }
+.tarot-cards.shuffling .tc-card { animation: tarot-riffle .5s ease-in-out infinite alternate; }
+@keyframes tarot-riffle {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tarot-cards.shuffling .tc-card { animation: none; }
+}
+.tc-slot { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 0; }
+/* dims match the baked 25x38 face at TileBox scale 4 (3 on handhelds) */
+.tc-card { width: 100px; height: 152px; }
+.tc-inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .6s cubic-bezier(.32,.72,0,1);
+}
+.tc-up .tc-inner { transform: rotateY(180deg); }
+.tc-rev.tc-up .tc-inner { transform: rotateY(180deg) rotate(180deg); }
+@media (prefers-reduced-motion: reduce) {
+  .tc-inner { transition: none; }
+}
+/* the border and fill live in the baked art; these are bare easels */
+.tc-back, .tc-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.tc-face { transform: rotateY(180deg); }
+.tc-poslabel {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 11px; color: var(--mut); letter-spacing: 1px; text-transform: uppercase;
+}
+.tc-poslabel .tc-name { font-size: 12px; color: var(--accent); letter-spacing: 0; text-transform: none; }
+
+.tarot-reading { margin-top: 32px; width: 100%; max-width: 480px; cursor: pointer; }
+.tarot-reading .tr-head {
+  margin: 20px 0 6px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent); font-weight: 400;
+}
+.tarot-reading .tr-text { font-size: 14px; line-height: 22px; color: var(--body); min-height: 22px; }
+.tarot-reading .tr-synth { margin-top: 20px; }
+.tarot-reading .tr-farewell { margin-top: 14px; color: var(--mut); }
+.tarot-again { margin-top: 28px; }
+
+@media (max-width: 600px) {
+  .tarot-page { padding-top: 64px; }
+  .tarot-cards { gap: 12px; }
+  .tc-card { width: 75px; height: 114px; }
+  .tarot-spreads { flex-direction: column; }
+}
+.tarot-scene { display: block; width: min(432px, 100%); margin: 0 auto; image-rendering: pixelated; }

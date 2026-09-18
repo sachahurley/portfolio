@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url'
 import { decodePng, encodePng } from './lib/png.mjs'
 import { regions, ROSTER } from './tiles/regions.mjs'
 import { buildExtras } from './tiles/extras.mjs'
+import { buildTarot } from './tiles/tarot.mjs'
 import { writeManifest, writeIndex, writeSheet, writeAtlas } from './lib/tiles-manifest.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -134,7 +135,26 @@ for (const [key, v] of owner) {
 // ---------------------------------------------------------------------------
 // Extras: the site's generated art, laid out on fresh rows below the sheet
 // ---------------------------------------------------------------------------
-const extras = buildExtras()
+// The tarot bake composes card faces from the sheet's own tiles: crop a
+// block by id, ink-only (bg and magenta separators drop to transparent).
+const assetById = new Map(assets.map((a) => [a.id, a]))
+function cropTile(id) {
+  const a = assetById.get(id)
+  if (!a) throw new Error(`tarot motif missing from sheet: ${id}`)
+  const w = a.w * PITCH - 1
+  const h = a.h * PITCH - 1
+  const out = { width: w, height: h, data: new Uint8ClampedArray(w * h * 4) }
+  for (let j = 0; j < h; j++) {
+    for (let i = 0; i < w; i++) {
+      const p = at(1 + a.x * PITCH + i, 1 + a.y * PITCH + j)
+      if (isBlank(p) || isMagenta(p)) continue
+      out.data.set(img.data.subarray(p, p + 4), (j * w + i) * 4)
+    }
+  }
+  return out
+}
+
+const extras = [...buildExtras(), ...buildTarot(cropTile)]
 const extraPlacements = []
 let exCol = 0
 let exRow = ROWS

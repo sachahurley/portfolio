@@ -52,6 +52,7 @@ export const XP_AWARDS = {
   secret: 50, // find a hidden interaction
   follow: 50,
   subscribe: 25,
+  tarot: 30, // receive a first tarot reading (key starts with lab: so it can roll a chest)
 } as const
 
 interface ToastItem {
@@ -116,6 +117,10 @@ interface XpValue {
   /** Item ids the visitor has inspected; the rest wear a "new" pip. */
   seenItems: number[]
   markItemSeen: (itemId: number) => void
+  /** Snapshot of the earned award keys (the visitor's activity log). A
+   *  getter rather than state: readers want it at a moment in time (the
+   *  tarot reading), not re-renders on every award. */
+  getEarned: () => string[]
 }
 
 const XpContext = createContext<XpValue | null>(null)
@@ -347,6 +352,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
     setToasts((t) => t.filter((x) => x.id !== id))
   }, [])
 
+  const getEarned = useCallback(() => [...earnedRef.current], [])
+
   const award = useCallback(
     (amount: number, reason: string, key?: string) => {
       if (key) {
@@ -568,6 +575,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
     unequipSlot,
     seenItems,
     markItemSeen,
+    getEarned,
   }
 
   return <XpContext.Provider value={value}>{children}</XpContext.Provider>
