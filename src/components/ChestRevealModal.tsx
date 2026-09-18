@@ -1,7 +1,7 @@
 /**
  * ChestRevealModal, the loot reveal, shown after opening a chest on the
  * character screen. Same portal/focus/Esc pattern as LevelUpModal and the
- * same .emodal card chrome; the item pops in with the egg-award keyframe.
+ * same .emodal card chrome; the item pops in with the gem-award keyframe.
  * State lives on the character page (opening is always user-initiated
  * there), so this stays a dumb presentational dialog.
  */
@@ -57,7 +57,7 @@ export default function ChestRevealModal({
           <span className="ch-card-stats">
             {STAT_IDS.filter((s) => item.stats[s] != null).map((s) => (
               <span key={s} className="ch-statline">
-                +{item.stats[s]} {STAT_NAMES[s]}
+                +{item.stats[s]} {STAT_NAMES[s].toLowerCase()}
               </span>
             ))}
           </span>

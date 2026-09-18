@@ -15,6 +15,7 @@
 
 import type { ReactNode } from 'react'
 import {
+  RARITY_LABELS,
   SLOT_LABELS,
   STAT_IDS,
   STAT_NAMES,
@@ -45,14 +46,14 @@ function ItemSide({
         {tag && <div className="ch-cardtag-row">{tag}</div>}
         <div className={`ch-card-name rar-${item.rarity}`}>{item.name}</div>
         <div className="ch-card-meta">
-          {item.rarity} · {item.baseName.toLowerCase()} · {SLOT_LABELS[item.slot]}
+          {RARITY_LABELS[item.rarity]} · {item.baseName.toLowerCase()} · {SLOT_LABELS[item.slot]}
         </div>
         <div className="ch-card-stats">
           {stats.map((s) => {
             const d = deltas?.[s] ?? 0
             return (
               <span key={s} className="ch-statline">
-                +{item.stats[s] ?? 0} {STAT_NAMES[s]}
+                +{item.stats[s] ?? 0} {STAT_NAMES[s].toLowerCase()}
                 {d > 0 && <span className="stat-up"> ▲{d}</span>}
                 {d < 0 && <span className="stat-down"> ▼{-d}</span>}
               </span>

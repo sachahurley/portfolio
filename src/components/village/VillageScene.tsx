@@ -2,10 +2,10 @@
  * VillageScene — the village-kit scene renderer on one canvas.
  *
  * Draws a kit recipe (villageKit.ts, the onebit-kit engine port) at an
- * exact integer zoom, inked through the active egg theme: line art in
+ * exact integer zoom, inked through the active gem theme: line art in
  * the theme's heading color, the live cue's highlights and glints in
  * the accent. Paper is transparent so the page background shows
- * through, which keeps egg re-theming free.
+ * through, which keeps gem re-theming free.
  *
  * DOM handles all text and a11y, like TownScene: mono labels under the
  * tappable items (the tool's CSS-label mechanism) and visually-hidden
@@ -59,7 +59,7 @@ export default function VillageScene({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [spots, setSpots] = useState<Spot[]>([])
   const [labels, setLabels] = useState<Label[]>([])
-  const { activeEgg } = useXp()
+  const { activeGem } = useXp()
 
   const apiRef = useRef<{
     setActive(i: number): void
@@ -77,8 +77,8 @@ export default function VillageScene({
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     // Base asset colour = the theme's body text (the lab tool's ink is
     // sampled from the same warm gray), accent for the live cue.
-    const ink = hexRgb(THEMES[activeEgg].text)
-    const accent = hexRgb(THEMES[activeEgg].accent)
+    const ink = hexRgb(THEMES[activeGem].text)
+    const accent = hexRgb(THEMES[activeGem].accent)
 
     let zoom = 3
     let W = 0
@@ -208,7 +208,7 @@ export default function VillageScene({
       ro.disconnect()
       apiRef.current = null
     }
-  }, [items, activeEgg])
+  }, [items, activeGem])
 
   return (
     <div ref={wrapRef} className="vg-frame">

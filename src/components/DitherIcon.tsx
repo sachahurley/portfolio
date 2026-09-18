@@ -3,7 +3,7 @@
  *
  * The shipped PNGs are a black glyph on a transparent ground, so using
  * them as an alpha mask over a currentColor background makes every icon
- * inherit its text color for free (menu rows, hovers, the accent, egg
+ * inherit its text color for free (menu rows, hovers, the accent, gem
  * themes). Sizes are native renders, never scaled: `size` must be one of
  * the set's pixel grids, and where the set carries a 2x partner
  * (12↔24, 16↔32, 24↔48) it rides along via image-set for retina.

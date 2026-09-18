@@ -1,15 +1,15 @@
 /**
- * useEggDrag — the drag-an-egg-into-the-fire interaction.
+ * useGemDrag — the drag-a-gem-into-the-fire interaction.
  *
  * Pointer-events based (mouse + touch; the slots set touch-action: none). A
  * fixed-position DOM clone follows the pointer; the drop is hit-tested
  * against the page's PixelFire. A drop counts when the pointer is inside the
- * fire's rect (padded HIT_PAD_ABOVE above, 40px below) OR the dragged egg
+ * fire's rect (padded HIT_PAD_ABOVE above, 40px below) OR the dragged gem
  * itself overlaps it, so the fire can sit close under the track without a
- * dead zone. Eggs are reusable, never consumed - dropping just switches the
+ * dead zone. Gems are reusable, never consumed - dropping just switches the
  * active theme.
  *
- * Gravity: releasing short of the fire doesn't always snap back. If the egg
+ * Gravity: releasing short of the fire doesn't always snap back. If the gem
  * was pulled down past GRAVITY_MIN_PULL and sits above the fire, it
  * free-falls the rest of the way (duration scales with distance) and lands
  * as a normal drop. The fire flares whenever a release would land, so the
@@ -24,12 +24,11 @@
 
 import { useCallback, useEffect, useRef } from 'react'
 import type { PointerEvent as ReactPointerEvent, RefObject } from 'react'
-import { eggSVG } from '../../lib/eggArt'
 import { runImpact } from '../../lib/impactFx'
 import { THEMES, type ThemeId } from '../../lib/themes'
 import type { PixelFireHandle } from '../PixelFire'
 
-// a release this many px below the slot hands the egg to gravity
+// a release this many px below the socket hands the gem to gravity
 const GRAVITY_MIN_PULL = 20
 // the fire's hit rect reaches this far above the flame band
 const HIT_PAD_ABOVE = 24
@@ -43,7 +42,7 @@ interface DragState {
   home: DOMRect
 }
 
-export function useEggDrag(opts: {
+export function useGemDrag(opts: {
   fireApiRef: RefObject<PixelFireHandle | null>
   onDrop: (id: ThemeId) => void
   toast: (msg: string) => void
@@ -57,7 +56,7 @@ export function useEggDrag(opts: {
     return el ? el.getBoundingClientRect() : null
   }, [fireApiRef])
 
-  /** Where a release at (x, y) would send the egg: into the fire, falling, or home. */
+  /** Where a release at (x, y) would send the gem: into the fire, falling, or home. */
   const dropMode = useCallback(
     (x: number, y: number): 'hit' | 'fall' | null => {
       const d = dragRef.current
@@ -69,11 +68,11 @@ export function useEggDrag(opts: {
       const inSpanX = x > fr.left && x < fr.right
       // pointer in the padded band (40px below for forgiveness)
       const pointerHit = inSpanX && y > fr.top - HIT_PAD_ABOVE && y < fr.bottom + 40
-      // or the egg body itself dipping into the band
-      const eggHit =
+      // or the gem body itself dipping into the band
+      const gemHit =
         left + d.home.width > fr.left && left < fr.right && bottom > fr.top && top < fr.bottom + 40
-      if (pointerHit || eggHit) return 'hit'
-      // gravity: a real downward pull, with the fire still below the egg
+      if (pointerHit || gemHit) return 'hit'
+      // gravity: a real downward pull, with the fire still below the gem
       if (inSpanX && top - d.home.top > GRAVITY_MIN_PULL && bottom <= fr.top) return 'fall'
       return null
     },
@@ -110,7 +109,7 @@ export function useEggDrag(opts: {
       const doneMsg =
         id === 'default'
           ? 'reverted to the default look'
-          : `dropped the ${THEMES[id].name} egg · site recolored`
+          : `dropped the ${THEMES[id].name} gem · site recolored`
 
       const fr = fireRect()
       const cloneTop = parseFloat(clone.style.top)
@@ -201,7 +200,9 @@ export function useEggDrag(opts: {
       const r = slot.getBoundingClientRect()
       const clone = document.createElement('div')
       clone.className = 'dragclone'
-      clone.innerHTML = eggSVG(THEMES[id], 'egg-art')
+      // the ghost is the socket's own gem art, cloned so it always matches
+      const art = slot.querySelector('.gem-art')
+      clone.innerHTML = art ? art.outerHTML : ''
       clone.style.left = `${r.left}px`
       clone.style.top = `${r.top}px`
       clone.style.width = `${r.width}px`

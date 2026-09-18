@@ -7,7 +7,7 @@
  * scripts/bake-gear.mjs); a base index out of range falls back to the
  * slot's first type, so a stale save still renders.
  *
- * Deliberately independent of the active egg: loot never re-themes.
+ * Deliberately independent of the active gem: loot never re-themes.
  */
 
 import { TileBox } from '../TileSprite'

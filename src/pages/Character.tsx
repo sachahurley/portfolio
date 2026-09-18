@@ -3,7 +3,7 @@
  *
  * Diablo-2-inspired, three columns on wide screens: identity + stats, the
  * paperdoll, and the pack (with any unopened chests); two columns on
- * tablets, one on phones, with the camp (progress + egg fire) below.
+ * tablets, one on phones, with the camp (progress + gem fire) below.
  * Tapping a paperdoll slot filters the pack to that slot; tapping an item
  * opens a card that compares it against what's worn, and the stats preview
  * the swap. Chests open in place with an impact burst and a reveal modal. Not a
@@ -20,9 +20,10 @@ import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
 import PixelFire, { type PixelFireHandle } from '../components/PixelFire'
-import EggShelf from '../components/progress/EggShelf'
+import GemShelf from '../components/progress/GemShelf'
 import { useXp } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
+import { THEMES } from '../lib/themes'
 import { runImpact } from '../lib/impactFx'
 import CharacterPanel from '../components/game/CharacterPanel'
 import ChestRevealModal from '../components/ChestRevealModal'
@@ -61,12 +62,13 @@ export default function Character() {
     logLine,
     seenItems,
     markItemSeen,
+    activeGem,
   } = useXp()
   const [selected, setSelected] = useState<number | null>(null)
   const [activeSlot, setActiveSlot] = useState<Slot | null>(null)
   const [revealed, setRevealed] = useState<Item | null>(null)
   const navigate = useNavigate()
-  // The camp fire below the sheet doubles as the egg drop target (same
+  // The camp fire below the sheet doubles as the gem drop target (same
   // pairing as the classic home page).
   const fireApiRef = useRef<PixelFireHandle>(null)
   // Paperdoll slot elements, the anchor for the equip impact.
@@ -239,7 +241,7 @@ export default function Character() {
                 {chests.map((c) => (
                   <button key={c.id} className="ch-chestbtn" onClick={(e) => onOpenChest(c, e)}>
                     <PixelItem kind="chest" rarity="common" cell={4} />
-                    <span>from {chestSourceLabel(c.src)}</span>
+                    <span>From {chestSourceLabel(c.src)}</span>
                   </button>
                 ))}
               </div>
@@ -268,15 +270,16 @@ export default function Character() {
         )}
       </div>
 
-      {/* Theme: the eggs earned by levelling, and the fire that applies
+      {/* Theme: the gems earned by levelling, and the fire that applies
           them. Full width under the three cards; level and XP stay in the
           character panel, so nothing here repeats them. */}
       <section className="ch-panel ch-camp" aria-label="Site theme">
         <div className="gf-label">theme</div>
         <div className="gf-dim ch-helper">
-          Each egg you earn recolors the site. Drag one into the fire to wear its look.
+          Wearing <span className="ch-wearing">{THEMES[activeGem].name}</span>. Each gem you earn
+          recolors the site; drag one into the fire to change.
         </div>
-        <EggShelf fireApiRef={fireApiRef} />
+        <GemShelf fireApiRef={fireApiRef} />
         <PixelFire ref={fireApiRef} inline />
       </section>
 

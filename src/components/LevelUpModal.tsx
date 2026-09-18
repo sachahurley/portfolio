@@ -1,5 +1,5 @@
 /**
- * LevelUpModal — the egg-award dialog, mounted once in MinimalChrome.
+ * LevelUpModal — the gem-award dialog, mounted once in MinimalChrome.
  *
  * Pull, not push: it opens only when the visitor taps the ▴ LEVEL UP badge
  * (celebrateLevel), then presents pending level-ups (threshold numbers 1..3)
@@ -11,8 +11,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useXp } from '../context/XpProvider'
-import { LEVEL_EGGS, THEMES } from '../lib/themes'
-import Egg from './progress/Egg'
+import { LEVEL_GEMS, THEMES } from '../lib/themes'
+import Gem from './progress/Gem'
 
 export default function LevelUpModal() {
   const { pendingLevels, celebrating, dismissModal } = useXp()
@@ -50,8 +50,8 @@ export default function LevelUpModal() {
   }, [shown, dismissModal])
 
   if (shown == null) return null
-  const egg = LEVEL_EGGS[shown - 1]
-  if (!egg) return null
+  const gem = LEVEL_GEMS[shown - 1]
+  if (!gem) return null
 
   return createPortal(
     <div className="emodal open" role="dialog" aria-modal="true" aria-label="Level up">
@@ -60,18 +60,18 @@ export default function LevelUpModal() {
           <span className="em-kicker">level up</span>
         </div>
         <div className="em-body">
-        <div className="em-egg">
-          <Egg themeId={egg} cls="egg-art-lg" />
+        <div className="em-gem">
+          <Gem themeId={gem} scale={8} cls="gem-art-lg" />
         </div>
         <div className="em-title">{`Level ${shown + 1}!`}</div>
         <div className="em-text">
-          You earned the <b>{THEMES[egg].name}</b> egg. Drop it into the fire on the home page to
-          recolor the site. A chest also waits on your character page.
+          You earned the <b>{THEMES[gem].name}</b> gem. Drop it into the fire on your character
+          page to recolor the site. A chest also waits there.
         </div>
         </div>
         <div className="em-foot">
           <button className="em-btn" ref={btnRef} onClick={dismissModal}>
-            Add to your eggs
+            Add to your gems
           </button>
         </div>
       </div>

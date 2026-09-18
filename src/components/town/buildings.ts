@@ -4,7 +4,7 @@
  * One grid cell is one ART PIXEL (the scene displays the grid at integer
  * zoom), so detail lives at 1px: selective outlines, pointed lancets,
  * 2px crenel teeth, slender spires. Tones are a limited 5-step ink ramp;
- * the scene colors each step as mix(dark, ink, luma) so egg themes retint
+ * the scene colors each step as mix(dark, ink, luma) so gem themes retint
  * the whole town. Standard three-face light: roof lightest, right (SE)
  * face mid, left (SW) face darkest.
  *

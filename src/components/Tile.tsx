@@ -3,7 +3,7 @@
  *
  *   <Tile id="weapons/sword/katana" />                 // native colors, 2x
  *   <Tile id="items/potion/flask_red" scale={4} />
- *   <Tile id="armor/helm/horned_helm" tint="var(--accent)" />  // follows the egg theme
+ *   <Tile id="armor/helm/horned_helm" tint="var(--accent)" />  // follows the gem theme
  *
  * Ids are type-checked against src/data/tileIndex.ts (generated; browse them at
  * /dev/tiles, or on the public atlas at /lab/tile-atlas).

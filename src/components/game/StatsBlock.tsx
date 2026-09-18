@@ -61,7 +61,7 @@ function StatRow({
   return (
     <div className="ch-statrow" title={STAT_FLAVOR[stat]}>
       <div className="ch-stat">
-        <span>{STAT_NAMES[stat].toLowerCase()}</span>
+        <span>{STAT_NAMES[stat]}</span>
         <span>
           {changes ? (
             <span className={preview > bonus ? 'stat-up' : 'stat-down'}>
@@ -102,7 +102,7 @@ export default function StatsBlock({
     <>
       <div className="gf-label ch-sectlabel">stats</div>
       <div className="ch-gearline">
-        gear {filled}/{SLOTS.length} · power {power}
+        Gear {filled}/{SLOTS.length} · power {power}
       </div>
       <div className="ch-stats">
         {STAT_IDS.map((s) => (

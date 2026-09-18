@@ -4,7 +4,7 @@
  * The building renderer (buildings.ts) paints MEANING (lit face, shade
  * face, roof, outline...); a TownStyle decides how each meaning looks.
  * Three systems, all colored with the active theme's ink over the dark
- * page ground so egg themes retint every style:
+ * page ground so gem themes retint every style:
  *
  * - sepia: the town's multi-tone ramp, mix(dark, ink, luma) per tone.
  * - ink:   strict 1-bit "ink & paper" (Polyducks / City Clickers rules):
@@ -22,7 +22,7 @@ import { hashNoise } from '../../lib/dither/render'
 import { TONES, TONE_LUMA, type Grid } from './buildings'
 
 // The dark ground base, from the same near-black backing family the
-// hatched placeholders hardcode in minimal.css; egg themes retint the
+// hatched placeholders hardcode in minimal.css; gem themes retint the
 // ink only, the dark stays put (the site is locked to dark mode).
 export const TOWN_DARK = '#17120d'
 

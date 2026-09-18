@@ -1,5 +1,5 @@
 /**
- * Impact effects for the egg-into-fire drop.
+ * Impact effects for the gem-into-fire drop.
  *
  * Imperative, transient DOM appended to <body> and removed on timers - these
  * are fire-and-forget particles that React never needs to reconcile. The

@@ -5,7 +5,7 @@
  * and displayed at an exact integer zoom (2x on phones, 4x on desktop), so
  * it stays crisp at every size. Statics (ground, buildings, the selective
  * 1px outline pass) bake to an offscreen layer colored through a limited
- * ink ramp: mix(dark, theme ink, tone luma), so egg themes retint the
+ * ink ramp: mix(dark, theme ink, tone luma), so gem themes retint the
  * whole town. The frame loop only draws the plaza bonfire, window glints,
  * the hover rim-light, and the enter transition. A parallel ID buffer
  * written during the bake gives per-pixel hit-testing.
@@ -81,10 +81,10 @@ export default function TownScene({ onEnter, onSecret }: TownSceneProps) {
   const [spots, setSpots] = useState<Spot[]>([])
   const [plate, setPlate] = useState<Plate | null>(null)
 
-  const { activeEgg } = useXp()
+  const { activeGem } = useXp()
   const palette = useMemo(
-    () => ({ ink: THEMES[activeEgg].accent, fire: firePaletteFor(activeEgg) }),
-    [activeEgg],
+    () => ({ ink: THEMES[activeGem].accent, fire: firePaletteFor(activeGem) }),
+    [activeGem],
   )
 
   // Callbacks live in refs so the bake effect never re-runs for them.
