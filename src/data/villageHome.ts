@@ -43,7 +43,7 @@ export const VILLAGE_HOME: VillageItem[] = [
   { tree: { canopy: 'canopy_pine', trunk: 'trunk_stump', height: 2 } },
   { part: 'mushroom', gap: 2 },
   {
-    part: 'crystal_ball',
+    part: 'brain',
     lift: 3,
     tap: { label: 'Lab', href: '/lab', style: 'invert' },
   },
@@ -93,4 +93,10 @@ export const VILLAGE_HOME: VillageItem[] = [
   { part: 'grass_3', gap: 2 },
   { house: { storeys: ['wall_5', 'upper_5_inv'], roof: 'roof_2' } },
   { part: 'grass_4', gap: 2 },
+  {
+    part: 'crystal_ball',
+    lift: 3,
+    tap: { label: 'Tarot', href: '/lab/tarot', style: 'invert' },
+  },
+  { part: 'grass_2', gap: 2 },
 ]
