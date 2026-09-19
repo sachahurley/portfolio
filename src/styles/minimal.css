@@ -578,43 +578,9 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
 }
 
 /* ---- level-up modal (EXP system) ---- */
-.emodal {
-  position: fixed; inset: 0; z-index: var(--z-index-popover); /* level-up modal: above fx */ display: none;
-  align-items: center; justify-content: center;
-  background: rgba(0,0,0,.62); backdrop-filter: blur(3px);
-}
-.emodal.open { display: flex; }
-/* dialog card: the large plate silhouette with a 2px border-colored ring,
-   built like .gf-xpbar (the element is the ring color clipped to the
-   polygon; ::before is the page ground clipped by the same polygon 2px
-   inside), so the frame stair-steps at the corners like the buttons. */
-.em-card {
-  position: relative; isolation: isolate;
-  background: var(--border); clip-path: var(--plate-round-lg);
-  text-align: center;
-  /* one consistent width for every dialog, whatever the content length */
-  width: min(320px, calc(100vw - 32px)); box-sizing: border-box;
-}
-.em-card::before {
-  content: ""; position: absolute; inset: 2px; z-index: -1;
-  background: var(--bg); clip-path: var(--plate-round-lg);
-}
-/* dialog bands: every modal on the site (reward, level-up, item card) is a
-   window with a header strip for its label and a footer strip for its
-   controls. Both are full-bleed inside the card's ring, so the card's
-   clip-path cuts their outer corners into the same stepped silhouette. */
-/* sepia-900, a step lighter than the plates the bands carry (sepia-925),
-   so a control never sinks into its own band */
-.em-head, .em-foot {
-  display: flex; align-items: center; gap: 12px;
-  padding: 8px 10px 8px 16px; background: var(--color-sepia-900, #2b2718);
-  font-family: var(--mono);
-}
-.em-head { justify-content: space-between; min-height: 44px; }
-.em-foot { justify-content: flex-end; padding: 12px 16px; }
-.em-kicker { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--body); }
-.em-body { padding: 24px 20px; }
-
+/* Dialog chrome (.emodal/.em-card/.em-head/.em-foot/.em-kicker/.em-btn)
+   retired: reward dialogs are @scorp-ds/components Modal (width 320,
+   footer CTA band). Content typography below still applies. */
 .em-gem { animation: mn-gempop .45s cubic-bezier(.34,1.3,.5,1) both; }
 .gem-art-lg { display: block; margin: 0 auto; filter: drop-shadow(0 6px 16px rgba(0,0,0,.5)); }
 @keyframes mn-gempop {
@@ -625,18 +591,6 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
 .em-title { font-size: 20px; font-weight: 400; color: var(--fg); margin-top: 16px; }
 .em-text { color: var(--body); font-size: 14px; line-height: 1.55; margin-top: 8px; }
 .em-text b { color: var(--accent); }
-/* dialog action: the plate family's large tier (same as the dock's menu
-   button): sepia plate, accent ink, accent flip on hover */
-.em-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 14px; line-height: 16px; font-weight: 400;
-  padding: 12px 18px; border: 0; cursor: pointer;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: var(--plate-round-lg);
-  transition: background-color .12s, color .12s;
-}
-.em-btn:hover { background: var(--accent); color: var(--bg); }
-.em-btn:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
 
 @media (prefers-reduced-motion: reduce) {
   .em-gem { animation: none; }

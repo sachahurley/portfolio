@@ -2,14 +2,14 @@
  * LevelUpModal — the gem-award dialog, mounted once in MinimalChrome.
  *
  * Pull, not push: it opens only when the visitor taps the ▴ LEVEL UP badge
- * (celebrateLevel), then presents pending level-ups (threshold numbers 1..3)
- * sequentially with a short beat between them. The title uses the display
- * level (band + 1) so it matches the "Level N · ..." progress copy. Esc or
- * the button dismisses (dismissModal pops the pending queue and persists).
+ * (celebrateLevel), then presents pending level-ups sequentially with a
+ * short beat between them. Chrome (scrim, plate panel, Esc, focus
+ * management, footer CTA band) is the DS Modal; this file keeps only the
+ * queue choreography and the celebratory content.
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { Button, Modal } from '@scorp-ds/components'
 import { useXp } from '../context/XpProvider'
 import { LEVEL_GEMS, THEMES } from '../lib/themes'
 import Gem from './progress/Gem'
@@ -19,63 +19,44 @@ export default function LevelUpModal() {
   const head = celebrating && pendingLevels.length ? pendingLevels[0] : null
   const [shown, setShown] = useState<number | null>(null)
   const wasOpenRef = useRef(false)
-  const btnRef = useRef<HTMLButtonElement>(null)
-  const prevFocusRef = useRef<HTMLElement | null>(null)
 
-  // Follow the queue head; when one modal replaces another, pause 260ms so
+  // Follow the queue head; when one award replaces another, pause 260ms so
   // the swap reads as two awards rather than the text flashing in place.
-  // (Async timeouts rather than direct setState, per react-hooks rules.)
   useEffect(() => {
     const delay = head != null && wasOpenRef.current ? 260 : 0
-    const t = window.setTimeout(() => setShown(head), delay)
+    const t = window.setTimeout(() => {
+      setShown(head)
+      wasOpenRef.current = head != null
+    }, delay)
     return () => clearTimeout(t)
   }, [head])
 
-  // Focus the close button on open, restore focus on close, Esc dismisses.
-  useEffect(() => {
-    if (shown == null) {
-      wasOpenRef.current = false
-      prevFocusRef.current?.focus()
-      prevFocusRef.current = null
-      return
-    }
-    wasOpenRef.current = true
-    prevFocusRef.current = document.activeElement as HTMLElement | null
-    btnRef.current?.focus()
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') dismissModal()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [shown, dismissModal])
+  const gem = shown != null ? LEVEL_GEMS[shown - 1] : undefined
 
-  if (shown == null) return null
-  const gem = LEVEL_GEMS[shown - 1]
-  if (!gem) return null
-
-  return createPortal(
-    <div className="emodal open" role="dialog" aria-modal="true" aria-label="Level up">
-      <div className="em-card">
-        <div className="em-head">
-          <span className="em-kicker">level up</span>
+  return (
+    <Modal
+      isOpen={shown != null && gem != null}
+      onClose={dismissModal}
+      title="Level up"
+      width={320}
+      footerContent={
+        <Button variant="secondary" size="small" type="button" onClick={dismissModal}>
+          Add to your gems
+        </Button>
+      }
+    >
+      {shown != null && gem != null && (
+        <div className="text-center">
+          <div className="em-gem">
+            <Gem themeId={gem} scale={8} cls="gem-art-lg" />
+          </div>
+          <div className="em-title">{`Level ${shown + 1}!`}</div>
+          <div className="em-text">
+            You earned the <b>{THEMES[gem].name}</b> gem. Drop it into the fire on your character
+            page to recolor the site. A chest also waits there.
+          </div>
         </div>
-        <div className="em-body">
-        <div className="em-gem">
-          <Gem themeId={gem} scale={8} cls="gem-art-lg" />
-        </div>
-        <div className="em-title">{`Level ${shown + 1}!`}</div>
-        <div className="em-text">
-          You earned the <b>{THEMES[gem].name}</b> gem. Drop it into the fire on your character
-          page to recolor the site. A chest also waits there.
-        </div>
-        </div>
-        <div className="em-foot">
-          <button className="em-btn" ref={btnRef} onClick={dismissModal}>
-            Add to your gems
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body
+      )}
+    </Modal>
   )
 }
