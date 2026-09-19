@@ -8,7 +8,7 @@
 
 import { useNavigate } from 'react-router-dom'
 import { useXp } from '../../context/XpProvider'
-import PixelPortrait from './PixelPortrait'
+import PortraitPlate from './PortraitPlate'
 
 export default function CharacterStrip() {
   const { name, avatarSeed, level, pendingLevels, chests } = useXp()
@@ -20,7 +20,7 @@ export default function CharacterStrip() {
       onClick={() => navigate('/character')}
       aria-label={`Character: ${name}, level ${level.level + 1} ${level.title}. Open character screen.`}
     >
-      <PixelPortrait seed={avatarSeed} cell={3} />
+      <PortraitPlate seed={avatarSeed} cell={3} small />
       <span className="gf-cs-main">
         <span className="gf-cs-name">{name}</span>
         <span className="gf-cs-lvl">

@@ -12,8 +12,8 @@
 import { TileBox } from '../TileSprite'
 import { AVATAR_TILES } from '../../game/avatarTiles'
 
-/** The sheet cell for a seed. */
-function avatarTile(seed: number): readonly [number, number] {
+/** The sheet cell (plus centering shift) for a seed. */
+function avatarTile(seed: number): readonly [number, number, number, number] {
   const n = AVATAR_TILES.length
   return AVATAR_TILES[((Math.floor(seed) % n) + n) % n]
 }
@@ -28,7 +28,7 @@ export default function PixelPortrait({
   cell?: number
   className?: string
 }) {
-  const [x, y] = avatarTile(seed)
+  const [x, y, dx, dy] = avatarTile(seed)
   return (
     <TileBox
       x={x}
@@ -36,7 +36,9 @@ export default function PixelPortrait({
       scale={cell}
       tint="var(--fg)"
       className={className}
-      style={{ display: 'block' }}
+      // the baked shift centers the figure's ink in the tile box; purely
+      // visual, so the layout box stays where the row put it
+      style={{ display: 'block', transform: `translate(${Math.round(dx * cell)}px, ${Math.round(dy * cell)}px)` }}
     />
   )
 }
