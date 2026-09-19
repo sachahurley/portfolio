@@ -13,6 +13,7 @@
 
 import { useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { TileBox } from './TileSprite'
+import { Button } from '@scorp-ds/components'
 
 /** items/lock/padlock_01 on the Urizen sheet (see /lab/tile-atlas). */
 const PADLOCK: readonly [number, number] = [10, 45]
@@ -77,9 +78,9 @@ export default function LockGate({
             spellCheck={false}
             disabled={busy}
           />
-          <button className="platebtn" type="submit" disabled={busy}>
+          <Button variant="secondary" size="small" type="submit" disabled={busy}>
             {busy ? 'checking' : 'unlock'}
-          </button>
+          </Button>
         </div>
         <span className="vault-err" aria-live="polite">
           {error ?? ' '}

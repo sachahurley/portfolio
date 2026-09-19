@@ -321,15 +321,9 @@ strong, b { font-weight: 400; }
    floats in the content column's top padding rather than taking a row of
    its own, so the page title starts at the same height whether or not a
    page has one (Home has none). */
-.pageback {
-  position: absolute; top: 48px; left: 24px;
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 40px; height: 40px; flex: none; padding: 0; border: 0; cursor: pointer;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: var(--plate-round);
-  transition: background-color .12s, color .12s;
-}
-.pageback:hover { background: var(--accent); color: var(--bg); }
+/* .pageback is now a LAYOUT hook only — the control itself is an icon-only
+   DS Button (secondary), which owns all visual styling. */
+.pageback { position: absolute; top: 48px; left: 24px; }
 /* detail-page prev/next pager: richer cousins of the menu buttons — the
    same pixel-round plate silhouette with a sepia-925 fill (no outline),
    one step above the sepia-950 page bg so it barely parts from the page;
@@ -410,18 +404,10 @@ a.item .t { color: var(--accent); }
    the compact tier: 6px ring = 28px tall (wider 10px side padding for
    text breathing room). Same sepia rest / accent hover states as the
    rest of the family. */
-.platebtn {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: var(--mono); font-size: 14px; line-height: 16px;
-  border: 0; padding: 6px 10px; cursor: pointer;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: var(--plate-round);
-  transition: background-color .12s, color .12s;
-}
-.platebtn:hover { background: var(--accent); color: var(--bg); }
+/* .platebtn retired: plate CTAs are @scorp-ds/components Button (secondary). */
 /* clip-path swallows the global outside focus ring on plate-clipped
    controls; paint an inset ring within the silhouette instead */
-.pageback:focus-visible, .platebtn:focus-visible, .pgbtn:focus-visible,
+.pgbtn:focus-visible,
 .gf-tab:focus-visible, a.item:focus-visible, .gf-dest:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
@@ -1345,7 +1331,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    One barrier for both, so a lock always looks like a lock. It borrows the
    site's terminal vocabulary: the Urizen padlock tile, the Loader's
    asterisk box (.ts-hint / .ts-hint-box), the character panel's underline
-   input recipe (.cs-name), .platebtn, and the hatch texture standing in
+   input recipe (.cs-name), the DS plate Button, and the hatch texture standing in
    for the redacted body below the gate (case studies only). Weight 400 and
    token colors throughout. */
 .item .lockmark { color: var(--mut); line-height: 0; margin-left: 8px; }

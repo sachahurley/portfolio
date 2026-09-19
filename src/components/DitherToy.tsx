@@ -13,6 +13,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { bayerThreshold, ONE_BIT_INK } from '../lib/dither/oneBit'
 import { hashNoise } from '../lib/dither/render'
+import { Button } from '@scorp-ds/components'
 
 const CELL = 4 // art cell in CSS px, the site's standard scale
 const FPS = 7 // the welcome title's boil beat
@@ -23,6 +24,7 @@ const MAX_ROWS = 110
 export default function DitherToy() {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
   const [src, setSrc] = useState('/dither/sacha-hurley-wild-loop.gif')
   const [bias, setBias] = useState(0)
   const biasRef = useRef(0)
@@ -163,15 +165,16 @@ export default function DitherToy() {
     >
       <canvas ref={canvasRef} className="dtoy-canvas" aria-label="Dithered preview" />
       <div className="dtoy-controls">
-        <label className="platebtn">
+        <Button variant="secondary" size="small" type="button" onClick={() => fileRef.current?.click()}>
           choose an image
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => pickFile(e.target.files?.[0])}
-            style={{ display: 'none' }}
-          />
-        </label>
+        </Button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          onChange={(e) => pickFile(e.target.files?.[0])}
+          style={{ display: 'none' }}
+        />
         <label className="dtoy-slider">
           ink
           <input
