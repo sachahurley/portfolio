@@ -8,6 +8,7 @@
 
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from './DitherIcon'
+import { Button } from '@scorp-ds/components'
 
 export default function BackButton({ fallback = '/' }: { fallback?: string }) {
   const navigate = useNavigate()
@@ -17,8 +18,15 @@ export default function BackButton({ fallback = '/' }: { fallback?: string }) {
     else navigate(fallback)
   }
   return (
-    <button type="button" className="pageback" onClick={goBack} aria-label="Go back">
+    <Button
+      variant="secondary"
+      size="medium"
+      type="button"
+      onClick={goBack}
+      aria-label="Go back"
+      className="pageback"
+    >
       <DitherIcon name="arrow-left" size={16} />
-    </button>
+    </Button>
   )
 }

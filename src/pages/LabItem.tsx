@@ -21,6 +21,7 @@ import LockGate from '../components/LockGate'
 import NotFound from './NotFound'
 import { usePageTitle } from '../lib/usePageTitle'
 import { ArrowUpRight } from '../components/icons'
+import { Button } from '@scorp-ds/components'
 
 // The atlas pulls in its own data fetch and styles, so it loads only when opened.
 const TileAtlas = lazy(() => import('../components/lab/TileAtlas'))
@@ -205,15 +206,16 @@ export default function LabItem() {
       {item.body && <p style={{ marginTop: 18 }}>{item.body}</p>}
 
       {item.externalUrl && (
-        <a
-          className="platebtn"
+        <Button
+          variant="secondary"
+          size="small"
           href={item.externalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ marginTop: 24 }}
+          className="mt-6"
         >
           view on GitHub <ArrowUpRight />
-        </a>
+        </Button>
       )}
 
       {!item.demo && !item.body && (

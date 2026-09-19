@@ -37,6 +37,7 @@ import {
 import { THEMES } from '../lib/themes'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
+import { Button } from '@scorp-ds/components'
 
 // The builder's state is a UI pref: its own key beside - not inside -
 // the sh_min save blob (the sh_side convention).
@@ -450,10 +451,10 @@ export default function BuilderLab() {
 
         <div className="bld-row">
           <span className="bld-row-label">&nbsp;</span>
-          <button type="button" className="platebtn" onClick={copy}>
+          <Button variant="secondary" size="small" type="button" onClick={copy}>
             <DitherIcon name="copy" size={16} />
             {copyState === 'copied' ? 'copied' : copyState === 'failed' ? 'copy failed' : mode === 'object' ? 'copy recipe' : 'copy scene'}
-          </button>
+          </Button>
         </div>
       </div>
 

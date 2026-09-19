@@ -20,6 +20,7 @@ import { usePageTitle } from '../lib/usePageTitle'
 import { useReadToEnd } from '../lib/useReadToEnd'
 import { useVault } from '../lib/useVault'
 import LockGate from '../components/LockGate'
+import { Button } from '@scorp-ds/components'
 
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -117,15 +118,16 @@ export default function ProjectDetail() {
       )}
 
       {project.externalUrl && (
-        <a
-          className="platebtn"
+        <Button
+          variant="secondary"
+          size="small"
           href={project.externalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ marginTop: 28 }}
+          className="mt-7"
         >
           view project <ArrowUpRight />
-        </a>
+        </Button>
       )}
 
       <PagerNav section="projects" slug={project.slug} />

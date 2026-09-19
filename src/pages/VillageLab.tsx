@@ -19,6 +19,7 @@ import BackButton from '../components/BackButton'
 import { ArrowUpRight } from '../components/icons'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
+import { Button } from '@scorp-ds/components'
 
 const TOOL_URL = '/village/index.html'
 
@@ -51,9 +52,9 @@ export default function VillageLab() {
       </div>
 
       <div className="bld-row" style={{ marginTop: 14, justifyContent: 'center' }}>
-        <a className="platebtn" href={TOOL_URL} target="_blank" rel="noopener noreferrer">
+        <Button variant="secondary" size="small" href={TOOL_URL} target="_blank" rel="noopener noreferrer">
           open full screen <ArrowUpRight />
-        </a>
+        </Button>
       </div>
 
       <p className="town-hint">

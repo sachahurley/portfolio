@@ -28,6 +28,16 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     disabled?: boolean;
     iconLeft?: React.ReactNode;
     iconRight?: React.ReactNode;
+    /**
+     * Render as an `<a>` with this destination instead of a `<button>` — same
+     * plate styling for link CTAs ("view project ↗"). Disabled anchors drop the
+     * href and set `aria-disabled`.
+     */
+    href?: string;
+    /** Anchor target (only with `href`), e.g. "_blank". */
+    target?: string;
+    /** Anchor rel (only with `href`); pair `target="_blank"` with "noopener noreferrer". */
+    rel?: string;
 }
 /**
  * Button Component

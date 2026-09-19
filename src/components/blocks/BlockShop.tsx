@@ -15,6 +15,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useXp } from '../../context/XpProvider'
 import { THEMES, mix } from '../../lib/themes'
+import { Button } from '@scorp-ds/components'
 import {
   CLASSIC,
   forEachDiamondCell,
@@ -576,9 +577,9 @@ export default function BlockShop() {
           )}
           <div className="bld-row">
             <span className="bld-row-label">&nbsp;</span>
-            <button type="button" className="platebtn" onClick={saveBlock}>
+            <Button variant="secondary" size="small" type="button" onClick={saveBlock}>
               save block
-            </button>
+            </Button>
             {selBlock && (
               <button type="button" className="cs-reroll" onClick={deleteBlock}>
                 delete selected
@@ -614,9 +615,9 @@ export default function BlockShop() {
           )}
           <div className="bld-row">
             <span className="bld-row-label">&nbsp;</span>
-            <button type="button" className="platebtn" onClick={saveObject}>
+            <Button variant="secondary" size="small" type="button" onClick={saveObject}>
               save object
-            </button>
+            </Button>
             <button
               type="button"
               className="cs-reroll"
