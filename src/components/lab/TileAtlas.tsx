@@ -8,6 +8,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { TileBox } from '../TileSprite'
+import { Button, Input } from '@scorp-ds/components'
 import './TileAtlas.css'
 
 type Row = [string, number, number, number?, number?]
@@ -110,8 +111,9 @@ export default function TileAtlas() {
   return (
     <div className="atlas">
       <div className="atlas-bar">
-        <input
+        <Input
           id="atlas-search"
+          size="small"
           type="search"
           value={q}
           onChange={(e) => choose({ q: e.target.value })}
@@ -159,9 +161,9 @@ export default function TileAtlas() {
         {sel && (
           <>
             {' · '}
-            <button type="button" className="atlas-copy" onClick={() => copyId(sel.id)}>
+            <Button variant="link" size="small" onClick={() => copyId(sel.id)}>
               {copied ? 'copied' : sel.id}
-            </button>
+            </Button>
           </>
         )}
       </p>
@@ -184,9 +186,9 @@ export default function TileAtlas() {
 
       {matches.length === 0 && <p className="atlas-note">Nothing matches. The names are drafts, so try a plainer word.</p>}
       {matches.length > shown && (
-        <button type="button" className="atlas-more" onClick={() => setShown(shown + PAGE)}>
+        <Button variant="secondary" size="small" onClick={() => setShown(shown + PAGE)}>
           show {Math.min(PAGE, matches.length - shown)} more
-        </button>
+        </Button>
       )}
     </div>
   )

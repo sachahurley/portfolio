@@ -3,17 +3,16 @@
  *
  * Shows the selected item and, when its slot is worn by a different item,
  * the equipped one beside it, split by a rule on wide screens and stacked
- * on narrow ones. It wears the reward modals' chrome (stepped corners, a
- * border ring, the close plate from the character screen's own corner, the
- * controls banded into a header and footer) and on phones it rises over
- * the page behind a scrim, so equipping, swapping
- * and unequipping all read as the same deliberate act. The selected
- * item's stats carry a ▲/▼ delta against the equipped item, so a swap
- * reads at a glance. The action is Equip (empty slot), Swap (slot worn by
- * something else) or Unequip (viewing the worn item).
+ * on narrow ones. Chrome is the DS Modal's docked variant: on desktop the
+ * panel pins low with no scrim so the paperdoll stays visible while you
+ * compare; below 960px the same component renders the standard centered
+ * modal, with scrim, focus handling, and Esc all owned by the DS. The
+ * selected item's stats carry a ▲/▼ delta against the equipped item, so a
+ * swap reads at a glance. The action is Equip (empty slot), Swap (slot
+ * worn by something else) or Unequip (viewing the worn item).
  */
 
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import {
   RARITY_LABELS,
   SLOT_LABELS,
@@ -23,7 +22,7 @@ import {
   type Item,
   type StatId,
 } from '../../game/loot'
-import DitherIcon from '../DitherIcon'
+import { Button, Modal } from '@scorp-ds/components'
 import ItemPlate from './ItemPlate'
 import Tag from './Tag'
 
@@ -84,73 +83,21 @@ export default function ItemCard({
   const selectedStats = STAT_IDS.filter((s) => has(item)(s) || (equipped != null && has(equipped)(s)))
   const label = isEquipped ? 'Unequip' : equipped ? 'Swap' : 'Equip'
 
-  // Below 960px the card is a true modal over a scrim; above, a floating
-  // panel. aria-modal and the focus trap follow that same breakpoint.
-  const [modal, setModal] = useState(() => window.matchMedia('(max-width: 959px)').matches)
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 959px)')
-    const onChange = () => setModal(mq.matches)
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [])
-
-  // Move focus into the card when it opens, back to the opener on close.
-  const cardRef = useRef<HTMLElement>(null)
-  const prevFocusRef = useRef<HTMLElement | null>(null)
-  useEffect(() => {
-    prevFocusRef.current = document.activeElement as HTMLElement | null
-    cardRef.current?.focus()
-    return () => {
-      prevFocusRef.current?.focus()
-      prevFocusRef.current = null
-    }
-  }, [])
-
-  // Modal mode only: keep Tab inside the card (the page behind is dimmed).
-  const onTrapKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (!modal || e.key !== 'Tab') return
-    const root = cardRef.current
-    if (!root) return
-    const focusables = root.querySelectorAll<HTMLElement>(
-      'button, [href], [tabindex]:not([tabindex="-1"])'
-    )
-    if (!focusables.length) return
-    const first = focusables[0]
-    const last = focusables[focusables.length - 1]
-    const active = document.activeElement
-    if (e.shiftKey) {
-      if (active === first || active === root) {
-        e.preventDefault()
-        last.focus()
-      }
-    } else if (active === last) {
-      e.preventDefault()
-      first.focus()
-    }
-  }
-
   return (
-    <>
-      {/* phones only (CSS): the page dims behind the card */}
-      <div className="ch-cardscrim" onClick={onClose} aria-hidden="true" />
-      <aside
-        ref={cardRef}
-        className={`ch-card${equipped ? ' is-compare' : ''}`}
-        role="dialog"
-        aria-modal={modal || undefined}
-        aria-label="Item details"
-        tabIndex={-1}
-        onKeyDown={onTrapKeyDown}
-      >
-        <div className="ch-card-head">
-          {/* comparing two items is its own act; a single item keeps its slot */}
-          <span className="ch-card-kicker">{equipped ? 'Compare' : SLOT_LABELS[item.slot]}</span>
-          <button className="ch-card-close" onClick={onClose} aria-label="Close">
-            <DitherIcon name="close" size={16} />
-          </button>
-        </div>
-        <div className="ch-card-pad">
-          <div className="ch-compare">
+    // comparing two items is its own act; a single item keeps its slot
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={equipped ? 'Compare' : SLOT_LABELS[item.slot]}
+      docked
+      width={640}
+      footerContent={
+        <Button variant="primary" size="small" onClick={onAction}>
+          {label}
+        </Button>
+      }
+    >
+      <div className={`ch-compare${equipped ? ' is-compare' : ''}`}>
             <ItemSide
               item={item}
               tag={
@@ -163,21 +110,14 @@ export default function ItemCard({
               stats={isEquipped ? STAT_IDS.filter(has(item)) : selectedStats}
               deltas={equipped ? statDeltas(item, equipped) : undefined}
             />
-            {equipped && (
-              <ItemSide
-                item={equipped}
-                tag={<Tag filled>equipped</Tag>}
-                stats={STAT_IDS.filter(has(equipped))}
-              />
-            )}
-          </div>
-        </div>
-        <div className="ch-card-foot">
-          <button className="ch-btn" onClick={onAction}>
-            {label}
-          </button>
-        </div>
-      </aside>
-    </>
+        {equipped && (
+          <ItemSide
+            item={equipped}
+            tag={<Tag filled>equipped</Tag>}
+            stats={STAT_IDS.filter(has(equipped))}
+          />
+        )}
+      </div>
+    </Modal>
   )
 }

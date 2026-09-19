@@ -581,9 +581,9 @@ export default function BlockShop() {
               save block
             </Button>
             {selBlock && (
-              <button type="button" className="cs-reroll" onClick={deleteBlock}>
+              <Button variant="ghost" size="small"  onClick={deleteBlock}>
                 delete selected
-              </button>
+              </Button>
             )}
           </div>
           {blockPalette('library')}
@@ -618,17 +618,16 @@ export default function BlockShop() {
             <Button variant="secondary" size="small" type="button" onClick={saveObject}>
               save object
             </Button>
-            <button
-              type="button"
-              className="cs-reroll"
+            <Button variant="ghost" size="small"
+              
               onClick={() => setState((s) => ({ ...s, objDraft: emptyObjDraft() }))}
             >
               clear
-            </button>
+            </Button>
             {selObject && (
-              <button type="button" className="cs-reroll" onClick={deleteObject}>
+              <Button variant="ghost" size="small"  onClick={deleteObject}>
                 delete selected object
-              </button>
+              </Button>
             )}
           </div>
           {objectPalette}
@@ -655,13 +654,12 @@ export default function BlockShop() {
           />
           <div className="bld-row">
             <span className="bld-row-label">&nbsp;</span>
-            <button
-              type="button"
-              className="cs-reroll"
+            <Button variant="ghost" size="small"
+              
               onClick={() => setState((s) => ({ ...s, placements: [] }))}
             >
               clear scene
-            </button>
+            </Button>
           </div>
           <p className="town-hint">
             Pick an object, hover to preview its footprint, tap to place it; tap a placed object to

@@ -10,6 +10,11 @@
  * - Scrollable content area (max-height: 66vh)
  * - Fade in/out animations (200ms duration)
  * - Backdrop scrim (semi-transparent overlay)
+ * - `docked` variant: on wide viewports (>=960px) the panel skips the scrim
+ *   and pins bottom-center as a NON-modal dialog (no aria-modal, no scroll
+ *   lock, page stays interactive), so the content behind stays in view while
+ *   the dialog acts on it. Below 960px docked falls back to the standard
+ *   centered modal, so consumers never branch on breakpoint themselves.
  * - Drop shadow using elevation tokens
  * - Click outside to close
  * - ESC key to close
@@ -45,6 +50,14 @@ export interface ModalProps {
      * (e.g. "min(320px, 90vw)"). Small celebratory dialogs want ~320.
      */
     width?: number | string;
+    /**
+     * Dock instead of covering: on viewports >= 960px the panel pins
+     * bottom-center with no scrim and no scroll lock (a non-modal dialog),
+     * keeping the page behind visible and interactive. Below 960px this is
+     * ignored and the standard centered modal renders, so the responsive
+     * fallback lives here, not in the consumer.
+     */
+    docked?: boolean;
 }
 /**
  * Modal Component
@@ -54,5 +67,5 @@ export interface ModalProps {
  * @param title - Header title text
  * @param children - Modal content (will be scrollable if it exceeds max-height)
  */
-export declare function Modal({ isOpen, onClose, title, children, footerContent, width }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Modal({ isOpen, onClose, title, children, footerContent, width, docked }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map

@@ -15,13 +15,10 @@
 .atlas-subs button { border-style: dashed; }
 
 .atlas-count { color: var(--mut); margin: 16px 0 8px; font-size: 13px; }
-.atlas-copy { background: none; border: 0; padding: 0; cursor: pointer; color: var(--accent); }
 
 .atlas-grid { display: flex; flex-wrap: wrap; gap: 3px; }
 .atlas-cell { display: grid; place-items: center; padding: 4px; line-height: 0; cursor: pointer;
   background: var(--color-sepia-1000, #0a0704); border: 1px solid transparent; }
 .atlas-cell:hover { border-color: var(--mut2); }
 .atlas-cell[aria-pressed="true"] { border-color: var(--accent); }
-.atlas-more { margin-top: 16px; background: none; border: 1px solid var(--border); padding: 5px 10px; cursor: pointer; }
-.atlas-more:hover { background: var(--hover); }
 .atlas-note { color: var(--body); }

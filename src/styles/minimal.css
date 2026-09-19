@@ -807,11 +807,19 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 
 .cs { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
 .cs-head { display: flex; align-items: flex-start; gap: 14px; }
-.cs-avatarbtn {
-  padding: 4px; background: var(--hover); border: 1px solid var(--border);
-  cursor: pointer; line-height: 0;
+/* the avatar button is just a hit area; PortraitPlate carries the chrome */
+.cs-avatarbtn { padding: 0; background: none; border: 0; cursor: pointer; line-height: 0; }
+.cs-avatarbtn:hover .pp-plate { background: var(--accent); }
+/* avatar on a plate (PortraitPlate): the equipment slot's ring recipe
+   (see .ch-slotwrap) around the portrait, so the character wears the same
+   frame as their gear. Default well = the paperdoll's 62px cell; .sm is
+   the compact strip tier (side panel footer, menu sheet row). */
+.pp-plate { display: inline-block; flex: none; padding: 1px; background: var(--border); clip-path: var(--notch4); }
+.pp-plate-in {
+  display: flex; align-items: center; justify-content: center;
+  width: 62px; height: 62px; background: var(--hover); clip-path: var(--notch4);
 }
-.cs-avatarbtn:hover { border-color: var(--accent); }
+.pp-plate.sm .pp-plate-in { width: 46px; height: 46px; }
 .cs-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 /* .cs-name retired: the rename field is the DS Input (quiet). */
 .cs-lvl { font-size: 12px; color: var(--body); }
@@ -826,11 +834,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .cs-cand { padding: 3px; background: transparent; border: 1px solid var(--border); cursor: pointer; line-height: 0; }
 .cs-cand:hover { border-color: var(--accent); }
-.cs-reroll {
-  font-family: var(--mono); font-size: 12px; color: var(--body);
-  background: transparent; border: 1px solid var(--border); padding: 12px 14px; cursor: pointer;
-}
-.cs-reroll:hover { color: var(--fg); border-color: var(--mut); }
+/* .cs-reroll retired: those text actions are the DS Button (ghost). */
 
 .sheet-contact { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
 .sheet-contact a { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--mut); padding: 4px 0; }
@@ -968,63 +972,21 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .ch-stat { display: flex; justify-content: space-between; gap: 10px; color: var(--body); }
 .ch-bonus { color: var(--accent); }
 
-/* item card */
-/* item card: the reward modals' chrome (.em-card) on the character
-   screen's equip / swap / unequip card, so every dialog on the site is cut
-   from the same stone: the large plate silhouette with a 2px ring drawn by
-   ::before, since a border would be sliced by the clip-path. */
-.ch-card {
-  grid-column: 1 / -1; position: relative; isolation: isolate;
-  display: flex; flex-direction: column;
-  background: var(--border); clip-path: var(--plate-round-lg);
-}
-.ch-card::before {
-  content: ""; position: absolute; inset: 2px; z-index: -1;
-  background: var(--bg); clip-path: var(--plate-round-lg);
-}
+/* item card: chrome retired — the card rides the DS Modal's docked
+   variant (scrim, bands, close, focus all owned by the DS; docked pins it
+   low on desktop, standard modal below 960). Only the compare body's own
+   styles remain. */
 /* the body must be allowed to shrink inside the flex row, or a long
    unique name pushes past the card edge; names wrap, the meta line
    (rarity · base · slot fragments) ellipsizes */
 .ch-card-body { min-width: 0; }
-/* item-card bands: own copies of the old dialog band recipe (the .em-*
-   chrome retired with the DS Modal swap, but this docked aside keeps the
-   window anatomy: header strip, padded body, footer strip). */
-.ch-card-head, .ch-card-foot {
-  display: flex; align-items: center; gap: 12px;
-  padding: 8px 10px 8px 16px; background: var(--color-sepia-900, #2b2718);
-  font-family: var(--mono);
-}
-.ch-card-head { justify-content: space-between; min-height: 44px; }
-.ch-card-foot { justify-content: flex-end; padding: 12px 16px; }
-.ch-card-kicker { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--body); }
-.ch-card-pad { padding: 24px 20px; }
 .ch-card-name { font-size: 16px; overflow-wrap: break-word; }
 .ch-card-meta {
   font-size: 12px; color: var(--mut); margin: 4px 0 10px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .ch-card-stats { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--body); }
-/* dialog action, matching the reward modals' .em-btn */
-.ch-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 14px; line-height: 16px;
-  padding: 12px 18px; border: 0; cursor: pointer;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: var(--plate-round-lg);
-  transition: background-color .12s, color .12s;
-}
-.ch-btn:hover { background: var(--accent); color: var(--bg); }
-.ch-btn:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
-/* the same plate as the character screen's corner close (.ch-close), sat
-   in the header band */
-.ch-card-close {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px; padding: 0; border: 0; cursor: pointer; flex: none;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: var(--plate-round);
-  transition: background-color .12s, color .12s;
-}
-.ch-card-close:hover { background: var(--accent); color: var(--bg); }
+/* .ch-btn retired: the card's action is the DS Button (primary). */
 
 /* ---- character screen: compare card, slot filter, pack, stats ---- */
 /* compare card: selected item beside the worn one, action below both */
@@ -1033,9 +995,9 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   /* side by side, split by a rule rather than a gap alone. Desktop only:
      below 960 the card is the 440px centered modal, where two columns
      would leave ~176px per item, so the compare stacks there. */
-  .ch-card.is-compare .ch-compare { grid-template-columns: 1fr 1fr; gap: 0; }
-  .ch-card.is-compare .ch-cardside:first-child { padding-right: 24px; }
-  .ch-card.is-compare .ch-cardside + .ch-cardside {
+  .ch-compare.is-compare { grid-template-columns: 1fr 1fr; gap: 0; }
+  .ch-compare.is-compare .ch-cardside:first-child { padding-right: 24px; }
+  .ch-compare.is-compare .ch-cardside + .ch-cardside {
     border-left: 1px solid var(--border); padding-left: 24px;
   }
 }
@@ -1052,22 +1014,6 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .ch-tag.fill { color: var(--bg); background: var(--rar-common); border-color: var(--rar-common); }
 
 
-/* phones: the card leaves the grid and floats over the page, dimming it,
-   so equip / swap / unequip read as one deliberate act. Desktop keeps the
-   card docked above the panels (see the 960px block below), where the
-   paperdoll it acts on stays in view. */
-.ch-cardscrim {
-  position: fixed; inset: 0; z-index: calc(var(--z-index-modal) + 2);
-  background: rgba(0, 0, 0, .62); backdrop-filter: blur(2px);
-}
-@media (max-width: 959px) {
-  .ch-card {
-    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    width: min(440px, calc(100vw - 48px)); max-height: 80vh; overflow: auto;
-    z-index: calc(var(--z-index-modal) + 3); margin: 0;
-  }
-}
-@media (min-width: 960px) { .ch-cardscrim { display: none; } }
 
 /* slot filter: the active slot's ring turns accent; the rest dim but
    stay focusable */
@@ -1078,7 +1024,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   outline: none; box-shadow: inset 0 0 0 2px var(--accent);
 }
 /* the clip-pathed plates clip the global outline away; same inset ring */
-.ch-close:focus-visible, .ch-card-close:focus-visible, .ch-chestbtn:focus-visible {
+.ch-close:focus-visible, .ch-chestbtn:focus-visible {
   outline: none; box-shadow: inset 0 0 0 2px var(--accent);
 }
 
@@ -1143,13 +1089,6 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
      fire - lives below the sheet; the close plate stays fixed */
   .gf-full .gf-viewport { overflow-y: auto; overflow-x: hidden; display: block; }
   .gf-full .ch-main { margin: auto; width: 100%; padding: 40px 24px; }
-  .gf-full .ch-card {
-    position: fixed; left: 50%; bottom: 48px; transform: translateX(-50%);
-    width: min(640px, calc(100vw - 96px)); margin: 0; z-index: 55;
-    /* short windows: never grow past the frame; scroll inside instead */
-    max-height: calc(100vh - 96px); overflow: auto;
-    filter: drop-shadow(0 12px 40px rgba(0, 0, 0, .5));
-  }
 }
 
 /* chest reveal modal: item pops like the gem award; stat lines stack */
@@ -1277,9 +1216,9 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 
 /* ---- builder lab (/lab/builder): the building workshop ----
    Same integer-zoom centered-canvas frame as the town; control rows
-   extend the dtoy vocabulary. Option buttons are the .cs-reroll recipe
-   with an aria-pressed accent state (the repo has no checkbox/select
-   convention; pressed buttons are the house idiom). */
+   extend the dtoy vocabulary. Option buttons (.bld-opt) are quiet
+   bordered chips with an aria-pressed accent state (toggles, not tabs;
+   pressed buttons are the house idiom). */
 .bld-frame {
   position: relative; margin-top: 24px;
   border: 1px solid var(--border); border-radius: 2px;
@@ -1345,9 +1284,12 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    are DOM overlays positioned in canvas pixels. */
 .vg-frame {
   position: relative; margin-top: 40px;
+  /* capped at the content column: the village reads as part of the same
+     column as the intro above it (three dense rows on desktop), instead
+     of thinning into wide sparse strips */
   --vg-bw: calc(100cqw - 48px);
-  width: min(var(--vg-bw), 960px);
-  margin-left: calc((100% - min(var(--vg-bw), 960px)) / 2);
+  width: min(var(--vg-bw), var(--col, 644px));
+  margin-left: calc((100% - min(var(--vg-bw), var(--col, 644px))) / 2);
 }
 .vg-frame canvas { position: relative; display: block; image-rendering: pixelated; }
 .vg-label {
@@ -1423,27 +1365,9 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .tarot-spread:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
 .tarot-spread .ts-name { font-size: 14px; color: var(--accent); }
 .tarot-spread .ts-desc { font-size: 12px; line-height: 17px; }
-.tarot-ask { width: 100%; display: flex; flex-direction: column; gap: 6px; }
-.tarot-ask .ta-label { font-size: 12px; color: var(--mut); }
-.tarot-ask input {
-  font-family: var(--mono); font-size: 14px; color: var(--fg);
-  background: transparent; border: 1px solid transparent; border-radius: 0;
-  border-bottom-color: var(--border); padding: 6px 0;
-}
-.tarot-ask input::placeholder { color: var(--mut); }
-.tarot-ask input:hover { border-bottom-color: var(--mut); }
-.tarot-ask input:focus { outline: none; border-bottom-color: var(--accent); }
-.tarot-draw {
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 14px; line-height: 16px;
-  padding: 12px 22px; border: 0; cursor: pointer;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
-  clip-path: var(--plate-round-lg);
-  transition: background-color .12s, color .12s;
-}
-.tarot-draw:hover:not(:disabled) { background: var(--accent); color: var(--bg); }
-.tarot-draw:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
-.tarot-draw:disabled { color: var(--mut); cursor: default; }
+.tarot-ask { width: 100%; }
+/* question field is the DS Input (quiet). */
+/* .tarot-draw retired: draw actions are the DS Button (primary). */
 .tarot-note { font-size: 11px; color: var(--mut); }
 
 /* the table: spread slots, then the typed reading */

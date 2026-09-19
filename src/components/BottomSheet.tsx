@@ -13,7 +13,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { BottomSheet as DSBottomSheet } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
-import PixelPortrait from './game/PixelPortrait'
+import PortraitPlate from './game/PortraitPlate'
 import DitherIcon from './DitherIcon'
 import VillageIcon from './village/VillageIcon'
 import { ArrowUpRight } from './icons'
@@ -66,7 +66,7 @@ export default function BottomSheet({
           onClick={onClose}
           aria-label={`Character: ${name}. Open character screen.`}
         >
-          <PixelPortrait seed={avatarSeed} cell={3} />
+          <PortraitPlate seed={avatarSeed} cell={3} small />
           <span className="sheet-char-main">
             <span className="sheet-char-name">{name}</span>
             <span className="sheet-char-lvl">

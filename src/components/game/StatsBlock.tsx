@@ -59,7 +59,7 @@ function StatRow({
   const shown = useCountUp(bonus)
   const changes = preview != null && preview !== bonus
   return (
-    <div className="ch-statrow" title={STAT_FLAVOR[stat]}>
+    <div className="ch-statrow">
       <div className="ch-stat">
         <span>{STAT_NAMES[stat]}</span>
         <span>
