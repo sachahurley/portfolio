@@ -48,12 +48,23 @@ const hexRgb = (h: string): [number, number, number] => [
   parseInt(h.slice(5, 7), 16),
 ]
 
+/** A rewards chip riding a hotspot's label (e.g. chests on the character
+ *  sword). `aria` is the screen-reader phrasing appended to the hotspot. */
+export interface VillageBadge {
+  text: string
+  aria: string
+  accent?: boolean
+}
+
 export default function VillageScene({
   items,
   onNavigate,
+  badges,
 }: {
   items: VillageItem[]
   onNavigate: (href: string) => void
+  /** Keyed by tap href. */
+  badges?: Record<string, VillageBadge>
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -231,26 +242,37 @@ export default function VillageScene({
           if (href) onNavigate(href)
         }}
       />
-      {labels.map((l) => (
-        <div key={l.idx} className="vg-label" style={{ left: l.left, top: l.top }}>
-          {l.text}
-        </div>
-      ))}
-      {spots.map((s) => (
-        <button
-          key={s.idx}
-          type="button"
-          className="vg-hotspot"
-          aria-label={s.aria}
-          style={{ left: s.left, top: s.top, width: s.width, height: s.height }}
-          onFocus={() => apiRef.current?.setActive(s.idx)}
-          onBlur={() => apiRef.current?.setActive(-1)}
-          onClick={() => {
-            const href = apiRef.current?.tapOf(s.idx)
-            if (href) onNavigate(href)
-          }}
-        />
-      ))}
+      {labels.map((l) => {
+        const href = items[l.idx]?.tap?.href
+        const badge = href ? badges?.[href] : undefined
+        return (
+          <div key={l.idx} className="vg-label" style={{ left: l.left, top: l.top }}>
+            {l.text}
+            {badge && (
+              <span className={`vg-badge${badge.accent ? ' lvl' : ''}`}>{badge.text}</span>
+            )}
+          </div>
+        )
+      })}
+      {spots.map((s) => {
+        const href = items[s.idx]?.tap?.href
+        const badge = href ? badges?.[href] : undefined
+        return (
+          <button
+            key={s.idx}
+            type="button"
+            className="vg-hotspot"
+            aria-label={badge ? `${s.aria}, ${badge.aria}` : s.aria}
+            style={{ left: s.left, top: s.top, width: s.width, height: s.height }}
+            onFocus={() => apiRef.current?.setActive(s.idx)}
+            onBlur={() => apiRef.current?.setActive(-1)}
+            onClick={() => {
+              const href = apiRef.current?.tapOf(s.idx)
+              if (href) onNavigate(href)
+            }}
+          />
+        )
+      })}
     </div>
   )
 }

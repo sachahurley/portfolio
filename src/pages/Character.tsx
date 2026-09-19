@@ -49,6 +49,28 @@ const DOLL_GRID: Array<Slot | null> = [
   'ring', 'boots', 'amulet',
 ]
 
+/** The unopened-chest buttons. Rendered twice: in a phone-only strip above
+ *  the grid (chests are what the badge promised, so they lead) and in the
+ *  pack panel at >=720px; CSS shows exactly one of the two. */
+function ChestRow({
+  chests,
+  onOpen,
+}: {
+  chests: SavedChest[]
+  onOpen: (chest: SavedChest, e: MouseEvent<HTMLButtonElement>) => void
+}) {
+  return (
+    <div className="ch-chests">
+      {chests.map((c) => (
+        <button key={c.id} className="ch-chestbtn" onClick={(e) => onOpen(c, e)}>
+          <PixelItem kind="chest" rarity="common" cell={4} />
+          <span>From {chestSourceLabel(c.src)}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function Character() {
   usePageTitle('Character')
   const {
@@ -60,6 +82,8 @@ export default function Character() {
     equipItem,
     unequipSlot,
     logLine,
+    toast,
+    celebrating,
     seenItems,
     markItemSeen,
     activeGem,
@@ -112,18 +136,22 @@ export default function Character() {
   }
 
   // Esc peels one layer at a time: the item card, then the slot filter,
-  // then the screen itself (the reveal modal handles its own Esc).
+  // then the screen itself (the reveal modal handles its own Esc). The
+  // level-up modal and the bottom sheet own Esc while open, so this
+  // handler stands down rather than also peeling a page layer.
   useEffect(() => {
     if (revealed) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
+      if (celebrating) return
+      if (document.querySelector('.sheet.open')) return
       if (selected != null) setSelected(null)
       else if (activeSlot != null) setActiveSlot(null)
       else closePage()
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [selected, activeSlot, revealed, closePage])
+  }, [selected, activeSlot, revealed, celebrating, closePage])
 
   const onSlotClick = (slot: Slot) => {
     if (activeSlot === slot) {
@@ -142,11 +170,13 @@ export default function Character() {
     if (!selectedItem) return
     if (selectedEquipped) {
       unequipSlot(selectedItem.slot)
+      toast(`unequipped the ${selectedItem.name}`)
     } else {
       equipItem(selectedItem.id)
       const el = slotRefs.current[selectedItem.slot]
       if (el) runImpact(el, rarityFx(selectedItem.rarity))
       logLine(`You equip the ${selectedItem.name}.`, 'hint')
+      toast(`equipped the ${selectedItem.name}`)
     }
     setSelected(null)
   }
@@ -169,6 +199,13 @@ export default function Character() {
       >
         <DitherIcon name="close" size={16} />
       </button>
+
+      {chests.length > 0 && (
+        <section className="ch-panel ch-chestbar" aria-label="Chests">
+          <div className="gf-label">chests</div>
+          <ChestRow chests={chests} onOpen={onOpenChest} />
+        </section>
+      )}
 
       <div className="ch-grid ch-grid3">
         <section className="ch-panel ch-col-id" aria-label="Character">
@@ -235,17 +272,10 @@ export default function Character() {
 
         <section className="ch-panel ch-col-loot" aria-label="Pack">
           {chests.length > 0 && (
-            <>
+            <div className="ch-pack-chests">
               <div className="gf-label">chests</div>
-              <div className="ch-chests">
-                {chests.map((c) => (
-                  <button key={c.id} className="ch-chestbtn" onClick={(e) => onOpenChest(c, e)}>
-                    <PixelItem kind="chest" rarity="common" cell={4} />
-                    <span>From {chestSourceLabel(c.src)}</span>
-                  </button>
-                ))}
-              </div>
-            </>
+              <ChestRow chests={chests} onOpen={onOpenChest} />
+            </div>
           )}
 
           <PackGrid

@@ -116,17 +116,41 @@ strong, b { font-weight: 400; }
     calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
     100% 100%, 0 100%
   );
-  transition: color .12s, transform .08s;
+  /* the return from .is-sunk waits .12s so the sheet is mostly down
+     before the notch resurfaces from the band */
+  transition: color .12s, transform .26s steps(5) .12s;
+}
+/* sheet open: the notch sinks below the screen edge (its straight bottom
+   already merges with the stonework, so it reads as diving into the band)
+   while the sheet's own Close notch rises in its place. Stepped travel,
+   like the toast, so the plate hops on the pixel grid. */
+.gf-tab.is-sunk {
+  transform: translateX(-50%) translateY(calc(100% + 24px + env(safe-area-inset-bottom, 0px)));
+  visibility: hidden; pointer-events: none;
+  /* below the scrim and sheet while it sinks, so the rising sheet passes
+     over it instead of the tab floating on the sheet's footer */
+  z-index: 73;
+  transition: transform .26s steps(5), visibility 0s .26s;
 }
 .gf-tab::before {
   content: ""; position: absolute; inset: 1px; z-index: -1;
-  background: var(--color-sepia-800, #474030);
+  /* the notch is a cut-out of the page, so its fill is the page ground
+     (--bg never re-themes); hover lifts to the stone it used to wear */
+  background: var(--bg);
   clip-path: inherit;
   transition: background-color .12s;
 }
-.gf-tab:hover::before { background: var(--color-sepia-700, #695f4d); }
-/* pressed into the stone: the notch sinks, keeping its centring transform */
-.gf-tab:active { transform: translateX(-50%) translateY(2px); }
+.gf-tab:hover::before { background: var(--color-sepia-800, #474030); }
+/* pressed into the stone: the notch sinks, keeping its centring transform
+   (its own fast transition so the press never rides the sink timing) */
+.gf-tab:active { transform: translateX(-50%) translateY(2px); transition: transform .06s; }
+/* rewards-waiting pip on the menu notch: accent for a pending level-up,
+   bone (the chest badge color) for unopened chests */
+.gf-tab-dot {
+  position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+  background: var(--rar-common); pointer-events: none;
+}
+.gf-tab-dot.lvl { background: var(--accent); }
 .tip {
   position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   z-index: var(--z-index-sticky); background: var(--fg); color: var(--bg);
@@ -262,19 +286,19 @@ strong, b { font-weight: 400; }
 .menu-note { font-size: 11px; color: var(--mut2); width: 100%; text-align: center; margin-top: 10px; }
 
 /* ---- layout — narrow column, emil-style rhythm ---- */
-.mn-main { position: relative; max-width: var(--col); margin: 0 auto; padding: 96px 24px 160px; }
+/* top padding = the 48px back-plate line + the 40px plate + a 24px spacer,
+   so titles clear the floating back button with real air on every page */
+.mn-main { position: relative; max-width: var(--col); margin: 0 auto; padding: 112px 24px 160px; }
 /* phones: wider side margins so text never runs up against the stonework.
    The back plate is defined further down, so it needs the extra specificity
    to follow the column in. */
 @media (max-width: 600px) {
   .mn-main { padding-left: 32px; padding-right: 32px; }
-  /* 26 = 32 column edge minus the tap target's 6px ring, plate stays at 32 */
-  .mn-main .pageback { left: 26px; }
+  .mn-main .pageback { left: 32px; }
 }
-/* Home starts at the back-plate line (the visible plate sits at 48px;
-   the .pageback button is 6px higher, that's just its transparent tap
-   ring): with no plate of its own, matching the plate's start keeps the
-   top gap equal across every page instead of reading as a lower start. */
+/* Home starts at the back-plate line (.pageback sits at top: 48px): with
+   no plate of its own, matching the plate's start keeps the top gap equal
+   across every page instead of reading as a lower start. */
 .mn-main.flush-top { padding-top: 48px; }
 
 .intro { display: block; }
@@ -291,29 +315,21 @@ strong, b { font-weight: 400; }
 .mn-block { margin-top: 64px; }
 @media (min-width: 640px) { .mn-block { margin-top: 128px; } }
 .label { font-size: 16px; font-weight: 400; color: var(--fg); margin: 0 0 16px; text-transform: capitalize; }
-/* detail-page back button: a 28px plate with the shared pixel-round
-   silhouette (16px icon + 6px padding, matching the corner inset). It
+/* detail-page back button: a 40px plate with the shared pixel-round
+   silhouette (16px icon core, 12px ring), sized as its own touch target
+   rather than the 28px compact tier the in-content buttons use. It
    floats in the content column's top padding rather than taking a row of
    its own, so the page title starts at the same height whether or not a
-   page has one (Home has none). The button itself is a transparent
-   40x40 tap target around the plate (clip-path clips hit-testing, so the
-   silhouette lives on the inner .pageback-plate); the 6px ring means the
-   plate still renders at the 48px/24px anchor other rules key off. */
+   page has one (Home has none). */
 .pageback {
-  position: absolute; top: 42px; left: 18px;
+  position: absolute; top: 48px; left: 24px;
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 40px; flex: none; padding: 0; border: 0; cursor: pointer;
-  background: none; color: var(--accent);
-}
-.pageback-plate {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; flex: none;
-  background: var(--color-sepia-925, #221e13);
+  background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
 }
-.pageback:hover { color: var(--bg); }
-.pageback:hover .pageback-plate { background: var(--accent); }
+.pageback:hover { background: var(--accent); color: var(--bg); }
 /* detail-page prev/next pager: richer cousins of the menu buttons — the
    same pixel-round plate silhouette with a sepia-925 fill (no outline),
    one step above the sepia-950 page bg so it barely parts from the page;
@@ -405,15 +421,11 @@ a.item .t { color: var(--accent); }
 .platebtn:hover { background: var(--accent); color: var(--bg); }
 /* clip-path swallows the global outside focus ring on plate-clipped
    controls; paint an inset ring within the silhouette instead */
-.platebtn:focus-visible, .pgbtn:focus-visible,
+.pageback:focus-visible, .platebtn:focus-visible, .pgbtn:focus-visible,
 .gf-tab:focus-visible, a.item:focus-visible, .gf-dest:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
-/* the back button's ring paints on the inner plate, not the invisible
-   40px tap target, so focus reads the same as the other plate buttons */
-.pageback:focus-visible { outline: none; }
-.pageback:focus-visible .pageback-plate { box-shadow: inset 0 0 0 2px var(--accent); }
 
 /* lab demo */
 /* tile atlas (/lab/tile-atlas): the sprite grid is the only part of that
@@ -501,7 +513,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
      plate fill clipped by the same polygon 1px inside, since a border
      would be sliced by the clip-path (the .em-card recipe) */
   background: var(--border); clip-path: var(--plate-round);
-  padding: 10px 12px;
+  padding: 14px 14px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   /* rises from below the bottom edge and drops back out the same way:
      no fade, so it reads as a physical plate. The travel is stepped
@@ -536,8 +548,12 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 }
 .gem-socket.active { background: var(--accent); }
 .gem-socket.empty { cursor: default; }
-.track-gem { cursor: grab; touch-action: none; }
+/* earned sockets are real buttons (tap/Enter wears the gem; drag is the
+   flourish): reset the UA button chrome, keep the socket recipe */
+.track-gem { cursor: grab; touch-action: none; border: 0; font: inherit; }
 .track-gem:active { cursor: grabbing; }
+.track-gem:focus-visible { outline: none; }
+.track-gem:focus-visible .gem-socket-in { box-shadow: inset 0 0 0 2px var(--accent); }
 .gem-art { display: block; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)); }
 .gem-socket.empty .gem-art { filter: none; }
 /* grip: a real, grabbable 2x3 dot grid below the gem (box-shadow dots have no hit area) */
@@ -676,7 +692,9 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
   .gframe {
     position: fixed; inset: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(240px, 24vw, 320px);
+    /* the side track is auto: the column carries its own width, so the
+       collapse can animate it shut (grid tracks don't transition) */
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: minmax(0, 1fr);
     grid-template-areas: 'viewport side';
     background: var(--bg);
@@ -685,21 +703,43 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
     padding: 16px;
   }
   .gf-viewport { grid-area: viewport; overflow-y: auto; overflow-x: hidden; min-width: 0; }
-  .gf-side { grid-area: side; display: flex; flex-direction: column; min-height: 0; border-left: 2px solid var(--border); }
+  .gf-side {
+    grid-area: side; display: flex; flex-direction: column; min-height: 0;
+    border-left: 2px solid var(--border);
+    width: clamp(240px, 24vw, 320px);
+    transition: width .28s ease, border-color .28s ease;
+  }
+  /* collapsed: the column squeezes shut; the seam fades with it. Content
+     is clipped, not squished: .gf-side-in clips, .gf-side-fix holds the
+     open width, so panels slide right behind the frame edge and the log
+     keeps its scroll for the reopen. */
+  .gf-side.is-closed { width: 0; border-left-color: transparent; }
+  .gf-side-in { flex: 1; min-height: 0; overflow: hidden; }
+  .gf-side-fix {
+    width: clamp(240px, 24vw, 320px); height: 100%; min-height: 0;
+    display: flex; flex-direction: column;
+  }
   /* log lives beneath the compass: fills the leftover column height,
      scrolls internally, newest line pinned by MessageLog's auto-scroll */
   .gf-log { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 16px 20px; }
   /* the log replaces toasts on desktop, and the compass replaces the
      floating dock: one nav surface per breakpoint */
   #toaster { display: none; }
+  /* the character screen unmounts the message log's column, so toasts
+     come back as its feedback channel there: a plate near the close
+     corner instead of the mobile full-width band */
+  .gf-full #toaster {
+    display: block; left: auto; right: 40px; bottom: 40px;
+    width: min(440px, calc(100vw - 80px));
+  }
   .gf-tab { display: none; }
   /* collapsible side column: a drawer-pull tab grown out of the seam (the
      column's 2px left border) at mid-height — 18px wide so it covers the
      border behind it, corners notched on its outer (left) side only, so
-     the straight side merges into the line. Clicking sets gframe.gf-noside,
-     which drops the column from the grid so the viewport takes the full
-     width; .gf-expand is the same tab waiting at the frame's right edge
-     (flush against the stone band) to pull the column back out. */
+     the straight side merges into the line. It hangs off the column's
+     left edge, so as the width animates shut the same tab rides the
+     moving seam and ends up waiting at the frame's right edge to pull
+     the column back out. */
   .gf-side { position: relative; }
   .gf-collapse {
     display: inline-flex; align-items: center; justify-content: center;
@@ -718,13 +758,14 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
   }
   .gf-collapse::before {
     content: ""; position: absolute; inset: 1px; z-index: -1;
-    background: var(--color-sepia-800, #474030);
+    /* page-ground fill, matching the mobile menu notch (see .gf-tab) */
+    background: var(--bg);
     clip-path: inherit;
     transition: background-color .12s;
   }
-  .gf-collapse:hover::before { background: var(--color-sepia-700, #695f4d); }
-  .gf-noside { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'viewport'; }
-  .gf-expand { left: auto; right: 16px; z-index: 65; }
+  .gf-collapse:hover::before { background: var(--color-sepia-800, #474030); }
+  /* clears the stone band when the tab parks at the frame edge */
+  .gf-collapse { z-index: 65; }
 }
 
 /* right column panels */
@@ -926,7 +967,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .cs-lvl { font-size: 12px; color: var(--body); }
 .cs-levelup {
   font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--bg); background: var(--accent); border: 0; padding: 6px 10px; cursor: pointer;
+  color: var(--bg); background: var(--accent); border: 0; padding: 10px 12px; cursor: pointer;
 }
 @media (prefers-reduced-motion: no-preference) { .cs-levelup { animation: gf-pulse 1.6s ease-in-out infinite; } }
 .cs-picker {
@@ -937,7 +978,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .cs-cand:hover { border-color: var(--accent); }
 .cs-reroll {
   font-family: var(--mono); font-size: 12px; color: var(--body);
-  background: transparent; border: 1px solid var(--border); padding: 8px 12px; cursor: pointer;
+  background: transparent; border: 1px solid var(--border); padding: 12px 14px; cursor: pointer;
 }
 .cs-reroll:hover { color: var(--fg); border-color: var(--mut); }
 
@@ -1039,6 +1080,12 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 
 /* chest row */
 .ch-chests { display: flex; flex-wrap: wrap; gap: 10px; }
+/* phones: chests get their own strip above the fold (the badge that led
+   the visitor here promised them); the copy inside the pack panel hides.
+   At >=720px the strip hides and the pack panel copy is the only one. */
+.ch-chestbar { margin-bottom: 16px; }
+@media (min-width: 720px) { .ch-chestbar { display: none; } }
+@media (max-width: 719px) { .ch-pack-chests { display: none; } }
 .ch-chestbtn {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   padding: 10px 12px; background: var(--hover); border: 0; clip-path: var(--notch4);
@@ -1085,8 +1132,15 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   content: ""; position: absolute; inset: 2px; z-index: -1;
   background: var(--bg); clip-path: var(--plate-round-lg);
 }
-.ch-card-name { font-size: 16px; }
-.ch-card-meta { font-size: 12px; color: var(--mut); margin: 4px 0 10px; }
+/* the body must be allowed to shrink inside the flex row, or a long
+   unique name pushes past the card edge; names wrap, the meta line
+   (rarity · base · slot fragments) ellipsizes */
+.ch-card-body { min-width: 0; }
+.ch-card-name { font-size: 16px; overflow-wrap: break-word; }
+.ch-card-meta {
+  font-size: 12px; color: var(--mut); margin: 4px 0 10px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .ch-card-stats { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--body); }
 /* dialog action, matching the reward modals' .em-btn */
 .ch-btn {
@@ -1103,7 +1157,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    in the header band */
 .ch-card-close {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; padding: 0; border: 0; cursor: pointer; flex: none;
+  width: 44px; height: 44px; padding: 0; border: 0; cursor: pointer; flex: none;
   background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
@@ -1113,8 +1167,10 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* ---- character screen: compare card, slot filter, pack, stats ---- */
 /* compare card: selected item beside the worn one, action below both */
 .ch-compare { display: grid; grid-template-columns: 1fr; gap: 20px; }
-@media (min-width: 720px) {
-  /* side by side, split by a rule rather than a gap alone */
+@media (min-width: 960px) {
+  /* side by side, split by a rule rather than a gap alone. Desktop only:
+     below 960 the card is the 440px centered modal, where two columns
+     would leave ~176px per item, so the compare stacks there. */
   .ch-card.is-compare .ch-compare { grid-template-columns: 1fr 1fr; gap: 0; }
   .ch-card.is-compare .ch-cardside:first-child { padding-right: 24px; }
   .ch-card.is-compare .ch-cardside + .ch-cardside {
@@ -1157,6 +1213,10 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .ch-main .is-dim { opacity: .25; }
 /* clip-path swallows the global focus outline; draw it inside instead */
 .ch-slot:focus-visible, .ch-invbtn:focus-visible {
+  outline: none; box-shadow: inset 0 0 0 2px var(--accent);
+}
+/* the clip-pathed plates clip the global outline away; same inset ring */
+.ch-close:focus-visible, .ch-card-close:focus-visible, .ch-chestbtn:focus-visible {
   outline: none; box-shadow: inset 0 0 0 2px var(--accent);
 }
 
@@ -1207,7 +1267,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .ch-close {
   position: fixed; top: calc(24px + env(safe-area-inset-top, 0px)); right: 24px; z-index: 65;
   display: inline-flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px; padding: 0; border: 0; cursor: pointer;
+  width: 44px; height: 44px; padding: 0; border: 0; cursor: pointer;
   background: var(--color-sepia-925, #221e13); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
@@ -1224,6 +1284,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   .gf-full .ch-card {
     position: fixed; left: 50%; bottom: 48px; transform: translateX(-50%);
     width: min(640px, calc(100vw - 96px)); margin: 0; z-index: 55;
+    /* short windows: never grow past the frame; scroll inside instead */
+    max-height: calc(100vh - 96px); overflow: auto;
     filter: drop-shadow(0 12px 40px rgba(0, 0, 0, .5));
   }
 }
@@ -1437,6 +1499,10 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   font-family: var(--mono); font-size: 12px; line-height: 1;
   color: var(--body); white-space: nowrap; pointer-events: none;
 }
+/* rewards badge riding a hotspot label (the character sword): the
+   character strip's badge colors at label scale */
+.vg-badge { margin-left: 6px; font-size: 11px; color: var(--rar-common); }
+.vg-badge.lvl { color: var(--accent); }
 .vg-hotspot {
   position: absolute; padding: 0; margin: 0;
   background: none; border: none; appearance: none;

@@ -13,8 +13,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useXp } from '../context/XpProvider'
 
-const HOLD_MS = 2200
-const DONE_MS = 2500
+const HOLD_MS = 3200
+const DONE_MS = 3500
 
 export default function Toaster() {
   const { toasts, removeToast } = useXp()
@@ -49,8 +49,15 @@ export default function Toaster() {
   const total = xp.reduce((sum, t) => sum + (t.amount ?? 0), 0)
   // Fragments actually shown: the first XP reason and the first plain
   // message (shortened to its lead clause when riding an XP line, so
-  // "found a chest · open it..." reads as "found a chest").
-  const plainMsg = plain.length ? (xp.length ? plain[0].msg.split(' · ')[0] : plain[0].msg) : null
+  // "found a chest · open it..." reads as "found a chest"). Sentence
+  // case: only the line's first fragment is capitalized, so a plain
+  // message leading the line caps up and stays lowercase mid-line.
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+  const plainMsg = plain.length
+    ? xp.length
+      ? plain[0].msg.split(' · ')[0]
+      : cap(plain[0].msg)
+    : null
   const more = toasts.length - (xp.length ? 1 : 0) - (plain.length ? 1 : 0)
 
   return (
@@ -59,7 +66,7 @@ export default function Toaster() {
         <div className={`toast${show ? ' show' : ''}`}>
           {xp.length > 0 && (
             <>
-              <span className="toast-xp">+{total} xp</span>
+              <span className="toast-xp">+{total} XP</span>
               {' · '}
               {xp[0].msg}
             </>
