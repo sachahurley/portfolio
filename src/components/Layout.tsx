@@ -58,7 +58,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div
-      className={`gframe${fullPage ? ' gf-full' : ''}${!fullPage && sideCollapsed ? ' gf-noside' : ''} bg-[var(--surface-page)] transition-colors`}
+      className={`gframe${fullPage ? ' gf-full' : ''} bg-[var(--surface-page)] transition-colors`}
     >
       {/* Adventure viewport - where Home, Quest Log, Library, etc. render */}
       <main className="gf-viewport" id="gf-viewport">
@@ -66,36 +66,32 @@ export default function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Right column: navigation, narration, and the visitor's character.
-          Collapsible (desktop only, where it exists): a drawer-pull tab
-          rides the seam at mid-height; collapsed, the same tab waits at
-          the frame's right edge to pull the column back out. */}
-      {!fullPage && !sideCollapsed && (
-        <aside className="gf-side" id="gf-side">
+          Collapsible (desktop only, where it exists): the column stays
+          mounted and its width animates shut (content clipped at fixed
+          width, so nothing squishes and the log keeps its scroll). The
+          drawer-pull tab hangs off the column's left edge, so it rides the
+          moving seam and ends up waiting at the frame's right edge — one
+          tab for both directions. */}
+      {!fullPage && (
+        <aside className={`gf-side${sideCollapsed ? ' is-closed' : ''}`} id="gf-side">
           <button
             type="button"
             className="gf-collapse"
             onClick={toggleSide}
-            aria-label="Collapse side panel"
-            aria-expanded="true"
+            aria-label={sideCollapsed ? 'Expand side panel' : 'Collapse side panel'}
+            aria-expanded={!sideCollapsed}
             aria-controls="gf-side"
           >
-            <span aria-hidden="true">›</span>
+            <span aria-hidden="true">{sideCollapsed ? '‹' : '›'}</span>
           </button>
-          <Compass />
-          <MessageLog />
-          <CharacterStrip />
+          <div className="gf-side-in">
+            <div className="gf-side-fix">
+              <Compass />
+              <MessageLog />
+              <CharacterStrip />
+            </div>
+          </div>
         </aside>
-      )}
-      {!fullPage && sideCollapsed && (
-        <button
-          type="button"
-          className="gf-collapse gf-expand"
-          onClick={toggleSide}
-          aria-label="Expand side panel"
-          aria-expanded="false"
-        >
-          <span aria-hidden="true">‹</span>
-        </button>
       )}
 
       {/* The welcome screen's jeweled stone frame, pinned around the

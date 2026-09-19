@@ -28,7 +28,7 @@ import { itemBmp, trim, type Bitmap, type VillageItem } from './villageKit'
 const NAV_ICONS = {
   home: { house: { storeys: ['wall_5', 'upper_5'], roof: 'roof_2' } },
   projects: { part: 'hammer_icon' },
-  lab: { part: 'brain' },
+  lab: { part: 'potion' },
   notes: { part: 'quill' },
   about: { part: 'skull' },
 } satisfies Record<string, VillageItem>

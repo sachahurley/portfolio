@@ -44,7 +44,7 @@ export const VILLAGE_HOME: VillageItem[] = [
   { tree: { canopy: 'canopy_pine', trunk: 'trunk_stump', height: 2 } },
   { part: 'mushroom', gap: 2 },
   {
-    part: 'brain',
+    part: 'potion',
     lift: 3,
     tap: { label: 'Lab', href: '/lab', style: 'invert' },
   },

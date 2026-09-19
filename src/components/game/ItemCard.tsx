@@ -13,7 +13,7 @@
  * something else) or Unequip (viewing the worn item).
  */
 
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import {
   RARITY_LABELS,
   SLOT_LABELS,
@@ -84,11 +84,64 @@ export default function ItemCard({
   const selectedStats = STAT_IDS.filter((s) => has(item)(s) || (equipped != null && has(equipped)(s)))
   const label = isEquipped ? 'Unequip' : equipped ? 'Swap' : 'Equip'
 
+  // Below 960px the card is a true modal over a scrim; above, a floating
+  // panel. aria-modal and the focus trap follow that same breakpoint.
+  const [modal, setModal] = useState(() => window.matchMedia('(max-width: 959px)').matches)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 959px)')
+    const onChange = () => setModal(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  // Move focus into the card when it opens, back to the opener on close.
+  const cardRef = useRef<HTMLElement>(null)
+  const prevFocusRef = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    prevFocusRef.current = document.activeElement as HTMLElement | null
+    cardRef.current?.focus()
+    return () => {
+      prevFocusRef.current?.focus()
+      prevFocusRef.current = null
+    }
+  }, [])
+
+  // Modal mode only: keep Tab inside the card (the page behind is dimmed).
+  const onTrapKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (!modal || e.key !== 'Tab') return
+    const root = cardRef.current
+    if (!root) return
+    const focusables = root.querySelectorAll<HTMLElement>(
+      'button, [href], [tabindex]:not([tabindex="-1"])'
+    )
+    if (!focusables.length) return
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    const active = document.activeElement
+    if (e.shiftKey) {
+      if (active === first || active === root) {
+        e.preventDefault()
+        last.focus()
+      }
+    } else if (active === last) {
+      e.preventDefault()
+      first.focus()
+    }
+  }
+
   return (
     <>
       {/* phones only (CSS): the page dims behind the card */}
       <div className="ch-cardscrim" onClick={onClose} aria-hidden="true" />
-      <aside className={`ch-card${equipped ? ' is-compare' : ''}`} aria-label="Item details">
+      <aside
+        ref={cardRef}
+        className={`ch-card${equipped ? ' is-compare' : ''}`}
+        role="dialog"
+        aria-modal={modal || undefined}
+        aria-label="Item details"
+        tabIndex={-1}
+        onKeyDown={onTrapKeyDown}
+      >
         <div className="em-head">
           {/* comparing two items is its own act; a single item keeps its slot */}
           <span className="em-kicker">{equipped ? 'Compare' : SLOT_LABELS[item.slot]}</span>

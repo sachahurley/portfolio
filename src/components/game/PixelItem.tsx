@@ -39,8 +39,9 @@ export default function PixelItem({
       tint={RARITY_COLORS[rarity]}
       className={className}
       // the baked shift centers the glyph's ink in the tile box; purely
-      // visual, so the layout box stays where the grid put it
-      style={{ display: 'block', transform: `translate(${dx * cell}px, ${dy * cell}px)` }}
+      // visual, so the layout box stays where the grid put it. Shifts come
+      // in half sheet px; round to whole screen px to stay crisp.
+      style={{ display: 'block', transform: `translate(${Math.round(dx * cell)}px, ${Math.round(dy * cell)}px)` }}
     />
   )
 }

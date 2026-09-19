@@ -766,26 +766,24 @@ export const CATALOG: VillagePart[] = [
   ]
  },
  {
-  "name": "brain",
-  "w": 17,
-  "h": 14,
+  "name": "potion",
+  "w": 11,
+  "h": 12,
   "cat": "prop",
   "kind": "sprite",
   "rows": [
-   "....XXXX.XXXX....",
-   "..XXHXXX.XXXXXX..",
-   ".XXX.XXX.XXX.XXX.",
-   ".XXXXXXX.XXXXXXX.",
-   "XXX.XXXX.XXXX.XXX",
-   "XXXXXX.X.X.XXXXXX",
-   "XXXXHXXX.XXXXXXXX",
-   "XX.XXXXX.XXXXX.XX",
-   "XXXXX.XX.XX.XHXXX",
-   ".XXXXXXX.XXXXXXX.",
-   ".XX.XXXX.XXXX.XX.",
-   "..XXXXXX.XXXXXX..",
-   "...XXXX...XXXX...",
-   ".....XX...XX....."
+   "....XXX....",
+   "....XXX....",
+   "...XXXXX...",
+   "H..X...X..H",
+   "..XX...XX..",
+   ".X.......X.",
+   "X.........X",
+   "XHHHHHHHHHX",
+   "XHH.HHHHHHX",
+   "XHHHHHH.HHX",
+   ".XHHHHHHHX.",
+   "..XXXXXXX.."
   ]
  },
  {

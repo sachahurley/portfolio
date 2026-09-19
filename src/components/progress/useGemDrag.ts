@@ -46,8 +46,10 @@ export function useGemDrag(opts: {
   fireApiRef: RefObject<PixelFireHandle | null>
   onDrop: (id: ThemeId) => void
   toast: (msg: string) => void
+  /** A press released without a real drag (tap/click); wear the gem directly. */
+  onTap?: (id: ThemeId) => void
 }) {
-  const { fireApiRef, onDrop, toast } = opts
+  const { fireApiRef, onDrop, toast, onTap } = opts
   const dragRef = useRef<DragState | null>(null)
   const busyRef = useRef(false)
 
@@ -114,6 +116,15 @@ export function useGemDrag(opts: {
       const fr = fireRect()
       const cloneTop = parseFloat(clone.style.top)
       const hitFire = mode === 'hit'
+
+      // a press released in place (not a cancel) is a tap, not a drag
+      const moved = Math.hypot(parseFloat(clone.style.left) - home.left, cloneTop - home.top)
+      if (!mode && moved < 6 && e.type !== 'pointercancel' && onTap) {
+        clone.remove()
+        restoreSlot()
+        onTap(id)
+        return
+      }
 
       if (!mode || !fr) {
         // snap back to the slot
@@ -186,7 +197,7 @@ export function useGemDrag(opts: {
       }, fallMs)
       finish(fallMs, fallMs + 200)
     },
-    [dropMode, fireApiRef, fireRect, onDrop, onMove, toast]
+    [dropMode, fireApiRef, fireRect, onDrop, onMove, onTap, toast]
   )
   useEffect(() => {
     onUpRef.current = onUp

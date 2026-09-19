@@ -112,7 +112,9 @@ const centerShift = (col, row) => {
     }
   }
   if (maxX < 0) return [0, 0] // empty tile: nothing to center
-  return [Math.round((TILE - 1 - minX - maxX) / 2), Math.round((TILE - 1 - minY - maxY) / 2)]
+  // Exact, so glyphs with asymmetric margins get a half-pixel shift (a 9px
+  // glyph in a 12px tile); the renderer rounds to whole *screen* px.
+  return [(TILE - 1 - minX - maxX) / 2, (TILE - 1 - minY - maxY) / 2]
 }
 const entryFor = (id) => {
   const [x, y] = cellFor(id)
@@ -144,7 +146,7 @@ fs.writeFileSync(
 import type { Slot } from './loot'
 
 /** A piece of gear's art: sheet cell [col, row] plus the [dx, dy] shift
- *  (sheet px) that visually centers its ink in the tile box. */
+ *  (sheet px, half-pixel steps) that centers its ink in the tile box. */
 export type GearTile = readonly [number, number, number, number]
 
 /** Per slot, its base types' art in base-index order. */

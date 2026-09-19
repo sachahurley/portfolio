@@ -2,19 +2,19 @@
 import type { Slot } from './loot'
 
 /** A piece of gear's art: sheet cell [col, row] plus the [dx, dy] shift
- *  (sheet px) that visually centers its ink in the tile box. */
+ *  (sheet px, half-pixel steps) that centers its ink in the tile box. */
 export type GearTile = readonly [number, number, number, number]
 
 /** Per slot, its base types' art in base-index order. */
 export const GEAR_TILES: Record<Slot, ReadonlyArray<GearTile>> = {
-  helm: [[39, 12, 0, 0] /* Dome Helm */, [38, 12, 0, 0] /* Horned Helm */, [40, 12, 0, 0] /* Bucket Helm */, [41, 12, 0, 0] /* Great Helm */, [8, 30, 0, -1] /* Feathered Hat */, [26, 23, 0, 1] /* Crown */],
-  weapon: [[36, 6, 1, 0] /* Short Sword */, [26, 6, 0, 0] /* Broadsword */, [34, 6, 0, 1] /* Katana */, [44, 6, 1, 0] /* Dagger */, [26, 9, 0, 0] /* Battle Axe */, [26, 7, 0, 0] /* Mace */, [42, 13, 0, 0] /* Staff */, [28, 8, 0, 0] /* Spear */, [26, 10, 0, 0] /* Bow */],
-  armor: [[0, 26, 0, 0] /* Tunic */, [4, 26, 0, 0] /* Scale Mail */, [15, 26, 0, -1] /* Chainmail */, [16, 26, 0, -1] /* Plate */, [13, 28, 0, 0] /* Robe */, [20, 28, 0, 0] /* Mantle */],
-  shield: [[26, 12, 0, 0] /* Heater Shield */, [28, 12, 0, 0] /* Round Shield */, [27, 12, 0, 0] /* Tower Shield */],
-  ring: [[11, 43, 0, 0] /* Band */, [12, 43, 0, 0] /* Signet */, [13, 43, 0, 0] /* Seal Ring */, [11, 44, 0, 0] /* Gemmed Ring */, [13, 44, 0, 0] /* Loop */],
-  boots: [[5, 29, 0, 0] /* Boots */, [6, 29, 0, 0] /* Sturdy Boots */, [12, 29, -1, 0] /* Tall Boots */, [13, 29, 0, -1] /* Greaves */],
-  amulet: [[0, 43, 0, 0] /* Amulet */, [2, 43, 0, 0] /* Talisman */, [0, 44, 0, 0] /* Pendant */, [2, 44, 0, 1] /* Charm */, [6, 44, 0, 0] /* Medallion */, [37, 23, 1, 0] /* Necklace */],
+  helm: [[39, 12, -0.5, -0.5] /* Dome Helm */, [38, 12, -0.5, -0.5] /* Horned Helm */, [40, 12, 0, 0] /* Bucket Helm */, [41, 12, -0.5, 0] /* Great Helm */, [8, 30, 0, -1.5] /* Feathered Hat */, [26, 23, 0, 0.5] /* Crown */],
+  weapon: [[36, 6, 0.5, -0.5] /* Short Sword */, [26, 6, 0, 0] /* Broadsword */, [34, 6, 0, 0.5] /* Katana */, [44, 6, 0.5, -0.5] /* Dagger */, [26, 9, 0, 0] /* Battle Axe */, [26, 7, 0, 0] /* Mace */, [42, 13, 0, 0] /* Staff */, [28, 8, 0, 0] /* Spear */, [26, 10, 0, 0] /* Bow */],
+  armor: [[0, 26, -0.5, -0.5] /* Tunic */, [4, 26, 0, -0.5] /* Scale Mail */, [15, 26, -0.5, -1] /* Chainmail */, [16, 26, -0.5, -1] /* Plate */, [13, 28, -0.5, 0] /* Robe */, [20, 28, -0.5, 0] /* Mantle */],
+  shield: [[26, 12, 0, 0] /* Heater Shield */, [28, 12, -0.5, -0.5] /* Round Shield */, [27, 12, 0, 0] /* Tower Shield */],
+  ring: [[11, 43, 0, -0.5] /* Band */, [12, 43, 0, 0] /* Signet */, [13, 43, 0, -0.5] /* Seal Ring */, [11, 44, 0, 0] /* Gemmed Ring */, [13, 44, 0, 0] /* Loop */],
+  boots: [[5, 29, 0, 0] /* Boots */, [6, 29, 0, 0] /* Sturdy Boots */, [12, 29, -1, 0] /* Tall Boots */, [13, 29, -0.5, -1] /* Greaves */],
+  amulet: [[0, 43, -0.5, 0] /* Amulet */, [2, 43, -0.5, 0] /* Talisman */, [0, 44, -0.5, -0.5] /* Pendant */, [2, 44, -0.5, 0.5] /* Charm */, [6, 44, 0, 0] /* Medallion */, [37, 23, 0.5, -0.5] /* Necklace */],
 }
 
 /** The loot chest icon. */
-export const CHEST_TILE: GearTile = [26, 19, 0, -1]
+export const CHEST_TILE: GearTile = [26, 19, -0.5, -1.5]
