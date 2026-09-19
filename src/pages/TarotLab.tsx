@@ -14,6 +14,7 @@
  */
 
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import { Button, Input } from '@scorp-ds/components'
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
 import TarotCardView from '../components/tarot/TarotCardView'
@@ -269,19 +270,20 @@ export default function TarotLab() {
               </button>
             ))}
           </div>
-          <label className="tarot-ask">
-            <span className="ta-label">A question for the cards (optional)</span>
-            <input
+          <div className="tarot-ask">
+            <Input
+              variant="quiet"
+              label="A question for the cards (optional)"
               type="text"
               value={question}
               maxLength={QUESTION_MAX}
               placeholder="Ask, or let the cards decide."
               onChange={(e) => setQuestion(e.target.value)}
             />
-          </label>
-          <button type="button" className="tarot-draw" onClick={begin} disabled={cooldownLeft > 0}>
+          </div>
+          <Button variant="primary" onClick={begin} disabled={cooldownLeft > 0}>
             {cooldownLeft > 0 ? `The deck rests (${Math.ceil(cooldownLeft / 1000)}s)` : 'Draw the cards'}
-          </button>
+          </Button>
           <p className="tarot-note">For insight and entertainment; the walking is still yours.</p>
         </section>
       )}
@@ -352,14 +354,13 @@ export default function TarotLab() {
 
           {status === 'done' && (
             <div className="tarot-again">
-              <button
-                type="button"
-                className="tarot-draw"
+              <Button
+                variant="primary"
                 onClick={() => dispatch({ type: 'reset' })}
                 disabled={cooldownLeft > 0}
               >
                 {cooldownLeft > 0 ? `The deck rests (${Math.ceil(cooldownLeft / 1000)}s)` : 'Ask again'}
-              </button>
+              </Button>
             </div>
           )}
         </section>

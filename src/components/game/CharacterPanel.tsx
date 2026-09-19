@@ -10,7 +10,8 @@ import { useState } from 'react'
 import { useXp } from '../../context/XpProvider'
 import { randomSeed } from '../../game/names'
 import PixelPortrait from './PixelPortrait'
-import { Input } from '@scorp-ds/components'
+import PortraitPlate from './PortraitPlate'
+import { Button, Input } from '@scorp-ds/components'
 
 const rollCandidates = () => Array.from({ length: 8 }, () => randomSeed())
 
@@ -49,7 +50,7 @@ export default function CharacterPanel() {
           aria-label="Change avatar"
           title="Change avatar"
         >
-          <PixelPortrait seed={avatarSeed} cell={4} />
+          <PortraitPlate seed={avatarSeed} cell={4} />
         </button>
 
         <div className="cs-id">
@@ -106,9 +107,9 @@ export default function CharacterPanel() {
               <PixelPortrait seed={s} cell={3} />
             </button>
           ))}
-          <button className="cs-reroll" onClick={() => setCandidates(rollCandidates())}>
+          <Button variant="ghost" size="small"  onClick={() => setCandidates(rollCandidates())}>
             ↻ Reroll
-          </button>
+          </Button>
         </div>
       )}
     </section>

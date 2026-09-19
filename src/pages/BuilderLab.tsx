@@ -357,21 +357,19 @@ export default function BuilderLab() {
           {slider('w', target.w, lim.w, (v) => editTarget({ w: v }), 'Width or span in tiles')}
           {slider('d', target.d, lim.d, (v) => editTarget({ d: v }), 'Depth in tiles')}
           {slider('h', target.h, lim.h, (v) => editTarget({ h: v }), 'Height')}
-          <button
-            type="button"
-            className="cs-reroll"
+          <Button variant="ghost" size="small"
+            
             onClick={() => editTarget({ seed: Math.floor(Math.random() * 10000) })}
           >
             reroll texture
-          </button>
+          </Button>
         </div>
 
         {mode === 'scene' && selected != null && (
           <div className="bld-row">
             <span className="bld-row-label">selected</span>
-            <button
-              type="button"
-              className="cs-reroll"
+            <Button variant="ghost" size="small"
+              
               onClick={() =>
                 clearSelectionAnd((s) => ({
                   ...s,
@@ -380,10 +378,9 @@ export default function BuilderLab() {
               }
             >
               delete
-            </button>
-            <button
-              type="button"
-              className="cs-reroll"
+            </Button>
+            <Button variant="ghost" size="small"
+              
               onClick={() => {
                 const it = scene.items[selected]
                 if (it) {
@@ -395,10 +392,10 @@ export default function BuilderLab() {
               }}
             >
               make brush
-            </button>
-            <button type="button" className="cs-reroll" onClick={() => setSelected(null)}>
+            </Button>
+            <Button variant="ghost" size="small"  onClick={() => setSelected(null)}>
               deselect
-            </button>
+            </Button>
           </div>
         )}
 
@@ -423,9 +420,8 @@ export default function BuilderLab() {
             </div>
             <div className="bld-row">
               <span className="bld-row-label">&nbsp;</span>
-              <button
-                type="button"
-                className="cs-reroll"
+              <Button variant="ghost" size="small"
+                
                 onClick={() => {
                   clearSelectionAnd((s) => ({
                     ...s,
@@ -435,16 +431,15 @@ export default function BuilderLab() {
                 }}
               >
                 surprise me
-              </button>
-              <button
-                type="button"
-                className="cs-reroll"
+              </Button>
+              <Button variant="ghost" size="small"
+                
                 onClick={() =>
                   clearSelectionAnd((s) => ({ ...s, scene: { ...s.scene, items: [] } }))
                 }
               >
                 clear
-              </button>
+              </Button>
             </div>
           </>
         )}
