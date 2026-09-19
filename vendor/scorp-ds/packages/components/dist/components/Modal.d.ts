@@ -5,7 +5,8 @@
  * Built entirely from design tokens defined in tokens.json
  *
  * FEATURES:
- * - Fixed header with title and close button (always visible)
+ * - Fixed header with title and a secondary-plate close button (always visible)
+ * - Optional fixed footer band for CTAs via `footerContent`
  * - Scrollable content area (max-height: 66vh)
  * - Fade in/out animations (200ms duration)
  * - Backdrop scrim (semi-transparent overlay)
@@ -17,13 +18,16 @@
  * DIMENSIONS:
  * - Width: 740px fixed
  * - Max height: 80% of viewport height
- * - Border radius: 24px (radius.container token)
+ *
+ * SHAPE: the panel is a large plate (--plate-round-lg, stepped one-bit corners)
+ * built with the ring recipe — outer layer is the stroke color clipped to the
+ * plate, inner layer is the card fill clipped 1px inset (clip-path slices real
+ * borders, so a border property cannot draw the ring).
  *
  * TOKENS USED:
  * - surface.card, surface.container-stroke, surface.overlay
  * - text.primary (title)
- * - radius.container: 24px border radius
- * - elevation.2: Drop shadow
+ * - plate.round-lg: panel silhouette
  */
 import { type ReactNode } from "react";
 export interface ModalProps {
@@ -31,6 +35,11 @@ export interface ModalProps {
     onClose: () => void;
     title: string;
     children: ReactNode;
+    /**
+     * Optional fixed footer for CTAs. Render DS Buttons here (e.g. a secondary
+     * "Cancel" + primary confirm); actions align to the right on a subtle band.
+     */
+    footerContent?: ReactNode;
 }
 /**
  * Modal Component
@@ -40,5 +49,5 @@ export interface ModalProps {
  * @param title - Header title text
  * @param children - Modal content (will be scrollable if it exceeds max-height)
  */
-export declare function Modal({ isOpen, onClose, title, children }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Modal({ isOpen, onClose, title, children, footerContent }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map

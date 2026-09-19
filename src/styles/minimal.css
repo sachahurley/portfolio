@@ -24,7 +24,7 @@ strong, b { font-weight: 400; }
 #loader {
   /* sepia-950, matching the baked background of the dither welcome asset so
      the letterbox around the integer-scaled image is invisible */
-  position: fixed; inset: 0; z-index: 90; background: var(--color-sepia-950, #1a150f);
+  position: fixed; inset: 0; z-index: calc(var(--z-index-modal) + 4); /* loader: above sheet+dock, below fx */ background: var(--color-sepia-950, #1a150f);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 48px; cursor: pointer; /* clears the 32px jeweled frame */
   transition: opacity .4s ease;
@@ -97,7 +97,7 @@ strong, b { font-weight: 400; }
 .gf-tab {
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  z-index: 76; display: flex; align-items: center; gap: 8px;
+  z-index: calc(var(--z-index-modal) + 1); display: flex; align-items: center; gap: 8px; /* dock: above the sheet */
   font-family: var(--mono); font-size: 13px; line-height: 16px;
   border: 0; padding: 10px 16px 12px; cursor: pointer;
   /* isolation (not position) so the ring pseudo can sit at z-index -1
@@ -129,7 +129,7 @@ strong, b { font-weight: 400; }
 .gf-tab:active { transform: translateX(-50%) translateY(2px); }
 .tip {
   position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
-  z-index: 72; background: var(--fg); color: var(--bg);
+  z-index: var(--z-index-sticky); background: var(--fg); color: var(--bg);
   font-size: 11px; padding: 6px 10px; border-radius: 6px; white-space: nowrap;
 }
 .tip:after {
@@ -142,7 +142,7 @@ strong, b { font-weight: 400; }
    instead of iOS blur: a black checkerboard at the site's 2px dither cell
    over a flat darkening — averages the same coverage the old flat rgba had */
 .scrim {
-  position: fixed; inset: 0; z-index: 74;
+  position: fixed; inset: 0; z-index: var(--z-index-overlay);
   background:
     conic-gradient(from 90deg at 50% 50%,
       rgba(0, 0, 0, 0.6) 25%, transparent 0 50%, rgba(0, 0, 0, 0.6) 0 75%, transparent 0)
@@ -157,7 +157,7 @@ strong, b { font-weight: 400; }
    .sheet-body carries the same polygon, so a uniform 2px var(--border) ring
    shows through, tracing the notches (a plain border would be clipped). */
 .sheet {
-  position: fixed; left: 50%; bottom: 0; width: min(540px,100%); z-index: 75;
+  position: fixed; left: 50%; bottom: 0; width: min(540px,100%); z-index: var(--z-index-modal);
   background: var(--border);
   padding: 2px 2px 0;
   clip-path: polygon(
@@ -375,7 +375,7 @@ a.item .t { color: var(--accent); }
 .thumbimg {
   flex: none; width: 132px; aspect-ratio: 16/9; border: 1px solid var(--border); border-radius: 6px;
   object-fit: cover; display: block;
-  background: repeating-linear-gradient(45deg,#121212,#121212 8px,#181818 8px,#181818 16px);
+  background: repeating-linear-gradient(45deg, var(--color-secondary-975), var(--color-secondary-975) 8px, var(--color-secondary-950) 8px, var(--color-secondary-950) 16px);
 }
 @media (max-width: 480px) { .thumbimg { width: 104px; } }
 /* On mobile, stack the row vertically: text on top, full-width thumbnail below. */
@@ -417,7 +417,7 @@ a.item .t { color: var(--accent); }
 
 /* lab demo */
 /* tile atlas (/lab/tile-atlas): the sprite grid is the only part of that
-   page that leaves the content column, using the .pb-break-full idiom
+   page that leaves the content column, using the full-bleed breakout idiom (now inside CaseStudyBlocks)
    (sized against the adventure viewport, since 100vw lies inside the
    desktop game frame; browsers without container units keep column
    width). Its header stays in the column, so the title and back plate
@@ -443,7 +443,7 @@ a.item .t { color: var(--accent); }
 /* detail bits */
 .thumb {
   height: 150px; border: 1px solid var(--border); border-radius: 6px; margin: 18px 0;
-  background: repeating-linear-gradient(45deg,#121212,#121212 8px,#181818 8px,#181818 16px);
+  background: repeating-linear-gradient(45deg, var(--color-secondary-975), var(--color-secondary-975) 8px, var(--color-secondary-950) 8px, var(--color-secondary-950) 16px);
 }
 h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-transform: capitalize; }
 .lead { color: var(--body); margin: 10px 0 0; max-width: 60ch; }
@@ -474,101 +474,20 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
    Adjacent block margins collapse, so object blocks carry 44px on both
    sides and the largest neighbour wins; directly after a headline the
    object's top margin is zeroed so the 28px header gap applies. */
-.pb-meta {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 16px; margin: 0 0 44px;
-}
-.pb-meta dt { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
-.pb-meta dd { margin: 4px 0 0; font-size: 14px; color: var(--body); line-height: 1.5; }
-/* explicit spacing: .prose p:last-child would zero the intro's bottom
-   margin (it's the header's last child), so the header owns the gaps */
-.pb-headline { margin: 64px 0 28px; }
-@media (min-width: 640px) { .pb-headline { margin-top: 96px; } }
-.pb-headline:first-child { margin-top: 0; }
-/* sentence case: data stays lowercase, only the first letter renders upper */
-.pb-kicker { font-size: 12px; color: var(--mut); }
-.pb-kicker::first-letter { text-transform: uppercase; }
-.pb-headline h2 { margin: 8px 0 0; }
-.pb-headline p { margin: 12px 0 0; }
-.pb-fig { margin: 44px 0; }
-.pb-img {
-  width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); border-radius: 2px;
-  background: repeating-linear-gradient(45deg, #121212, #121212 8px, #181818 8px, #181818 16px);
-}
-.pb-cap { font-size: 12px; color: var(--mut); margin-top: 8px; }
-.pb-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 44px 0; }
-/* the pair owns the object margins; its inner figures sit flush */
-.pb-pair .pb-fig { margin: 0; }
-@media (max-width: 600px) { .pb-pair { grid-template-columns: 1fr; } }
-
-/* Breakout art: 'wide' pushes ~120px past the column each side, 'full'
-   runs to the page margins (24px inside the viewport edges). Sized in
-   container units against the adventure viewport (.gf-viewport below),
-   because 100vw lies inside the desktop game frame; the overhang is
-   split evenly to stay centred. Wide never exceeds full. Browsers
-   without container units keep column width. */
-.pb-break-wide { --pb-bw: min(calc(100% + 240px), calc(100cqw - 48px)); }
-.pb-break-full { --pb-bw: calc(100cqw - 48px); }
-.pb-break-wide, .pb-break-full {
-  width: var(--pb-bw);
-  margin-left: calc((100% - var(--pb-bw)) / 2);
-}
-/* Callouts share rows via subgrid: each item spans a title row and a body
-   row, so every body starts on the same line no matter how the titles
-   wrap. The item's own 6px row-gap is the title/body glue (overriding the
-   inherited 28px); browsers without subgrid just stack per column. */
-.pb-callouts {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 28px 32px; margin: 44px 0;
-}
-.pb-callouts > div { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 6px; }
-.pb-callouts .pb-ct { margin-bottom: 0; }
-.pb-ct { color: var(--fg); margin-bottom: 6px; }
-.pb-callouts p, .pb-insights p, .pb-deflist p { font-size: 14px; line-height: 1.6; margin: 0; }
-.pb-insights {
-  list-style: none; margin: 44px 0; padding: 0;
-  display: flex; flex-direction: column; gap: 28px;
-}
-.pb-insights li { display: flex; gap: 14px; }
-.pb-num { color: var(--accent); font-size: 14px; line-height: 24px; flex: none; }
-/* pull quote: emphasis via scale and the accent glyph, never weight.
-   With a name the block grows an attribution row; without an image src
-   the avatar stays a hatched placeholder like every other pb image. */
-.pb-quote { margin: 44px 0; padding: 0; text-align: left; font-size: 18px; line-height: 1.6; color: var(--fg); }
-.pb-quote::before { content: '\201C'; display: block; font-size: 44px; line-height: 1; color: var(--accent); margin-bottom: 8px; }
-.pb-quote blockquote { margin: 0; padding: 0; }
-.pb-quote-attr { display: flex; align-items: center; gap: 12px; margin-top: 16px; font-size: 14px; }
-.pb-quote-avatar {
-  width: 40px; height: 40px; flex: none; object-fit: cover;
-  border: 1px solid var(--border); border-radius: 2px;
-  background: repeating-linear-gradient(45deg, #121212, #121212 8px, #181818 8px, #181818 16px);
-}
-.pb-quote-name { display: block; color: var(--fg); }
-.pb-quote-role { display: block; font-size: 12px; color: var(--mut); }
-.pb-deflist {
-  list-style: none; margin: 44px 0; padding: 0;
-  display: flex; flex-direction: column; gap: 28px;
-}
-/* header binds forward: first object after a headline sits at the 28px
-   header gap, not the 44px object gap. Callout rows are the exception:
-   their own titles make them read as separate objects, so they keep the
-   full 44px even directly after a headline. */
-.pb-headline + .pb-fig, .pb-headline + .pb-pair,
-.pb-headline + .pb-insights, .pb-headline + .pb-deflist, .pb-headline + .pb-quote {
-  margin-top: 0;
-}
+/* Case-study section styles (the pb-* block) moved into the design system:
+   ProjectBlocks now renders @scorp-ds/components CaseStudyBlocks. */
 
 /* toasts — one full-width summary plate above the menu notch.
    16px insets clear the 8px stone band plus an 8px gap; the bottom
    inset rides the safe area so the dock button never overlaps. Sits
-   BELOW the dock (z 72) so a leaving toast slides down behind the menu
+   BELOW the dock (sticky tier) so a leaving toast slides down behind the menu
    plate on its way off the screen. */
 #toaster {
   position: fixed;
   left: calc(24px + env(safe-area-inset-left, 0px));
   right: calc(24px + env(safe-area-inset-right, 0px));
   bottom: calc(74px + env(safe-area-inset-bottom, 0px));
-  z-index: 70;
+  z-index: calc(var(--z-index-sticky) - 1); /* below the dock, per the slide-behind exit */
 }
 /* how far down the plate has to travel to clear the screen: its own
    height, plus the gap it sits above the bottom edge */
@@ -632,22 +551,22 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 
 /* ---- gem drag clone + impact effects ---- */
 .dragclone {
-  position: fixed; z-index: 96; pointer-events: none;
+  position: fixed; z-index: calc(var(--z-index-modal) + 7); pointer-events: none;
   display: flex; align-items: center; justify-content: center;
 }
 .dragclone .gem-art { filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)); }
 .dragclone.fall { transition: transform .42s cubic-bezier(.45,.05,.7,1), opacity .42s; }
 .dragclone.snap { transition: left .3s ease, top .3s ease; }
 .ember {
-  position: fixed; border-radius: 1px; z-index: 96; pointer-events: none;
+  position: fixed; border-radius: 1px; z-index: calc(var(--z-index-modal) + 7); pointer-events: none;
   transition: transform .95s cubic-bezier(.2,.5,.2,1), opacity .95s ease;
 }
 .flash {
-  position: fixed; width: 70px; height: 70px; z-index: 95; pointer-events: none;
+  position: fixed; width: 70px; height: 70px; z-index: calc(var(--z-index-modal) + 6); pointer-events: none;
   border-radius: 50%; opacity: .9;
   transition: transform .6s cubic-bezier(.2,.6,.2,1), opacity .6s ease;
 }
-.pulse { position: fixed; inset: 0; z-index: 94; pointer-events: none; opacity: 0; }
+.pulse { position: fixed; inset: 0; z-index: calc(var(--z-index-modal) + 7); pointer-events: none; opacity: 0; }
 
 /* ---- theme cascade (EXP system) ----
    applyTheme staggers --accent then --fg/--body; this transition is what
@@ -658,7 +577,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
 
 /* ---- level-up modal (EXP system) ---- */
 .emodal {
-  position: fixed; inset: 0; z-index: 97; display: none;
+  position: fixed; inset: 0; z-index: var(--z-index-popover); /* level-up modal: above fx */ display: none;
   align-items: center; justify-content: center;
   background: rgba(0,0,0,.62); backdrop-filter: blur(3px);
 }
@@ -1114,7 +1033,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   background: var(--hover); border: 0; clip-path: var(--notch4); cursor: pointer;
   font-family: var(--mono); padding: 0;
 }
-.ch-slot:hover { background: #222; }
+.ch-slot:hover { background: var(--surface-muted); }
 /* --mut (sepia-600) clears 4.5:1 on the slot surface; --mut2 did not */
 .ch-slotname { font-size: 10px; color: var(--mut); text-transform: lowercase; }
 
@@ -1125,7 +1044,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   padding: 10px 12px; background: var(--hover); border: 0; clip-path: var(--notch4);
   cursor: pointer; font-family: var(--mono); font-size: 10px; color: var(--body);
 }
-.ch-chestbtn:hover { background: #222; }
+.ch-chestbtn:hover { background: var(--surface-muted); }
 
 /* inventory grid */
 .ch-inv { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px; }
@@ -1134,7 +1053,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
   background: var(--hover); border: 0; clip-path: var(--notch4); cursor: pointer; padding: 0;
 }
-.ch-invbtn:hover { background: #222; }
+.ch-invbtn:hover { background: var(--surface-muted); }
 
 /* loot on a plate: the paperdoll/pack cell rebuilt for the dialogs (chest
    reveal, item card) via ItemPlate, so an item is the same size and wears
@@ -1220,14 +1139,14 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    card docked above the panels (see the 960px block below), where the
    paperdoll it acts on stays in view. */
 .ch-cardscrim {
-  position: fixed; inset: 0; z-index: 78;
+  position: fixed; inset: 0; z-index: calc(var(--z-index-modal) + 2);
   background: rgba(0, 0, 0, .62); backdrop-filter: blur(2px);
 }
 @media (max-width: 959px) {
   .ch-card {
     position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
     width: min(440px, calc(100vw - 48px)); max-height: 80vh; overflow: auto;
-    z-index: 79; margin: 0;
+    z-index: calc(var(--z-index-modal) + 3); margin: 0;
   }
 }
 @media (min-width: 960px) { .ch-cardscrim { display: none; } }
@@ -1390,7 +1309,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .vault-redacted { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
 .vault-hatch {
   border: 1px solid var(--border); border-radius: 2px;
-  background: repeating-linear-gradient(45deg, #121212, #121212 8px, #181818 8px, #181818 16px);
+  background: repeating-linear-gradient(45deg, var(--color-secondary-975), var(--color-secondary-975) 8px, var(--color-secondary-950) 8px, var(--color-secondary-950) 16px);
 }
 .vault-hatch:nth-of-type(1) { height: 96px; }
 .vault-hatch:nth-of-type(2) { height: 148px; }

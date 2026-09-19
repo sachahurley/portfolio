@@ -36,7 +36,8 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
  * @param label - Optional label text displayed next to radio
  * @param error - Whether radio has a validation error
  * @param disabled - Whether radio is disabled
- * @param checked - Whether radio is checked
+ * @param checked - Controlled checked state; omit it to use the native
+ *                  uncontrolled behavior (`defaultChecked` + radio-group name)
  * @param name - Name attribute for radio group (required for grouping)
  * @param value - Value attribute for this radio option
  * @param onCheckedChange - Callback when radio state changes (alternative to onChange)

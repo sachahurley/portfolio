@@ -9,12 +9,14 @@
  * - medium: 40px min-height (matches medium input - default)
  * - large: 48px min-height (matches large input)
  *
+ * SHAPE: plate ring recipe, identical to Input — wrapper = border color clipped
+ * to --plate-round, textarea = fill clipped 1px inset. The ring walks the
+ * portfolio ramp: idle hairline → hover mut → focus accent.
+ *
  * STATES:
- * - default: Standard textarea appearance
- * - hover: Subtle border change on mouse over
- * - focused: Primary color focus ring (keyboard accessible)
+ * - default / hover / focused: ring color ramp (see above)
  * - disabled: Reduced opacity, not interactive
- * - error: Red border to indicate validation issues
+ * - error: Red ring + tinted fill
  */
 import { type ReactNode, type TextareaHTMLAttributes } from "react";
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {

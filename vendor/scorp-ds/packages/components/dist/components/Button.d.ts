@@ -5,9 +5,16 @@
  * Built entirely from design tokens defined in tokens.json
  *
  * VARIANTS (fills from semantic CSS variables in tokens.css — theme switches via `.dark`):
- * - primary / secondary: `--button-*` pairs for background, hover, text
+ * - primary: gold CTA fill · secondary: the quiet plate that flips to gold on hover
  * - ghost / outline / destructive / link: same semantic layer
- * - icon: square chrome using `--button-icon-*` (background, hover, text, disabled)
+ * - icon: square plate using `--button-icon-*` (background, hover, text, disabled)
+ *
+ * SHAPE: every button is clipped to the plate silhouette (--plate-round, stepped
+ * one-bit corners). The clip swallows outside focus outlines, so focus renders as
+ * an INSET ring (box-shadow) using the --focus-ring-* tokens. The outline variant
+ * uses the ring recipe (element = border color clipped, ::before = opaque fill
+ * clipped 1px inset) so its border walks the stepped corners like every other
+ * bordered plate; its fill is the page surface, not transparent.
  *
  * SIZES: All defined in tokens.json
  * - small: 32px height
