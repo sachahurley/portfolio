@@ -13,7 +13,7 @@
 
 import { useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { TileBox } from './TileSprite'
-import { Button } from '@scorp-ds/components'
+import { Button, Input } from '@scorp-ds/components'
 
 /** items/lock/padlock_01 on the Urizen sheet (see /lab/tile-atlas). */
 const PADLOCK: readonly [number, number] = [10, 45]
@@ -67,9 +67,10 @@ export default function LockGate({
         <span className="vault-sealed">{kicker}</span>
         <StarBox text={hint} />
         <div className="vault-form">
-          <input
+          <Input
             ref={inputRef}
-            className="vault-input"
+            variant="quiet"
+            className="flex-1 min-w-0 text-base"
             type={inputType}
             aria-label={inputType === 'password' ? 'Password' : 'Unlock code'}
             aria-invalid={!!error}

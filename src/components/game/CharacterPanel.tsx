@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { useXp } from '../../context/XpProvider'
 import { randomSeed } from '../../game/names'
 import PixelPortrait from './PixelPortrait'
+import { Input } from '@scorp-ds/components'
 
 const rollCandidates = () => Array.from({ length: 8 }, () => randomSeed())
 
@@ -54,9 +55,10 @@ export default function CharacterPanel() {
         <div className="cs-id">
           {/* Uncontrolled on purpose: keyed by the saved name, committed on
               blur/Enter, so half-typed names never hit the save. */}
-          <input
+          <Input
             key={name}
-            className="cs-name"
+            variant="quiet"
+            className="text-base"
             defaultValue={name}
             maxLength={40}
             aria-label="Character name"

@@ -29,7 +29,6 @@ export default function Dock({ open, onToggle }: { open: boolean; onToggle: () =
     <button
       className={`gf-tab${open ? ' is-sunk' : ''}`}
       aria-haspopup="dialog"
-      aria-controls="sheet"
       aria-expanded={open}
       aria-label={waiting ? 'Menu, rewards waiting' : undefined}
       onClick={onToggle}

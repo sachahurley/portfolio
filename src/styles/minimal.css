@@ -165,93 +165,9 @@ strong, b { font-weight: 400; }
 /* Bayer-checker scrim (classic-Mac dither, kin to the welcome dissolve)
    instead of iOS blur: a black checkerboard at the site's 2px dither cell
    over a flat darkening — averages the same coverage the old flat rgba had */
-.scrim {
-  position: fixed; inset: 0; z-index: var(--z-index-overlay);
-  background:
-    conic-gradient(from 90deg at 50% 50%,
-      rgba(0, 0, 0, 0.6) 25%, transparent 0 50%, rgba(0, 0, 0, 0.6) 0 75%, transparent 0)
-    0 0 / 4px 4px,
-    rgba(0, 0, 0, 0.35);
-  opacity: 0; pointer-events: none; transition: opacity .3s ease;
-}
-.scrim.open { opacity: 1; pointer-events: auto; }
-/* Notched top corners (an 8px right-angle cut) with a real 2px seam:
-   the li.sel ring trick at sheet scale — the outer .sheet is clipped to the
-   notched polygon and filled with the seam color, with 2px top/side padding;
-   .sheet-body carries the same polygon, so a uniform 2px var(--border) ring
-   shows through, tracing the notches (a plain border would be clipped). */
-.sheet {
-  position: fixed; left: 50%; bottom: 0; width: min(540px,100%); z-index: var(--z-index-modal);
-  background: var(--border);
-  padding: 2px 2px 0;
-  clip-path: polygon(
-    0 100%, 0 8px, 8px 8px, 8px 0,
-    calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px, 100% 100%
-  );
-  max-height: 86vh; display: flex; flex-direction: column;
-  transform: translateX(-50%) translateY(110%);
-  transition: transform .34s cubic-bezier(.32,.72,0,1);
-}
-.sheet.open { transform: translateX(-50%) translateY(0); }
-.sheet.dragging { transition: none; }
-.sheet-body {
-  background: var(--bg);
-  clip-path: polygon(
-    0 100%, 0 8px, 8px 8px, 8px 0,
-    calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px, 100% 100%
-  );
-  /* clears the 24px tile ring on the sides and bottom (plus a breath) */
-  padding: 0 36px calc(32px + env(safe-area-inset-bottom, 0px));
-  overflow: auto; min-height: 0;
-}
-/* tile ring: the stone run around the whole sheet seam, an overlay inside
-   the 2px seam so the scrolling content passes beneath it. The top run is
-   two segments flanking the close notch (the tab is ~100px wide, centred),
-   so the tiles never overlap it; the side columns hang between the top and
-   bottom runs, and the bottom run rides the safe area. */
-.sheet-tiles { position: absolute; inset: 2px; pointer-events: none; }
-.st-band { position: absolute; display: flex; overflow: hidden; line-height: 0; }
-.st-top { top: 0; height: 24px; }
-.st-top.l { left: 0; width: calc(50% - 60px); }
-.st-top.r { right: 0; width: calc(50% - 60px); justify-content: flex-end; }
-.st-side { top: 24px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); width: 24px; flex-direction: column; }
-.st-side.l { left: 0; }
-.st-side.r { right: 0; }
-.st-bottom { left: 0; right: 0; height: 24px; bottom: env(safe-area-inset-bottom, 0px); }
-/* the close notch: the menu notch (.gf-tab) hung from the sheet's top seam
-   — same stone fill, type and 4px stepped corners, flipped so the straight
-   edge merges upward into the seam and the free (bottom) corners are
-   notched. Doubles as the drag handle, so it keeps cursor/touch-action. */
-.grabber {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  margin: 0 auto 14px; padding: 10px 16px; border: 0;
-  position: relative; isolation: isolate;
-  /* frame-stone colours, matching .gf-tab (see the note there) */
-  background: var(--color-sepia-500, #bfb4a3); color: var(--color-sepia-500, #bfb4a3);
-  font-family: var(--mono); font-size: 13px; line-height: 16px;
-  clip-path: polygon(
-    0 0, 100% 0,
-    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
-    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
-  );
-  cursor: grab; touch-action: none;
-  transition: color .12s;
-}
-.grabber::before {
-  content: ""; position: absolute; inset: 1px; z-index: -1;
-  background: var(--color-sepia-800, #474030);
-  clip-path: inherit;
-  transition: background-color .12s;
-}
-.grabber:hover::before { background: var(--color-sepia-700, #695f4d); }
-.grabber:active { cursor: grabbing; }
-/* Nav rows carry the compass's plate grammar at touch scale: the same
-   --plate-round silhouette, hover plate, and accent-filled active plate +
-   1px ring as .gf-compass, with larger type and padding for fingers. The
-   1px transparent border is the spacer that keeps row geometry unchanged
-   when .sel swaps it for the wrapper's 1px ring padding (see the compass
-   comment for the mechanics). Labels render as data ships them, like the
-   compass — no text-transform. */
+/* Sheet shell (scrim/panel/tile ring/grabber) retired: the menu shell is
+   @scorp-ds/components BottomSheet; only the sheet CONTENT styles below
+   (.menu-nav, .sheet-char, .sheet-contact) remain. */
 .menu-nav { display: flex; flex-direction: column; gap: 2px; width: 100%; }
 .mn-row { clip-path: var(--plate-round); }
 .mn-row.sel { background: var(--accent); padding: 1px; }
@@ -897,13 +813,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .cs-avatarbtn:hover { border-color: var(--accent); }
 .cs-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
-.cs-name {
-  font-family: var(--mono); font-size: 16px; color: var(--fg);
-  background: transparent; border: 1px solid transparent; border-bottom-color: var(--border);
-  padding: 2px 0; width: 100%;
-}
-.cs-name:hover { border-bottom-color: var(--mut); }
-.cs-name:focus { outline: none; border-bottom-color: var(--accent); }
+/* .cs-name retired: the rename field is the DS Input (quiet). */
 .cs-lvl { font-size: 12px; color: var(--body); }
 .cs-levelup {
   font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
@@ -1312,13 +1222,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .vault-gate > span:first-of-type { margin-top: 4px; }
 .vault-sealed { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
 .vault-form { display: flex; gap: 14px; align-items: center; justify-content: center; width: 100%; max-width: 340px; margin-top: 6px; }
-.vault-input {
-  font-family: var(--mono); font-size: 16px; color: var(--fg);
-  background: transparent; border: 1px solid transparent; border-radius: 0;
-  border-bottom-color: var(--border); padding: 2px 0; flex: 1; min-width: 0;
-}
-.vault-input:hover { border-bottom-color: var(--mut); }
-.vault-input:focus { outline: none; border-bottom-color: var(--accent); }
+/* .vault-input retired: the passphrase field is the DS Input (quiet). */
 .vault-err { font-size: 12px; color: var(--accent); min-height: 16px; }
 .vault-redacted { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
 .vault-hatch {

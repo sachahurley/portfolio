@@ -19,6 +19,13 @@
 import { type InputHTMLAttributes, type ReactNode } from "react";
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
     size?: "small" | "medium" | "large";
+    /**
+     * Visual variant. "box" (default) is the plate field; "quiet" is the
+     * underline recipe — transparent, bottom hairline only, the site's voice
+     * for inline fields (passwords, rename-in-place). Same border ramp:
+     * idle hairline → hover mut → focus accent.
+     */
+    variant?: "box" | "quiet";
     error?: boolean;
     /**
      * Optional visible label. When set, renders a `<label>` associated with the input via `htmlFor` / `id`.
