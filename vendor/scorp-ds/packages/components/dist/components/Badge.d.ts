@@ -11,6 +11,9 @@
  * - warning: Purple for warnings
  * - error: Red for errors
  * - info: Blue for informational messages
+ * - bone: filled sepia-500 chip, identical in both themes — the
+ *   tier-neutral state marker for surfaces that must not ride the accent
+ *   or re-theme (the portfolio's equipped/loot chips)
  *
  * SIZES:
  * - small: Compact badge (20px height)
@@ -24,7 +27,7 @@
  */
 import { type ReactNode } from "react";
 export interface BadgeProps {
-    variant?: "default" | "primary" | "success" | "warning" | "error" | "info";
+    variant?: "default" | "primary" | "success" | "warning" | "error" | "info" | "bone";
     size?: "small" | "medium" | "large";
     children: ReactNode;
     iconLeft?: ReactNode;

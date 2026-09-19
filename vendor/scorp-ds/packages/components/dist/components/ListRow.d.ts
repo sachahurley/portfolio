@@ -15,7 +15,7 @@
  *   secondary scale in AA-passing theme pairs (700/600 and 800/500)
  * - duration.fast (hover), focus inset ring (clip swallows outside outlines)
  */
-import { type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ElementType, type ReactNode } from "react";
 type CommonProps = {
     /** Small line above the title (date, category). Rendered in text.tertiary. */
     meta?: ReactNode;
@@ -25,17 +25,38 @@ type CommonProps = {
     description?: ReactNode;
     /** Trailing affordance next to the title (e.g. an external-link glyph). */
     titleSuffix?: ReactNode;
+    /**
+     * Thumbnail slot beside the text (a sized <img> or framed node; the row
+     * reserves the slot with flex-shrink: 0 and never scales it).
+     */
+    thumb?: ReactNode;
+    /** Which side the thumbnail sits on (default "start"). */
+    thumbPosition?: "start" | "end";
     className?: string;
 };
 export type ListRowProps = CommonProps & (({
     href: string;
     onClick?: never;
+    as?: never;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "className" | "title">) | ({
     href?: never;
     onClick: () => void;
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "className" | "title">) | {
+    as?: never;
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "className" | "title">)
+/**
+ * Custom link component (e.g. a router <Link>): the row renders it with
+ * interactive styling and spreads `asProps` onto it (`to`, `state`,
+ * ...), so client-side navigation works without a full page load.
+ */
+ | {
+    as: ElementType;
+    asProps?: Record<string, unknown>;
     href?: never;
     onClick?: never;
+} | {
+    href?: never;
+    onClick?: never;
+    as?: never;
 });
 /**
  * ListRow Component
