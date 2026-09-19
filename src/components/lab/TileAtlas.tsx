@@ -8,7 +8,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { TileBox } from '../TileSprite'
-import { Button, Input } from '@scorp-ds/components'
+import { Button, Input, Slider } from '@scorp-ds/components'
 import './TileAtlas.css'
 
 type Row = [string, number, number, number?, number?]
@@ -120,19 +120,19 @@ export default function TileAtlas() {
           placeholder="search sword, potion, wall"
           aria-label="Search sprites"
         />
-        <label className="atlas-zoom">
+        <span className="atlas-zoom">
           zoom
-          <input
+          <Slider
             id="atlas-zoom"
-            type="range"
             min={2}
             max={6}
             step={1}
             value={scale}
             onChange={(e) => setScale(Number(e.target.value))}
             aria-label="Zoom"
+            className="dtoy-slider-track"
           />
-        </label>
+        </span>
       </div>
 
       <div className="atlas-chips">

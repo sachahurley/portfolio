@@ -15,7 +15,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useXp } from '../../context/XpProvider'
 import { THEMES, mix } from '../../lib/themes'
-import { Button } from '@scorp-ds/components'
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@scorp-ds/components'
 import {
   CLASSIC,
   forEachDiamondCell,
@@ -554,11 +554,17 @@ export default function BlockShop() {
 
   return (
     <div className="blk-shop">
-      {optRow('stage', ['block', 'object', 'scene'], ['block', 'object', 'scene'], tab, (v) =>
-        setState((s) => ({ ...s, tab: v as Tab })),
-      )}
+      {/* the stage strip is a real tab set (the shop's one mutually
+          exclusive view switch); panels keep their lazy conditionals so
+          only the active stage's canvases bake */}
+      <Tabs value={tab} onValueChange={(v) => setState((s) => ({ ...s, tab: v as Tab }))}>
+        <TabsList aria-label="Stage">
+          <TabsTrigger value="block">block</TabsTrigger>
+          <TabsTrigger value="object">object</TabsTrigger>
+          <TabsTrigger value="scene">scene</TabsTrigger>
+        </TabsList>
 
-      {tab === 'block' && (
+      <TabsContent value="block">{tab === 'block' && (
         <>
           <div className="blk-row">
             <div className="blk-fig">
@@ -589,9 +595,9 @@ export default function BlockShop() {
           {blockPalette('library')}
           <p className="town-hint">Design the three faces, save it, and it joins the block library.</p>
         </>
-      )}
+      )}</TabsContent>
 
-      {tab === 'object' && (
+      <TabsContent value="object">{tab === 'object' && (
         <>
           {blockPalette('blocks')}
           <IsoView
@@ -636,9 +642,9 @@ export default function BlockShop() {
             the object to its footprint.
           </p>
         </>
-      )}
+      )}</TabsContent>
 
-      {tab === 'scene' && (
+      <TabsContent value="scene">{tab === 'scene' && (
         <>
           {objectPalette}
           <IsoView
@@ -666,7 +672,8 @@ export default function BlockShop() {
             remove it.
           </p>
         </>
-      )}
+      )}</TabsContent>
+      </Tabs>
     </div>
   )
 }

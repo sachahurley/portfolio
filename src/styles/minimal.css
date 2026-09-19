@@ -273,15 +273,12 @@ strong, b { font-weight: 400; }
 .list { display: flex; flex-direction: column; gap: 16px; margin: 0 -12px -12px; }
 /* hover plate shares the pixel-rounded silhouette with the compass rows;
    the clip is invisible until the hover background fills it */
-.item { display: block; padding: 12px; clip-path: var(--plate-round); transition: background .12s; }
-.item:hover { background: var(--hover); }
-.item .nd { display: block; color: var(--mut); font-size: 14px; line-height: 20px; margin-bottom: 2px; }
-.item .t { display: block; color: var(--fg); line-height: 24px; }
+/* .item core retired: rows are the DS ListRow (plate, hover, meta/title/
+   description typography all live there). Only the site extras below —
+   thumbnail sizing, external arrow, lockmark — remain. */
 /* link titles carry the warm sepia-gold accent (no hover underline on rows) */
-a.item .t { color: var(--accent); }
 /* 4px breath between the row's title and its description */
-.item .d { display: block; color: var(--body); line-height: 24px; margin-top: 4px; }
-.item .ext { color: inherit; line-height: 0; margin-left: 8px; }
+.list .ext { color: inherit; line-height: 0; }
 
 /* ---- tools (About): compact plain list, not Item rows. The row is not a
    button; only the tool name links out, inline with the external arrow.
@@ -296,23 +293,18 @@ a.item .t { color: var(--accent); }
 .tool-desc { display: block; color: var(--body); margin-top: 1px; }
 .meta { color: var(--mut); font-size: 14px; }
 /* optional 16:9 thumbnail on the far right of a row */
-.item.has-img { display: flex; align-items: center; gap: 16px; }
-.item.has-img .txt { flex: 1; min-width: 0; }
 .thumbimg {
   flex: none; width: 132px; aspect-ratio: 16/9; border: 1px solid var(--border); border-radius: 6px;
   object-fit: cover; display: block;
   background: repeating-linear-gradient(45deg, var(--color-secondary-975), var(--color-secondary-975) 8px, var(--color-secondary-950) 8px, var(--color-secondary-950) 16px);
 }
 @media (max-width: 480px) { .thumbimg { width: 104px; } }
-/* On mobile, stack the row vertically: text on top, full-width thumbnail below. */
-@media (max-width: 600px) {
-  .item.has-img { flex-direction: column; align-items: stretch; }
-  .item.has-img .thumbimg { width: 100%; }
-  /* opt-in: keep the row two-column with a portrait (4:3) image on the right */
-  .item.has-img.img-right { flex-direction: row; align-items: center; }
-  .item.has-img.img-right .txt { flex: 1; min-width: 0; }
-  .item.has-img.img-right .thumbimg { width: 84px; aspect-ratio: 3 / 4; }
-}
+/* tight rows opt into a portrait (3:4) thumbnail column; on phones every
+   thumb narrows further so the text column keeps room (ListRow keeps the
+   pair side by side — the old stack-below-on-mobile layout retired with
+   the DS row swap) */
+.thumbimg.portrait { width: 84px; aspect-ratio: 3 / 4; }
+@media (max-width: 600px) { .thumbimg { width: 84px; aspect-ratio: 3 / 4; } }
 
 /* buttons — the in-content plate button, part of the pixel-plate family
    (.pageback icon button, .pgbtn rich pager). Every tier is a
@@ -324,7 +316,7 @@ a.item .t { color: var(--accent); }
 /* clip-path swallows the global outside focus ring on plate-clipped
    controls; paint an inset ring within the silhouette instead */
 .pgbtn:focus-visible,
-.gf-tab:focus-visible, a.item:focus-visible, .gf-dest:focus-visible {
+.gf-tab:focus-visible, .gf-dest:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
@@ -489,7 +481,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 /* ---- theme cascade (EXP system) ----
    applyTheme staggers --accent then --fg/--body; this transition is what
    makes the recolor sweep across the text instead of snapping. */
-body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-nav a {
+body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   transition: color .55s ease;
 }
 
@@ -656,7 +648,7 @@ body, h1, .label, .item .t, .item .d, .item .nd, .bio p, .lead, .prose p, .menu-
    corners built from 2px stair-step cells — top/bottom edges inset 6px,
    with a single 2px step into the vertical edge. Defined on :root so it's
    shared by the compass rows (hover/active plates, selected ring) and the
-   home-page .item hover plates. */
+   home-page row hover plates. */
 :root {
   /* the large floating tier's silhouette: --plate-round at 2x */
   --plate-round-lg: polygon(
@@ -753,14 +745,10 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   background: var(--dither-dark) 0 0 / 4px 4px, var(--accent);
   transition: width .3s ease;
 }
-.gf-cs-badge {
-  font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--bg); background: var(--accent); padding: 3px 6px;
-}
-/* chest badge: same chip, tier-neutral bone tint (loot never rides accent) */
-.gf-cs-badge.chest { background: var(--rar-common); }
+/* .gf-cs-badge retired: strip badges are the DS Badge (primary pulses for
+   a pending level, bone for chests) */
 @media (prefers-reduced-motion: no-preference) {
-  .gf-cs-badge { animation: gf-pulse 1.6s ease-in-out infinite; }
+  .gf-pulse { animation: gf-pulse 1.6s ease-in-out infinite; }
   @keyframes gf-pulse { 50% { opacity: .55; } }
 }
 
@@ -1002,16 +990,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   }
 }
 .ch-cardside { display: flex; gap: 16px; align-items: flex-start; min-width: 0; }
-/* state eyebrow chips (Tag.tsx): the character strip's badge grammar.
-   Outlined + muted for the quiet state ("in your pack"); .fill pops the
-   one that matters ("equipped") in the tier-neutral bone tint, since
-   loot chrome never rides the accent. */
-.ch-cardtag-row { margin-bottom: 6px; line-height: 1; }
-.ch-tag {
-  display: inline-block; font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--mut); border: 1px solid var(--border); padding: 2px 6px;
-}
-.ch-tag.fill { color: var(--bg); background: var(--rar-common); border-color: var(--rar-common); }
+/* .ch-tag retired: the eyebrow chips are the DS Badge (bone / default) */
 
 
 
@@ -1100,7 +1079,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .dtoy-canvas { display: block; width: 100%; border: 1px solid var(--border); image-rendering: pixelated; background: var(--bg); }
 .dtoy-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-family: var(--mono); font-size: 13px; color: var(--body); }
 .dtoy-slider { display: inline-flex; align-items: center; gap: 8px; }
-.dtoy-slider input[type='range'] { accent-color: var(--accent); width: 150px; }
+/* raw range retired: sliders are the DS Slider; this hook only sets width */
+.dtoy-slider-track { width: 150px; }
 
 /* ---- village kit icons (VillageIcon): the nav rows' pixel art ----
    Inline SVG, so the art fills its box at any scale and takes its colour
@@ -1149,7 +1129,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    input recipe (.cs-name), the DS plate Button, and the hatch texture standing in
    for the redacted body below the gate (case studies only). Weight 400 and
    token colors throughout. */
-.item .lockmark { color: var(--mut); line-height: 0; margin-left: 8px; }
+.lockmark { color: var(--mut); line-height: 0; margin-left: 8px; }
 .vault-gate {
   margin-top: 32px; padding: 32px 24px;
   border: 1px solid var(--border); border-radius: 2px;

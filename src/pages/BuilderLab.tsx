@@ -37,7 +37,7 @@ import {
 import { THEMES } from '../lib/themes'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
-import { Button } from '@scorp-ds/components'
+import { Button, Slider } from '@scorp-ds/components'
 
 // The builder's state is a UI pref: its own key beside - not inside -
 // the sh_min save blob (the sh_side convention).
@@ -300,10 +300,9 @@ export default function BuilderLab() {
     onChange: (v: number) => void,
     aria: string,
   ) => (
-    <label className="dtoy-slider">
+    <span className="dtoy-slider">
       {label}
-      <input
-        type="range"
+      <Slider
         min={range[0]}
         max={range[1]}
         step={1}
@@ -311,8 +310,9 @@ export default function BuilderLab() {
         onChange={(e) => onChange(Number(e.target.value))}
         disabled={range[0] === range[1]}
         aria-label={aria}
+        className="dtoy-slider-track"
       />
-    </label>
+    </span>
   )
 
   return (
