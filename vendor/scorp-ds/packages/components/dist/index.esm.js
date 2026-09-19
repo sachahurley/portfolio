@@ -3321,14 +3321,14 @@ function Ar({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, wi
   return m ? /* @__PURE__ */ o(
     "div",
     {
-      className: "fixed left-1/2 -translate-x-1/2 animate-in fade-in",
+      className: "fixed inset-x-0 flex justify-center pointer-events-none animate-in fade-in",
       style: {
         zIndex: "var(--z-index-modal)",
         bottom: "48px",
         animationDuration: "var(--duration-normal)",
         filter: "drop-shadow(0 10px 40px rgba(0, 0, 0, 0.35))"
       },
-      children: h
+      children: /* @__PURE__ */ o("div", { className: "pointer-events-auto flex max-w-full", children: h })
     }
   ) : /* @__PURE__ */ o(ie, { children: /* @__PURE__ */ o(
     "div",

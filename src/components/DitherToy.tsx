@@ -13,7 +13,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { bayerThreshold, ONE_BIT_INK } from '../lib/dither/oneBit'
 import { hashNoise } from '../lib/dither/render'
-import { Button } from '@scorp-ds/components'
+import { Button, Slider } from '@scorp-ds/components'
 
 const CELL = 4 // art cell in CSS px, the site's standard scale
 const FPS = 7 // the welcome title's boil beat
@@ -175,18 +175,18 @@ export default function DitherToy() {
           onChange={(e) => pickFile(e.target.files?.[0])}
           style={{ display: 'none' }}
         />
-        <label className="dtoy-slider">
+        <span className="dtoy-slider">
           ink
-          <input
-            type="range"
+          <Slider
             min={-0.35}
             max={0.35}
             step={0.01}
             value={bias}
             onChange={(e) => setBias(Number(e.target.value))}
             aria-label="Ink density"
+            className="dtoy-slider-track"
           />
-        </label>
+        </span>
         <span className="gf-dim">or drop an image onto the canvas</span>
       </div>
     </div>

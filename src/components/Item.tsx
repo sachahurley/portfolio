@@ -1,13 +1,22 @@
 /**
  * Item / List — the core row component
  *
- * A block link with stacked children: optional date, a title (amber when it's
- * a link), an optional description, and an optional 16:9 thumbnail on the far
- * right. Used by every Minimal-mode page (Home, Projects, Notes, Lab, About).
+ * A thin adapter over the design system's ListRow (which was itself
+ * promoted from this row): date → meta, title, desc → description, the
+ * external-arrow / padlock as titleSuffix, and the thumbnail in the
+ * trailing thumb slot. Internal routes render through react-router's
+ * Link via as/asProps, so client-side navigation survives.
+ *
+ * Site-specific extras stay here and in minimal.css: thumbnail sizing
+ * (16:9, narrower on phones, portrait 3:4 in tight rows) and the
+ * lockmark tint. List keeps its own wrapper: the -12px side margins
+ * align the rows' plate padding with the page column, which is layout
+ * knowledge Stack shouldn't own.
  */
 
 import { type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { ListRow } from '@scorp-ds/components'
 import { ArrowUpRight } from './icons'
 import DitherIcon from './DitherIcon'
 
@@ -21,7 +30,7 @@ interface ItemProps {
   desc?: ReactNode
   img?: boolean      // show a placeholder 16:9 thumbnail
   imgSrc?: string    // a real thumbnail image (overrides the placeholder)
-  imgRight?: boolean // on mobile, keep a two-column row with a portrait (4:3) image on the right, instead of stacking it below
+  imgRight?: boolean // tighter portrait (3:4) thumbnail column
   onClick?: () => void
 }
 
@@ -43,55 +52,54 @@ function clampSentences(s: string, max = 2): string {
 
 export function Item({ to, href, external, locked, date, title, desc, img, imgSrc, imgRight, onClick }: ItemProps) {
   const hasImg = !!img || !!imgSrc
-  const className = `item${hasImg ? ' has-img' : ''}${hasImg && imgRight ? ' img-right' : ''}`
 
   const displayTitle = stripTrailingPeriod(title)
   const displayDesc = typeof desc === 'string' ? clampSentences(desc) : desc
 
-  const text = (
-    <>
-      {date && <span className="nd">{date}</span>}
-      <span className="t">
-        {displayTitle}
-        {external && <span className="ext"><ArrowUpRight /></span>}
-        {locked && <span className="lockmark"><DitherIcon name="lock" size={12} title="Password protected" /></span>}
-      </span>
-      {displayDesc && <span className="d">{displayDesc}</span>}
-    </>
-  )
+  const suffix =
+    external || locked ? (
+      <>
+        {external && (
+          <span className="ext">
+            <ArrowUpRight />
+          </span>
+        )}
+        {locked && (
+          <span className="lockmark">
+            <DitherIcon name="lock" size={12} title="Password protected" />
+          </span>
+        )}
+      </>
+    ) : undefined
 
-  const thumb = imgSrc ? (
-    <img className="thumbimg" src={imgSrc} alt="" />
-  ) : (
-    <span className="thumbimg" />
-  )
-
-  const body = hasImg ? (
-    <>
-      <span className="txt">{text}</span>
-      {thumb}
-    </>
-  ) : (
-    text
-  )
-
-  if (to) {
-    return (
-      <Link to={to} className={className} onClick={onClick}>
-        {body}
-      </Link>
+  const thumb = hasImg ? (
+    imgSrc ? (
+      <img className={`thumbimg${imgRight ? ' portrait' : ''}`} src={imgSrc} alt="" />
+    ) : (
+      <span className={`thumbimg${imgRight ? ' portrait' : ''}`} />
     )
-  }
+  ) : undefined
+
+  const linkProps = to
+    ? { as: Link, asProps: { to, onClick } }
+    : {
+        as: 'a' as const,
+        asProps: {
+          href,
+          onClick,
+          ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
+        },
+      }
 
   return (
-    <a
-      href={href}
-      className={className}
-      target={external ? '_blank' : undefined}
-      rel={external ? 'noopener noreferrer' : undefined}
-      onClick={onClick}
-    >
-      {body}
-    </a>
+    <ListRow
+      {...linkProps}
+      meta={date}
+      title={displayTitle}
+      titleSuffix={suffix}
+      description={displayDesc}
+      thumb={thumb}
+      thumbPosition="end"
+    />
   )
 }

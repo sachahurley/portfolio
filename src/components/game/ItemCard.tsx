@@ -88,7 +88,8 @@ export default function ItemCard({
     <Modal
       isOpen
       onClose={onClose}
-      title={equipped ? 'Compare' : SLOT_LABELS[item.slot]}
+      // sentence-case header; SLOT_LABELS stay lowercase for mid-sentence use
+      title={equipped ? 'Compare' : SLOT_LABELS[item.slot].charAt(0).toUpperCase() + SLOT_LABELS[item.slot].slice(1)}
       docked
       width={640}
       footerContent={

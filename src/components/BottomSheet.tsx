@@ -10,7 +10,7 @@
  */
 
 import { Link, useLocation } from 'react-router-dom'
-import { BottomSheet as DSBottomSheet } from '@scorp-ds/components'
+import { Badge, BottomSheet as DSBottomSheet } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
@@ -74,11 +74,11 @@ export default function BottomSheet({
             </span>
           </span>
           {pendingLevels.length > 0 ? (
-            <span className="gf-cs-badge">▴ level up</span>
+            <Badge variant="primary" size="small" className="gf-pulse uppercase [letter-spacing:.08em]">▴ level up</Badge>
           ) : chests.length > 0 ? (
-            <span className="gf-cs-badge chest">
+            <Badge variant="bone" size="small" className="uppercase [letter-spacing:.08em]">
               ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
-            </span>
+            </Badge>
           ) : (
             <span className="sheet-char-go">›</span>
           )}

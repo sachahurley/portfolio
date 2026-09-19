@@ -7,6 +7,7 @@
  */
 
 import { useNavigate } from 'react-router-dom'
+import { Badge } from '@scorp-ds/components'
 import { useXp } from '../../context/XpProvider'
 import PortraitPlate from './PortraitPlate'
 
@@ -30,11 +31,11 @@ export default function CharacterStrip() {
           <i style={{ width: `${level.pct}%` }} />
         </span>
       </span>
-      {pendingLevels.length > 0 && <span className="gf-cs-badge">▴ level up</span>}
+      {pendingLevels.length > 0 && <Badge variant="primary" size="small" className="gf-pulse uppercase [letter-spacing:.08em]">▴ level up</Badge>}
       {pendingLevels.length === 0 && chests.length > 0 && (
-        <span className="gf-cs-badge chest">
+        <Badge variant="bone" size="small" className="uppercase [letter-spacing:.08em]">
           ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
-        </span>
+        </Badge>
       )}
     </button>
   )
