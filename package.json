@@ -8,6 +8,7 @@
     "dev:portfolio-only": "vite",
     "tiles": "node --import ./scripts/lib/register-ts.mjs scripts/index-tiles.mjs && node scripts/bake-tarot.mjs",
     "vendor:ds": "bash scripts/vendor-ds.sh",
+    "ds:check": "bash scripts/check-ds-sync.sh",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
