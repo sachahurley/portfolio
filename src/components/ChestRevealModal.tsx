@@ -1,13 +1,12 @@
 /**
  * ChestRevealModal, the loot reveal, shown after opening a chest on the
- * character screen. Same portal/focus/Esc pattern as LevelUpModal and the
- * same .emodal card chrome; the item pops in with the gem-award keyframe.
+ * character screen. Chrome (scrim, plate panel, Esc, focus management,
+ * footer CTA) is the DS Modal; the item pops in with the gem-award keyframe.
  * State lives on the character page (opening is always user-initiated
  * there), so this stays a dumb presentational dialog.
  */
 
-import { useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
+import { Button, Modal } from '@scorp-ds/components'
 import ItemPlate from './game/ItemPlate'
 import { RARITY_COLORS, RARITY_LABELS, STAT_NAMES, STAT_IDS, type Item } from '../game/loot'
 
@@ -18,33 +17,21 @@ export default function ChestRevealModal({
   item: Item | null
   onClose: () => void
 }) {
-  const btnRef = useRef<HTMLButtonElement>(null)
-  const prevFocusRef = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
-    if (!item) {
-      prevFocusRef.current?.focus()
-      prevFocusRef.current = null
-      return
-    }
-    prevFocusRef.current = document.activeElement as HTMLElement | null
-    btnRef.current?.focus()
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [item, onClose])
-
   if (!item) return null
 
-  return createPortal(
-    <div className="emodal open" role="dialog" aria-modal="true" aria-label="Chest opened">
-      <div className="em-card">
-        <div className="em-head">
-          <span className="em-kicker">chest opened</span>
-        </div>
-        <div className="em-body">
+  return (
+    <Modal
+      isOpen
+      onClose={onClose}
+      title="Chest opened"
+      width={320}
+      footerContent={
+        <Button variant="secondary" size="small" type="button" onClick={onClose}>
+          Take it
+        </Button>
+      }
+    >
+      <div className="text-center">
         <div className="em-item">
           <ItemPlate item={item} />
         </div>
@@ -62,14 +49,7 @@ export default function ChestRevealModal({
             ))}
           </span>
         </div>
-        </div>
-        <div className="em-foot">
-          <button className="em-btn" ref={btnRef} onClick={onClose}>
-            Take it
-          </button>
-        </div>
       </div>
-    </div>,
-    document.body
+    </Modal>
   )
 }

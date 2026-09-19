@@ -8,6 +8,10 @@
  * everything else becomes a "+N more" counter. Each new arrival
  * extends the card's life; when it fades out, all consumed toasts are
  * removed and the next arrival starts a fresh card.
+ *
+ * Deliberately NOT the DS Toaster: this is a summarizer (one folding
+ * plate with below-dock exit choreography), not a toast queue. Its plate
+ * CSS (.toast) matches the DS Toast recipe token-for-token.
  */
 
 import { useEffect, useRef, useState } from 'react'

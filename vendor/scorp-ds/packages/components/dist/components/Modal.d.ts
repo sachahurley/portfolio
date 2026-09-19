@@ -40,6 +40,11 @@ export interface ModalProps {
      * "Cancel" + primary confirm); actions align to the right on a subtle band.
      */
     footerContent?: ReactNode;
+    /**
+     * Panel width (default 740). Numbers are px; strings pass through
+     * (e.g. "min(320px, 90vw)"). Small celebratory dialogs want ~320.
+     */
+    width?: number | string;
 }
 /**
  * Modal Component
@@ -49,5 +54,5 @@ export interface ModalProps {
  * @param title - Header title text
  * @param children - Modal content (will be scrollable if it exceeds max-height)
  */
-export declare function Modal({ isOpen, onClose, title, children, footerContent }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Modal({ isOpen, onClose, title, children, footerContent, width }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map
