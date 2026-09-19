@@ -69,8 +69,7 @@ export default function LockGate({
         <div className="vault-form">
           <Input
             ref={inputRef}
-            variant="quiet"
-            className="flex-1 min-w-0 text-base"
+            size="small"
             type={inputType}
             aria-label={inputType === 'password' ? 'Password' : 'Unlock code'}
             aria-invalid={!!error}

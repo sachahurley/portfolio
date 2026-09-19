@@ -57,8 +57,7 @@ export default function CharacterPanel() {
               blur/Enter, so half-typed names never hit the save. */}
           <Input
             key={name}
-            variant="quiet"
-            className="text-base"
+            size="small"
             defaultValue={name}
             maxLength={40}
             aria-label="Character name"
