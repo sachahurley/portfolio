@@ -3312,7 +3312,7 @@ function Cr({ isOpen: e, onClose: t, title: r, children: o, footerContent: n, wi
               )
             ] }),
             /* @__PURE__ */ a("div", { className: "overflow-y-auto px-8 py-6", tabIndex: 0, children: o }),
-            n && /* @__PURE__ */ a("div", { className: "flex items-center justify-end gap-3 px-8 py-5 border-t-[0.5px] border-solid border-[var(--surface-container-stroke)] bg-[var(--surface-subtle)]", children: n })
+            n && /* @__PURE__ */ a("div", { className: "flex items-center justify-end gap-3 px-8 py-5 border-t-[0.5px] border-solid border-[var(--surface-container-stroke)]", children: n })
           ] })
         }
       )
