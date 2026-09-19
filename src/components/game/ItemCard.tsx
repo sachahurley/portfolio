@@ -142,14 +142,14 @@ export default function ItemCard({
         tabIndex={-1}
         onKeyDown={onTrapKeyDown}
       >
-        <div className="em-head">
+        <div className="ch-card-head">
           {/* comparing two items is its own act; a single item keeps its slot */}
-          <span className="em-kicker">{equipped ? 'Compare' : SLOT_LABELS[item.slot]}</span>
+          <span className="ch-card-kicker">{equipped ? 'Compare' : SLOT_LABELS[item.slot]}</span>
           <button className="ch-card-close" onClick={onClose} aria-label="Close">
             <DitherIcon name="close" size={16} />
           </button>
         </div>
-        <div className="em-body">
+        <div className="ch-card-pad">
           <div className="ch-compare">
             <ItemSide
               item={item}
@@ -172,7 +172,7 @@ export default function ItemCard({
             )}
           </div>
         </div>
-        <div className="em-foot">
+        <div className="ch-card-foot">
           <button className="ch-btn" onClick={onAction}>
             {label}
           </button>
