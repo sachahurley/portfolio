@@ -1,23 +1,19 @@
 /**
- * BottomSheet — the pixel-RPG bottom sheet (all screen sizes), opened by the
- * dock's Menu button or the game frame's character strip. Speaks the same
- * material language as the desktop compass: notched top corners, a 2px token
- * seam, a drawer-pull tab, and --plate-round nav rows at touch scale.
+ * BottomSheet — the site menu, opened by the dock's Menu button or the game
+ * frame's character strip. The shell (scrim, top-plate panel, grabber,
+ * slide + exit animation, Esc, scroll lock) is the DS BottomSheet; this
+ * file keeps the contents: nav from the world-map registry, the compact
+ * character row, and the contact links.
  *
- * Contents: nav from the world-map registry (no location is level-gated
- * today; the sealed treatment only appears if one sets minLevel), a
- * compact character row linking to the /character screen (the full sheet
- * lives there), and the contact links ("dispatch a raven"). Tap the pull
- * tab or drag it down to dismiss; also closes on scrim tap, Esc, or a
- * nav link.
+ * The stone tile-ring seam and drag-to-dismiss were retired with the DS
+ * swap (decision 2026-09-18): close is the scrim, Esc, or any nav link.
  */
 
-import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { BottomSheet as DSBottomSheet } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PixelPortrait from './game/PixelPortrait'
-import TileBand from './TileBand'
 import DitherIcon from './DitherIcon'
 import VillageIcon from './village/VillageIcon'
 import { ArrowUpRight } from './icons'
@@ -32,102 +28,12 @@ export default function BottomSheet({
   const location = useLocation()
   const { level, award, name, avatarSeed, pendingLevels, chests } = useXp()
   const displayLevel = level.level + 1
-  const sheetRef = useRef<HTMLDivElement>(null)
-  const scrimRef = useRef<HTMLDivElement>(null)
-  // Suppresses the click that follows a real drag on the pull-tab, so a
-  // cancelled drag (released before the dismiss threshold) doesn't close
-  const draggedRef = useRef(false)
 
   const isActive = (path: string) =>
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
 
-  // Close on Escape while open
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [open, onClose])
-
-  // Clear any drag transforms whenever open state flips
-  useEffect(() => {
-    const sheet = sheetRef.current
-    const scrim = scrimRef.current
-    if (sheet) sheet.style.transform = ''
-    if (scrim) scrim.style.opacity = ''
-  }, [open])
-
-  // Drag-to-dismiss
-  const onGrabberDown = (e: React.PointerEvent) => {
-    const sheet = sheetRef.current
-    const scrim = scrimRef.current
-    if (!sheet) return
-    const startY = e.clientY
-    let dy = 0
-    draggedRef.current = false
-    sheet.classList.add('dragging')
-
-    const move = (ev: PointerEvent) => {
-      dy = Math.max(0, ev.clientY - startY)
-      if (dy > 8) draggedRef.current = true
-      sheet.style.transform = `translateX(-50%) translateY(${dy}px)`
-      if (scrim) scrim.style.opacity = String(Math.max(0, 1 - dy / 400))
-    }
-    const up = () => {
-      sheet.classList.remove('dragging')
-      document.removeEventListener('pointermove', move)
-      document.removeEventListener('pointerup', up)
-      const shouldClose = dy > 120
-      sheet.style.transform = ''
-      if (scrim) scrim.style.opacity = ''
-      if (shouldClose) onClose()
-    }
-    document.addEventListener('pointermove', move)
-    document.addEventListener('pointerup', up)
-  }
-
-  // Tap (or keyboard-activate) the pull-tab to close; a drag's trailing
-  // click is swallowed via draggedRef
-  const onGrabberClick = () => {
-    if (draggedRef.current) {
-      draggedRef.current = false
-      return
-    }
-    onClose()
-  }
-
   return (
-    <>
-      <div
-        ref={scrimRef}
-        className={`scrim${open ? ' open' : ''}`}
-        onClick={onClose}
-      />
-      <div
-        ref={sheetRef}
-        id="sheet"
-        className={`sheet${open ? ' open' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu"
-      >
-        <div className="sheet-body">
-        {/* The close notch: the menu notch's twin, hung from the sheet's top
-            seam (straight edge merged in, free corners notched) so the same
-            stone tab that opened the sheet is what shuts it. Tap or drag
-            down to dismiss. */}
-        <button
-          type="button"
-          className="grabber"
-          onPointerDown={onGrabberDown}
-          onClick={onGrabberClick}
-        >
-          <DitherIcon name="chevron-down" size={16} />
-          Close
-        </button>
-
+    <DSBottomSheet isOpen={open} onClose={onClose} ariaLabel="Menu">
         <nav className="menu-nav">
           {LOCATIONS.map((loc) => {
             const locked = loc.minLevel != null && displayLevel < loc.minLevel
@@ -193,21 +99,6 @@ export default function BottomSheet({
             GitHub · sachahurley <ArrowUpRight />
           </a>
         </div>
-
-        </div>
-
-        {/* Stonework ring: the baseboard's run continued around the whole
-            sheet seam, as an overlay so content scrolls beneath it. The top
-            run is split into two segments flanking the close notch, so the
-            tiles never overlap the tab. */}
-        <div className="sheet-tiles" aria-hidden="true">
-          <TileBand className="st-band st-top l" />
-          <TileBand className="st-band st-top r" />
-          <TileBand className="st-band st-side l" />
-          <TileBand className="st-band st-side r" />
-          <TileBand className="st-band st-bottom" />
-        </div>
-      </div>
-    </>
+    </DSBottomSheet>
   )
 }
