@@ -6,9 +6,12 @@ import { createRoot } from 'react-dom/client'
 // back to ui-monospace (SF Mono on macOS). Self-hosted via @fontsource.
 import '@fontsource/fragment-mono/400.css'
 
-// Load Scorpion UI's CSS variables (design tokens for colors, fonts, etc.)
-// This MUST come before your own CSS so the tokens are available
-import '@scorp-ds/components/styles'
+// Load the scorp-ds design tokens directly (CSS custom properties only).
+// The baked components stylesheet is no longer imported: it carried a second
+// Tailwind preflight that fought ours, and DS component classes compile
+// through this app's own Tailwind pass (the content glob covers the vendored
+// dist). MUST come before our CSS so the tokens are available.
+import '@scorp-ds/tokens/styles/tokens.css'
 
 // Your project's Tailwind CSS (uses the tokens loaded above)
 import './index.css'

@@ -9,10 +9,14 @@
  * - medium: 32px height (h-8) - matches small button/input - default
  * - large: 40px height (h-10) - matches medium button/input
  *
+ * SHAPE: track and knob are both clipped to the small plate (--plate-round).
+ * Focus is an inset ring (the clip swallows outside outlines) and the knob
+ * hops on steps(3) — plate motion, not a glide.
+ *
  * Features:
  * - Accessible (ARIA attributes, keyboard support)
  * - Focus states matching design system
- * - Smooth animations
+ * - Pixel-grid knob motion
  * - Optional label
  * - Optional icon inside knob (for special use cases like theme toggle)
  */

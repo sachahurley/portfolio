@@ -35,7 +35,8 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
  * @param label - Optional label text displayed next to checkbox
  * @param error - Whether checkbox has a validation error
  * @param disabled - Whether checkbox is disabled
- * @param checked - Whether checkbox is checked
+ * @param checked - Controlled checked state; omit it to use the native
+ *                  uncontrolled behavior (`defaultChecked`)
  * @param onCheckedChange - Callback when checkbox state changes (alternative to onChange)
  */
 export declare const Checkbox: import("react").ForwardRefExoticComponent<CheckboxProps & import("react").RefAttributes<HTMLInputElement>>;

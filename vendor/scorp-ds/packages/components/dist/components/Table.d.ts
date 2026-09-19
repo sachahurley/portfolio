@@ -3,20 +3,30 @@
  * Compose `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, and `TableCell`.
  */
 import { type HTMLAttributes, type TdHTMLAttributes, type ThHTMLAttributes, type TableHTMLAttributes } from "react";
+/** Row padding density. `compact` is the default data-grid rhythm; the other
+ *  two step up the cell padding on the 4px grid for lower-density reading. */
+export type TableDensity = "compact" | "comfortable" | "spacious";
 export type TableProps = TableHTMLAttributes<HTMLTableElement> & {
     /** Zebra striping for body rows (even rows use `surface-subtle`). */
     striped?: boolean;
     /** Full outer border around the table. */
     bordered?: boolean;
+    /** Row padding rhythm (default `compact`); cells read it via context. */
+    density?: TableDensity;
 };
 /**
  * Root `<table>`. Wrap in a scroll container in product code when needed (`overflow-x-auto`).
+ * `bordered` frames the table on the large plate via the ring recipe (outer layer =
+ * stroke clipped to the plate, inner layer = fill clipped 1px inset) — clip-path
+ * slices real borders, so a border property cannot draw the frame.
  */
 export declare const Table: import("react").ForwardRefExoticComponent<TableHTMLAttributes<HTMLTableElement> & {
     /** Zebra striping for body rows (even rows use `surface-subtle`). */
     striped?: boolean;
     /** Full outer border around the table. */
     bordered?: boolean;
+    /** Row padding rhythm (default `compact`); cells read it via context. */
+    density?: TableDensity;
 } & import("react").RefAttributes<HTMLTableElement>>;
 export type TableHeaderProps = HTMLAttributes<HTMLTableSectionElement>;
 /**
