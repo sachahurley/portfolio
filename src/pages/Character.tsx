@@ -18,6 +18,7 @@
 
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Button } from '@scorp-ds/components'
 import DitherIcon from '../components/DitherIcon'
 import PixelFire, { type PixelFireHandle } from '../components/PixelFire'
 import GemShelf from '../components/progress/GemShelf'
@@ -194,14 +195,17 @@ export default function Character() {
 
   return (
     <div className="ch-main">
-      <button
+      {/* .ch-close is a layout hook only; the control is the DS icon Button */}
+      <Button
+        variant="icon"
+        size="icon"
         type="button"
         className="ch-close"
         onClick={closePage}
         aria-label="Close character screen"
       >
         <DitherIcon name="close" size={16} />
-      </button>
+      </Button>
 
       <div className="ch-grid ch-grid3">
         <section className="ch-panel ch-col-id" aria-label="Character">

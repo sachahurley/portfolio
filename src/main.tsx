@@ -19,6 +19,14 @@ import './index.css'
 // Minimal-mode stylesheet (ported from the prototype; uses the aliases in index.css)
 import './styles/minimal.css'
 
+// Rarity palette: loot.ts is the single source of truth; the CSS custom
+// properties minimal.css consumes are set once here. Theme gems never touch
+// --rar-* (themes.ts removes only its own keys), so these survive re-theming.
+import { RARITY_COLORS } from './game/loot'
+for (const [rarity, hex] of Object.entries(RARITY_COLORS)) {
+  document.documentElement.style.setProperty(`--rar-${rarity}`, hex)
+}
+
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
