@@ -20,9 +20,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
-    // Don't pre-bundle the linked design-system packages. Serving them directly
-    // means edits in ../scorp-ds reflect immediately in dev — no Vite restart or
-    // `--force` needed to clear the dependency cache.
+    // Don't pre-bundle the vendored design-system packages. Serving them
+    // directly means the dev.sh dist->vendor sync loop's updates reflect
+    // without a Vite restart or `--force` to clear the dependency cache.
+    // (@scorp-ds/* resolves into vendor/, not the sibling checkout.)
     exclude: ['@scorp-ds/components', '@scorp-ds/tokens'],
   },
 })

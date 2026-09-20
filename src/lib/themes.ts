@@ -5,9 +5,11 @@
  * the site by writing CSS custom properties inline on <html> (inline style
  * beats the :root rules in index.css). The "default" theme is special: it
  * REMOVES the inline overrides so the stylesheet (scorp-ds token aliases)
- * stays the single source of truth for the site's stock look. That means
- * THEMES.default's accent/head/text literals are only used for gem art and
- * impact effects - if the scorp-ds tokens ever change, update them here too.
+ * stays the single source of truth for the site's stock look. The default
+ * theme's colors (used for gem art and impact effects, which need concrete
+ * hex strings for canvas) are READ from the scorp-ds CSS variables at
+ * access time via cssVar(), so a DS token change flows through without a
+ * manual mirror update; the literals remain only as last-resort fallbacks.
  *
  * Colors on ember/tide/dusk are the placeholder art-direction set from the
  * prototype spec; the contract is the variable structure (--accent, --hover,
@@ -28,16 +30,33 @@ export interface Theme {
 // Gems awarded at levels 1/2/3 (index = level - 1).
 export const LEVEL_GEMS: GemId[] = ['ember', 'tide', 'dusk']
 
+/**
+ * Read a scorp-ds CSS custom property, falling back to the given hex when
+ * the variable is unavailable (tests, or a token rename upstream). Canvas
+ * art needs concrete color strings, so this resolves the var to its value.
+ */
+function cssVar(name: string, fallback: string): string {
+  if (typeof window === 'undefined') return fallback
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return v || fallback
+}
+
 export const THEMES: Record<ThemeId, Theme> = {
-  // Default mirrors the site's REAL stock values (index.css / scorp-ds dark),
-  // not the prototype's grays. fire = representative hues pulled from
-  // DEFAULT_FIRE_PALETTE below, used by the impact effects.
+  // Default mirrors the site's REAL stock values (scorp-ds dark). Getters
+  // resolve the DS tokens lazily (at gem-art/impact time, when tokens.css
+  // is guaranteed loaded) instead of mirroring hexes that drift.
   default: {
     name: 'Sepia',
-    accent: '#e0a26a', // mirrors --accent in index.css (the village gold)
-    head: '#fdfcfb',
-    text: '#bfb4a3',
-    fire: ['#E0DACE', '#968A75', '#474030'],
+    get accent() { return cssVar('--color-amber-gold', '#e0a26a') },
+    get head() { return cssVar('--color-sepia-50', '#fdfcfb') },
+    get text() { return cssVar('--color-sepia-500', '#bfb4a3') },
+    get fire(): [string, string, string] {
+      return [
+        cssVar('--color-sepia-400', '#E0DACE'),
+        cssVar('--color-sepia-600', '#968A75'),
+        cssVar('--color-sepia-800', '#474030'),
+      ]
+    },
   },
   ember: {
     name: 'Ember',
@@ -94,21 +113,23 @@ export function mix(a: string, b: string, t: number): string {
 // ramp runs the sepia scale; the flame mass sits in the DARK sepias
 // (800-600), cresting at 500/400, so the fire reads as embers in the
 // welcome asset's register rather than a bright blaze.
+// Resolved from the scorp-ds sepia tokens at module load (tokens.css is
+// imported before the app tree in main.tsx); hexes are fallbacks only.
 export const DEFAULT_FIRE_PALETTE = [
   'transparent', // 0: no fire
-  '#0A0704', //  1: sepia-1000 (barely visible ember)
-  '#120D09', //  2: sepia-975
-  '#1A150F', //  3: sepia-950
-  '#221E13', //  4: sepia-925 (dark ember)
-  '#2B2718', //  5: sepia-900
-  '#2B2718', //  6: sepia-900
-  '#474030', //  7: sepia-800
-  '#474030', //  8: sepia-800
-  '#695F4D', //  9: sepia-700 (welcome dark drip - the flame body)
-  '#695F4D', // 10: sepia-700
-  '#968A75', // 11: sepia-600 (warm glow)
-  '#BFB4A3', // 12: sepia-500 (welcome mid drip, hot tip)
-  '#E0DACE', // 13: sepia-400 (rare white-hot sparkle)
+  cssVar('--color-sepia-1000', '#0A0704'), //  1: barely visible ember
+  cssVar('--color-sepia-975', '#120D09'), //  2
+  cssVar('--color-sepia-950', '#1A150F'), //  3
+  cssVar('--color-sepia-925', '#221E13'), //  4: dark ember
+  cssVar('--color-sepia-900', '#2B2718'), //  5
+  cssVar('--color-sepia-900', '#2B2718'), //  6
+  cssVar('--color-sepia-800', '#474030'), //  7
+  cssVar('--color-sepia-800', '#474030'), //  8
+  cssVar('--color-sepia-700', '#695F4D'), //  9: welcome dark drip - the flame body
+  cssVar('--color-sepia-700', '#695F4D'), // 10
+  cssVar('--color-sepia-600', '#968A75'), // 11: warm glow
+  cssVar('--color-sepia-500', '#BFB4A3'), // 12: welcome mid drip, hot tip
+  cssVar('--color-sepia-400', '#E0DACE'), // 13: rare white-hot sparkle
 ]
 
 // Intensity -> color anchors for generated theme palettes, chosen so the

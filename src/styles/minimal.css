@@ -24,7 +24,7 @@ strong, b { font-weight: 400; }
 #loader {
   /* sepia-950, matching the baked background of the dither welcome asset so
      the letterbox around the integer-scaled image is invisible */
-  position: fixed; inset: 0; z-index: calc(var(--z-index-modal) + 4); /* loader: above sheet+dock, below fx */ background: var(--color-sepia-950, #1a150f);
+  position: fixed; inset: 0; z-index: calc(var(--z-index-modal) + 4); /* loader: above sheet+dock, below fx */ background: var(--color-sepia-950);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 48px; cursor: pointer; /* clears the 32px jeweled frame */
   transition: opacity .4s ease;
@@ -110,7 +110,7 @@ strong, b { font-weight: 400; }
      (the stonework is dithered to sepia-500, see JeweledFrame), a base
      token themes never override: the frame never re-themes and neither
      does its notch. */
-  background: var(--color-sepia-500, #bfb4a3); color: var(--color-sepia-500, #bfb4a3);
+  background: var(--color-sepia-500); color: var(--color-sepia-500);
   clip-path: polygon(
     0 4px, 4px 4px, 4px 0,
     calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
@@ -140,7 +140,7 @@ strong, b { font-weight: 400; }
   clip-path: inherit;
   transition: background-color .12s;
 }
-.gf-tab:hover::before { background: var(--color-sepia-800, #474030); }
+.gf-tab:hover::before { background: var(--color-sepia-800); }
 /* pressed into the stone: the notch sinks, keeping its centring transform
    (its own fast transition so the press never rides the sink timing) */
 .gf-tab:active { transform: translateX(-50%) translateY(2px); transition: transform .06s; }
@@ -249,7 +249,7 @@ strong, b { font-weight: 400; }
 .pager { display: flex; gap: 12px; margin-top: 96px; }
 .pgbtn {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px;
-  padding: 12px; background: var(--color-sepia-925, #221e13);
+  padding: 12px; background: var(--color-sepia-925);
   clip-path: var(--plate-round);
   transition: background-color .12s;
 }
@@ -419,7 +419,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 }
 .toast::before {
   content: ""; position: absolute; inset: 1px; z-index: -1;
-  background: var(--color-sepia-925, #16120c); clip-path: var(--plate-round);
+  background: var(--color-sepia-925); clip-path: var(--plate-round);
 }
 .toast.show {
   transform: none;
@@ -595,7 +595,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
     position: absolute; top: 50%; left: -16px; transform: translateY(-50%);
     isolation: isolate;
     /* same frame-stone ring as the mobile menu notch (see .gf-tab) */
-    background: var(--color-sepia-500, #bfb4a3); color: var(--color-sepia-500, #bfb4a3);
+    background: var(--color-sepia-500); color: var(--color-sepia-500);
     font-family: var(--mono); font-size: 13px; line-height: 1;
     clip-path: polygon(
       0 4px, 4px 4px, 4px 0,
@@ -611,7 +611,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
     clip-path: inherit;
     transition: background-color .12s;
   }
-  .gf-collapse:hover::before { background: var(--color-sepia-800, #474030); }
+  .gf-collapse:hover::before { background: var(--color-sepia-800); }
   /* clears the stone band when the tab parks at the frame edge */
   .gf-collapse { z-index: 65; }
 }
@@ -644,28 +644,11 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 
 /* compass */
 .gf-compass ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-/* pixel-rounded plate silhouette (RPG dialog-box style): quarter-round
-   corners built from 2px stair-step cells — top/bottom edges inset 6px,
-   with a single 2px step into the vertical edge. Defined on :root so it's
-   shared by the compass rows (hover/active plates, selected ring) and the
-   home-page row hover plates. */
-:root {
-  /* the large floating tier's silhouette: --plate-round at 2x */
-  --plate-round-lg: polygon(
-    0 12px, 4px 12px, 4px 4px, 12px 4px, 12px 0,
-    calc(100% - 12px) 0, calc(100% - 12px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 12px, 100% 12px,
-    100% calc(100% - 12px), calc(100% - 4px) calc(100% - 12px), calc(100% - 4px) calc(100% - 4px),
-    calc(100% - 12px) calc(100% - 4px), calc(100% - 12px) 100%,
-    12px 100%, 12px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 12px), 0 calc(100% - 12px)
-  );
-  --plate-round: polygon(
-    0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
-    calc(100% - 6px) 0, calc(100% - 6px) 2px, calc(100% - 2px) 2px, calc(100% - 2px) 6px, 100% 6px,
-    100% calc(100% - 6px), calc(100% - 2px) calc(100% - 6px), calc(100% - 2px) calc(100% - 2px),
-    calc(100% - 6px) calc(100% - 2px), calc(100% - 6px) 100%,
-    6px 100%, 6px calc(100% - 2px), 2px calc(100% - 2px), 2px calc(100% - 6px), 0 calc(100% - 6px)
-  );
-}
+/* pixel-rounded plate silhouette (RPG dialog-box style): --plate-round and
+   --plate-round-lg come from the scorp-ds tokens (tokens.css) — they are NOT
+   re-declared here. A local :root copy used to shadow the DS values for the
+   whole site, DS components included; keep it deleted so the DS shape
+   language stays the single source of truth. */
 /* every row carries the pixel-rounded polygon; it's invisible while the
    background is transparent, and shapes the hover/active plates */
 .gf-dest {
@@ -1046,7 +1029,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   position: fixed; top: calc(24px + env(safe-area-inset-top, 0px)); right: 24px; z-index: 65;
   display: inline-flex; align-items: center; justify-content: center;
   width: 44px; height: 44px; padding: 0; border: 0; cursor: pointer;
-  background: var(--color-sepia-925, #221e13); color: var(--accent);
+  background: var(--color-sepia-925); color: var(--accent);
   clip-path: var(--plate-round);
   transition: background-color .12s, color .12s;
 }
@@ -1177,7 +1160,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .town-plate {
   position: absolute; transform: translate(-50%, -100%);
   font-family: var(--mono); font-size: 12px; line-height: 1;
-  color: var(--fg); background: var(--color-sepia-925, #16120c);
+  color: var(--fg); background: var(--color-sepia-925);
   border: 1px solid var(--border); border-radius: 2px;
   padding: 6px 8px; white-space: nowrap; pointer-events: none;
 }
@@ -1342,7 +1325,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .tarot-spread {
   flex: 1; display: flex; flex-direction: column; gap: 6px; text-align: left;
   font-family: var(--mono); padding: 14px 14px 12px; border: 0; cursor: pointer;
-  background: var(--color-sepia-925, #221e13); color: var(--body);
+  background: var(--color-sepia-925); color: var(--body);
   clip-path: var(--plate-round-lg);
   transition: background-color .12s, color .12s, box-shadow .12s;
 }
