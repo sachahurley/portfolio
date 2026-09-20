@@ -3317,7 +3317,7 @@ function Ar({ isOpen: e, onClose: t, title: r, children: o, footerContent: a, wi
       "aria-label": r,
       onClick: (g) => g.stopPropagation(),
       children: /* @__PURE__ */ y("div", { className: "w-full plate-round-lg bg-[var(--surface-card)] flex flex-col overflow-hidden", children: [
-        /* @__PURE__ */ y("div", { className: "flex items-center justify-between px-8 py-6 border-b-[0.5px] border-solid border-[var(--surface-container-stroke)]", children: [
+        /* @__PURE__ */ y("div", { className: "flex items-center justify-between px-6 py-5 border-b-[0.5px] border-solid border-[var(--surface-container-stroke)]", children: [
           /* @__PURE__ */ n("h2", { className: "text-base font-mono text-[var(--text-primary)] font-medium flex-1 min-w-0 truncate", children: r }),
           /* @__PURE__ */ n(
             Ge,
@@ -3332,15 +3332,15 @@ function Ar({ isOpen: e, onClose: t, title: r, children: o, footerContent: a, wi
             }
           )
         ] }),
-        /* @__PURE__ */ n("div", { className: "overflow-y-auto px-8 py-6", tabIndex: 0, children: o }),
-        a && /* @__PURE__ */ n("div", { className: "flex items-center justify-end gap-3 px-8 py-5 border-t-[0.5px] border-solid border-[var(--surface-container-stroke)]", children: a })
+        /* @__PURE__ */ n("div", { className: "overflow-y-auto px-6 py-5", tabIndex: 0, children: o }),
+        a && /* @__PURE__ */ n("div", { className: "flex items-center justify-end gap-3 px-6 py-5 border-t-[0.5px] border-solid border-[var(--surface-container-stroke)]", children: a })
       ] })
     }
   );
   return N ? /* @__PURE__ */ n(
     "div",
     {
-      className: `fixed inset-x-0 flex justify-center pointer-events-none ${m ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
+      className: `fixed inset-x-0 mx-auto w-fit max-w-full ${m ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
       style: {
         zIndex: "var(--z-index-modal)",
         bottom: "48px",
@@ -3350,12 +3350,12 @@ function Ar({ isOpen: e, onClose: t, title: r, children: o, footerContent: a, wi
       onAnimationEnd: () => {
         m && u(!1);
       },
-      children: /* @__PURE__ */ n("div", { className: `flex max-w-full ${m ? "" : "pointer-events-auto"}`, children: w })
+      children: w
     }
   ) : /* @__PURE__ */ n(ie, { children: /* @__PURE__ */ n(
     "div",
     {
-      className: `fixed inset-0 flex items-center justify-center p-5 bg-[var(--surface-overlay)] ${m ? "animate-out fade-out fill-mode-forwards pointer-events-none" : "animate-in fade-in"}`,
+      className: `fixed inset-0 flex items-center justify-center p-5 bg-[var(--surface-overlay)] ${m ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
       style: { zIndex: "var(--z-index-modal)", animationDuration: "var(--duration-normal)" },
       onClick: t,
       onAnimationEnd: () => {
