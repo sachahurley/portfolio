@@ -9,7 +9,7 @@
 /* ============================================================
    Minimal-mode semantic tokens
    These alias the scorp-ds dark-theme CSS variables (loaded via
-   `@scorp-ds/components/styles` in main.tsx) so the Minimal-mode
+   `@scorp-ds/tokens/styles/tokens.css` in main.tsx) so the Minimal-mode
    stylesheet can reference `var(--bg)`, `var(--accent)`, etc. while
    every color still traces back to the design system.
    ============================================================ */
