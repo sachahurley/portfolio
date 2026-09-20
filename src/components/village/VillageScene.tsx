@@ -248,12 +248,12 @@ export default function VillageScene({
         return (
           <div key={l.idx} className="vg-label" style={{ left: l.left, top: l.top }}>
             {l.text}
-            {badge && (
-              <span className={`vg-badge${badge.accent ? ' lvl' : ''}`}>{badge.text}</span>
-            )}
+            {badge && !badge.accent && <span className="vg-badge">{badge.text}</span>}
           </div>
         )
       })}
+      {/* accent rewards (a pending level) mark the sprite itself, the
+          RPG over-the-head cue, instead of riding the caption */}
       {spots.map((s) => {
         const href = items[s.idx]?.tap?.href
         const badge = href ? badges?.[href] : undefined
@@ -271,6 +271,21 @@ export default function VillageScene({
               if (href) onNavigate(href)
             }}
           />
+        )
+      })}
+      {spots.map((s) => {
+        const href = items[s.idx]?.tap?.href
+        const badge = href ? badges?.[href] : undefined
+        if (!badge?.accent) return null
+        return (
+          <span
+            key={`marker-${s.idx}`}
+            className="vg-marker"
+            aria-hidden="true"
+            style={{ left: s.left + s.width / 2, top: s.top - 6 }}
+          >
+            ▴
+          </span>
         )
       })}
     </div>

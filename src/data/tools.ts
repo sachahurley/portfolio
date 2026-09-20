@@ -1,8 +1,7 @@
 /**
  * TOOLS DATA
  *
- * The tools I reach for. Consumed by the About page and the
- * "What I Use" note (/notes/uses).
+ * The tools I reach for. Consumed by the About page.
  */
 
 export interface Tool {

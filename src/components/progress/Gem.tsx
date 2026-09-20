@@ -16,12 +16,12 @@ const GEM_TILE: readonly [number, number] = [1, 22]
 
 export default function Gem({
   themeId,
-  scale = 3,
+  scale = 2,
   dim = false,
   cls,
 }: {
   themeId: ThemeId
-  /** Screen px per sheet px (3 track, 8 level-up modal). */
+  /** Screen px per sheet px (2 track, 8 level-up modal). */
   scale?: number
   dim?: boolean
   cls?: string

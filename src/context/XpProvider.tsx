@@ -114,6 +114,8 @@ interface XpValue {
   /** Equip an owned item into its slot; a displaced item stays owned. */
   equipItem: (itemId: number) => void
   unequipSlot: (slot: Slot) => void
+  /** Destroy an owned item forever; a worn one leaves its slot empty. */
+  destroyItem: (itemId: number) => void
   /** Item ids the visitor has inspected; the rest wear a "new" pip. */
   seenItems: number[]
   markItemSeen: (itemId: number) => void
@@ -470,6 +472,25 @@ export function XpProvider({ children }: { children: ReactNode }) {
     [persist]
   )
 
+  const destroyItem = useCallback(
+    (itemId: number) => {
+      const it = itemsRef.current.find((i) => i.id === itemId)
+      if (!it) return
+      itemsRef.current = itemsRef.current.filter((i) => i.id !== itemId)
+      setItems(itemsRef.current)
+      if (equipRef.current[it.slot] === itemId) {
+        const next = { ...equipRef.current }
+        delete next[it.slot]
+        equipRef.current = next
+        setEquipment(next)
+      }
+      seenRef.current = seenRef.current.filter((id) => id !== itemId)
+      setSeenItems(seenRef.current)
+      persist()
+    },
+    [persist]
+  )
+
   const markItemSeen = useCallback(
     (itemId: number) => {
       if (seenRef.current.includes(itemId)) return
@@ -573,6 +594,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
     openChest,
     equipItem,
     unequipSlot,
+    destroyItem,
     seenItems,
     markItemSeen,
     getEarned,

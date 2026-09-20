@@ -33,6 +33,13 @@ export default function LevelUpModal() {
 
   const gem = shown != null ? LEVEL_GEMS[shown - 1] : undefined
 
+  // The Modal fades out on close; hold the last award so the panel doesn't
+  // empty mid-fade (adjust-state-during-render, as in ItemCard).
+  const [last, setLast] = useState<{ level: number; gem: (typeof LEVEL_GEMS)[number] } | null>(null)
+  if (shown != null && gem != null && (last?.level !== shown || last?.gem !== gem)) {
+    setLast({ level: shown, gem })
+  }
+
   return (
     <Modal
       isOpen={shown != null && gem != null}
@@ -45,15 +52,15 @@ export default function LevelUpModal() {
         </Button>
       }
     >
-      {shown != null && gem != null && (
+      {last != null && (
         <div className="text-center">
           <div className="em-gem">
-            <Gem themeId={gem} scale={8} cls="gem-art-lg" />
+            <Gem themeId={last.gem} scale={8} cls="gem-art-lg" />
           </div>
-          <div className="em-title">{`Level ${shown + 1}!`}</div>
+          <div className="em-title">{`Level ${last.level + 1}!`}</div>
           <div className="em-text">
-            You earned the <b>{THEMES[gem].name}</b> gem. Drop it into the fire on your character
-            page to recolor the site. A chest also waits there.
+            You earned the <b>{THEMES[last.gem].name}</b> gem. Drop it into the fire on your
+            character page to recolor the site. A chest also waits there.
           </div>
         </div>
       )}

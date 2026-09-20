@@ -4,9 +4,9 @@
  * Diablo-2-inspired, three columns on wide screens: identity + stats, the
  * paperdoll, and the pack (with any unopened chests); two columns on
  * tablets, one on phones, with the camp (progress + gem fire) below.
- * Tapping a paperdoll slot filters the pack to that slot; tapping an item
- * opens a card that compares it against what's worn, and the stats preview
- * the swap. Chests open in place with an impact burst and a reveal modal. Not a
+ * Tapping a worn paperdoll item opens its card (the way to unequip);
+ * empty slots are inert labels. Tapping a pack item opens a card that
+ * compares it against what's worn, and the stats preview the swap. Chests open in place with an impact burst and a reveal modal. Not a
  * "location": it isn't in the world registry, awards no visit XP, and gets
  * a flavor log line instead of an arrival.
  *
@@ -27,12 +27,12 @@ import { THEMES } from '../lib/themes'
 import { runImpact } from '../lib/impactFx'
 import CharacterPanel from '../components/game/CharacterPanel'
 import ChestRevealModal from '../components/ChestRevealModal'
+import DestroyConfirmModal from '../components/game/DestroyConfirmModal'
 import ItemCard from '../components/game/ItemCard'
 import PackGrid from '../components/game/PackGrid'
 import PixelItem from '../components/game/PixelItem'
 import StatsBlock from '../components/game/StatsBlock'
 import {
-  chestSourceLabel,
   rarityFx,
   resolveItem,
   SLOT_LABELS,
@@ -49,28 +49,6 @@ const DOLL_GRID: Array<Slot | null> = [
   'ring', 'boots', 'amulet',
 ]
 
-/** The unopened-chest buttons. Rendered twice: in a phone-only strip above
- *  the grid (chests are what the badge promised, so they lead) and in the
- *  pack panel at >=720px; CSS shows exactly one of the two. */
-function ChestRow({
-  chests,
-  onOpen,
-}: {
-  chests: SavedChest[]
-  onOpen: (chest: SavedChest, e: MouseEvent<HTMLButtonElement>) => void
-}) {
-  return (
-    <div className="ch-chests">
-      {chests.map((c) => (
-        <button key={c.id} className="ch-chestbtn" onClick={(e) => onOpen(c, e)}>
-          <PixelItem kind="chest" rarity="common" cell={4} />
-          <span>From {chestSourceLabel(c.src)}</span>
-        </button>
-      ))}
-    </div>
-  )
-}
-
 export default function Character() {
   usePageTitle('Character')
   const {
@@ -81,6 +59,7 @@ export default function Character() {
     openChest,
     equipItem,
     unequipSlot,
+    destroyItem,
     logLine,
     toast,
     celebrating,
@@ -89,8 +68,9 @@ export default function Character() {
     activeGem,
   } = useXp()
   const [selected, setSelected] = useState<number | null>(null)
-  const [activeSlot, setActiveSlot] = useState<Slot | null>(null)
   const [revealed, setRevealed] = useState<Item | null>(null)
+  // Destroy is gated by a confirm modal stacked over the item card.
+  const [confirmingDestroy, setConfirmingDestroy] = useState(false)
   const navigate = useNavigate()
   // The camp fire below the sheet doubles as the gem drop target (same
   // pairing as the classic home page).
@@ -145,25 +125,21 @@ export default function Character() {
       if (e.key !== 'Escape') return
       if (celebrating) return
       if (document.querySelector('.sheet.open')) return
-      if (selected != null) setSelected(null)
-      else if (activeSlot != null) setActiveSlot(null)
+      // the destroy confirm is the top layer; peel it alone (idempotent
+      // with the DS modal's own Esc handling)
+      if (confirmingDestroy) setConfirmingDestroy(false)
+      else if (selected != null) setSelected(null)
       else closePage()
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [selected, activeSlot, revealed, celebrating, closePage])
+  }, [selected, revealed, celebrating, confirmingDestroy, closePage])
 
+  // Worn slots open their item's card (the way to unequip); empty slots
+  // are inert labels, not a filter (slot filtering was retired).
   const onSlotClick = (slot: Slot) => {
-    if (activeSlot === slot) {
-      setActiveSlot(null)
-      setSelected(null)
-      return
-    }
-    setActiveSlot(slot)
     const worn = equipment[slot]
     if (worn != null) selectItem(worn)
-    // an open card for another slot's item no longer matches the filter
-    else if (selectedItem && selectedItem.slot !== slot) setSelected(null)
   }
 
   const onItemAction = () => {
@@ -179,6 +155,33 @@ export default function Character() {
       toast(`equipped the ${selectedItem.name}`)
     }
     setSelected(null)
+  }
+
+  // Destroy from the item card, pack items only (a worn item unequips
+  // first). The button only asks; the confirm modal is the real gate.
+  const onItemDestroy = () => {
+    if (!selectedItem || selectedEquipped) return
+    setConfirmingDestroy(true)
+  }
+  const onDestroyConfirmed = () => {
+    if (!selectedItem) return
+    destroyItem(selectedItem.id)
+    logLine(`You destroy the ${selectedItem.name}.`, 'hint')
+    toast(`destroyed the ${selectedItem.name}`)
+    setConfirmingDestroy(false)
+    setSelected(null)
+  }
+
+  // Equip straight from the reveal, offered only while the slot is empty
+  // (an occupied slot deserves the compare card, not a blind swap).
+  const onRevealEquip = () => {
+    if (!revealed) return
+    equipItem(revealed.id)
+    const el = slotRefs.current[revealed.slot]
+    if (el) runImpact(el, rarityFx(revealed.rarity))
+    logLine(`You equip the ${revealed.name}.`, 'hint')
+    toast(`equipped the ${revealed.name}`)
+    setRevealed(null)
   }
 
   const onOpenChest = (chest: SavedChest, e: MouseEvent<HTMLButtonElement>) => {
@@ -200,13 +203,6 @@ export default function Character() {
         <DitherIcon name="close" size={16} />
       </button>
 
-      {chests.length > 0 && (
-        <section className="ch-panel ch-chestbar" aria-label="Chests">
-          <div className="gf-label">chests</div>
-          <ChestRow chests={chests} onOpen={onOpenChest} />
-        </section>
-      )}
-
       <div className="ch-grid ch-grid3">
         <section className="ch-panel ch-col-id" aria-label="Character">
           <CharacterPanel />
@@ -220,23 +216,13 @@ export default function Character() {
 
         <section className="ch-panel ch-col-doll" aria-label="Equipment">
           <div className="gf-label">equipment</div>
-          <div className="gf-dim ch-helper">
-            {activeSlot
-              ? `Showing ${SLOT_LABELS[activeSlot]}; tap again to show all`
-              : 'Tap a slot to filter your pack'}
-          </div>
-          <div className={`ch-doll${activeSlot ? ' has-active' : ''}`}>
+          <div className="gf-dim ch-helper">Tap a worn item to inspect it</div>
+          <div className="ch-doll">
             {DOLL_GRID.map((cellKind, i) => {
               if (cellKind === null) return <div key={i} />
               const slot = cellKind
               const saved = items.find((it) => it.id === equipment[slot])
-              const active = activeSlot === slot
-              const cls = [
-                'ch-slotwrap',
-                saved ? `bg-rar-${saved.rarity}` : '',
-                active ? 'is-active' : '',
-                activeSlot && !active ? 'is-dim' : '',
-              ]
+              const cls = ['ch-slotwrap', saved ? `bg-rar-${saved.rarity}` : '']
                 .filter(Boolean)
                 .join(' ')
               return (
@@ -247,23 +233,25 @@ export default function Character() {
                     slotRefs.current[slot] = el
                   }}
                 >
-                  <button
-                    className="ch-slot"
-                    onClick={() => onSlotClick(slot)}
-                    aria-pressed={active}
-                    aria-label={saved ? `${slot}: ${resolveItem(saved).name}` : `${slot}: empty`}
-                  >
-                    {saved ? (
+                  {saved ? (
+                    <button
+                      className="ch-slot"
+                      onClick={() => onSlotClick(slot)}
+                      aria-label={`${slot}: ${resolveItem(saved).name}`}
+                    >
                       <PixelItem
                         kind={saved.slot}
                         base={saved.base}
                         rarity={saved.rarity}
                         cell={4}
                       />
-                    ) : (
+                    </button>
+                  ) : (
+                    // empty slots are labels, not controls
+                    <div className="ch-slot ch-slot-empty">
                       <span className="ch-slotname">{SLOT_LABELS[slot]}</span>
-                    )}
-                  </button>
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -271,33 +259,34 @@ export default function Character() {
         </section>
 
         <section className="ch-panel ch-col-loot" aria-label="Pack">
-          {chests.length > 0 && (
-            <div className="ch-pack-chests">
-              <div className="gf-label">chests</div>
-              <ChestRow chests={chests} onOpen={onOpenChest} />
-            </div>
-          )}
-
+          {/* chests live in the grid itself (PackGrid leads with them) */}
           <PackGrid
             pack={pack}
             items={items}
             equipment={equipment}
-            hasChests={chests.length > 0}
-            activeSlot={activeSlot}
+            chests={chests}
+            onOpenChest={onOpenChest}
             seenItems={seenItems}
             onSelect={selectItem}
           />
         </section>
 
-        {selectedItem && (
-          <ItemCard
-            item={selectedItem}
-            equipped={wornInSlot}
-            isEquipped={selectedEquipped}
-            onAction={onItemAction}
-            onClose={() => setSelected(null)}
-          />
-        )}
+        {/* Always mounted: the card holds its last item through the fade-out */}
+        <ItemCard
+          item={selectedItem}
+          equipped={wornInSlot}
+          isEquipped={selectedEquipped}
+          onAction={onItemAction}
+          onDestroy={onItemDestroy}
+          // while the confirm is stacked on top, the card's own close paths
+          // (its Esc listener) peel the confirm instead of the card
+          onClose={() => (confirmingDestroy ? setConfirmingDestroy(false) : setSelected(null))}
+        />
+        <DestroyConfirmModal
+          item={confirmingDestroy ? selectedItem : null}
+          onConfirm={onDestroyConfirmed}
+          onClose={() => setConfirmingDestroy(false)}
+        />
       </div>
 
       {/* Theme: the gems earned by levelling, and the fire that applies
@@ -313,7 +302,12 @@ export default function Character() {
         <PixelFire ref={fireApiRef} inline />
       </section>
 
-      <ChestRevealModal item={revealed} onClose={() => setRevealed(null)} />
+      <ChestRevealModal
+        item={revealed}
+        canEquip={revealed != null && equipment[revealed.slot] == null}
+        onEquip={onRevealEquip}
+        onClose={() => setRevealed(null)}
+      />
     </div>
   )
 }

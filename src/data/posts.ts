@@ -155,18 +155,6 @@ export const posts: Post[] = [
       <p>A friendly closing thought, then a way to keep the conversation going.</p>
     `,
   },
-  {
-    slug: 'uses',
-    title: 'What I Use',
-    date: '2026-01-20',
-    excerpt: 'The tools I actually reach for, day to day',
-    tags: ['Tools'],
-    // The /notes/uses page renders the tools list (from data/tools.ts) instead
-    // of this HTML, so this content is just a fallback.
-    content: `
-      <p>The tools I actually reach for, day to day. I keep the kit small and lean on AI tooling to move fast.</p>
-    `,
-  },
 ]
 
 // Helper: get all posts sorted by date (newest first)
