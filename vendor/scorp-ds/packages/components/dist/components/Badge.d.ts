@@ -23,12 +23,16 @@
  * FEATURES:
  * - Optional close button (onClose prop)
  * - Icon support (iconLeft prop)
+ * - caps: uppercase eyebrow voice (uppercase + .08em tracking) for state
+ *   chips ("EQUIPPED", "LEVEL UP") without per-site className overrides
  * - Full light/dark theme support
  */
 import { type ReactNode } from "react";
 export interface BadgeProps {
     variant?: "default" | "primary" | "success" | "warning" | "error" | "info" | "bone";
     size?: "small" | "medium" | "large";
+    /** Uppercase eyebrow voice: uppercase text with .08em tracking. */
+    caps?: boolean;
     children: ReactNode;
     iconLeft?: ReactNode;
     onClose?: () => void;
@@ -44,5 +48,5 @@ export interface BadgeProps {
  * @param onClose - Optional callback when close button is clicked
  * @param className - Additional CSS classes
  */
-export declare function Badge({ variant, size, children, iconLeft, onClose, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
+export declare function Badge({ variant, size, caps, children, iconLeft, onClose, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Badge.d.ts.map
