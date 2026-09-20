@@ -22,6 +22,7 @@ export declare const TUI_ICON_GLYPHS: {
     readonly CheckCircle: "✓";
     readonly ChevronDown: "▼";
     readonly ChevronRight: "▶";
+    readonly ChevronUp: "▲";
     readonly Copy: "⎘";
     readonly Download: "⤓";
     readonly Edit: "✎";
@@ -37,13 +38,19 @@ export declare const TUI_ICON_GLYPHS: {
     readonly Moon: "☾";
     readonly MoreVertical: "⋮";
     readonly Music2: "♫";
+    readonly Pause: "⏸";
+    readonly Play: "▶";
     readonly Plus: "+";
+    readonly Repeat: "↻";
     readonly Save: "⤓";
     readonly Search: "⌕";
     readonly Send: "➤";
     readonly Settings: "⚙";
     readonly Share2: "↗";
     readonly Shield: "☖";
+    readonly Shuffle: "⇄";
+    readonly SkipBack: "⏮";
+    readonly SkipForward: "⏭";
     readonly Star: "★";
     readonly Sun: "☀";
     readonly Tag: "⌂";
