@@ -700,14 +700,9 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 
 /* sheet: compact character row linking to /character (full sheet there) */
-.sheet-char {
-  display: flex; align-items: center; gap: 12px;
-  margin-top: 16px; padding: 12px 0 0; border-top: 1px solid var(--border);
-  font-family: var(--mono); color: var(--fg);
-}
-.sheet-char-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
-.sheet-char-name { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sheet-char-lvl { font-size: 12px; color: var(--body); }
+/* LAYOUT hook only: the row itself is the DS ListRow (thumb + title +
+   badge suffix); this adds the sheet's section seam above it. */
+.sheet-char { margin-top: 16px; border-top: 1px solid var(--border); }
 .sheet-char-go { font-size: 18px; color: var(--mut); }
 
 /* ---- title-screen save readout (NEW GAME / CONTINUE) ---- */
@@ -1170,6 +1165,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .blk-fig canvas { image-rendering: pixelated; display: block; }
 .blk-cap { font-family: var(--mono); font-size: 12px; color: var(--mut); }
+/* Deliberately custom (not DS Badge/Tabs): pressed thumbnail toggles are
+   the house idiom for lab tooling, like .bld-opt below. */
 .blk-thumb {
   padding: 6px; background: transparent; cursor: pointer;
   border: 1px solid var(--border); line-height: 0;
@@ -1271,6 +1268,9 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   display: flex; flex-direction: column; gap: 20px; align-items: center;
 }
 .tarot-spreads { display: flex; gap: 12px; width: 100%; }
+/* Deliberately NOT the DS Radio: that's a dot-and-label form control,
+   and these are rich chip cards (name + description). The radiogroup
+   semantics live in the markup (role=radio / aria-checked). */
 .tarot-spread {
   flex: 1; display: flex; flex-direction: column; gap: 6px; text-align: left;
   font-family: var(--mono); padding: 14px 14px 12px; border: 0; cursor: pointer;

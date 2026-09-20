@@ -10,7 +10,7 @@
  * (use Table). Rows are for scannable lists and navigation.
  *
  * TOKENS USED:
- * - plate.round (silhouette), surface.muted (hover fill)
+ * - plate.round (silhouette), surface.muted (hover fill; `selected` holds it)
  * - accent (interactive title), text.primary; meta/description use the
  *   secondary scale in AA-passing theme pairs (700/600 and 800/500)
  * - duration.fast (hover), focus inset ring (clip swallows outside outlines)
@@ -32,6 +32,14 @@ type CommonProps = {
     thumb?: ReactNode;
     /** Which side the thumbnail sits on (default "start"). */
     thumbPosition?: "start" | "end";
+    /**
+     * Marks the row as the current selection (the active nav route, the
+     * chosen item): the row holds the hover state — surface.muted fill,
+     * accent title — per the SideNavigation pattern (fill + color, never
+     * color alone, never weight). Nav consumers should also pass
+     * `aria-current="page"` so the state is announced.
+     */
+    selected?: boolean;
     className?: string;
 };
 export type ListRowProps = CommonProps & (({

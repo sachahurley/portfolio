@@ -10,7 +10,7 @@
  */
 
 import { Link, useLocation } from 'react-router-dom'
-import { Badge, BottomSheet as DSBottomSheet } from '@scorp-ds/components'
+import { Badge, BottomSheet as DSBottomSheet, ListRow } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
@@ -60,30 +60,31 @@ export default function BottomSheet({
         </nav>
 
 
-        {/* Compact character row: the full sheet lives at /character. */}
-        <Link
+        {/* Compact character row (DS ListRow; the full sheet lives at
+            /character). .sheet-char is only the section seam above it. */}
+        <ListRow
+          as={Link}
+          asProps={{
+            to: '/character',
+            onClick: onClose,
+            'aria-label': `Character: ${name}. Open character screen.`,
+          }}
           className="sheet-char"
-          to="/character"
-          onClick={onClose}
-          aria-label={`Character: ${name}. Open character screen.`}
-        >
-          <PortraitPlate seed={avatarSeed} cell={3} small />
-          <span className="sheet-char-main">
-            <span className="sheet-char-name">{name}</span>
-            <span className="sheet-char-lvl">
-              Lv {level.level + 1} — {level.title}
-            </span>
-          </span>
-          {pendingLevels.length > 0 ? (
-            <Badge variant="primary" size="small" className="gf-pulse uppercase [letter-spacing:.08em]">▴ level up</Badge>
-          ) : chests.length > 0 ? (
-            <Badge variant="bone" size="small" className="uppercase [letter-spacing:.08em]">
-              ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
-            </Badge>
-          ) : (
-            <span className="sheet-char-go">›</span>
-          )}
-        </Link>
+          thumb={<PortraitPlate seed={avatarSeed} cell={3} small />}
+          title={name}
+          titleSuffix={
+            pendingLevels.length > 0 ? (
+              <Badge variant="primary" size="small" caps className="gf-pulse">▴ level up</Badge>
+            ) : chests.length > 0 ? (
+              <Badge variant="bone" size="small" caps>
+                ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
+              </Badge>
+            ) : (
+              <span className="sheet-char-go">›</span>
+            )
+          }
+          description={`Lv ${level.level + 1} — ${level.title}`}
+        />
 
         {/* Contact — sheet-only by design; no dedicated page, no email. */}
         <div className="sheet-contact">

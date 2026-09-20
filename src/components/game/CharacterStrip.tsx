@@ -16,6 +16,10 @@ export default function CharacterStrip() {
   const navigate = useNavigate()
 
   return (
+    // Deliberately NOT a DS ListRow: this is a filled footer strip (game
+    // chrome) with an embedded XP bar and right-aligned state badges;
+    // expressing it through ListRow would take more overrides than the
+    // recipe below. The badges themselves are DS.
     <button
       className="gf-charstrip"
       onClick={() => navigate('/character')}
@@ -31,9 +35,9 @@ export default function CharacterStrip() {
           <i style={{ width: `${level.pct}%` }} />
         </span>
       </span>
-      {pendingLevels.length > 0 && <Badge variant="primary" size="small" className="gf-pulse uppercase [letter-spacing:.08em]">▴ level up</Badge>}
+      {pendingLevels.length > 0 && <Badge variant="primary" size="small" caps className="gf-pulse">▴ level up</Badge>}
       {pendingLevels.length === 0 && chests.length > 0 && (
-        <Badge variant="bone" size="small" className="uppercase [letter-spacing:.08em]">
+        <Badge variant="bone" size="small" caps>
           ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
         </Badge>
       )}
