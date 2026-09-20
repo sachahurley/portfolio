@@ -44,16 +44,17 @@ export default function BottomSheet({
                 <span className="nav-flavor">sealed</span>
               </span>
             ) : (
-              // .sel wrapper = the compass's accent-ring trick (gf-compass li.sel)
-              <span key={loc.path} className={`mn-row${active ? ' sel' : ''}`}>
-                <Link
-                  to={loc.path}
-                  className={active ? 'active' : undefined}
-                  onClick={onClose}
-                >
-                  <VillageIcon name={loc.icon} size={20} className="gf-ic" /> {loc.real}
-                </Link>
-              </span>
+              // active = fill + accent text (the DS SideNavigation pattern);
+              // the old accent-ring wrapper was retired for storybook parity
+              <Link
+                key={loc.path}
+                to={loc.path}
+                className={active ? 'active' : undefined}
+                aria-current={active ? 'page' : undefined}
+                onClick={onClose}
+              >
+                <VillageIcon name={loc.icon} size={20} className="gf-ic" /> {loc.real}
+              </Link>
             )
           })}
         </nav>

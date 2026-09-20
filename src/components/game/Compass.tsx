@@ -23,7 +23,7 @@ export default function Compass() {
           const locked = loc.minLevel != null && displayLevel < loc.minLevel
           const active = here?.path === loc.path
           return (
-            <li key={loc.path} className={active && !locked ? 'sel' : undefined}>
+            <li key={loc.path}>
               {locked ? (
                 <span className="gf-dest locked" aria-label="Sealed location">
                   <DitherIcon name="lock" size={16} className="gf-ic" /> ???{' '}

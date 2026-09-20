@@ -124,7 +124,7 @@ export default function ProjectDetail() {
           href={project.externalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-7"
+          className="mt-6"
         >
           view project <ArrowUpRight />
         </Button>

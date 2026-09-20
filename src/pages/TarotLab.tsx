@@ -236,9 +236,10 @@ export default function TarotLab() {
 
   return (
     <div className="tarot-page">
-      <button type="button" className="ch-close" onClick={closePage} aria-label="Close tarot reader">
+      {/* .ch-close is a layout hook only; the control is the DS icon Button */}
+      <Button variant="icon" size="icon" type="button" className="ch-close" onClick={closePage} aria-label="Close tarot reader">
         <DitherIcon name="close" size={16} />
-      </button>
+      </Button>
 
       <TarotScene />
 

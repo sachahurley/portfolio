@@ -151,16 +151,6 @@ strong, b { font-weight: 400; }
   background: var(--rar-common); pointer-events: none;
 }
 .gf-tab-dot.lvl { background: var(--accent); }
-.tip {
-  position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
-  z-index: var(--z-index-sticky); background: var(--fg); color: var(--bg);
-  font-size: 11px; padding: 6px 10px; border-radius: 6px; white-space: nowrap;
-}
-.tip:after {
-  content: ""; position: absolute; bottom: -5px; left: 50%; margin-left: -5px;
-  border: 5px solid transparent; border-top-color: var(--fg); border-bottom: 0;
-}
-
 /* ---- pixel-RPG bottom sheet (desktop + mobile) ---- */
 /* Bayer-checker scrim (classic-Mac dither, kin to the welcome dissolve)
    instead of iOS blur: a black checkerboard at the site's 2px dither cell
@@ -169,8 +159,6 @@ strong, b { font-weight: 400; }
    @scorp-ds/components BottomSheet; only the sheet CONTENT styles below
    (.menu-nav, .sheet-char, .sheet-contact) remain. */
 .menu-nav { display: flex; flex-direction: column; gap: 2px; width: 100%; }
-.mn-row { clip-path: var(--plate-round); }
-.mn-row.sel { background: var(--accent); padding: 1px; }
 .menu-nav a {
   display: flex; align-items: center; font-size: 20px; font-weight: 400;
   padding: 9px 13px; color: var(--mut); border: 1px solid transparent;
@@ -178,28 +166,12 @@ strong, b { font-weight: 400; }
   transition: color .15s ease, background-color .15s ease;
 }
 .menu-nav a:hover { color: var(--fg); background: var(--hover); }
+/* active = the hover state held (fill + accent text), the DS
+   SideNavigation pattern; the accent-ring wrapper was retired */
 .menu-nav a.active {
-  color: var(--accent); background: var(--hover); border: 0;
+  color: var(--accent); background: var(--hover);
   transition: color .15s ease;
 }
-.menu-foot {
-  margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
-}
-.menu-foot .foot-left { display: flex; flex-direction: column; gap: 6px; }
-.menu-foot .foot-title { font-size: 12px; color: var(--mut2); }
-.menu-foot .lvl { font-size: 14px; color: var(--mut); display: flex; align-items: center; gap: 10px; }
-.menu-foot .exp { font-size: 12px; }
-.menu-foot .mbar { width: 90px; height: 8px; background: var(--hover); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
-.menu-foot .mbar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s; }
-.toggle {
-  font-family: var(--mono); font-size: 14px; border: 1px solid var(--border);
-  background: var(--bg); border-radius: 6px; padding: 8px 12px; cursor: pointer; color: var(--fg);
-}
-.toggle:hover { background: var(--hover); }
-/* the ⚔ icon matches the home "See all" arrow size */
-.toggle .qicon { font-size: 1.6rem; line-height: 0; vertical-align: -0.04em; }
-.menu-note { font-size: 11px; color: var(--mut2); width: 100%; text-align: center; margin-top: 10px; }
 
 /* ---- layout — narrow column, emil-style rhythm ---- */
 /* top padding = the 48px back-plate line + the 40px plate + a 24px spacer,
@@ -657,21 +629,13 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 }
 /* greyish plate on hover (links only — the sealed span doesn't react) */
 a.gf-dest:hover { color: var(--fg); background: var(--hover); }
-/* active row: accent text on a filled, pixel-rounded plate. The 1px accent
-   ring is real geometry, not filters: the <li> is clipped to the rounded
-   polygon, filled accent, with 1px padding; the link inside carries the same
-   polygon, so its corners land 1px inside the li's and a uniform ring of the
-   accent shows through. (The previous four-drop-shadow trace composed
-   shadows-of-shadows and stair-stepped at the corners.) The link's
-   spacer border drops to 0 so the 1px padding keeps row size unchanged. */
-.gf-compass li.sel {
-  background: var(--accent); padding: 1px;
-  clip-path: var(--plate-round);
-}
+/* active row = the hover state held: surface-muted fill + accent text,
+   the DS SideNavigation pattern (fill + color, never color alone, never
+   weight). The 1px accent-ring wrapper was retired for storybook parity. */
 .gf-dest.active {
-  color: var(--accent); background: var(--hover); border: 0;
-  /* no background transition: it would fade from transparent and flash the
-     accent underlay through the link for a beat on selection */
+  color: var(--accent); background: var(--hover);
+  /* no background transition: it would fade from transparent for a beat
+     on selection */
   transition: color .15s ease;
 }
 .gf-dest.active .gf-ic { opacity: 1; }
@@ -794,8 +758,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .cs-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 /* .cs-name retired: the rename field is the DS Input (quiet). */
 .cs-lvl { font-size: 12px; color: var(--body); }
+/* layout hook only; the pulse rides in via the shared .gf-pulse class */
 .cs-levelup { margin-left: 10px; vertical-align: middle; }
-@media (prefers-reduced-motion: no-preference) { .cs-levelup { animation: gf-pulse 1.6s ease-in-out infinite; } }
 .cs-picker {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
   margin-top: 12px; padding: 12px; border: 1px solid var(--border); background: var(--hover);
@@ -823,13 +787,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 
 /* ==== character screen (/character): loot, paperdoll, stats ==== */
 /* Rarity tiers get their own vars: --accent belongs to the active banner
-   and loot never re-themes with it. */
+   and loot never re-themes with it. The --rar-* values are NOT declared
+   here: main.tsx sets them inline on <html> from RARITY_COLORS in
+   src/game/loot.ts, the single source of truth for the rarity palette. */
 :root {
-  --rar-common: #dcd8cc;
-  --rar-magic: #7f8ff5;
-  --rar-rare: #e8d44d;
-  --rar-unique: #c7883d;
-  /* stat comparison: gains and losses, also outside the theme cascade */
+  /* stat comparison: gains and losses, also outside the theme cascade.
+     Deliberately NOT the DS success/error tokens: those hues read too
+     saturated against the sepia loot card; these are the site's own. */
   --stat-up: #6fcf6a;
   --stat-down: #e5604d;
   /* the site's 4px notched-corner polygon, shared by slot/inventory chrome */
@@ -976,10 +940,6 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .ch-slot:focus-visible, .ch-invbtn:focus-visible {
   outline: none; box-shadow: inset 0 0 0 2px var(--accent);
 }
-/* the clip-pathed plates clip the global outline away; same inset ring */
-.ch-close:focus-visible {
-  outline: none; box-shadow: inset 0 0 0 2px var(--accent);
-}
 
 /* pack: fixed 4-wide shelf with empty cells, upgrade mark, new pip */
 .ch-inv.ch-pack { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -1025,15 +985,11 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    viewport locks (no scroll), the sheet centers in the frame, and the
    item card floats above the panels instead of stretching the page;
    below 960px the handheld port keeps its normal page scroll. */
+/* LAYOUT hook only (position + layer): the control itself is an icon-only
+   DS Button, which owns all visual styling (same split as .pageback). */
 .ch-close {
   position: fixed; top: calc(24px + env(safe-area-inset-top, 0px)); right: 24px; z-index: 65;
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px; padding: 0; border: 0; cursor: pointer;
-  background: var(--color-sepia-925); color: var(--accent);
-  clip-path: var(--plate-round);
-  transition: background-color .12s, color .12s;
 }
-.ch-close:hover { background: var(--accent); color: var(--bg); }
 @media (min-width: 960px) {
   /* clear the 16px stone band and the 32px corner boss */
   .ch-close { top: 40px; right: 40px; }
@@ -1166,13 +1122,6 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 }
 .town-plate-sub { color: var(--mut); }
 .town-hint { font-family: var(--mono); font-size: 12px; color: var(--mut); margin-top: 12px; text-align: center; }
-/* the quiet home-variant switch link (HomeGate), inside a .town-hint line */
-.home-switch {
-  font-family: var(--mono); font-size: 12px; color: var(--accent);
-  background: none; border: 0; padding: 0; cursor: pointer;
-  border-bottom: 1px solid var(--mut2);
-}
-.home-switch:hover { border-color: var(--accent); }
 
 /* ---- builder lab (/lab/builder): the building workshop ----
    Same integer-zoom centered-canvas frame as the town; control rows
