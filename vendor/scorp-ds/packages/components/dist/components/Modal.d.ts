@@ -8,7 +8,8 @@
  * - Fixed header with title and a secondary-plate close button (always visible)
  * - Optional fixed footer band for CTAs via `footerContent`
  * - Scrollable content area (max-height: 66vh)
- * - Fade in/out animations (200ms duration)
+ * - Fades in on open and out on close (duration.normal); stays mounted
+ *   through the exit animation and unmounts on animationend
  * - Backdrop scrim (semi-transparent overlay)
  * - `docked` variant: on wide viewports (>=960px) the panel skips the scrim
  *   and pins bottom-center as a NON-modal dialog (no aria-modal, no scroll
