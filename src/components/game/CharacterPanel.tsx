@@ -82,14 +82,20 @@ export default function CharacterPanel() {
           </div>
           <div className="gf-xpnum">
             {level.need != null ? `${level.cur}/${level.need} XP` : `${xp} XP · max`}
+            {/* levelling is an XP event, so its call to action lives on the
+                XP line (and frees the name row for identity alone) */}
+            {pendingLevels.length > 0 && (
+              <Button
+                variant="primary"
+                size="small"
+                className="cs-levelup gf-pulse"
+                onClick={celebrateLevel}
+              >
+                ▴ Level up
+              </Button>
+            )}
           </div>
         </div>
-
-        {pendingLevels.length > 0 && (
-          <button className="cs-levelup" onClick={celebrateLevel}>
-            ▴ level up
-          </button>
-        )}
       </div>
 
       {picking && (

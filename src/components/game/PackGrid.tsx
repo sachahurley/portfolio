@@ -1,31 +1,34 @@
 /**
  * PackGrid, the character screen's inventory.
  *
- * A fixed 4-wide grid of at least 12 cells (empty cells shown), growing by
- * rows if the pack holds more; there is no pack limit, the 12 is only the
- * visual shelf. Each item cell can carry a ▲ (beats what's worn in its
- * slot, or the slot is empty) and an accent pip (not inspected yet). With a
- * paperdoll slot active, items for other slots dim but stay focusable.
+ * A fixed 4-wide grid of at least 16 cells (empty cells shown), growing by
+ * rows if the pack holds more; there is no pack limit, the 16 is only the
+ * visual shelf. Unopened chests lead the grid as cells of their own (tap
+ * to open) rather than a separate section, so all loot lives on one
+ * shelf. Each item cell can carry a ▲ (beats what's worn in its slot, or
+ * the slot is empty) and an accent pip (not inspected yet).
  */
 
+import { type MouseEvent } from 'react'
 import {
+  chestSourceLabel,
   resolveItem,
-  SLOT_LABELS,
   statTotal,
+  type SavedChest,
   type SavedItem,
   type Slot,
 } from '../../game/loot'
 import PixelItem from './PixelItem'
 
-const SHELF = 12
+const SHELF = 16
 const COLS = 4
 
 export default function PackGrid({
   pack,
   items,
   equipment,
-  hasChests,
-  activeSlot,
+  chests,
+  onOpenChest,
   seenItems,
   onSelect,
 }: {
@@ -33,23 +36,20 @@ export default function PackGrid({
   pack: SavedItem[]
   items: SavedItem[]
   equipment: Partial<Record<Slot, number>>
-  hasChests: boolean
-  activeSlot: Slot | null
+  /** Unopened chests; they lead the grid as their own cells. */
+  chests: SavedChest[]
+  onOpenChest: (chest: SavedChest, e: MouseEvent<HTMLButtonElement>) => void
   seenItems: number[]
   onSelect: (id: number) => void
 }) {
-  const cells = Math.max(SHELF, Math.ceil(pack.length / COLS) * COLS)
+  const hasChests = chests.length > 0
+  const cells = Math.max(SHELF, Math.ceil((chests.length + pack.length) / COLS) * COLS)
   const worn = (slot: Slot) => {
     const saved = items.find((i) => i.id === equipment[slot])
     return saved ? resolveItem(saved) : null
   }
-  const slotEmpty =
-    activeSlot != null &&
-    equipment[activeSlot] == null &&
-    !pack.some((it) => it.slot === activeSlot)
-  const helper = slotEmpty
-    ? `No ${SLOT_LABELS[activeSlot]} yet; chests drop as you explore`
-    : pack.length > 0
+  const helper =
+    pack.length > 0
       ? null
       : items.length === 0 && !hasChests
         ? 'Your pack is empty; chests drop as you explore the site'
@@ -65,16 +65,26 @@ export default function PackGrid({
       </div>
       {helper && <div className="gf-dim ch-helper">{helper}</div>}
       <div className="ch-inv ch-pack">
-        {Array.from({ length: cells }, (_, i) => {
+        {chests.map((c) => (
+          <div key={`chest-${c.id}`} className="ch-invwrap bg-rar-common">
+            <button
+              className="ch-invbtn"
+              onClick={(e) => onOpenChest(c, e)}
+              aria-label={`Chest from ${chestSourceLabel(c.src)}, tap to open`}
+            >
+              <PixelItem kind="chest" rarity="common" cell={3} />
+            </button>
+          </div>
+        ))}
+        {Array.from({ length: cells - chests.length }, (_, i) => {
           const saved = pack[i]
           if (!saved) return <div key={`empty-${i}`} className="ch-packempty" aria-hidden="true" />
           const it = resolveItem(saved)
           const eq = worn(it.slot)
           const upgrade = !eq || statTotal(it) > statTotal(eq)
           const unseen = !seenItems.includes(it.id)
-          const dim = activeSlot != null && it.slot !== activeSlot
           return (
-            <div key={it.id} className={`ch-invwrap bg-rar-${it.rarity}${dim ? ' is-dim' : ''}`}>
+            <div key={it.id} className={`ch-invwrap bg-rar-${it.rarity}`}>
               <button
                 className="ch-invbtn"
                 onClick={() => onSelect(it.id)}

@@ -1,9 +1,7 @@
 /**
  * Note detail (/notes/:slug)
  *
- * Date + title + prose body. The special
- * "uses" note (/notes/uses) renders the tools list instead of its HTML body -
- * this is where "What I Use" lives (it is not a standalone page).
+ * Title + date + prose body.
  */
 
 import { useEffect } from 'react'
@@ -12,7 +10,6 @@ import MinimalPage from '../components/MinimalPage'
 import BackButton from '../components/BackButton'
 import PagerNav from '../components/PagerNav'
 import { getPostBySlug } from '../data/posts'
-import { tools } from '../data/tools'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { formatDate } from '../lib/date'
 import NotFound from './NotFound'
@@ -30,8 +27,6 @@ export default function NotePost() {
 
   if (!post) return <NotFound />
 
-  const isUses = post.slug === 'uses'
-
   return (
     <MinimalPage>
       <BackButton fallback="/notes" />
@@ -43,22 +38,7 @@ export default function NotePost() {
       </div>
 
       <div className="prose">
-        {isUses ? (
-          <>
-            <p>{post.excerpt} I keep the kit small and lean on AI tooling to move fast.</p>
-            <h2>Tools</h2>
-            <ul>
-              {tools.map((t) => (
-                <li key={t.name}>
-                  <strong>{t.name}</strong> — {t.use} · {t.tier}
-                </li>
-              ))}
-            </ul>
-            <p>Most days that's Conductor and Claude Code, with Notion for planning.</p>
-          </>
-        ) : (
-          <div dangerouslySetInnerHTML={{ __html: post.content }} />
-        )}
+        <div dangerouslySetInnerHTML={{ __html: post.content }} />
       </div>
 
       <PagerNav section="notes" slug={post.slug} />

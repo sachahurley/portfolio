@@ -438,7 +438,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
 .gem-socket { position: relative; display: inline-block; flex: none; padding: 1px; background: var(--border); clip-path: var(--notch4); }
 .gem-socket-in {
   display: flex; align-items: center; justify-content: center;
-  width: 46px; height: 46px; background: var(--hover); clip-path: var(--notch4);
+  width: 34px; height: 34px; background: var(--hover); clip-path: var(--notch4);
 }
 .gem-socket.active { background: var(--accent); }
 .gem-socket.empty { cursor: default; }
@@ -811,10 +811,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .cs-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 /* .cs-name retired: the rename field is the DS Input (quiet). */
 .cs-lvl { font-size: 12px; color: var(--body); }
-.cs-levelup {
-  font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--bg); background: var(--accent); border: 0; padding: 10px 12px; cursor: pointer;
-}
+.cs-levelup { margin-left: 10px; vertical-align: middle; }
 @media (prefers-reduced-motion: no-preference) { .cs-levelup { animation: gf-pulse 1.6s ease-in-out infinite; } }
 .cs-picker {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
@@ -917,23 +914,13 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   font-family: var(--mono); padding: 0;
 }
 .ch-slot:hover { background: var(--surface-muted); }
+/* empty slots are labels, not controls (slot filtering retired) */
+.ch-slot-empty { cursor: default; }
+.ch-slot-empty:hover { background: var(--hover); }
 /* --mut (sepia-600) clears 4.5:1 on the slot surface; --mut2 did not */
 .ch-slotname { font-size: 10px; color: var(--mut); text-transform: lowercase; }
 
-/* chest row */
-.ch-chests { display: flex; flex-wrap: wrap; gap: 10px; }
-/* phones: chests get their own strip above the fold (the badge that led
-   the visitor here promised them); the copy inside the pack panel hides.
-   At >=720px the strip hides and the pack panel copy is the only one. */
-.ch-chestbar { margin-bottom: 16px; }
-@media (min-width: 720px) { .ch-chestbar { display: none; } }
-@media (max-width: 719px) { .ch-pack-chests { display: none; } }
-.ch-chestbtn {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: 10px 12px; background: var(--hover); border: 0; clip-path: var(--notch4);
-  cursor: pointer; font-family: var(--mono); font-size: 10px; color: var(--body);
-}
-.ch-chestbtn:hover { background: var(--surface-muted); }
+/* .ch-chests / .ch-chestbar retired: chests are cells in the pack grid */
 
 /* inventory grid */
 .ch-inv { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px; }
@@ -958,7 +945,8 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* stats block: two columns of name/value rows, bonuses in the accent */
 .ch-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; font-size: 14px; }
 .ch-stat { display: flex; justify-content: space-between; gap: 10px; color: var(--body); }
-.ch-bonus { color: var(--accent); }
+/* gear bonuses read as gains, not links: the stat-up green */
+.ch-bonus { color: var(--stat-up); }
 
 /* item card: chrome retired — the card rides the DS Modal's docked
    variant (scrim, bands, close, focus all owned by the DS; docked pins it
@@ -968,12 +956,17 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
    unique name pushes past the card edge; names wrap, the meta line
    (rarity · base · slot fragments) ellipsizes */
 .ch-card-body { min-width: 0; }
+/* row rhythm: the state tag floats 6px above the name block; name + meta
+   read as one tight cluster (2px); stats sit 6px below as their own group */
+.ch-cardtag-row { margin-bottom: 6px; }
 .ch-card-name { font-size: 16px; overflow-wrap: break-word; }
 .ch-card-meta {
-  font-size: 12px; color: var(--mut); margin: 4px 0 10px;
+  font-size: 12px; color: var(--mut); margin: 2px 0 6px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .ch-card-stats { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--body); }
+/* per-item control (destroy) sits with its item, not in the shared footer */
+.ch-card-action { margin-top: 12px; }
 /* .ch-btn retired: the card's action is the DS Button (primary). */
 
 /* ---- character screen: compare card, slot filter, pack, stats ---- */
@@ -996,14 +989,12 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 
 /* slot filter: the active slot's ring turns accent; the rest dim but
    stay focusable */
-.ch-slotwrap.is-active { background: var(--accent); padding: 2px; }
-.ch-main .is-dim { opacity: .25; }
 /* clip-path swallows the global focus outline; draw it inside instead */
 .ch-slot:focus-visible, .ch-invbtn:focus-visible {
   outline: none; box-shadow: inset 0 0 0 2px var(--accent);
 }
 /* the clip-pathed plates clip the global outline away; same inset ring */
-.ch-close:focus-visible, .ch-chestbtn:focus-visible {
+.ch-close:focus-visible {
   outline: none; box-shadow: inset 0 0 0 2px var(--accent);
 }
 
@@ -1068,6 +1059,12 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
      fire - lives below the sheet; the close plate stays fixed */
   .gf-full .gf-viewport { overflow-y: auto; overflow-x: hidden; display: block; }
   .gf-full .ch-main { margin: auto; width: 100%; padding: 40px 24px; }
+}
+/* the fixed close plate owns the viewport's top-right 84px; between 960px
+   and ~1240px the centered 1120px sheet reaches under it, so start the
+   sheet below the plate's band there (wider viewports clear it laterally) */
+@media (min-width: 960px) and (max-width: 1259px) {
+  .gf-full .ch-main { padding-top: 104px; }
 }
 
 /* chest reveal modal: item pops like the gem award; stat lines stack */
@@ -1280,7 +1277,16 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 /* rewards badge riding a hotspot label (the character sword): the
    character strip's badge colors at label scale */
 .vg-badge { margin-left: 6px; font-size: 11px; color: var(--rar-common); }
-.vg-badge.lvl { color: var(--accent); }
+/* quest marker: a pending level marks the sprite itself (the RPG
+   over-the-head cue) as a small pulsing accent plate */
+.vg-marker {
+  position: absolute; transform: translate(-50%, -100%);
+  font-family: var(--mono); font-size: 11px; line-height: 1;
+  color: var(--bg); background: var(--accent);
+  padding: 3px 5px; clip-path: var(--plate-round);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) { .vg-marker { animation: gf-pulse 1.6s ease-in-out infinite; } }
 .vg-hotspot {
   position: absolute; padding: 0; margin: 0;
   background: none; border: none; appearance: none;
