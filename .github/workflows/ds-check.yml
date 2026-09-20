@@ -1,0 +1,37 @@
+name: ds-check
+
+# Fails when the committed vendor/scorp-ds copy drifts from scorp-ds main.
+# Red here means "run npm run vendor:ds, build, and ship the vendor commit"
+# (or ask Claude to run /vendor-portfolio). The dist diff rebuilds the DS
+# in CI, so component-only DS changes are caught too — the old check only
+# compared token files and reported IN SYNC on stale bundles.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "47 6 * * *" # daily: catches DS merges that happened without a re-vendor
+  workflow_dispatch:
+
+jobs:
+  ds-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out scorp-ds (source of truth)
+        uses: actions/checkout@v4
+        with:
+          repository: sachahurley/scorp-ds
+          path: .scorp-ds-truth
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install scorp-ds deps (needed to build components dist)
+        run: npm ci --prefix "$GITHUB_WORKSPACE/.scorp-ds-truth"
+
+      - name: Diff vendored DS against scorp-ds main
+        run: SCORP_DS_DIR="$GITHUB_WORKSPACE/.scorp-ds-truth" bash scripts/check-ds-sync.sh
