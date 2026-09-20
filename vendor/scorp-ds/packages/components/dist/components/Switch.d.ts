@@ -26,6 +26,12 @@ export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
     onCheckedChange?: (checked: boolean) => void;
     size?: "small" | "medium" | "large";
     label?: string;
+    /**
+     * Keep `label` as the accessible name only (no visible text). Use in
+     * compositions where the row already carries a visible heading — e.g. a
+     * settings row — so the name isn't duplicated next to the track.
+     */
+    hideLabel?: boolean;
     disabled?: boolean;
     icon?: ReactNode;
 }
@@ -35,7 +41,8 @@ export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
  * @param checked - Whether switch is checked/on (default: false)
  * @param onCheckedChange - Callback when switch state changes
  * @param size - Switch size (default: "medium")
- * @param label - Optional label text displayed next to switch
+ * @param label - Optional label text displayed next to switch (and the accessible name)
+ * @param hideLabel - Use label as the accessible name only; render no visible text
  * @param disabled - Whether switch is disabled
  * @param icon - Optional icon to display inside the knob (e.g., Moon/Sun for theme toggle)
  */
