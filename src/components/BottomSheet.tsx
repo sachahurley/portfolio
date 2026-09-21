@@ -91,7 +91,9 @@ export default function BottomSheet({
           className="sheet-char"
           thumb={<PortraitPlate seed={avatarSeed} cell={2} tiny />}
           title={name}
-          titleSuffix={<span className="sheet-char-go">›</span>}
+          // the chest overlay owns the row's right side; the chevron only
+          // returns when nothing waits there
+          titleSuffix={chests.length === 0 ? <span className="sheet-char-go">›</span> : undefined}
           description={
             // level line + the same mini XP readout as the game frame's
             // character strip (.xp-mini), so the sheet row reads level

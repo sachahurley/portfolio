@@ -144,12 +144,15 @@ strong, b { font-weight: 400; }
 /* pressed into the stone: the notch sinks, keeping its centring transform
    (its own fast transition so the press never rides the sink timing) */
 .gf-tab:active { transform: translateX(-50%) translateY(2px); transition: transform .06s; }
-/* rewards-waiting pip on the menu notch: one dot, one meaning (a pending
-   level claim or an unopened chest waits on the character screen) */
+/* rewards-waiting pip on the menu notch (collapsed state only; Dock
+   unmounts it while the sheet is up): bone for a pending level claim,
+   accent when an unopened chest waits (the sheet row's chest art is the
+   answer to it) */
 .gf-tab-dot {
   position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
   background: var(--rar-common); pointer-events: none;
 }
+.gf-tab-dot.is-chest { background: var(--accent); }
 /* ---- pixel-RPG bottom sheet (desktop + mobile) ---- */
 /* Bayer-checker scrim (classic-Mac dither, kin to the welcome dissolve)
    instead of iOS blur: a black checkerboard at the site's 2px dither cell
