@@ -10,7 +10,7 @@
  */
 
 import { Link, useLocation } from 'react-router-dom'
-import { Badge, BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds/components'
+import { BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
@@ -78,21 +78,20 @@ export default function BottomSheet({
           asProps={{
             to: '/character',
             onClick: onClose,
-            'aria-label': `Character: ${name}. Open character screen.`,
+            // waiting rewards live in the label (the visual signal is the
+            // chest overlay; the count itself never renders)
+            'aria-label': `Character: ${name}.${
+              pendingLevels.length + chests.length > 0
+                ? ` ${pendingLevels.length + chests.length} reward${
+                    pendingLevels.length + chests.length > 1 ? 's' : ''
+                  } waiting.`
+                : ''
+            } Open character screen.`,
           }}
           className="sheet-char"
           thumb={<PortraitPlate seed={avatarSeed} cell={2} tiny />}
           title={name}
-          titleSuffix={
-            // one quiet signal for all waiting rewards (claims + chests)
-            pendingLevels.length + chests.length > 0 ? (
-              <Badge variant="bone" size="small" caps>
-                ▴ {pendingLevels.length + chests.length} waiting
-              </Badge>
-            ) : (
-              <span className="sheet-char-go">›</span>
-            )
-          }
+          titleSuffix={<span className="sheet-char-go">›</span>}
           description={
             // level line + the same mini XP readout as the game frame's
             // character strip (.xp-mini), so the sheet row reads level
