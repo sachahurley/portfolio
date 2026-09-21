@@ -266,5 +266,6 @@ export function chestSourceLabel(src: string): string {
   if (src.startsWith('questdone:')) return 'a completed quest'
   if (src.startsWith('note:')) return 'a note'
   if (src.startsWith('lab:')) return 'the lab'
+  if (src.startsWith('tarot:')) return 'the parlor'
   return 'the road'
 }

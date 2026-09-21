@@ -57,9 +57,11 @@ import { summarizeVisitor } from '../lib/tarot/summarizeVisitor'
 import {
   PARLOR_MESSAGE_MAX,
   PARLOR_TITLE_MAX,
+  PARLOR_USER_MESSAGES_HARD_MAX,
   PARLOR_USER_MESSAGES_MAX,
   type SpreadId,
 } from '../lib/tarot/contract'
+import { parlorBaseDef } from '../lib/tarot/parlorLoot'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { levelInfo } from '../lib/levels'
 import { usePageTitle } from '../lib/usePageTitle'
@@ -354,13 +356,20 @@ export default function TarotLab() {
 
   // -- the draw flow --------------------------------------------------------
 
-  const cut = (spreadId: SpreadId, question: string, offerId?: string) => {
+  const cut = (
+    spreadId: SpreadId,
+    question: string,
+    offerId?: string,
+    opts: { skipCooldown?: boolean; clarifies?: string } = {},
+  ) => {
     if (busy || pending) return
-    if (!isOwner && cooldownLeft > 0) return
+    if (!isOwner && !opts.skipCooldown && cooldownLeft > 0) return
     const spread = SPREADS.find((s) => s.id === spreadId)
     if (!spread) return
-    const drawn = drawSpread(spread)
-    if (!isOwner) {
+    // The Balance charm sets the deck's reversal temper.
+    const balanced = settings.perks.includes('balance')
+    const drawn = drawSpread(spread, balanced ? settings.reversalRate / 100 : undefined)
+    if (!isOwner && !opts.skipCooldown) {
       try {
         localStorage.setItem(LAST_KEY, String(Date.now()))
       } catch {
@@ -377,15 +386,20 @@ export default function TarotLab() {
       ...(question ? { question } : {}),
       cards: drawn.map((d) => ({ id: d.card.id, position: d.position.id, reversed: d.reversed })),
       reading: null,
+      // A clarifier is born spent: no clarifying the clarification.
+      ...(opts.clarifies ? { clarified: true } : {}),
     }
     updateThread((t) => ({
       ...t,
       messages: [
-        ...t.messages.map((m) =>
-          m.kind === 'offer' && (m.id === offerId || m.status === 'open')
-            ? { ...m, status: (m.id === offerId ? 'cut' : 'declined') as 'cut' | 'declined' }
-            : m,
-        ),
+        ...t.messages.map((m) => {
+          if (m.kind === 'offer' && (m.id === offerId || m.status === 'open')) {
+            return { ...m, status: (m.id === offerId ? 'cut' : 'declined') as 'cut' | 'declined' }
+          }
+          // The clarifier is spent on its source draw.
+          if (m.kind === 'draw' && m.id === opts.clarifies) return { ...m, clarified: true }
+          return m
+        }),
         drawMsg,
       ],
     }))
@@ -600,19 +614,49 @@ export default function TarotLab() {
   }
 
   const onChip = (chip: SuggestionChip) => {
-    if (chip.kind === 'draw') setPicker(true)
-    else sendMessage(chip.label)
+    if (chip.kind === 'draw') {
+      setPicker(true)
+    } else if (chip.kind === 'clarify') {
+      // The Clarifier charm: one extra card on the latest reading, free of
+      // the cut cooldown (it belongs to the sitting already paid for).
+      const lastDraw = [...threadRef.current.messages]
+        .reverse()
+        .find((m): m is Extract<Msg, { kind: 'draw' }> => m.kind === 'draw' && !!m.reading)
+      if (lastDraw && !lastDraw.clarified) {
+        cut('one', 'A clarifying card for the spread laid just before', undefined, {
+          skipCooldown: true,
+          clarifies: lastDraw.id,
+        })
+      }
+    } else {
+      sendMessage(chip.label)
+    }
   }
 
   // -- render ---------------------------------------------------------------
 
   const untouched = !thread.messages.some((m) => m.kind === 'user' || m.kind === 'draw')
   const hasOpenOffer = thread.messages.some((m) => m.kind === 'offer' && m.status === 'open')
-  const remaining = Math.max(0, PARLOR_USER_MESSAGES_MAX - thread.userMsgCount)
+  // The Patience charm stretches the audience (server-enforced too).
+  const capNow = settings.perks.includes('patience')
+    ? PARLOR_USER_MESSAGES_HARD_MAX
+    : PARLOR_USER_MESSAGES_MAX
+  const remaining = Math.max(0, capNow - thread.userMsgCount)
   const chips =
     !untouched && !busy && !thread.closed && !pending && !picker && !hasOpenOffer
-      ? suggestionChips(thread)
+      ? suggestionChips(thread, { clarifier: settings.perks.includes('clarifier') })
       : []
+
+  // Equipped parlor cosmetics: card-back tint and table props.
+  const equippedBack = settings.loadout.back != null
+    ? settings.owned.find((i) => i.id === settings.loadout.back)
+    : undefined
+  const backTint = equippedBack ? parlorBaseDef(equippedBack).tint : undefined
+  const propCells = settings.loadout.props
+    .map((id) => settings.owned.find((i) => i.id === id))
+    .filter((i): i is NonNullable<typeof i> => !!i)
+    .map((i) => parlorBaseDef(i).cell)
+    .filter((c): c is readonly [number, number] => !!c)
   const subline =
     view === 'threads'
       ? 'The sittings the Reader remembers.'
@@ -636,7 +680,7 @@ export default function TarotLab() {
         <DitherIcon name="close" size={16} />
       </Button>
 
-      <TarotScene />
+      <TarotScene props={propCells} />
 
       <header className="tarot-head">
         <h1 className="tarot-title">The Reader</h1>
@@ -695,6 +739,7 @@ export default function TarotLab() {
             busy={busy}
             handheld={handheld}
             chips={chips}
+            backTint={backTint}
             onChip={onChip}
             onReveal={reveal}
             onRetryCut={retryCut}

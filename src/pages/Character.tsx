@@ -265,11 +265,12 @@ export default function Character() {
 
         <section className="ch-panel ch-col-loot" aria-label="Pack">
           {/* chests live in the grid itself (PackGrid leads with them) */}
+          {/* tarot: parcels open in the parlor against its own loot table */}
           <PackGrid
             pack={pack}
             items={items}
             equipment={equipment}
-            chests={chests}
+            chests={chests.filter((c) => !c.src.startsWith('tarot:'))}
             onOpenChest={onOpenChest}
             seenItems={seenItems}
             seenChests={seenChests}

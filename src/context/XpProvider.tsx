@@ -111,6 +111,9 @@ interface XpValue {
   /** Roll the chest's item, move it to items, and return it resolved (for
    *  the reveal). Null if the chest id is unknown. */
   openChest: (chestId: number) => Item | null
+  /** Remove a chest WITHOUT rolling gear and return it: the parlor opens
+   *  its own parcels (tarot: sources) against the parlor loot table. */
+  takeChest: (chestId: number) => SavedChest | null
   /** Equip an owned item into its slot; a displaced item stays owned. */
   equipItem: (itemId: number) => void
   unequipSlot: (slot: Slot) => void
@@ -494,6 +497,20 @@ export function XpProvider({ children }: { children: ReactNode }) {
     [persist, logLine]
   )
 
+  const takeChest = useCallback(
+    (chestId: number): SavedChest | null => {
+      const chest = chestsRef.current.find((c) => c.id === chestId)
+      if (!chest) return null
+      chestsRef.current = chestsRef.current.filter((c) => c.id !== chestId)
+      setChests(chestsRef.current)
+      seenChestsRef.current = seenChestsRef.current.filter((id) => id !== chestId)
+      setSeenChests(seenChestsRef.current)
+      persist()
+      return chest
+    },
+    [persist]
+  )
+
   const equipItem = useCallback(
     (itemId: number) => {
       const it = itemsRef.current.find((i) => i.id === itemId)
@@ -646,6 +663,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
     items,
     equipment,
     openChest,
+    takeChest,
     equipItem,
     unequipSlot,
     destroyItem,

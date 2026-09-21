@@ -21,6 +21,7 @@ export default function TarotCardView({
   faceUp,
   scale = 4,
   onReveal,
+  backTint,
 }: {
   drawn: DrawnCard
   faceUp: boolean
@@ -28,6 +29,8 @@ export default function TarotCardView({
   scale?: number
   /** When set, the face-down card is a tap target that turns it over. */
   onReveal?: () => void
+  /** Equipped card back re-tints the deck (parlor loot, cosmetic). */
+  backTint?: string
 }) {
   const cell = TAROT_TILES[drawn.card.id]
   const orientation = drawn.reversed ? ', reversed' : ''
@@ -35,7 +38,7 @@ export default function TarotCardView({
     <div className={`tc-card${faceUp ? ' tc-up' : ''}${drawn.reversed ? ' tc-rev' : ''}`}>
       <div className="tc-inner" aria-hidden="true">
         <div className="tc-back">
-          <TileBox x={TAROT_BACK[0]} y={TAROT_BACK[1]} w={TAROT_TILE_W} h={TAROT_TILE_H} scale={scale} tint="var(--body)" />
+          <TileBox x={TAROT_BACK[0]} y={TAROT_BACK[1]} w={TAROT_TILE_W} h={TAROT_TILE_H} scale={scale} tint={backTint ?? 'var(--body)'} />
         </div>
         <div className="tc-face">
           {cell && (

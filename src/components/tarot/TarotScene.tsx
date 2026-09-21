@@ -32,9 +32,16 @@ function cssColor(name: string, fallback: Rgba): Rgba {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
 }
 
-export default function TarotScene() {
+export default function TarotScene({
+  props = [],
+}: {
+  /** Equipped table props (parlor loot): Urizen [col,row] cells, max 3,
+   *  blitted onto the table beside the Reader. */
+  props?: readonly (readonly [number, number])[]
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const { activeGem } = useXp()
+  const propsKey = JSON.stringify(props)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -62,6 +69,9 @@ export default function TarotScene() {
       }
       const reader = mask(READER_CELL)
       const orb = mask(ORB_CELL)
+      // getImageData copies, so the reused scratch is safe per mask() call.
+      const propCells = (JSON.parse(propsKey) as [number, number][]).slice(0, 3)
+      const propMasks = propCells.map((cell) => mask(cell))
       // Lowest inked row of a tile, so sprites can rest ON surfaces instead
       // of overlapping them (tiles carry transparent margins that vary).
       const inkBottom = (m: ImageData) => {
@@ -73,6 +83,7 @@ export default function TarotScene() {
       // Table top edge is art row 19; the orb's last ink row lands on 18,
       // resting just above the table like the candles do.
       const orbOy = 18 - inkBottom(orb)
+      const propOys = propMasks.map((m) => 18 - inkBottom(m))
 
       const buf = document.createElement('canvas')
       buf.width = ART_W
@@ -115,6 +126,9 @@ export default function TarotScene() {
         for (let x = 10; x < ART_W - 10; x += 3) put(x, 21, body)
         // the orb, resting on the table to her side
         blit(orb, Math.floor(ART_W / 2) + 9, orbOy, accent)
+        // equipped table props, quiet ink, clear of reader/orb/candles
+        const PROP_X = [16, 23, 53]
+        propMasks.forEach((m, i) => blit(m, PROP_X[i] ?? 16, propOys[i], body))
         // orb glint breathes on the beat (2 rows below the orb's top ink)
         if (frame % 2 === 0) put(Math.floor(ART_W / 2) + 13, orbOy + 2, fg)
 
@@ -160,7 +174,7 @@ export default function TarotScene() {
       disposed = true
       window.clearInterval(timer)
     }
-  }, [activeGem])
+  }, [activeGem, propsKey])
 
   return <canvas ref={canvasRef} className="tarot-scene" aria-hidden="true" />
 }

@@ -33,11 +33,13 @@ function drawCards(n: number): TarotCard[] {
   return order.slice(0, n).map((i) => TAROT_DECK[i])
 }
 
-export function drawSpread(spread: SpreadDef): DrawnCard[] {
+/** `reversalChance` overrides the default temper (the Balance charm lets
+ *  the visitor choose 0, 0.3, or 0.5). */
+export function drawSpread(spread: SpreadDef, reversalChance = REVERSAL_CHANCE): DrawnCard[] {
   const cards = drawCards(spread.positions.length)
   return spread.positions.map((position, i) => ({
     card: cards[i],
     position,
-    reversed: rand() < REVERSAL_CHANCE,
+    reversed: rand() < reversalChance,
   }))
 }

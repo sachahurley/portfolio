@@ -1542,6 +1542,31 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .pt-parlor-block { display: flex; flex-direction: column; gap: 10px; }
 .pt-parlor-head { font-size: 14px; color: var(--accent); }
 
+/* ---- phase 6: parcels + the parlor loadout ----
+   Loot rows are quiet plates: rarity carries the name color (the same
+   --rar-* independence gear has), state text stays muted. */
+.pt-parcel {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 12px; background: var(--hover);
+  clip-path: var(--plate-round-lg);
+}
+.pt-loadout-kind { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.pt-loadout-items { display: flex; flex-direction: column; gap: 8px; }
+.pt-loot {
+  display: flex; flex-direction: column; gap: 3px; text-align: left;
+  font-family: var(--mono); padding: 10px 12px; border: 0; cursor: pointer;
+  background: transparent; color: var(--body);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s;
+}
+@media (hover: hover) { .pt-loot:hover { background: var(--hover); } }
+.pt-loot:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.pt-loot.worn { background: var(--hover); }
+.pt-loot-name { font-size: 13px; }
+.pt-loot-desc { font-size: 11px; line-height: 16px; color: var(--body); }
+.pt-loot-state { font-size: 10px; letter-spacing: .5px; text-transform: uppercase; color: var(--mut); }
+.pt-loot.worn .pt-loot-state { color: var(--accent); }
+
 /* ---- phase 3: management, chips, quote, share ----
    Quiet text actions everywhere (.pt-act): the transcript and the book
    stay prose-first; primary buttons are reserved for the composer. */

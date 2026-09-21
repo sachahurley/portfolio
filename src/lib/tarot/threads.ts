@@ -18,6 +18,12 @@
 
 import { CARD_BY_ID, SPREADS } from '../../data/tarot'
 import {
+  PARLOR_SLOTS,
+  resolveParlorItem,
+  type ParlorKind,
+  type ParlorSavedItem,
+} from './parlorLoot'
+import {
   PARLOR_DRAWS_CHAR_BUDGET,
   PARLOR_DRAWS_MAX,
   PARLOR_RECENT_MAX,
@@ -70,6 +76,8 @@ export type Msg =
       cards: SavedCard[]
       /** The reading for this draw; null while the cut is in flight. */
       reading: StoredReaderText | null
+      /** The Clarifier charm's follow-up card was already pulled. */
+      clarified?: boolean
     }
   | { kind: 'system'; id: string; at: number; text: string }
 
@@ -274,37 +282,138 @@ export function searchThreads(threads: Thread[], filter: ThreadFilter): Thread[]
   })
 }
 
-// -- parlor settings (sh_tarot_parlor) --------------------------------------
+// -- parlor settings + loot (sh_tarot_parlor) --------------------------------
 
 const PARLOR_KEY = 'sh_tarot_parlor'
 
+export interface ParlorLoadout {
+  back: number | null
+  props: number[]
+  voice: number | null
+  charm: number | null
+}
+
 export interface ParlorSettings {
   ownerCode: string | null
-  /** Phase 6 fills these; carried in requests already. */
+  /** DERIVED from the equipped voice/charm on load; carried in requests. */
   voice: string | null
   perks: string[]
+  /** Parlor loot owned (rolled from tarot: chests) and what is equipped. */
+  owned: ParlorSavedItem[]
+  loadout: ParlorLoadout
+  /** Balance charm setting: reversal chance in percent. */
+  reversalRate: 0 | 30 | 50
+}
+
+const emptyLoadout = (): ParlorLoadout => ({ back: null, props: [], voice: null, charm: null })
+
+const isParlorItem = (v: unknown): v is ParlorSavedItem => {
+  if (typeof v !== 'object' || v === null) return false
+  const i = v as Record<string, unknown>
+  return (
+    typeof i.id === 'number' &&
+    typeof i.kind === 'string' &&
+    i.kind in PARLOR_SLOTS &&
+    typeof i.base === 'number' &&
+    typeof i.rarity === 'string'
+  )
 }
 
 export function loadParlorSettings(): ParlorSettings {
   try {
     const raw = localStorage.getItem(PARLOR_KEY)
-    const parsed = raw ? (JSON.parse(raw) as Partial<ParlorSettings>) : {}
+    const parsed = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}
+    const owned = Array.isArray(parsed.owned) ? parsed.owned.filter(isParlorItem) : []
+    const ownedIds = new Set(owned.map((i) => i.id))
+    const l = (parsed.loadout ?? {}) as Record<string, unknown>
+    const slot = (v: unknown) => (typeof v === 'number' && ownedIds.has(v) ? v : null)
+    const loadout: ParlorLoadout = {
+      back: slot(l.back),
+      props: Array.isArray(l.props)
+        ? l.props.filter((v): v is number => typeof v === 'number' && ownedIds.has(v)).slice(0, PARLOR_SLOTS.prop)
+        : [],
+      voice: slot(l.voice),
+      charm: slot(l.charm),
+    }
+    // voice/perks derive from the loadout; the request contract stays flat.
+    const keyOf = (id: number | null, kind: ParlorKind) => {
+      const item = id != null ? owned.find((i) => i.id === id && i.kind === kind) : undefined
+      return item ? resolveParlorItem(item).key : null
+    }
+    const charmKey = keyOf(loadout.charm, 'charm')
+    const rate = parsed.reversalRate
     return {
-      ownerCode: typeof parsed.ownerCode === 'string' && parsed.ownerCode ? parsed.ownerCode : null,
-      voice: typeof parsed.voice === 'string' ? parsed.voice : null,
-      perks: Array.isArray(parsed.perks) ? parsed.perks.filter((p) => typeof p === 'string') : [],
+      ownerCode:
+        typeof parsed.ownerCode === 'string' && parsed.ownerCode ? parsed.ownerCode : null,
+      voice: keyOf(loadout.voice, 'voice'),
+      perks: charmKey ? [charmKey] : [],
+      owned,
+      loadout,
+      reversalRate: rate === 0 || rate === 50 ? rate : 30,
     }
   } catch {
-    return { ownerCode: null, voice: null, perks: [] }
+    return {
+      ownerCode: null,
+      voice: null,
+      perks: [],
+      owned: [],
+      loadout: emptyLoadout(),
+      reversalRate: 30,
+    }
   }
 }
 
 export function saveParlorSettings(settings: ParlorSettings): void {
   try {
-    localStorage.setItem(PARLOR_KEY, JSON.stringify(settings))
+    // voice/perks are derived; only the sources of truth persist.
+    localStorage.setItem(
+      PARLOR_KEY,
+      JSON.stringify({
+        ownerCode: settings.ownerCode,
+        owned: settings.owned,
+        loadout: settings.loadout,
+        reversalRate: settings.reversalRate,
+      }),
+    )
   } catch {
     /* private mode */
   }
+}
+
+/** Add a freshly rolled parlor item (id de-duped) and persist. */
+export function addParlorItem(item: ParlorSavedItem): ParlorSettings {
+  const settings = loadParlorSettings()
+  let saved = item
+  while (settings.owned.some((i) => i.id === saved.id)) saved = { ...saved, id: saved.id + 1 }
+  const next = { ...settings, owned: [...settings.owned, saved] }
+  saveParlorSettings(next)
+  return loadParlorSettings()
+}
+
+/** Equip/unequip one item in its kind's slot(s); persists and re-derives. */
+export function toggleParlorEquip(itemId: number): ParlorSettings {
+  const settings = loadParlorSettings()
+  const item = settings.owned.find((i) => i.id === itemId)
+  if (!item) return settings
+  const loadout = { ...settings.loadout, props: [...settings.loadout.props] }
+  if (item.kind === 'prop') {
+    if (loadout.props.includes(itemId)) {
+      loadout.props = loadout.props.filter((id) => id !== itemId)
+    } else {
+      loadout.props = [...loadout.props, itemId].slice(-PARLOR_SLOTS.prop)
+    }
+  } else {
+    const kind = item.kind as 'back' | 'voice' | 'charm'
+    loadout[kind] = loadout[kind] === itemId ? null : itemId
+  }
+  saveParlorSettings({ ...settings, loadout })
+  return loadParlorSettings()
+}
+
+export function setReversalRate(rate: 0 | 30 | 50): ParlorSettings {
+  const settings = loadParlorSettings()
+  saveParlorSettings({ ...settings, reversalRate: rate })
+  return loadParlorSettings()
 }
 
 // -- request assembly -------------------------------------------------------

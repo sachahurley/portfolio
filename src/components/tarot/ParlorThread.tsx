@@ -78,6 +78,7 @@ export default function ParlorThread({
   busy,
   handheld,
   chips,
+  backTint,
   onReveal,
   onRetryCut,
   onCutOffer,
@@ -93,6 +94,8 @@ export default function ParlorThread({
   handheld: boolean
   /** Suggestion chips for the current state; rendered under the transcript. */
   chips: SuggestionChip[]
+  /** Equipped card back re-tints face-down cards (parlor loot). */
+  backTint?: string
   onReveal: (index: number) => void
   onRetryCut: (msgId: string) => void
   onCutOffer: (offerId: string, question: string) => void
@@ -158,6 +161,7 @@ export default function ParlorThread({
                       key={d.card.id}
                       drawn={d}
                       faceUp={flipped[i]}
+                      backTint={backTint}
                       scale={handheld ? 3 : 4}
                       onReveal={
                         isPending && !shuffling

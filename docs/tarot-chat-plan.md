@@ -155,7 +155,7 @@ visitor's XP (content gating stays trust-light per §9.3; the server's real
 line is tokens per spread and big spreads counting as 2 turns). Celtic
 Cross gets its own mobile layout pass before build (Paper mock first).
 
-### Phase 6 · Parlor loot (§6.4)
+### Phase 6 · Parlor loot (§6.4) — DONE 2026-09-21
 
 `src/lib/tarot/parlor.ts` (`sh_tarot_parlor`), parlor loot table rolled
 from `tarot:` chests, loadout UI in the Parlor tab, scene props on

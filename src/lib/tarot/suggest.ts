@@ -11,13 +11,17 @@ import type { Thread } from './threads'
 
 export interface SuggestionChip {
   label: string
-  /** 'ask' sends the label as a message; 'draw' opens the spread picker. */
-  kind: 'ask' | 'draw'
+  /** 'ask' sends the label; 'draw' opens the picker; 'clarify' pulls the
+   *  Clarifier charm's extra card for the latest reading. */
+  kind: 'ask' | 'draw' | 'clarify'
 }
 
 const MAX_CHIPS = 3
 
-export function suggestionChips(thread: Thread): SuggestionChip[] {
+export function suggestionChips(
+  thread: Thread,
+  opts: { clarifier?: boolean } = {},
+): SuggestionChip[] {
   const asked = new Set(
     thread.messages.filter((m) => m.kind === 'user').map((m) => m.text.trim().toLowerCase()),
   )
@@ -26,6 +30,11 @@ export function suggestionChips(thread: Thread): SuggestionChip[] {
   const draws = thread.messages.filter((m) => m.kind === 'draw' && m.reading)
   const last = draws[draws.length - 1]
   if (last && last.kind === 'draw') {
+    // The Clarifier charm leads when its card is still unpulled. Canned
+    // readings count (to the visitor they are simply the reading).
+    if (opts.clarifier && !last.clarified) {
+      pool.push({ kind: 'clarify', label: 'Pull a clarifying card' })
+    }
     // Cards on the table, reversed ones first (they invite the question).
     const cards = [...last.cards].sort((a, b) => Number(b.reversed) - Number(a.reversed))
     for (const c of cards.slice(0, 2)) {
