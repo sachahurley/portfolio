@@ -59,7 +59,15 @@ export async function handleMockChat(request: Request): Promise<Response> {
           await sleep(25)
         }
       }
-      if (!spreadId) {
+      const named = [...CARD_BY_ID.values()].find((c) => question.toLowerCase().includes(c.name.toLowerCase()))
+      const onTable = history.some((m) => m.role === 'reader' && m.draw)
+      if (named && !/\b(three|spread|lay)\b/i.test(question)) {
+        await say(
+          `${named.name} upright speaks of ${named.meaningUp}; reversed, ${named.meaningRev}. Hold that against your question and notice which half stings. (Practice answer, templated.)`,
+        )
+      } else if (onTable && !spreadId) {
+        await say('Look again at the cards already on the table; the answer is in how they lean on each other. What do you notice first? (Practice answer, templated.)')
+      } else if (!spreadId) {
         await say('The candles are steady. Tell me what is on your mind, or ask me to pull a card, and I will lay them out for you.')
       } else {
         await say(spreadId === 'three' ? 'Let me lay out three cards: what was, what is, what may come.' : 'Let me pull a single card for you.')

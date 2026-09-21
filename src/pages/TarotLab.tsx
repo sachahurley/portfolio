@@ -33,6 +33,7 @@ import {
   type Sitting,
 } from '../lib/tarot/chat'
 import { USER_TEXT_MAX, USER_TURNS_MAX, type ChatMessage } from '../lib/tarot/contract'
+import { quickReplies } from '../lib/tarot/suggest'
 import { CARD_BY_ID } from '../data/tarot'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
@@ -215,6 +216,7 @@ export default function TarotLab() {
   }
 
   const errorInfo = error && error !== 'cap' ? ERRORS[error] : null
+  const replies = busy || closed || error ? [] : quickReplies(messages)
 
   /** Header action at the close button's size; icon-only on handhelds so the title keeps its room. */
   const barButton = (label: string, icon: DitherIconName, onClick: () => void) =>
@@ -321,6 +323,19 @@ export default function TarotLab() {
                   {m.text && <p className="tm-text">{m.text}</p>}
                   {m.draw && <CardStrip draw={m.draw} animate={i === liveIndex} />}
                   {m.after && <p className="tm-text">{m.after}</p>}
+                  {i === messages.length - 1 && replies.length > 0 && (
+                    <div className="tarot-quick" aria-label="Quick replies">
+                      {replies.map((q) => (
+                        <ListRow
+                          key={q}
+                          title={q}
+                          onClick={() => send(q)}
+                          thumb={<DitherIcon name="arrow-right" size={16} />}
+                          thumbPosition="end"
+                        />
+                      ))}
+                    </div>
+                  )}
                   {busy && i === liveIndex && !m.text && !m.draw && <p className="tm-wait">The Seer considers…</p>}
                   {busy && i === liveIndex && m.draw && !m.after && <p className="tm-wait">She studies the cards…</p>}
                 </div>

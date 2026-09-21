@@ -1387,6 +1387,9 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tarot-empty-sub { margin: 0; font-size: 13px; line-height: 20px; color: var(--body); }
 .tarot-starters { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 4px; text-align: left; }
 
+/* quick replies under the latest reading (the starters' recipe) */
+.tarot-quick { display: flex; flex-direction: column; gap: 4px; }
+
 /* past sittings: the shelf "New sitting" fills */
 .tarot-past { display: flex; flex-direction: column; gap: 8px; }
 .tarot-past-title { margin: 0; font-size: 18px; line-height: 24px; color: var(--fg); font-weight: 400; }
