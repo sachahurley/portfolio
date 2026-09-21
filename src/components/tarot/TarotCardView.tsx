@@ -12,6 +12,7 @@
  * transition is never interrupted by a wrapper swap).
  */
 
+import { Badge } from '@scorp-ds/components'
 import { TileBox } from '../TileSprite'
 import { TAROT_TILES, TAROT_BACK, TAROT_TILE_W, TAROT_TILE_H } from '../../game/tarotTiles'
 import type { DrawnCard } from '../../lib/tarot/draw'
@@ -65,7 +66,12 @@ export default function TarotCardView({
       )}
       <figcaption className="tc-poslabel">
         {drawn.position.label}
-        {faceUp && <span className="tc-name">{drawn.card.name}{drawn.reversed ? ' (rev)' : ''}</span>}
+        {faceUp && <span className="tc-name">{drawn.card.name}</span>}
+        {faceUp && drawn.reversed && (
+          <Badge size="small" variant="default">
+            Reversed
+          </Badge>
+        )}
       </figcaption>
     </figure>
   )

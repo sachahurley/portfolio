@@ -1321,66 +1321,80 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .vk-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
 
 /* ---- tarot reader (/lab/tarot) ----
-   Full-page parlor (gframe.gf-full, like /character): the scene banner, then
-   a chat thread with the Reader and a fixed composer. The card flip is the
-   site's one piece of 3D: a rotateY on .tc-inner, with reversed cards
-   landing rotated 180. All colors via tokens. */
+   Full-page chat (gframe.gf-full, like /character): a header bar, the
+   thread, and a composer pinned above the dock. Components are scorp-ds
+   (Avatar, Button, ListRow, Card, Badge, Alert, Divider, Input); this block
+   only lays them out. The card flip is the site's one piece of 3D: a
+   rotateY on .tc-inner, reversed cards landing rotated 180. Colors via
+   tokens only. */
 .tarot-page {
   min-height: 100%;
   display: flex; flex-direction: column; align-items: center;
-  padding: 72px 24px calc(48px + env(safe-area-inset-bottom, 0px));
+  /* 40px clears the stone band + corner boss; the bottom clears the
+     fixed composer and the dock notch */
+  padding: 28px 40px calc(190px + env(safe-area-inset-bottom, 0px));
   font-family: var(--mono);
 }
-.tarot-chat-page { padding-bottom: 180px; }
-.tarot-head { text-align: center; max-width: 560px; display: flex; flex-direction: column; align-items: center; }
-.tarot-title { font-size: 22px; line-height: 28px; color: var(--fg); font-weight: 400; }
-.tarot-sub { margin-top: 8px; font-size: 13px; line-height: 20px; color: var(--body); }
-.tarot-new { margin-top: 12px; }
-.tarot-note { margin-top: 8px; font-size: 11px; line-height: 16px; color: var(--mut); text-align: center; }
 
-/* the thread: user lines right-aligned on a plate, Reader prose full width */
+/* header bar */
+.tarot-bar {
+  width: 100%; max-width: 720px;
+  position: sticky; top: 0; z-index: 4; background: var(--bg); padding-top: 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--surface-container-stroke);
+}
+.tarot-bar-id { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.tarot-bar-text { min-width: 0; }
+.tarot-title { margin: 0; font-size: 16px; line-height: 22px; color: var(--fg); font-weight: 400; }
+.tarot-sub { margin: 0; font-size: 12px; line-height: 18px; color: var(--mut); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tarot-bar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.tarot-new { white-space: nowrap; flex-shrink: 0; }
+
+/* thread */
 .tarot-thread {
-  margin-top: 28px; width: 100%; max-width: 560px;
-  display: flex; flex-direction: column; gap: 20px;
+  width: 100%; max-width: 720px; padding-top: 28px;
+  display: flex; flex-direction: column; gap: 24px;
 }
 .tm { margin: 0; font-size: 14px; line-height: 22px; color: var(--body); }
 .tm-user {
-  align-self: flex-end; max-width: 85%;
+  align-self: flex-end; max-width: 80%;
   padding: 10px 14px; background: var(--hover); color: var(--fg);
   clip-path: var(--plate-round-lg);
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
-.tm-reader { display: flex; flex-direction: column; gap: 16px; }
-.tm-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tm-reader { display: flex; gap: 12px; align-items: flex-start; }
+.tm-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding-top: 2px; }
+.tm-text { margin: 0; color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere; }
 .tm-wait { margin: 0; color: var(--mut); }
 @media (prefers-reduced-motion: no-preference) {
   .tm-wait { animation: tarot-breathe 1.2s ease-in-out infinite alternate; }
 }
 @keyframes tarot-breathe { from { opacity: .45; } to { opacity: 1; } }
-.tm-system { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; color: var(--mut); }
-.tm-system p { margin: 0; }
+.tarot-alert-body { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 /* scroll anchor: land the newest line above the fixed composer */
-.tarot-end { scroll-margin-bottom: 170px; }
+.tarot-end { scroll-margin-bottom: 190px; }
 
-/* empty state: three starter prompts (spread-chip recipe) */
-.tarot-starters { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
-.tarot-chip {
-  font-family: var(--mono); font-size: 13px; line-height: 18px; text-align: left;
-  padding: 12px 14px; border: 0; cursor: pointer;
-  background: transparent; color: var(--accent);
-  clip-path: var(--plate-round-lg);
-  transition: background-color .12s, color .12s;
+/* empty state: a fan of card backs, the prompt, three starters */
+.tarot-empty {
+  min-height: 46vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 24px; text-align: center;
 }
-@media (hover: hover) { .tarot-chip:hover { background: var(--hover); } }
-.tarot-chip:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.tarot-fan { display: flex; gap: 6px; }
+.tarot-fan-card.f0 { transform: rotate(-8deg) translateY(4px); }
+.tarot-fan-card.f2 { transform: rotate(8deg) translateY(4px); }
+.tarot-empty-copy { display: flex; flex-direction: column; gap: 8px; max-width: 420px; }
+.tarot-empty-title { margin: 0; font-size: 22px; line-height: 28px; color: var(--fg); font-weight: 400; }
+.tarot-empty-sub { margin: 0; font-size: 13px; line-height: 20px; color: var(--body); }
+.tarot-starters { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 4px; text-align: left; }
 
-/* cards */
-.tarot-cards { display: flex; gap: 24px; justify-content: center; perspective: 900px; }
-.tarot-strip { gap: 16px; padding: 4px 0; }
+/* the draw: DS Card around the strip */
+.tarot-draw-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
+.tarot-draw-name { font-size: 12px; color: var(--mut); letter-spacing: 1px; text-transform: uppercase; }
+.tarot-draw-count { font-size: 12px; color: var(--mut); }
+.tarot-cards { display: flex; gap: 20px; justify-content: center; perspective: 900px; padding: 4px 0; }
 .tc-slot { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 0; }
-/* dims match the baked 25x38 face at the TileBox scale in use */
+/* dims match the baked 25x38 face at TileBox scale 4 (3 on handhelds) */
 .tc-card { width: 100px; height: 152px; }
-.tarot-strip .tc-card { width: 75px; height: 114px; }
 .tc-inner {
   position: relative; width: 100%; height: 100%;
   transform-style: preserve-3d;
@@ -1399,7 +1413,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tc-tap { display: block; padding: 0; background: none; border: 0; cursor: pointer; }
 .tc-tap:disabled { cursor: default; }
 .tc-poslabel {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
   font-size: 11px; color: var(--mut); letter-spacing: 1px; text-transform: uppercase;
 }
 .tc-poslabel .tc-name { font-size: 12px; color: var(--accent); letter-spacing: 0; text-transform: none; text-align: center; max-width: 110px; }
@@ -1408,24 +1422,24 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
    layer, both clipped) so the plate corners step like everything else */
 .tarot-chatbar {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: 64px;
-  width: min(560px, calc(100% - 64px)); z-index: 5;
+  width: min(720px, calc(100% - 64px)); z-index: 5;
   padding: 1px; background: var(--surface-container-stroke);
   clip-path: var(--plate-round-lg);
 }
 .tarot-chatbar-in {
-  display: flex; gap: 10px; align-items: center;
-  padding: 10px; background: var(--bg);
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 10px 10px 8px; background: var(--bg);
   clip-path: var(--plate-round-lg);
 }
-.tarot-chatbar-in > :first-child { flex: 1; min-width: 0; }
+.tarot-composer { display: flex; gap: 10px; align-items: center; margin: 0; }
+.tarot-composer > :first-child { flex: 1; min-width: 0; }
+.tarot-restart { width: 100%; }
+.tarot-foot { margin: 0; font-size: 11px; line-height: 16px; color: var(--mut); text-align: center; }
 
 @media (max-width: 600px) {
-  .tarot-page { padding-top: 64px; }
-  .tarot-page { padding-left: 16px; padding-right: 16px; }
-  .tarot-chat-page { padding-bottom: 170px; }
-  .tarot-cards { gap: 12px; }
+  .tarot-page { padding: 28px 32px calc(180px + env(safe-area-inset-bottom, 0px)); }
+  .tarot-cards { gap: 10px; }
   .tc-card { width: 75px; height: 114px; }
-  .tarot-strip .tc-card { width: 50px; height: 76px; }
   .tarot-chatbar { width: calc(100% - 32px); bottom: 56px; }
+  .tarot-empty-title { font-size: 18px; line-height: 24px; }
 }
-.tarot-scene { display: block; width: min(432px, 100%); margin: 0 auto; image-rendering: pixelated; }
