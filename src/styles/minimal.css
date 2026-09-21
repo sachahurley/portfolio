@@ -144,13 +144,12 @@ strong, b { font-weight: 400; }
 /* pressed into the stone: the notch sinks, keeping its centring transform
    (its own fast transition so the press never rides the sink timing) */
 .gf-tab:active { transform: translateX(-50%) translateY(2px); transition: transform .06s; }
-/* rewards-waiting pip on the menu notch: accent for a pending level-up,
-   bone (the chest badge color) for unopened chests */
+/* rewards-waiting pip on the menu notch: one dot, one meaning (a pending
+   level claim or an unopened chest waits on the character screen) */
 .gf-tab-dot {
   position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
   background: var(--rar-common); pointer-events: none;
 }
-.gf-tab-dot.lvl { background: var(--accent); }
 /* ---- pixel-RPG bottom sheet (desktop + mobile) ---- */
 /* Bayer-checker scrim (classic-Mac dither, kin to the welcome dissolve)
    instead of iOS blur: a black checkerboard at the site's 2px dither cell
@@ -680,32 +679,56 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gf-cs-lvl { font-size: 11px; color: var(--body); }
-/* notched + dithered like .gf-xpbar (see the comment there) */
-.gf-cs-bar {
-  height: 6px; position: relative;
+/* mini XP readout, notched + dithered like .gf-xpbar (see the comment
+   there); shared by the character strip and the menu sheet's row */
+.xp-mini {
+  height: 6px; position: relative; display: block;
   padding: 1px; background: var(--border); clip-path: var(--notch2);
 }
-.gf-cs-bar::before {
+.xp-mini::before {
   content: ""; position: absolute; inset: 1px; clip-path: var(--notch2);
   background: var(--dither-light) 0 0 / 4px 4px, var(--bg);
 }
-.gf-cs-bar > i {
+.xp-mini > i {
   position: relative; display: block; height: 100%;
   background: var(--dither-dark) 0 0 / 4px 4px, var(--accent);
   transition: width .3s ease;
 }
-/* .gf-cs-badge retired: strip badges are the DS Badge (primary pulses for
-   a pending level, bone for chests) */
-@media (prefers-reduced-motion: no-preference) {
-  .gf-pulse { animation: gf-pulse 1.6s ease-in-out infinite; }
-  @keyframes gf-pulse { 50% { opacity: .55; } }
-}
+/* .gf-cs-badge and .gf-pulse retired: the strip's single waiting badge is
+   the DS Badge (bone, caps), and persistent signals no longer pulse. */
 
+/* sheet: section seams between nav / character row / contact. The seam is
+   the DS Divider (never a border on the ListRow: its --plate-round clip
+   slices 6px off each end of a border it carries). Color realigned from
+   the Divider's term-dim to the site's border token (DS gap: Divider has
+   no surface-stroke variant). */
+.sheet-sep { margin-top: 16px; border-top-color: var(--border); }
+/* the seam after the character row hugs it (margin 0): the row's own 12px
+   plate padding is the gap, matching the seam above for an even sandwich */
+.sheet-char + .sheet-sep { margin-top: 0; }
 /* sheet: compact character row linking to /character (full sheet there) */
 /* LAYOUT hook only: the row itself is the DS ListRow (thumb + title +
-   badge suffix); this adds the sheet's section seam above it. */
-.sheet-char { margin-top: 16px; border-top: 1px solid var(--border); }
-.sheet-char-go { font-size: 18px; color: var(--mut); }
+   badge suffix); this seats the mini XP bar under the level line and
+   anchors the go-chevron to the row's right edge, vertically centred
+   (it rides in the title's suffix slot, so it needs lifting out). */
+/* tighter vertical plate padding than the DS row's p-3 (sides stay 12px
+   for the column alignment); the seams hug the row, so this is the whole
+   gap between the row content and its dividers */
+.sheet-char { position: relative; padding-top: 8px; padding-bottom: 8px; }
+/* centre the portrait plate against the text column (the ListRow's flex
+   pair defaults to items-start) */
+.sheet-char > span { align-items: center; }
+/* optical centring for the text column: the title's 24px line box holds
+   ~7px of dead leading above the glyph ink while the xp bar below is
+   solid to its edge, so the geometrically-centred column reads low-set;
+   nudging it up half the overhang evens the visible gaps. The plate and
+   chevron are solid ink and stay on the geometric centre. */
+.sheet-char > span > span + span { transform: translateY(-3.5px); }
+.sheet-char .xp-mini { margin-top: 6px; max-width: 220px; }
+.sheet-char-go {
+  position: absolute; top: 50%; right: 12px; transform: translateY(-50%);
+  font-size: 18px; color: var(--mut);
+}
 
 /* ---- title-screen save readout (NEW GAME / CONTINUE) ---- */
 /* stacked under the art (the loader is a column flex): the art's wrap
@@ -730,7 +753,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 @media (max-width: 600px) { .title-save { margin-top: 16px; } }
 
 /* ---- sheet: registry nav extras, character sheet, contact ---- */
-.menu-nav .gf-ic { margin-right: 8px; }
+.menu-nav .gf-ic { margin-right: 12px; }
 .nav-sealed {
   display: flex; align-items: center; font-size: 20px; padding: 10px 14px;
   color: var(--mut2); opacity: .6; cursor: not-allowed;
@@ -752,10 +775,12 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   width: 62px; height: 62px; background: var(--hover); clip-path: var(--notch4);
 }
 .pp-plate.sm .pp-plate-in { width: 46px; height: 46px; }
+/* .xs is the menu-sheet row tier (cell 2 figure, 24px of ink) */
+.pp-plate.xs .pp-plate-in { width: 36px; height: 36px; }
 .cs-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 /* .cs-name retired: the rename field is the DS Input (quiet). */
 .cs-lvl { font-size: 12px; color: var(--body); }
-/* layout hook only; the pulse rides in via the shared .gf-pulse class */
+/* layout hook only (quiet by design: no pulse on persistent signals) */
 .cs-levelup { margin-left: 10px; vertical-align: middle; }
 .cs-picker {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
@@ -765,7 +790,9 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 @media (hover: hover) { .cs-cand:hover { border-color: var(--accent); } }
 /* .cs-reroll retired: those text actions are the DS Button (ghost). */
 
-.sheet-contact { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+/* 13px sides align the contact text with the nav links' text column (the
+   seam above moved to .sheet-sep, same as the character row's) */
+.sheet-contact { padding: 16px 13px 0; display: flex; flex-direction: column; gap: 6px; }
 .sheet-contact a { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--mut); padding: 4px 0; }
 @media (hover: hover) { .sheet-contact a:hover { color: var(--fg); } }
 
@@ -1205,19 +1232,8 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   font-family: var(--mono); font-size: 12px; line-height: 1;
   color: var(--body); white-space: nowrap; pointer-events: none;
 }
-/* rewards badge riding a hotspot label (the character sword): the
-   character strip's badge colors at label scale */
-.vg-badge { margin-left: 6px; font-size: 11px; color: var(--rar-common); }
-/* quest marker: a pending level marks the sprite itself (the RPG
-   over-the-head cue) as a small pulsing accent plate */
-.vg-marker {
-  position: absolute; transform: translate(-50%, -100%);
-  font-family: var(--mono); font-size: 11px; line-height: 1;
-  color: var(--bg); background: var(--accent);
-  padding: 3px 5px; clip-path: var(--plate-round);
-  pointer-events: none;
-}
-@media (prefers-reduced-motion: no-preference) { .vg-marker { animation: gf-pulse 1.6s ease-in-out infinite; } }
+/* .vg-badge / .vg-marker retired: village reward affordances were cut;
+   the waiting signal lives on the strip / sheet row / dock dot. */
 .vg-hotspot {
   position: absolute; padding: 0; margin: 0;
   background: none; border: none; appearance: none;

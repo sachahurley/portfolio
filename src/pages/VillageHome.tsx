@@ -10,27 +10,13 @@
 
 import { useNavigate } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
-import VillageScene, { type VillageBadge } from '../components/village/VillageScene'
-import { useXp } from '../context/XpProvider'
+import VillageScene from '../components/village/VillageScene'
 import { VILLAGE_HOME } from '../data/villageHome'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function VillageHome() {
   usePageTitle()
   const navigate = useNavigate()
-
-  // Rewards waiting on the character screen badge the sword hotspot, so
-  // the home page carries the same pull as the side strip and the sheet.
-  const { chests, pendingLevels } = useXp()
-  const charBadge: VillageBadge | null =
-    pendingLevels.length > 0
-      ? { text: '▴ level up', aria: 'level up waiting', accent: true }
-      : chests.length > 0
-        ? {
-            text: `▪ ${chests.length}`,
-            aria: `${chests.length} chest${chests.length > 1 ? 's' : ''} waiting`,
-          }
-        : null
 
   return (
     <MinimalPage flushTop>
@@ -45,11 +31,9 @@ export default function VillageHome() {
         </p>
       </div>
 
-      <VillageScene
-        items={VILLAGE_HOME}
-        onNavigate={(href) => navigate(href)}
-        badges={charBadge ? { '/character': charBadge } : undefined}
-      />
+      {/* reward badges retired from the village: the waiting signal
+          lives on the character strip / sheet row / dock dot */}
+      <VillageScene items={VILLAGE_HOME} onNavigate={(href) => navigate(href)} />
     </MinimalPage>
   )
 }

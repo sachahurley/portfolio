@@ -15,11 +15,11 @@ import DitherIcon from './DitherIcon'
 import { useXp } from '../context/XpProvider'
 
 export default function Dock({ open, onToggle }: { open: boolean; onToggle: () => void }) {
-  // Rewards waiting (a pending level-up outranks unopened chests) get a
-  // pip on the notch, so mobile visitors have a persistent signal beyond
-  // the transient toast.
+  // Any waiting reward (pending level claim or unopened chest) gets one
+  // pip on the notch: mobile's single persistent signal beyond the
+  // transient toast. No level/chest distinction; one dot, one meaning.
   const { chests, pendingLevels } = useXp()
-  const waiting = pendingLevels.length > 0 ? 'level' : chests.length > 0 ? 'chest' : null
+  const waiting = pendingLevels.length + chests.length > 0
 
   // Stays mounted while the sheet is open: the notch sinks into the stone
   // band (CSS .is-sunk) as the sheet rises carrying its twin, so the two
@@ -35,9 +35,7 @@ export default function Dock({ open, onToggle }: { open: boolean; onToggle: () =
     >
       <DitherIcon name="home" size={16} className="ic-home" />
       Menu
-      {waiting && (
-        <span className={`gf-tab-dot${waiting === 'level' ? ' lvl' : ''}`} aria-hidden="true" />
-      )}
+      {waiting && <span className="gf-tab-dot" aria-hidden="true" />}
     </button>
   )
 }
