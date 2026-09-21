@@ -404,7 +404,7 @@ export default function TarotLab() {
             <p className="tarot-foot">
               {closed
                 ? `Up to ${USER_TURNS_MAX} questions per sitting. Start fresh any time.`
-                : 'For insight and entertainment. Messages may be sent to an AI provider for replies; saved only in this browser.'}
+                : 'For entertainment. Messages may be sent to an AI provider; saved only in this browser.'}
             </p>
           </div>
         </div>
