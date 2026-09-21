@@ -5,7 +5,16 @@
  * (the character name deliberately stays local).
  */
 
-import { AWARDS_MAX, AWARD_KEY_MAX, type TimeOfDay, type VisitorSummary } from './contract'
+import {
+  AWARDS_MAX,
+  AWARD_KEY_MAX,
+  GEMS_MAX,
+  GEM_MAX,
+  VISITED_MAX,
+  XP_MAX,
+  type TimeOfDay,
+  type VisitorSummary,
+} from './contract'
 import { levelInfo } from '../levels'
 import { resolveItem, STAT_IDS, type SavedItem, type Slot } from '../../game/loot'
 
@@ -29,9 +38,12 @@ export function summarizeVisitor(state: {
   const awards = state.earned
     .slice(-AWARDS_MAX)
     .map((k) => k.slice(0, AWARD_KEY_MAX))
+  // Clamped to the contract's caps (like awards above) so a long-lived
+  // save can never outgrow the server's validation.
   const visited = state.earned
     .filter((k) => k.startsWith('visit:'))
-    .map((k) => k.slice('visit:'.length))
+    .map((k) => k.slice('visit:'.length, 'visit:'.length + AWARD_KEY_MAX))
+    .slice(-VISITED_MAX)
 
   const byId = new Map(state.items.map((i) => [i.id, i]))
   const gear = Object.entries(state.equipment).flatMap(([slot, id]) => {
@@ -45,8 +57,8 @@ export function summarizeVisitor(state: {
   return {
     returning: state.isReturning,
     levelTitle: levelInfo(state.xp).title,
-    xp: state.xp,
-    gems: state.gems,
+    xp: Math.min(Math.max(0, Math.floor(state.xp)), XP_MAX),
+    gems: state.gems.slice(0, GEMS_MAX).map((g) => g.slice(0, GEM_MAX)),
     awards,
     gear,
     timeOfDay: timeOfDay(),

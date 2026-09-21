@@ -12,6 +12,11 @@
 export const QUESTION_MAX = 280
 export const AWARDS_MAX = 40
 export const AWARD_KEY_MAX = 64
+export const GEMS_MAX = 16
+export const GEM_MAX = 32
+export const VISITED_MAX = 40
+/** Generous ceiling on a real save's XP; anything above is a forged body. */
+export const XP_MAX = 1_000_000
 
 export type SpreadId = 'one' | 'three'
 
@@ -92,10 +97,16 @@ const SPREAD_SIZES: Record<SpreadId, number> = { one: 1, three: 3 }
 
 /**
  * Server-side request validation. `deckIds` is the full set of legal card
- * ids (the server builds it from TAROT_DECK). Returns null when valid, or
- * a short reason for the 400 body.
+ * ids and `positionsBySpread` each spread's position ids in draw order
+ * (the server builds both from src/data/tarot.ts, so the client cannot
+ * invent cards or positions the deck does not define). Returns null when
+ * valid, or a short reason for the 400 body.
  */
-export function validateRequest(body: unknown, deckIds: ReadonlySet<string>): string | null {
+export function validateRequest(
+  body: unknown,
+  deckIds: ReadonlySet<string>,
+  positionsBySpread: Readonly<Record<SpreadId, readonly string[]>>,
+): string | null {
   if (typeof body !== 'object' || body === null) return 'not an object'
   const req = body as Record<string, unknown>
   const spread = req.spread as SpreadId
@@ -105,26 +116,33 @@ export function validateRequest(body: unknown, deckIds: ReadonlySet<string>): st
     if (req.question.length > QUESTION_MAX) return 'question too long'
   }
   if (!Array.isArray(req.cards) || req.cards.length !== SPREAD_SIZES[spread]) return 'bad cards'
+  const positions = positionsBySpread[spread]
   const seen = new Set<string>()
-  for (const c of req.cards as Record<string, unknown>[]) {
+  for (const [i, c] of (req.cards as Record<string, unknown>[]).entries()) {
     if (typeof c !== 'object' || c === null) return 'bad card'
     if (typeof c.id !== 'string' || !deckIds.has(c.id)) return 'unknown card'
     if (seen.has(c.id)) return 'duplicate card'
     seen.add(c.id)
     if (typeof c.name !== 'string' || c.name.length > 40) return 'bad card name'
-    if (typeof c.position !== 'string' || c.position.length > 16) return 'bad position'
+    // Positions are the spread's, in draw order; no client-invented text.
+    if (c.position !== positions[i]) return 'bad position'
     if (typeof c.reversed !== 'boolean') return 'bad orientation'
   }
   const v = req.visitor as Record<string, unknown> | undefined
   if (typeof v !== 'object' || v === null) return 'bad visitor'
   if (typeof v.returning !== 'boolean') return 'bad visitor'
   if (typeof v.levelTitle !== 'string' || v.levelTitle.length > 32) return 'bad visitor'
-  if (typeof v.xp !== 'number' || !Number.isFinite(v.xp)) return 'bad visitor'
+  if (typeof v.xp !== 'number' || !Number.isInteger(v.xp) || v.xp < 0 || v.xp > XP_MAX)
+    return 'bad visitor'
   for (const list of [v.gems, v.awards, v.visited]) {
     if (!Array.isArray(list) || list.some((s) => typeof s !== 'string')) return 'bad visitor'
   }
   if ((v.awards as string[]).length > AWARDS_MAX) return 'too many awards'
   if ((v.awards as string[]).some((s) => s.length > AWARD_KEY_MAX)) return 'award key too long'
+  if ((v.gems as string[]).length > GEMS_MAX) return 'too many gems'
+  if ((v.gems as string[]).some((s) => s.length > GEM_MAX)) return 'gem too long'
+  if ((v.visited as string[]).length > VISITED_MAX) return 'too many visits'
+  if ((v.visited as string[]).some((s) => s.length > AWARD_KEY_MAX)) return 'visit too long'
   if (!Array.isArray(v.gear) || v.gear.length > 8) return 'bad gear'
   for (const g of v.gear as Record<string, unknown>[]) {
     if (typeof g !== 'object' || g === null) return 'bad gear'
@@ -139,8 +157,12 @@ export function validateRequest(body: unknown, deckIds: ReadonlySet<string>): st
 
 /** Chat request validation: the reading-request rules plus the carried
  *  reading, the transcript so far, and the new message. */
-export function validateChatRequest(body: unknown, deckIds: ReadonlySet<string>): string | null {
-  const base = validateRequest(body, deckIds)
+export function validateChatRequest(
+  body: unknown,
+  deckIds: ReadonlySet<string>,
+  positionsBySpread: Readonly<Record<SpreadId, readonly string[]>>,
+): string | null {
+  const base = validateRequest(body, deckIds, positionsBySpread)
   if (base) return base
   const req = body as Record<string, unknown>
   const positions = (req.cards as { position: string }[]).map((c) => c.position)

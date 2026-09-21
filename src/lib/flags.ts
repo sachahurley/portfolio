@@ -5,8 +5,9 @@
  * TAROT_ENABLED gates the tarot parlor (route, lab row, village tap). Always
  * on in dev; off in deployed builds until VITE_TAROT=1 is set in the Vercel
  * env, so shipping it later is an env flip + redeploy, not a code change.
- * The serverless function stays deployed either way; without its key it
- * answers 503 and costs nothing.
+ * The serverless functions stay deployed either way, but read the same
+ * env var at runtime (api/_lib/guard.ts) and answer 404 while it is off,
+ * so a flagged-off deploy has no reachable spend surface.
  */
 
 export const TAROT_ENABLED = import.meta.env.DEV || import.meta.env.VITE_TAROT === '1'
