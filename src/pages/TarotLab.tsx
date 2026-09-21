@@ -1,7 +1,7 @@
 /**
  * Tarot reader (/lab/tarot)
  *
- * A chat with the Reader. Ask anything about your life or the cards; she
+ * A chat with the Seer. Ask anything about your life or the cards; she
  * draws when a draw would help (server-side, from the real 78-card deck)
  * and the cards land in her message. One conversation on the table, saved
  * in this browser; "New sitting" shelves it under Past sittings, where it
@@ -46,9 +46,9 @@ const STARTERS = [
 ]
 
 const ERRORS: Record<Exclude<AskError, 'cap'>, { title: string; description: string; retry: boolean }> = {
-  failed: { title: 'The candle gutters', description: 'The Reader lost the thread. Your message is safe.', retry: true },
-  rate_limited: { title: 'The Reader needs a moment', description: 'Too many questions at once. Try again shortly.', retry: true },
-  unavailable: { title: 'The Reader is away', description: 'The parlor is closed right now. Come back later.', retry: false },
+  failed: { title: 'The candle gutters', description: 'The Seer lost the thread. Your message is safe.', retry: true },
+  rate_limited: { title: 'The Seer needs a moment', description: 'Too many questions at once. Try again shortly.', retry: true },
+  unavailable: { title: 'The Seer is away', description: 'The parlor is closed right now. Come back later.', retry: false },
 }
 
 /** A past sitting as a row: when, what was asked first, and what was drawn. */
@@ -242,7 +242,7 @@ export default function TarotLab() {
         <div className="tarot-bar-id">
           <ReaderAvatar size="medium" />
           <div className="tarot-bar-text">
-            <h1 className="tarot-title">The Reader</h1>
+            <h1 className="tarot-title">The Seer</h1>
             <p className="tarot-sub">Tarot, one conversation at a time</p>
           </div>
         </div>
@@ -272,7 +272,7 @@ export default function TarotLab() {
           </div>
         </section>
       ) : (
-        <section className="tarot-thread" aria-label="Conversation with the Reader" aria-live="polite">
+        <section className="tarot-thread" aria-label="Conversation with the Seer" aria-live="polite">
           {empty && (
             <div className="tarot-empty">
               <div className="tarot-fan" aria-hidden="true">
@@ -292,7 +292,7 @@ export default function TarotLab() {
               <div className="tarot-empty-copy">
                 <h2 className="tarot-empty-title">What's on your mind?</h2>
                 <p className="tarot-empty-sub">
-                  Ask the Reader anything. She'll draw from a real 78-card deck when the cards can help.
+                  Ask the Seer anything. She'll draw from a real 78-card deck when the cards can help.
                 </p>
               </div>
               <div className="tarot-starters">
@@ -321,7 +321,7 @@ export default function TarotLab() {
                   {m.text && <p className="tm-text">{m.text}</p>}
                   {m.draw && <CardStrip draw={m.draw} animate={i === liveIndex} />}
                   {m.after && <p className="tm-text">{m.after}</p>}
-                  {busy && i === liveIndex && !m.text && !m.draw && <p className="tm-wait">The Reader considers…</p>}
+                  {busy && i === liveIndex && !m.text && !m.draw && <p className="tm-wait">The Seer considers…</p>}
                   {busy && i === liveIndex && m.draw && !m.after && <p className="tm-wait">She studies the cards…</p>}
                 </div>
               </div>
@@ -369,11 +369,11 @@ export default function TarotLab() {
               >
                 <Input
                   ref={inputRef}
-                  aria-label="Message the Reader"
+                  aria-label="Message the Seer"
                   type="text"
                   value={draft}
                   maxLength={USER_TEXT_MAX}
-                  placeholder={busy ? 'The Reader is speaking…' : 'Ask the Reader'}
+                  placeholder={busy ? 'The Seer is speaking…' : 'Ask the Seer'}
                   onChange={(e) => setDraft(e.target.value)}
                 />
                 <Button variant="primary" size="icon" type="submit" disabled={busy || !draft.trim()} aria-label="Send">
