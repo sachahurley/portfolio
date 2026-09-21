@@ -61,6 +61,33 @@ export interface TarotResponse {
   reading: Reading
 }
 
+// -- chatting with the Reader (POST /api/tarot-chat) ------------------------
+
+export const CHAT_MESSAGE_MAX = 280
+/** Follow-ups per reading; the server refuses the turn after the last. */
+export const CHAT_TURNS_MAX = 3
+/** Upper bound on a reply the client will accept (and the server will send). */
+export const CHAT_REPLY_MAX = 1200
+/** Upper bound on any single reading text the chat request carries back. */
+const READING_TEXT_MAX = 2000
+
+export interface ChatExchange {
+  question: string
+  reply: string
+}
+
+/** The chat is stateless server-side: each turn carries the original
+ *  reading context plus the transcript so far. */
+export interface TarotChatRequest extends TarotRequest {
+  reading: Reading
+  exchanges: ChatExchange[]
+  message: string
+}
+
+export interface TarotChatResponse {
+  reply: string
+}
+
 const SPREAD_SIZES: Record<SpreadId, number> = { one: 1, three: 3 }
 
 /**
@@ -107,6 +134,30 @@ export function validateRequest(body: unknown, deckIds: ReadonlySet<string>): st
   }
   const tods: TimeOfDay[] = ['morning', 'afternoon', 'evening', 'night']
   if (!tods.includes(v.timeOfDay as TimeOfDay)) return 'bad time of day'
+  return null
+}
+
+/** Chat request validation: the reading-request rules plus the carried
+ *  reading, the transcript so far, and the new message. */
+export function validateChatRequest(body: unknown, deckIds: ReadonlySet<string>): string | null {
+  const base = validateRequest(body, deckIds)
+  if (base) return base
+  const req = body as Record<string, unknown>
+  const positions = (req.cards as { position: string }[]).map((c) => c.position)
+  if (!isReading(req.reading, positions)) return 'bad reading'
+  const r = req.reading as Reading
+  const texts = [r.greeting, r.synthesis, r.farewell, ...r.cards.map((c) => c.text)]
+  if (texts.some((t) => t.length > READING_TEXT_MAX)) return 'reading too long'
+  if (!Array.isArray(req.exchanges)) return 'bad exchanges'
+  if (req.exchanges.length >= CHAT_TURNS_MAX) return 'audience spent'
+  for (const e of req.exchanges as Record<string, unknown>[]) {
+    if (typeof e !== 'object' || e === null) return 'bad exchange'
+    if (typeof e.question !== 'string' || e.question.length > CHAT_MESSAGE_MAX) return 'bad exchange'
+    if (typeof e.reply !== 'string' || e.reply.length > CHAT_REPLY_MAX) return 'bad exchange'
+  }
+  if (typeof req.message !== 'string') return 'bad message'
+  const msg = req.message.trim()
+  if (!msg || msg.length > CHAT_MESSAGE_MAX) return 'bad message'
   return null
 }
 

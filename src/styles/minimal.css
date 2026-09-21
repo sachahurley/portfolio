@@ -676,6 +676,12 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   font-family: var(--mono); color: var(--fg); position: relative;
 }
 @media (hover: hover) { .gf-charstrip:hover { background: var(--bg); } }
+/* rewards-waiting pip: the dock notch's dot recipe (one dot, one meaning);
+   an inline badge crushed the strip's narrow text column */
+.gf-cs-dot {
+  position: absolute; top: 10px; right: 10px; width: 8px; height: 8px;
+  background: var(--rar-common); pointer-events: none;
+}
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gf-cs-lvl { font-size: 11px; color: var(--body); }
@@ -1012,11 +1018,11 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 /* LAYOUT hook only (position + layer): the control itself is an icon-only
    DS Button, which owns all visual styling (same split as .pageback). */
 .ch-close {
-  position: fixed; top: calc(24px + env(safe-area-inset-top, 0px)); right: 24px; z-index: 65;
+  /* 40px clears the 16px stone band and the 32px corner boss; the site
+     frame keeps the same 2x scale on phones, so every width needs it */
+  position: fixed; top: calc(40px + env(safe-area-inset-top, 0px)); right: 40px; z-index: 65;
 }
 @media (min-width: 960px) {
-  /* clear the 16px stone band and the 32px corner boss */
-  .ch-close { top: 40px; right: 40px; }
   .gf-full { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'viewport'; }
   /* scrolls (not locked) since the camp section - progress + the gem
      fire - lives below the sheet; the close plate stays fixed */
@@ -1288,16 +1294,21 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tarot-spreads { display: flex; gap: 12px; width: 100%; }
 /* Deliberately NOT the DS Radio: that's a dot-and-label form control,
    and these are rich chip cards (name + description). The radiogroup
-   semantics live in the markup (role=radio / aria-checked). */
+   semantics live in the markup (role=radio / aria-checked).
+   Selection is the DS pattern (fill + accent title, per ListRow selected /
+   SideNavigation), never a ring: an inset box-shadow ring is rectangular
+   and the stepped plate clip slices its corners off. */
 .tarot-spread {
   flex: 1; display: flex; flex-direction: column; gap: 6px; text-align: left;
   font-family: var(--mono); padding: 14px 14px 12px; border: 0; cursor: pointer;
-  background: var(--color-sepia-925); color: var(--body);
+  background: transparent; color: var(--body);
   clip-path: var(--plate-round-lg);
-  transition: background-color .12s, color .12s, box-shadow .12s;
+  transition: background-color .12s, color .12s;
 }
-@media (hover: hover) { .tarot-spread:hover { color: var(--fg); } }
-.tarot-spread.sel { color: var(--fg); box-shadow: inset 0 0 0 1px var(--accent); }
+@media (hover: hover) { .tarot-spread:hover { background: var(--hover); color: var(--fg); } }
+.tarot-spread.sel { background: var(--hover); color: var(--fg); }
+/* keyboard-only inset ring, accepting the clipped corners (DS ListRow
+   ships the same focus recipe on the same clip) */
 .tarot-spread:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
 .tarot-spread .ts-name { font-size: 14px; color: var(--accent); }
 .tarot-spread .ts-desc { font-size: 12px; line-height: 17px; }
@@ -1318,6 +1329,17 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   .tarot-cards.shuffling .tc-card { animation: none; }
 }
 .tc-slot { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 0; }
+/* tap-to-turn: the face-down card is a bare button (the card art is the
+   whole affordance); once turned it stays mounted, disabled */
+.tc-tap { display: block; padding: 0; background: none; border: 0; cursor: pointer; }
+.tc-tap:disabled { cursor: default; }
+.tc-tap:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+/* unturned cards keep a slow float after the shuffle: the invitation */
+@media (prefers-reduced-motion: no-preference) {
+  .tarot-cards:not(.shuffling) .tc-tap:not(:disabled) .tc-card {
+    animation: tarot-riffle 1.8s ease-in-out infinite alternate;
+  }
+}
 /* dims match the baked 25x38 face at TileBox scale 4 (3 on handhelds) */
 .tc-card { width: 100px; height: 152px; }
 .tc-inner {
@@ -1343,6 +1365,13 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tc-poslabel .tc-name { font-size: 12px; color: var(--accent); letter-spacing: 0; text-transform: none; }
 
 .tarot-reading { margin-top: 32px; width: 100%; max-width: 480px; cursor: pointer; }
+/* the visitor's own words, echoed: the original question above the
+   greeting, and each follow-up above the Reader's reply */
+.tarot-reading .tr-asked { margin-bottom: 10px; font-size: 12px; line-height: 18px; color: var(--mut); }
+.tarot-reading .tr-chat { margin-top: 24px; }
+.tarot-reading .tr-chat .tr-asked { margin-bottom: 6px; }
+/* the skip affordance, visible while the reading types */
+.tarot-reading .tr-skiphint { margin-top: 16px; font-size: 11px; color: var(--mut); }
 .tarot-reading .tr-head {
   margin: 20px 0 6px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
   color: var(--accent); font-weight: 400;
@@ -1350,12 +1379,56 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tarot-reading .tr-text { font-size: 14px; line-height: 22px; color: var(--body); min-height: 22px; }
 .tarot-reading .tr-synth { margin-top: 20px; }
 .tarot-reading .tr-farewell { margin-top: 14px; color: var(--mut); }
-.tarot-again { margin-top: 28px; }
+/* after the farewell: the quiet session controls (new reading / ledger);
+   the DS buttons own their look, this row only places them */
+.tarot-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
+/* the ledger: past sittings, newest first. Rows reuse the spread-chip
+   recipe (plate clip, hover fill, inset focus ring); text is name/date,
+   the question in the visitor's own words, then the cards drawn */
+.tarot-ledger {
+  margin-top: 32px; width: 100%; max-width: 480px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.tl-row {
+  display: flex; flex-direction: column; gap: 4px; text-align: left;
+  font-family: var(--mono); padding: 12px 14px; border: 0; cursor: pointer;
+  background: transparent; color: var(--body);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s, color .12s;
+}
+@media (hover: hover) { .tl-row:hover { background: var(--hover); color: var(--fg); } }
+.tl-row:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.tl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.tl-name { font-size: 14px; color: var(--accent); }
+.tl-date { font-size: 11px; color: var(--mut); }
+.tl-q { font-size: 12px; line-height: 17px; }
+.tl-cards { font-size: 11px; line-height: 16px; color: var(--mut); }
+.tl-back { margin-top: 12px; display: flex; justify-content: center; }
+
+/* footer chat bar: fixed above the dock notch; ring recipe (stroke layer
+   + fill layer, both clipped) so the plate corners step like everything
+   else. .has-chat pads the page so the typed column scrolls clear of it. */
+/* padding clears the fixed bar plus the session-controls row above it */
+.tarot-page.has-chat { padding-bottom: 200px; }
+.tarot-page.has-chat .tarot-reading > div:last-child { scroll-margin-bottom: 150px; }
+.tarot-chatbar {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 64px;
+  width: min(640px, calc(100% - 64px)); z-index: 5;
+  padding: 1px; background: var(--surface-container-stroke);
+  clip-path: var(--plate-round-lg);
+}
+.tarot-chatbar-in {
+  display: flex; gap: 10px; align-items: center;
+  padding: 10px; background: var(--bg);
+  clip-path: var(--plate-round-lg);
+}
 
 @media (max-width: 600px) {
   .tarot-page { padding-top: 64px; }
   .tarot-cards { gap: 12px; }
   .tc-card { width: 75px; height: 114px; }
   .tarot-spreads { flex-direction: column; }
+  .tarot-chatbar { width: calc(100% - 32px); bottom: 56px; }
 }
 .tarot-scene { display: block; width: min(432px, 100%); margin: 0 auto; image-rendering: pixelated; }

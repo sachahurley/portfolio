@@ -14,6 +14,18 @@
 import type { Reading } from './contract'
 import type { DrawnCard } from './draw'
 
+/** In-fiction closing lines for when the chat's API path fails: the Reader
+ *  ends the audience rather than erroring, per the parlor's no-error rule. */
+const CHAT_CLOSERS = [
+  'The cards have said what they will say tonight; sit with them a while.',
+  'The candles gutter; the Reader folds her hands. The rest is yours to walk.',
+  'She turns her palm over the spread: what you seek is already in the cards before you.',
+] as const
+
+export function chatFallback(): string {
+  return CHAT_CLOSERS[Math.floor(Math.random() * CHAT_CLOSERS.length)]
+}
+
 /** Small string hash -> mulberry32, plenty for picking template variants. */
 function seedFrom(cards: DrawnCard[]): () => number {
   let h = 2166136261

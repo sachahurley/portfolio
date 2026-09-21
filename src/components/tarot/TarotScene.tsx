@@ -62,6 +62,17 @@ export default function TarotScene() {
       }
       const reader = mask(READER_CELL)
       const orb = mask(ORB_CELL)
+      // Lowest inked row of a tile, so sprites can rest ON surfaces instead
+      // of overlapping them (tiles carry transparent margins that vary).
+      const inkBottom = (m: ImageData) => {
+        let b = 0
+        for (let j = 0; j < TILE; j++)
+          for (let i = 0; i < TILE; i++) if (m.data[(j * TILE + i) * 4 + 3] > 0) b = j
+        return b
+      }
+      // Table top edge is art row 19; the orb's last ink row lands on 18,
+      // resting just above the table like the candles do.
+      const orbOy = 18 - inkBottom(orb)
 
       const buf = document.createElement('canvas')
       buf.width = ART_W
@@ -103,9 +114,9 @@ export default function TarotScene() {
         }
         for (let x = 10; x < ART_W - 10; x += 3) put(x, 21, body)
         // the orb, resting on the table to her side
-        blit(orb, Math.floor(ART_W / 2) + 9, 12, accent)
-        // orb glint breathes on the beat
-        if (frame % 2 === 0) put(Math.floor(ART_W / 2) + 13, 14, fg)
+        blit(orb, Math.floor(ART_W / 2) + 9, orbOy, accent)
+        // orb glint breathes on the beat (2 rows below the orb's top ink)
+        if (frame % 2 === 0) put(Math.floor(ART_W / 2) + 13, orbOy + 2, fg)
 
         // candles at the table's ends
         for (const cx of [10, ART_W - 13]) {

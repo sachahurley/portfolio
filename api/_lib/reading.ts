@@ -29,35 +29,15 @@ import {
   type TarotRequest,
 } from '../../src/lib/tarot/contract'
 import { CARD_BY_ID, SPREADS, TAROT_DECK } from '../../src/data/tarot'
+import { makeLimiter } from './limits'
 
 const MODEL = () => process.env.TAROT_MODEL ?? 'claude-haiku-4-5'
 const MAX_BODY = 8 * 1024
 const MAX_TOKENS = 1200
 
-// -- rate limiting ----------------------------------------------------------
+// -- rate limiting (shared recipe in ./limits.ts) ---------------------------
 
-const HOUR = 3_600_000
-const DAY = 24 * HOUR
-const PER_IP_HOUR = 6
-const PER_IP_DAY = 20
-const PER_INSTANCE_DAY = 300
-
-const hits = new Map<string, number[]>()
-let instanceHits: number[] = []
-
-function rateLimited(ip: string, now = Date.now()): boolean {
-  instanceHits = instanceHits.filter((t) => now - t < DAY)
-  if (instanceHits.length >= PER_INSTANCE_DAY) return true
-  const mine = (hits.get(ip) ?? []).filter((t) => now - t < DAY)
-  if (mine.length >= PER_IP_DAY) return true
-  if (mine.filter((t) => now - t < HOUR).length >= PER_IP_HOUR) return true
-  mine.push(now)
-  hits.set(ip, mine)
-  instanceHits.push(now)
-  // keep the map from growing unbounded on a long-lived instance
-  if (hits.size > 5000) hits.clear()
-  return false
-}
+const rateLimited = makeLimiter({ perIpHour: 6, perIpDay: 20, perInstanceDay: 300 })
 
 // -- prompt -----------------------------------------------------------------
 
@@ -71,7 +51,9 @@ Never give medical, legal, or financial advice, diagnoses, or predictions of dea
 
 Plain prose. No markdown, no emoji, no em dashes (use commas or semicolons). Per-card text 60 to 90 words; the synthesis 80 to 120 words, drawing the cards together; the greeting one or two sentences; the farewell a single sentence. Copy each card's position and cardId exactly as given.`
 
-function userMessage(req: TarotRequest): string {
+/** The spread-and-cards context block, shared with the chat endpoint
+ *  (api/_lib/chat.ts) so both voices ground in the same card senses. */
+export function cardContextLines(req: TarotRequest): string[] {
   const spread = SPREADS.find((s) => s.id === req.spread)
   const lines: string[] = []
   lines.push(`Spread: ${spread?.name ?? req.spread}`)
@@ -88,6 +70,11 @@ function userMessage(req: TarotRequest): string {
     )
   }
   lines.push(`What the cards show of the querent: ${JSON.stringify(req.visitor)}`)
+  return lines
+}
+
+function userMessage(req: TarotRequest): string {
+  const lines = cardContextLines(req)
   const q = req.question?.trim().slice(0, QUESTION_MAX)
   lines.push(q ? `<question>${q}</question>` : 'The querent asked no question of the cards.')
   return lines.join('\n')

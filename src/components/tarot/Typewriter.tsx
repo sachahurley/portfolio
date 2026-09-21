@@ -29,7 +29,9 @@ export default function Typewriter({
   const [shown, setShown] = useState(0)
   const doneRef = useRef(false)
   const onDoneRef = useRef(onDone)
-  onDoneRef.current = onDone
+  useEffect(() => {
+    onDoneRef.current = onDone
+  }, [onDone])
 
   const reduced =
     typeof window !== 'undefined' &&
@@ -39,7 +41,7 @@ export default function Typewriter({
   useEffect(() => {
     if (!active || doneRef.current) return
     if (instant) {
-      setShown(text.length)
+      // shown state stays untouched; render derives the full length
       doneRef.current = true
       onDoneRef.current?.()
       return
@@ -70,7 +72,7 @@ export default function Typewriter({
   if (!active) return null
   return (
     <>
-      <span aria-hidden="true">{text.slice(0, shown)}</span>
+      <span aria-hidden="true">{text.slice(0, instant ? text.length : shown)}</span>
       <span className="sr-only">{text}</span>
     </>
   )
