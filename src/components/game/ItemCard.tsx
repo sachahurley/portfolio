@@ -116,18 +116,38 @@ export default function ItemCard({
   const selectedStats = STAT_IDS.filter((s) => has(item)(s) || (equipped != null && has(equipped)(s)))
   const label = isEquipped ? 'Unequip' : equipped ? 'Swap' : 'Equip'
 
+  // In a compare the destroy button sits inside its item's column so it
+  // can't read as acting on both sides; a single-item card has no such
+  // ambiguity, so it joins the footer beside the primary action.
+  const destroyButton =
+    !isEquipped && onDestroy ? (
+      <Button
+        variant="destructive"
+        size="small"
+        type="button"
+        aria-label={`Destroy the ${item.name}`}
+        onClick={onDestroy}
+      >
+        Destroy
+      </Button>
+    ) : null
+
   return (
     // comparing two items is its own act; a single item keeps its slot
+    // (and a narrower card: no second column to hold space for)
     <Modal
       isOpen={liveItem != null}
       onClose={onClose}
       title={equipped ? 'Compare' : cap(SLOT_LABELS[item.slot])}
       docked
-      width={640}
+      width={equipped ? 640 : 440}
       footerContent={
-        <Button variant="primary" size="small" onClick={onAction}>
-          {label}
-        </Button>
+        <>
+          {!equipped && destroyButton}
+          <Button variant="primary" size="small" onClick={onAction}>
+            {label}
+          </Button>
+        </>
       }
     >
       <div className={`ch-compare${equipped ? ' is-compare' : ''}`}>
@@ -142,19 +162,7 @@ export default function ItemCard({
               }
               stats={isEquipped ? STAT_IDS.filter(has(item)) : selectedStats}
               deltas={equipped ? statDeltas(item, equipped) : undefined}
-              action={
-                !isEquipped && onDestroy ? (
-                  <Button
-                    variant="destructive"
-                    size="small"
-                    type="button"
-                    aria-label={`Destroy the ${item.name}`}
-                    onClick={onDestroy}
-                  >
-                    Destroy
-                  </Button>
-                ) : undefined
-              }
+              action={equipped ? (destroyButton ?? undefined) : undefined}
             />
         {equipped && (
           <ItemSide

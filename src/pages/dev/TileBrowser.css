@@ -3,7 +3,7 @@
 .tb p { margin: 0 0 12px; }
 .tb button, .tb input, .tb select { font: inherit; font-weight: 400; color: var(--fg); background: transparent; border: 1px solid var(--border); padding: 4px 8px; }
 .tb button { cursor: pointer; text-align: left; }
-.tb button:hover { background: var(--hover); }
+@media (hover: hover) { .tb button:hover { background: var(--hover); } }
 .tb button:disabled { opacity: .5; cursor: default; }
 .tb button.on { color: var(--accent); border-color: var(--accent); }
 .tb input:focus-visible, .tb button:focus-visible, .tb select:focus-visible { outline: 1px solid var(--ring); }
