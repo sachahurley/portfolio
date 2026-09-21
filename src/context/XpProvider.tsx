@@ -24,6 +24,7 @@ import {
 import { applyTheme, LEVEL_GEMS, type GemId, type ThemeId } from '../lib/themes'
 import { levelInfo, LEVEL_TITLES, type LevelInfo } from '../lib/levels'
 import { generateName, randomSeed } from '../game/names'
+import { DEFAULT_INK, isAvatarInkId, type AvatarInkId } from '../game/avatarInks'
 import {
   BASES,
   chestChance,
@@ -94,6 +95,9 @@ interface XpValue {
   setName: (name: string) => void
   avatarSeed: number
   setAvatarSeed: (seed: number) => void
+  /** The palette ink the avatar is painted in (see game/avatarInks). */
+  avatarInk: AvatarInkId
+  setAvatarInk: (ink: AvatarInkId) => void
   /** True when this browser has an existing save (CONTINUE vs NEW GAME). */
   isReturning: boolean
   /** Levels reached but not yet celebrated (threshold numbers 1..3),
@@ -143,6 +147,7 @@ interface PersistedState {
   activeGem: ThemeId
   name: string
   avatarSeed: number
+  avatarInk: AvatarInkId
   pendingLevels: number[]
   /** Per-save salt for chest-drop rolls (which content drops differs per
    *  visitor, but is fixed for a given save). */
@@ -189,6 +194,7 @@ function load(): { state: PersistedState; existed: boolean } {
     activeGem: 'default',
     name: generateName(seed),
     avatarSeed: seed,
+    avatarInk: DEFAULT_INK,
     pendingLevels: [],
     lootSeed: randomSeed(),
     chests: [],
@@ -222,6 +228,7 @@ function load(): { state: PersistedState; existed: boolean } {
       // saves with a stored seed but no name keep name/seed consistent.
       if (!(typeof s.name === 'string' && s.name.trim())) state.name = generateName(state.avatarSeed)
     }
+    if (isAvatarInkId(s.avatarInk)) state.avatarInk = s.avatarInk
     if (Array.isArray(s.pendingLevels)) {
       state.pendingLevels = s.pendingLevels.filter(
         (n): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= LEVEL_GEMS.length
@@ -296,6 +303,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const [activeGem, setActiveGemState] = useState<ThemeId>(initial.activeGem)
   const [name, setNameState] = useState(initial.name)
   const [avatarSeed, setAvatarSeedState] = useState(initial.avatarSeed)
+  const [avatarInk, setAvatarInkState] = useState<AvatarInkId>(initial.avatarInk)
   const [pendingLevels, setPendingLevels] = useState<number[]>(initial.pendingLevels)
   const [chests, setChests] = useState<SavedChest[]>(initial.chests)
   const [items, setItems] = useState<SavedItem[]>(initial.items)
@@ -312,6 +320,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const activeGemRef = useRef<ThemeId>(initial.activeGem)
   const nameRef = useRef(initial.name)
   const avatarSeedRef = useRef(initial.avatarSeed)
+  const avatarInkRef = useRef<AvatarInkId>(initial.avatarInk)
   const pendingRef = useRef<number[]>(initial.pendingLevels)
   const lootSeedRef = useRef(initial.lootSeed)
   const chestsRef = useRef<SavedChest[]>(initial.chests)
@@ -332,6 +341,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
           activeGem: activeGemRef.current,
           name: nameRef.current,
           avatarSeed: avatarSeedRef.current,
+          avatarInk: avatarInkRef.current,
           pendingLevels: pendingRef.current,
           lootSeed: lootSeedRef.current,
           chests: chestsRef.current,
@@ -575,6 +585,16 @@ export function XpProvider({ children }: { children: ReactNode }) {
     [persist]
   )
 
+  const setAvatarInk = useCallback(
+    (ink: AvatarInkId) => {
+      if (avatarInkRef.current === ink) return
+      avatarInkRef.current = ink
+      setAvatarInkState(ink)
+      persist()
+    },
+    [persist]
+  )
+
   const setActiveGem = useCallback(
     (id: ThemeId) => {
       if (id !== 'default' && !gemsRef.current.includes(id)) return
@@ -598,6 +618,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
     activeGemRef.current = 'default'
     nameRef.current = generateName(seed)
     avatarSeedRef.current = seed
+    avatarInkRef.current = DEFAULT_INK
     pendingRef.current = []
     lootSeedRef.current = randomSeed()
     chestsRef.current = []
@@ -610,6 +631,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
     setActiveGemState('default')
     setNameState(nameRef.current)
     setAvatarSeedState(seed)
+    setAvatarInkState(DEFAULT_INK)
     setPendingLevels([])
     setChests([])
     setItems([])
@@ -637,6 +659,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
     setName,
     avatarSeed,
     setAvatarSeed,
+    avatarInk,
+    setAvatarInk,
     isReturning: initial.existed,
     pendingLevels,
     celebrating,

@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import DitherLive, { type DitherLiveVariant, type DitherTuning } from './DitherLive'
 import JeweledFrame from './JeweledFrame'
 import PixelPortrait from './game/PixelPortrait'
+import { inkColor } from '../game/avatarInks'
 import { useXp } from '../context/XpProvider'
 
 /** Which welcome lettering to show: 'block' is the 1-bit Helvetica stack,
@@ -57,7 +58,7 @@ function StarBox({ text }: { text: string }) {
 export default function Loader() {
   const [hidden, setHidden] = useState(false)
   const [gone, setGone] = useState(false)
-  const { isReturning, name, avatarSeed, gems } = useXp()
+  const { isReturning, name, avatarSeed, avatarInk, gems } = useXp()
 
   // Once dismissed, let the 0.4s opacity fade play, then unmount.
   useEffect(() => {
@@ -90,7 +91,7 @@ export default function Loader() {
           <>
             {SHOW_SAVE_READOUT && (
               <div className="ts-char">
-                <PixelPortrait seed={avatarSeed} cell={3} />
+                <PixelPortrait seed={avatarSeed} cell={3} ink={inkColor(avatarInk)} />
                 <span className="ts-line">
                   continue — {name}
                   {gems.length > 0 && ` · ${gems.length} banner${gems.length > 1 ? 's' : ''}`}

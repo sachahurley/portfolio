@@ -15,18 +15,20 @@ import PixelPortrait from './PixelPortrait'
 export default function PortraitPlate({
   seed,
   cell = 4,
+  ink,
   small = false,
   tiny = false,
 }: {
   seed: number
   cell?: number
+  ink?: string
   small?: boolean
   tiny?: boolean
 }) {
   return (
     <span className={`pp-plate${small ? ' sm' : ''}${tiny ? ' xs' : ''}`}>
       <span className="pp-plate-in">
-        <PixelPortrait seed={seed} cell={cell} />
+        <PixelPortrait seed={seed} cell={cell} ink={ink} />
       </span>
     </span>
   )

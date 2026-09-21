@@ -4,15 +4,15 @@
  * art wearing the village tappables' twin glints (villageKit.ts bakes
  * them into canvas; here the same 14-frame star on the 300ms beat is
  * rebuilt as CSS pixels, accent-inked like the village's live cue).
- * Decorative only: both hosts carry the waiting state in their labels.
+ * Decorative only: every host carries the waiting state in its label.
  */
 
 import PixelItem from './PixelItem'
 
-export default function ChestSignal() {
+export default function ChestSignal({ tint }: { tint?: string }) {
   return (
     <span className="chest-signal" aria-hidden="true">
-      <PixelItem kind="chest" rarity="common" cell={2} />
+      <PixelItem kind="chest" rarity="common" cell={2} tint={tint} />
       <i className="chest-glint chest-glint-a" />
       <i className="chest-glint chest-glint-b" />
     </span>
