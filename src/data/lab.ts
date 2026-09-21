@@ -9,7 +9,6 @@
  * code ships in the bundle - it is a puzzle, not a password.
  */
 
-import { TAROT_ENABLED } from '../lib/flags'
 
 export interface LabItem {
   slug: string     // URL path, e.g. "dawg"
@@ -72,16 +71,11 @@ export const lab: LabItem[] = [
     desc: 'A modular 1-bit pixel village builder with 124 parts, stackers, and recipe export.',
   },
   // Rendered by the dedicated TarotLab page, not the LabItem template.
-  // Behind TAROT_ENABLED: absent from deployed builds until the flag ships.
-  ...(TAROT_ENABLED
-    ? [
-        {
-          slug: 'tarot',
-          title: 'Tarot reader',
-          desc: 'A pixel mystic deals a real 78-card draw and reads your journey through the site.',
-        },
-      ]
-    : []),
+  {
+    slug: 'tarot',
+    title: 'Tarot reader',
+    desc: 'A pixel mystic deals a real 78-card draw and reads your journey through the site.',
+  },
   {
     slug: 'dot-loader',
     title: 'Dot loader',

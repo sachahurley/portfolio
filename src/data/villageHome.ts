@@ -12,7 +12,6 @@
  */
 
 import type { VillageItem } from '../components/village/villageKit'
-import { TAROT_ENABLED } from '../lib/flags'
 
 export const VILLAGE_HOME: VillageItem[] = [
   { tree: { canopy: 'canopy_oak', trunk: 'trunk_oak' } },
@@ -94,15 +93,11 @@ export const VILLAGE_HOME: VillageItem[] = [
   { part: 'grass_3', gap: 2 },
   { house: { storeys: ['wall_5', 'upper_5_inv'], roof: 'roof_2' } },
   { part: 'grass_4', gap: 2 },
-  // The tarot parlor's door; behind TAROT_ENABLED with its route and lab row.
-  ...(TAROT_ENABLED
-    ? [
-        {
-          part: 'crystal_ball',
-          lift: 3,
-          tap: { label: 'Tarot', href: '/lab/tarot', style: 'invert' },
-        } satisfies VillageItem,
-        { part: 'grass_2', gap: 2 } satisfies VillageItem,
-      ]
-    : []),
+  // The tarot parlor's door.
+  {
+    part: 'crystal_ball',
+    lift: 3,
+    tap: { label: 'Tarot', href: '/lab/tarot', style: 'invert' },
+  },
+  { part: 'grass_2', gap: 2 },
 ]
