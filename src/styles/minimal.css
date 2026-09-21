@@ -1379,12 +1379,38 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tarot-reading .tr-text { font-size: 14px; line-height: 22px; color: var(--body); min-height: 22px; }
 .tarot-reading .tr-synth { margin-top: 20px; }
 .tarot-reading .tr-farewell { margin-top: 14px; color: var(--mut); }
-.tarot-again { margin-top: 28px; }
+/* after the farewell: the quiet session controls (new reading / ledger);
+   the DS buttons own their look, this row only places them */
+.tarot-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
+/* the ledger: past sittings, newest first. Rows reuse the spread-chip
+   recipe (plate clip, hover fill, inset focus ring); text is name/date,
+   the question in the visitor's own words, then the cards drawn */
+.tarot-ledger {
+  margin-top: 32px; width: 100%; max-width: 480px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.tl-row {
+  display: flex; flex-direction: column; gap: 4px; text-align: left;
+  font-family: var(--mono); padding: 12px 14px; border: 0; cursor: pointer;
+  background: transparent; color: var(--body);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s, color .12s;
+}
+@media (hover: hover) { .tl-row:hover { background: var(--hover); color: var(--fg); } }
+.tl-row:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.tl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.tl-name { font-size: 14px; color: var(--accent); }
+.tl-date { font-size: 11px; color: var(--mut); }
+.tl-q { font-size: 12px; line-height: 17px; }
+.tl-cards { font-size: 11px; line-height: 16px; color: var(--mut); }
+.tl-back { margin-top: 12px; display: flex; justify-content: center; }
 
 /* footer chat bar: fixed above the dock notch; ring recipe (stroke layer
    + fill layer, both clipped) so the plate corners step like everything
    else. .has-chat pads the page so the typed column scrolls clear of it. */
-.tarot-page.has-chat { padding-bottom: 150px; }
+/* padding clears the fixed bar plus the session-controls row above it */
+.tarot-page.has-chat { padding-bottom: 200px; }
 .tarot-page.has-chat .tarot-reading > div:last-child { scroll-margin-bottom: 150px; }
 .tarot-chatbar {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: 64px;

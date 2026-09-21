@@ -11,6 +11,10 @@
  * Choreography hides latency: cards are drawn client-side the moment the
  * visitor commits, the API call departs in parallel, and the shuffle/flip
  * theater plays while it travels. Text then types out per section.
+ *
+ * Finished readings land in the Reader's ledger (lib/tarot/archive):
+ * reopening one restores the table fully revealed, text whole, with the
+ * follow-up audience resumable until its turns are spent.
  */
 
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
@@ -18,9 +22,17 @@ import { Button, Input } from '@scorp-ds/components'
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
 import TarotCardView from '../components/tarot/TarotCardView'
+import TarotLedger from '../components/tarot/TarotLedger'
 import TarotScene from '../components/tarot/TarotScene'
 import Typewriter from '../components/tarot/Typewriter'
 import { SPREADS, CARD_BY_ID, type SpreadDef } from '../data/tarot'
+import {
+  loadLedger,
+  rehydrate,
+  saveReading,
+  updateReading,
+  type SavedReading,
+} from '../lib/tarot/archive'
 import { drawSpread, type DrawnCard } from '../lib/tarot/draw'
 import { chatFallback, fallbackReading } from '../lib/tarot/fallbackReading'
 import { requestChat, requestReading } from '../lib/tarot/client'
@@ -55,17 +67,30 @@ interface State {
   /** Which reading section is currently typing (greeting=0, cards=1..n,
    *  synthesis=n+1, farewell=n+2). */
   section: number
+  /** The question this sitting was asked with (captured at begin/restore,
+   *  so the live setup input can change without rewriting history). */
+  asked: string
 }
 
 type Action =
-  | { type: 'begin'; spread: SpreadDef; drawn: DrawnCard[] }
+  | { type: 'begin'; spread: SpreadDef; drawn: DrawnCard[]; asked: string }
   | { type: 'shuffled' }
   | { type: 'reveal'; index: number }
   | { type: 'reading'; reading: Reading }
   | { type: 'section-done' }
   | { type: 'reset' }
+  /** Reopen a ledger entry: everything revealed, no theater to run. */
+  | { type: 'restore'; spread: SpreadDef; drawn: DrawnCard[]; reading: Reading; asked: string }
 
-const initial: State = { status: 'idle', spread: null, drawn: [], flipped: [], reading: null, section: 0 }
+const initial: State = {
+  status: 'idle',
+  spread: null,
+  drawn: [],
+  flipped: [],
+  reading: null,
+  section: 0,
+  asked: '',
+}
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -76,6 +101,7 @@ function reducer(state: State, action: Action): State {
         spread: action.spread,
         drawn: action.drawn,
         flipped: action.drawn.map(() => false),
+        asked: action.asked,
       }
     case 'shuffled':
       return { ...state, status: 'revealing' }
@@ -92,6 +118,16 @@ function reducer(state: State, action: Action): State {
     }
     case 'reset':
       return initial
+    case 'restore':
+      return {
+        status: 'done',
+        spread: action.spread,
+        drawn: action.drawn,
+        flipped: action.drawn.map(() => true),
+        reading: action.reading,
+        section: action.drawn.length + 3,
+        asked: action.asked,
+      }
   }
 }
 
@@ -117,6 +153,12 @@ export default function TarotLab() {
   const [exchanges, setExchanges] = useState<ChatExchange[]>([])
   const [chatMsg, setChatMsg] = useState('')
   const [chatState, setChatState] = useState<'open' | 'waiting' | 'closed'>('open')
+  // The Reader's ledger: past sittings, plus which surface is showing.
+  const [ledger, setLedger] = useState<SavedReading[]>(() => loadLedger())
+  const [view, setView] = useState<'parlor' | 'ledger'>('parlor')
+  /** Ledger id of the sitting on the table (set on archive or restore);
+   *  doubles as the archived-already guard for the save effect. */
+  const entryIdRef = useRef<string | null>(null)
   const readingRef = useRef<Reading | null>(null)
   const waitingRef = useRef(false)
   const timersRef = useRef<number[]>([])
@@ -142,11 +184,15 @@ export default function TarotLab() {
   }, [navigate])
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closePage()
+      // Escape peels one layer: the ledger first, then the parlor itself.
+      if (e.key === 'Escape') {
+        if (view === 'ledger') setView('parlor')
+        else closePage()
+      }
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [closePage])
+  }, [closePage, view])
 
   // Clear pending theater timers on unmount.
   useEffect(
@@ -165,10 +211,14 @@ export default function TarotLab() {
   }, [state.status])
 
   // Keep the newest typed section in view as the reading unrolls (chat
-  // replies included).
+  // replies included). A restored sitting is exempt for a beat: its whole
+  // text mounts at once (and the Typewriter onDone cascade still bumps
+  // `section` a few times), and it should open at the greeting, not the end.
   const readingEndRef = useRef<HTMLDivElement | null>(null)
+  const restoredAtRef = useRef(0)
   useEffect(() => {
     if (state.status !== 'reading' && state.status !== 'done') return
+    if (Date.now() - restoredAtRef.current < 500) return
     readingEndRef.current?.scrollIntoView({
       behavior: reduced ? 'auto' : 'smooth',
       block: 'end',
@@ -199,6 +249,13 @@ export default function TarotLab() {
     award(XP_AWARDS.tarot, 'received a reading', 'lab:tarot-reading')
   }, [state.status, award])
 
+  // Both the ledger and a reopened reading enter at their top, not at
+  // whatever depth the finished reading had scrolled to.
+  const scrollTop = () => {
+    document.querySelector('.gf-viewport')?.scrollTo(0, 0)
+    window.scrollTo(0, 0)
+  }
+
   const later = (fn: () => void, ms: number) => {
     timersRef.current.push(window.setTimeout(fn, ms))
   }
@@ -213,6 +270,7 @@ export default function TarotLab() {
     setExchanges([])
     setChatMsg('')
     setChatState('open')
+    entryIdRef.current = null
     readingRef.current = null
     waitingRef.current = false
     try {
@@ -220,7 +278,7 @@ export default function TarotLab() {
     } catch {
       /* private mode: the server still enforces its own limits */
     }
-    dispatch({ type: 'begin', spread, drawn })
+    dispatch({ type: 'begin', spread, drawn, asked: q })
     logLine('The Reader lays out the cards.', 'arrive')
 
     // The request departs while the theater plays. Every failure becomes
@@ -243,6 +301,25 @@ export default function TarotLab() {
       })
       .then((reading) => {
         readingRef.current = reading
+        // The sitting enters the ledger the moment its reading exists (the
+        // theater is presentation, not state), so even a visitor who leaves
+        // mid-shuffle finds it remembered.
+        const entry: SavedReading = {
+          id: crypto.randomUUID(),
+          at: Date.now(),
+          spreadId: spread.id,
+          question: q || undefined,
+          cards: drawn.map((d) => ({
+            id: d.card.id,
+            position: d.position.id,
+            reversed: d.reversed,
+          })),
+          reading,
+          exchanges: [],
+          chatClosed: false,
+        }
+        entryIdRef.current = entry.id
+        setLedger(saveReading(entry))
         if (waitingRef.current) dispatch({ type: 'reading', reading })
       })
 
@@ -257,9 +334,8 @@ export default function TarotLab() {
     later(() => dispatch({ type: 'shuffled' }), SHUFFLE_MS)
   }
 
-  const { status, drawn, flipped, reading, section } = state
+  const { status, drawn, flipped, reading, section, asked } = state
   const inSession = status !== 'idle'
-  const asked = question.trim().slice(0, QUESTION_MAX)
   const cardName = (cardId: string, reversed: boolean) => {
     const card = CARD_BY_ID.get(cardId)
     return card ? `${card.name}${reversed ? ', reversed' : ''}` : cardId
@@ -288,19 +364,52 @@ export default function TarotLab() {
       exchanges,
       message: msg,
     }
+    // One turn in flight at a time, so the closure's transcript is current.
+    const settle = (reply: string, closed: boolean) => {
+      const next = [...exchanges, { question: msg, reply }]
+      setExchanges(next)
+      setChatState(closed ? 'closed' : 'open')
+      if (entryIdRef.current) setLedger(updateReading(entryIdRef.current, next, closed))
+    }
     requestChat(payload)
-      .then((reply) => {
-        setExchanges((prev) => [...prev, { question: msg, reply }])
-        setChatState(turn >= CHAT_TURNS_MAX ? 'closed' : 'open')
-      })
-      .catch(() => {
-        setExchanges((prev) => [...prev, { question: msg, reply: chatFallback() }])
-        setChatState('closed')
-      })
+      .then((reply) => settle(reply, turn >= CHAT_TURNS_MAX))
+      .catch(() => settle(chatFallback(), true))
   }
 
+  // Reopen a past sitting: the table restores fully revealed, text whole,
+  // and the audience resumes if turns remain.
+  const openEntry = (entry: SavedReading) => {
+    const live = rehydrate(entry)
+    if (!live) return
+    entryIdRef.current = entry.id
+    restoredAtRef.current = Date.now()
+    readingRef.current = null
+    waitingRef.current = false
+    setSkipAll(true)
+    setExchanges(entry.exchanges)
+    setChatMsg('')
+    setChatState(
+      entry.chatClosed || entry.exchanges.length >= CHAT_TURNS_MAX ? 'closed' : 'open',
+    )
+    dispatch({
+      type: 'restore',
+      spread: live.spread,
+      drawn: live.drawn,
+      reading: entry.reading,
+      asked: entry.question ?? '',
+    })
+    setView('parlor')
+    scrollTop()
+  }
+
+  const openLedger = () => {
+    setView('ledger')
+    scrollTop()
+  }
+  const inParlor = view === 'parlor'
+
   return (
-    <div className={`tarot-page${status === 'done' && reading ? ' has-chat' : ''}`}>
+    <div className={`tarot-page${inParlor && status === 'done' && reading ? ' has-chat' : ''}`}>
       {/* .ch-close is a layout hook only; the control is the DS icon Button */}
       <Button variant="icon" size="icon" type="button" className="ch-close" onClick={closePage} aria-label="Close tarot reader">
         <DitherIcon name="close" size={16} />
@@ -311,17 +420,23 @@ export default function TarotLab() {
       <header className="tarot-head">
         <h1 className="tarot-title">The Reader</h1>
         <p className="tarot-sub">
-          {inSession
-            ? status === 'done'
-              ? 'The cards rest.'
-              : status === 'revealing' && !allFlipped
-                ? 'Tap a card to turn it.'
-                : 'The cards are speaking.'
-            : 'A real draw from a full 78-card deck, read for whoever sits down.'}
+          {!inParlor
+            ? 'The sittings the Reader remembers.'
+            : inSession
+              ? status === 'done'
+                ? 'The cards rest.'
+                : status === 'revealing' && !allFlipped
+                  ? 'Tap a card to turn it.'
+                  : 'The cards are speaking.'
+              : 'A real draw from a full 78-card deck, read for whoever sits down.'}
         </p>
       </header>
 
-      {!inSession && (
+      {!inParlor && (
+        <TarotLedger entries={ledger} onOpen={openEntry} onBack={() => setView('parlor')} />
+      )}
+
+      {inParlor && !inSession && (
         <section className="tarot-setup" aria-label="Choose your reading">
           <div className="tarot-spreads" role="radiogroup" aria-label="Spread">
             {SPREADS.map((s) => (
@@ -351,11 +466,16 @@ export default function TarotLab() {
           <Button variant="primary" onClick={begin} disabled={cooldownLeft > 0}>
             {cooldownLeft > 0 ? `The deck rests (${Math.ceil(cooldownLeft / 1000)}s)` : 'Draw the cards'}
           </Button>
+          {ledger.length > 0 && (
+            <Button variant="ghost" type="button" onClick={openLedger}>
+              Past readings ({ledger.length})
+            </Button>
+          )}
           <p className="tarot-note">For insight and entertainment; the walking is still yours.</p>
         </section>
       )}
 
-      {inSession && (
+      {inParlor && inSession && (
         <section className="tarot-table" aria-label="The spread">
           <div className={`tarot-cards n${drawn.length}${status === 'shuffling' ? ' shuffling' : ''}`}>
             {drawn.map((d, i) => (
@@ -435,15 +555,26 @@ export default function TarotLab() {
             </div>
           )}
 
+          {/* After the farewell: quiet session controls. Secondary/ghost on
+              purpose, so the chat bar's Ask keeps the only primary, and
+              "new reading" can never read as "re-ask my question". */}
           {status === 'done' && (
-            <div className="tarot-again">
+            <div className="tarot-actions">
               <Button
-                variant="primary"
+                variant="secondary"
+                type="button"
                 onClick={() => dispatch({ type: 'reset' })}
                 disabled={cooldownLeft > 0}
               >
-                {cooldownLeft > 0 ? `The deck rests (${Math.ceil(cooldownLeft / 1000)}s)` : 'Ask again'}
+                {cooldownLeft > 0
+                  ? `The deck rests (${Math.ceil(cooldownLeft / 1000)}s)`
+                  : 'A new reading'}
               </Button>
+              {ledger.length > 0 && (
+                <Button variant="ghost" type="button" onClick={openLedger}>
+                  Past readings
+                </Button>
+              )}
             </div>
           )}
         </section>
@@ -452,7 +583,7 @@ export default function TarotLab() {
       {/* Footer chat bar: ask the Reader about the finished reading (the
           replies land in the reading column above). DS Input + Button on
           the ring-recipe plate. */}
-      {status === 'done' && reading && (
+      {inParlor && status === 'done' && reading && (
         <form
           className="tarot-chatbar"
           onSubmit={(e) => {
