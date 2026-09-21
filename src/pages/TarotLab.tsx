@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Alert, Avatar, Button, Divider, Input, ListRow } from '@scorp-ds/components'
+import { Alert, Avatar, Button, Divider, Input, ListRow, Tooltip } from '@scorp-ds/components'
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
 import type { DitherIconName } from '../lib/dither/icons'
@@ -218,24 +218,43 @@ export default function TarotLab() {
   const errorInfo = error && error !== 'cap' ? ERRORS[error] : null
   const replies = busy || closed || error ? [] : quickReplies(messages)
 
-  /** Header action at the close button's size; icon-only on handhelds so the title keeps its room. */
-  const barButton = (label: string, icon: DitherIconName, onClick: () => void) =>
-    handheld ? (
+  /** Icon-only header action, square like the close button; the tooltip names it. */
+  const iconAction = (label: string, icon: DitherIconName, onClick: () => void) => (
+    <Tooltip content={label} position="bottom">
       <Button variant="icon" size="icon" type="button" onClick={onClick} aria-label={label}>
         <DitherIcon name={icon} size={16} />
       </Button>
-    ) : (
-      <Button
-        variant="secondary"
-        size="medium"
-        type="button"
-        className="tarot-new"
-        onClick={onClick}
-        iconLeft={<DitherIcon name={icon} size={16} />}
-      >
-        {label}
-      </Button>
-    )
+    </Tooltip>
+  )
+
+  /** Suggested asks (the empty-state starters, the quick replies after a reading). */
+  const chips = (asks: string[], className: string, label: string) => (
+    <div className={`tarot-chips ${className}`} aria-label={label}>
+      {asks.map((q) => (
+        <Button key={q} variant="outline" size="small" type="button" className="tarot-chip" onClick={() => send(q)}>
+          {q}
+        </Button>
+      ))}
+    </div>
+  )
+
+  /** Back from Past sittings, at the close button's size; icon-only on handhelds. */
+  const backButton = handheld ? (
+    <Button variant="icon" size="icon" type="button" onClick={() => setShowPast(false)} aria-label="Back">
+      <DitherIcon name="arrow-left" size={16} />
+    </Button>
+  ) : (
+    <Button
+      variant="secondary"
+      size="medium"
+      type="button"
+      className="tarot-new"
+      onClick={() => setShowPast(false)}
+      iconLeft={<DitherIcon name="arrow-left" size={16} />}
+    >
+      Back
+    </Button>
+  )
 
   return (
     <div className="tarot-page tarot-chat-page">
@@ -250,9 +269,9 @@ export default function TarotLab() {
         </div>
         <div className="tarot-bar-actions">
           {showPast
-            ? barButton('Back', 'arrow-left', () => setShowPast(false))
-            : past.length > 0 && barButton('Past sittings', 'clock', () => setShowPast(true))}
-          {!empty && !showPast && barButton('New sitting', 'plus', newSitting)}
+            ? backButton
+            : past.length > 0 && iconAction('Past sittings', 'clock', () => setShowPast(true))}
+          {!empty && !showPast && iconAction('New sitting', 'plus', newSitting)}
           <Button variant="icon" size="icon" type="button" onClick={closePage} aria-label="Close tarot reader">
             <DitherIcon name="close" size={16} />
           </Button>
@@ -297,17 +316,7 @@ export default function TarotLab() {
                   Ask the Seer anything. She'll draw from a real 78-card deck when the cards can help.
                 </p>
               </div>
-              <div className="tarot-starters">
-                {STARTERS.map((s) => (
-                  <ListRow
-                    key={s}
-                    title={s}
-                    onClick={() => send(s)}
-                    thumb={<DitherIcon name="arrow-right" size={16} />}
-                    thumbPosition="end"
-                  />
-                ))}
-              </div>
+              {chips(STARTERS, 'tarot-starters', 'Suggested questions')}
             </div>
           )}
 
@@ -323,19 +332,7 @@ export default function TarotLab() {
                   {m.text && <p className="tm-text">{m.text}</p>}
                   {m.draw && <CardStrip draw={m.draw} animate={i === liveIndex} />}
                   {m.after && <p className="tm-text">{m.after}</p>}
-                  {i === messages.length - 1 && replies.length > 0 && (
-                    <div className="tarot-quick" aria-label="Quick replies">
-                      {replies.map((q) => (
-                        <ListRow
-                          key={q}
-                          title={q}
-                          onClick={() => send(q)}
-                          thumb={<DitherIcon name="arrow-right" size={16} />}
-                          thumbPosition="end"
-                        />
-                      ))}
-                    </div>
-                  )}
+                  {i === messages.length - 1 && replies.length > 0 && chips(replies, 'tarot-quick', 'Quick replies')}
                   {busy && i === liveIndex && !m.text && !m.draw && <p className="tm-wait">The Seer considers…</p>}
                   {busy && i === liveIndex && m.draw && !m.after && <p className="tm-wait">She studies the cards…</p>}
                 </div>

@@ -61,7 +61,7 @@ export async function handleMockChat(request: Request): Promise<Response> {
       }
       const named = [...CARD_BY_ID.values()].find((c) => question.toLowerCase().includes(c.name.toLowerCase()))
       const onTable = history.some((m) => m.role === 'reader' && m.draw)
-      if (named && !/\b(three|spread|lay)\b/i.test(question)) {
+      if (named && !/\b(three|spread|lay)\b/i.test(question.toLowerCase().replace(named.name.toLowerCase(), ''))) {
         await say(
           `${named.name} upright speaks of ${named.meaningUp}; reversed, ${named.meaningRev}. Hold that against your question and notice which half stings. (Practice answer, templated.)`,
         )
