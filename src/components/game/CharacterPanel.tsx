@@ -88,7 +88,7 @@ export default function CharacterPanel() {
               <Button
                 variant="primary"
                 size="small"
-                className="cs-levelup gf-pulse"
+                className="cs-levelup"
                 onClick={celebrateLevel}
               >
                 ▴ Level up

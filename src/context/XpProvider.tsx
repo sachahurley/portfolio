@@ -255,15 +255,15 @@ function load(): { state: PersistedState; existed: boolean } {
 }
 
 export function XpProvider({ children }: { children: ReactNode }) {
-  // Hydrate synchronously (lazy initializer): load + migrate, then reconcile,
-  // which grants gems for levels a returning visitor has already achieved,
-  // silently (no modal) - this also covers the threshold migration from the
-  // old 5-level system.
+  // Hydrate synchronously (lazy initializer): load + migrate, then reconcile.
+  // Gems are claim-gated: levels a returning visitor has achieved but whose
+  // gems aren't owned yet queue as PENDING claims (the celebration grants
+  // them), never silent grants. Saves that already own gems keep them.
   const [initial] = useState<PersistedState & { existed: boolean }>(() => {
     const { state: s, existed } = load()
     for (let l = 1; l <= levelInfo(s.xp).level; l++) {
       const gem = LEVEL_GEMS[l - 1]
-      if (gem && !s.gems.includes(gem)) s.gems.push(gem)
+      if (gem && !s.gems.includes(gem) && !s.pendingLevels.includes(l)) s.pendingLevels.push(l)
       // Guaranteed level chests, granted retroactively for saves that passed
       // thresholds before loot existed. The earned marker keeps this
       // idempotent across visits and mirrors award()'s bookkeeping.
@@ -375,14 +375,14 @@ export function XpProvider({ children }: { children: ReactNode }) {
       if (key && isChestKey(key) && chestChance(key, lootSeedRef.current)) {
         chestSrcs.push(key)
       }
-      // Each threshold crossed grants its gem immediately (the ritual never
-      // waits) and queues a PENDING level-up: the celebration modal opens
-      // only when the visitor taps the badge, never auto-pops.
+      // Each threshold crossed queues a PENDING level-up; the gem is NOT
+      // granted here. Opening the celebration claims it (claim-on-open),
+      // and the modal opens only when the visitor taps the badge, never
+      // auto-pops.
       const queued: number[] = []
       for (let l = before + 1; l <= after; l++) {
         const gem = LEVEL_GEMS[l - 1]
-        if (gem && !gemsRef.current.includes(gem)) {
-          gemsRef.current = [...gemsRef.current, gem]
+        if (gem && !gemsRef.current.includes(gem) && !pendingRef.current.includes(l)) {
           queued.push(l)
         }
         logLine(`You have reached Level ${l + 1} — ${LEVEL_TITLES[l] ?? ''}`.trim(), 'level')
@@ -394,7 +394,6 @@ export function XpProvider({ children }: { children: ReactNode }) {
       }
       if (queued.length) {
         pendingRef.current = [...pendingRef.current, ...queued]
-        setGems([...gemsRef.current])
         setPendingLevels(pendingRef.current)
       }
       if (chestSrcs.length) {
@@ -409,24 +408,50 @@ export function XpProvider({ children }: { children: ReactNode }) {
             : `Something rattles: you found ${chestSrcs.length} chests.`,
           'hint'
         )
-        toast('found a chest · open it on your character page')
+        // The "where to open it" line is a tutorial, not an announcement:
+        // it plays once, ever; later drops get the short form.
+        const firstChest = !earnedRef.current.has('hint:chest')
+        if (firstChest) earnedRef.current.add('hint:chest')
+        toast(
+          firstChest
+            ? 'found a chest · open it on your character page'
+            : chestSrcs.length > 1
+              ? `found ${chestSrcs.length} chests`
+              : 'found a chest'
+        )
       }
       persist()
     },
     [persist, toast, logLine]
   )
 
-  /** Open the celebration for the oldest un-celebrated level-up. */
-  const celebrateLevel = useCallback(() => {
-    if (pendingRef.current.length) setCelebrating(true)
+  // Claim-on-open: showing a level's celebration IS the claim. Grants the
+  // queue head's gem (idempotent, so StrictMode double-invokes are safe).
+  const claimHead = useCallback(() => {
+    const l = pendingRef.current[0]
+    const gem = l != null ? LEVEL_GEMS[l - 1] : undefined
+    if (gem && !gemsRef.current.includes(gem)) {
+      gemsRef.current = [...gemsRef.current, gem]
+      setGems([...gemsRef.current])
+    }
   }, [])
+
+  /** Open the celebration for the oldest un-celebrated level-up (claims it). */
+  const celebrateLevel = useCallback(() => {
+    if (!pendingRef.current.length) return
+    claimHead()
+    setCelebrating(true)
+    persist()
+  }, [claimHead, persist])
 
   const dismissModal = useCallback(() => {
     pendingRef.current = pendingRef.current.slice(1)
     setPendingLevels(pendingRef.current)
-    if (pendingRef.current.length === 0) setCelebrating(false)
+    // more queued: the modal advances to the next level, which claims it
+    if (pendingRef.current.length > 0) claimHead()
+    else setCelebrating(false)
     persist()
-  }, [persist])
+  }, [claimHead, persist])
 
   const openChest = useCallback(
     (chestId: number): Item | null => {

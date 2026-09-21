@@ -48,23 +48,12 @@ const hexRgb = (h: string): [number, number, number] => [
   parseInt(h.slice(5, 7), 16),
 ]
 
-/** A rewards chip riding a hotspot's label (e.g. chests on the character
- *  sword). `aria` is the screen-reader phrasing appended to the hotspot. */
-export interface VillageBadge {
-  text: string
-  aria: string
-  accent?: boolean
-}
-
 export default function VillageScene({
   items,
   onNavigate,
-  badges,
 }: {
   items: VillageItem[]
   onNavigate: (href: string) => void
-  /** Keyed by tap href. */
-  badges?: Record<string, VillageBadge>
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -242,52 +231,28 @@ export default function VillageScene({
           if (href) onNavigate(href)
         }}
       />
-      {labels.map((l) => {
-        const href = items[l.idx]?.tap?.href
-        const badge = href ? badges?.[href] : undefined
-        return (
-          <div key={l.idx} className="vg-label" style={{ left: l.left, top: l.top }}>
-            {l.text}
-            {badge && !badge.accent && <span className="vg-badge">{badge.text}</span>}
-          </div>
-        )
-      })}
-      {/* accent rewards (a pending level) mark the sprite itself, the
-          RPG over-the-head cue, instead of riding the caption */}
-      {spots.map((s) => {
-        const href = items[s.idx]?.tap?.href
-        const badge = href ? badges?.[href] : undefined
-        return (
-          <button
-            key={s.idx}
-            type="button"
-            className="vg-hotspot"
-            aria-label={badge ? `${s.aria}, ${badge.aria}` : s.aria}
-            style={{ left: s.left, top: s.top, width: s.width, height: s.height }}
-            onFocus={() => apiRef.current?.setActive(s.idx)}
-            onBlur={() => apiRef.current?.setActive(-1)}
-            onClick={() => {
-              const href = apiRef.current?.tapOf(s.idx)
-              if (href) onNavigate(href)
-            }}
-          />
-        )
-      })}
-      {spots.map((s) => {
-        const href = items[s.idx]?.tap?.href
-        const badge = href ? badges?.[href] : undefined
-        if (!badge?.accent) return null
-        return (
-          <span
-            key={`marker-${s.idx}`}
-            className="vg-marker"
-            aria-hidden="true"
-            style={{ left: s.left + s.width / 2, top: s.top - 6 }}
-          >
-            ▴
-          </span>
-        )
-      })}
+      {labels.map((l) => (
+        <div key={l.idx} className="vg-label" style={{ left: l.left, top: l.top }}>
+          {l.text}
+        </div>
+      ))}
+      {/* reward badges/markers retired: the waiting signal lives on the
+          character strip / sheet row / dock dot, one surface per chrome */}
+      {spots.map((s) => (
+        <button
+          key={s.idx}
+          type="button"
+          className="vg-hotspot"
+          aria-label={s.aria}
+          style={{ left: s.left, top: s.top, width: s.width, height: s.height }}
+          onFocus={() => apiRef.current?.setActive(s.idx)}
+          onBlur={() => apiRef.current?.setActive(-1)}
+          onClick={() => {
+            const href = apiRef.current?.tapOf(s.idx)
+            if (href) onNavigate(href)
+          }}
+        />
+      ))}
     </div>
   )
 }

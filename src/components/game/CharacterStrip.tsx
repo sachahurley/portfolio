@@ -14,6 +14,10 @@ import PortraitPlate from './PortraitPlate'
 export default function CharacterStrip() {
   const { name, avatarSeed, level, pendingLevels, chests } = useXp()
   const navigate = useNavigate()
+  // One quiet signal for everything waiting on the character screen
+  // (pending level claims + unopened chests); the moment itself already
+  // got a toast, so the persistent badge doesn't pulse or shout.
+  const waiting = pendingLevels.length + chests.length
 
   return (
     // Deliberately NOT a DS ListRow: this is a filled footer strip (game
@@ -31,14 +35,13 @@ export default function CharacterStrip() {
         <span className="gf-cs-lvl">
           Lv {level.level + 1} — {level.title}
         </span>
-        <span className="gf-cs-bar">
+        <span className="xp-mini">
           <i style={{ width: `${level.pct}%` }} />
         </span>
       </span>
-      {pendingLevels.length > 0 && <Badge variant="primary" size="small" caps className="gf-pulse">▴ level up</Badge>}
-      {pendingLevels.length === 0 && chests.length > 0 && (
+      {waiting > 0 && (
         <Badge variant="bone" size="small" caps>
-          ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
+          ▴ {waiting} waiting
         </Badge>
       )}
     </button>

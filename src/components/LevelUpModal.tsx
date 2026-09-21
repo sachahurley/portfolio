@@ -1,11 +1,13 @@
 /**
  * LevelUpModal — the gem-award dialog, mounted once in MinimalChrome.
  *
- * Pull, not push: it opens only when the visitor taps the ▴ LEVEL UP badge
+ * Pull, not push: it opens only when the visitor taps the waiting badge
  * (celebrateLevel), then presents pending level-ups sequentially with a
- * short beat between them. Chrome (scrim, plate panel, Esc, focus
- * management, footer CTA band) is the DS Modal; this file keeps only the
- * queue choreography and the celebratory content.
+ * short beat between them. Opening IS the claim: the provider grants each
+ * shown level's gem (claim-on-open), so by the time the visitor reads the
+ * card the gem is already in their track. Chrome (scrim, plate panel, Esc,
+ * focus management, footer CTA band) is the DS Modal; this file keeps only
+ * the queue choreography and the celebratory content.
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -48,7 +50,7 @@ export default function LevelUpModal() {
       width={320}
       footerContent={
         <Button variant="secondary" size="small" type="button" onClick={dismissModal}>
-          Add to your gems
+          Continue
         </Button>
       }
     >

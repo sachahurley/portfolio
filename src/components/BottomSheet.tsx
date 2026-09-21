@@ -10,7 +10,7 @@
  */
 
 import { Link, useLocation } from 'react-router-dom'
-import { Badge, BottomSheet as DSBottomSheet, ListRow } from '@scorp-ds/components'
+import { Badge, BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
@@ -60,8 +60,14 @@ export default function BottomSheet({
         </nav>
 
 
+        {/* Section seams are the DS Divider, NOT a border on the rows:
+            the ListRow clips itself to --plate-round, which slices 6px off
+            each end of any border it carries, so the seams live outside it
+            (that also keeps both lines identical by construction). */}
+        <Divider spacing="none" className="sheet-sep" />
+
         {/* Compact character row (DS ListRow; the full sheet lives at
-            /character). .sheet-char is only the section seam above it. */}
+            /character). .sheet-char is only the layout hook for the bar. */}
         <ListRow
           as={Link}
           asProps={{
@@ -70,21 +76,32 @@ export default function BottomSheet({
             'aria-label': `Character: ${name}. Open character screen.`,
           }}
           className="sheet-char"
-          thumb={<PortraitPlate seed={avatarSeed} cell={3} small />}
+          thumb={<PortraitPlate seed={avatarSeed} cell={2} tiny />}
           title={name}
           titleSuffix={
-            pendingLevels.length > 0 ? (
-              <Badge variant="primary" size="small" caps className="gf-pulse">▴ level up</Badge>
-            ) : chests.length > 0 ? (
+            // one quiet signal for all waiting rewards (claims + chests)
+            pendingLevels.length + chests.length > 0 ? (
               <Badge variant="bone" size="small" caps>
-                ▪ {chests.length} chest{chests.length > 1 ? 's' : ''}
+                ▴ {pendingLevels.length + chests.length} waiting
               </Badge>
             ) : (
               <span className="sheet-char-go">›</span>
             )
           }
-          description={`Lv ${level.level + 1} — ${level.title}`}
+          description={
+            // level line + the same mini XP readout as the game frame's
+            // character strip (.xp-mini), so the sheet row reads level
+            // progress too, not just the number
+            <>
+              {`Lv ${level.level + 1} — ${level.title}`}
+              <span className="xp-mini" aria-hidden="true">
+                <i style={{ width: `${level.pct}%` }} />
+              </span>
+            </>
+          }
         />
+
+        <Divider spacing="none" className="sheet-sep" />
 
         {/* Contact — sheet-only by design; no dedicated page, no email. */}
         <div className="sheet-contact">
