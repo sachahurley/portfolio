@@ -1468,7 +1468,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   .tarot-page { padding: 28px 32px calc(180px + env(safe-area-inset-bottom, 0px)); }
   .tarot-cards { gap: 10px; }
   .tc-card { width: 75px; height: 114px; }
-  .tarot-chatbar { width: calc(100% - 32px); bottom: 56px; }
+  .tarot-chatbar { width: calc(100% - 64px); bottom: 56px; }
   .tarot-empty { padding-top: 34px; }
   .tarot-empty-title { font-size: 18px; line-height: 24px; }
 }
