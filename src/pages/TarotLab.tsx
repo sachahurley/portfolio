@@ -3,10 +3,12 @@
  *
  * A chat with the Reader. Ask anything about your life or the cards; she
  * draws when a draw would help (server-side, from the real 78-card deck)
- * and the cards land in her message. One conversation, saved in this
- * browser; "New sitting" clears it.
+ * and the cards land in her message. One conversation on the table, saved
+ * in this browser; "New sitting" shelves it under Past sittings, where it
+ * can be reopened.
  *
- * Layout (top to bottom): header bar (avatar, title, New sitting, close),
+ * Layout (top to bottom): header bar (avatar, title, Past sittings, New
+ * sitting, close),
  * the thread (empty state with starters, or messages), and the composer
  * pinned above the dock with the footnote under it. Built from scorp-ds
  * parts: Avatar, Button, ListRow, Card (the draw), Badge, Alert, Divider,
@@ -20,8 +22,18 @@ import DitherIcon from '../components/DitherIcon'
 import { TileBox } from '../components/TileSprite'
 import CardStrip from '../components/tarot/CardStrip'
 import { TAROT_BACK, TAROT_TILE_H, TAROT_TILE_W } from '../game/tarotTiles'
-import { askReader, loadConversation, saveConversation, type AskError } from '../lib/tarot/chat'
+import {
+  askReader,
+  loadConversation,
+  loadSittings,
+  saveConversation,
+  saveSittings,
+  shelve,
+  type AskError,
+  type Sitting,
+} from '../lib/tarot/chat'
 import { USER_TEXT_MAX, USER_TURNS_MAX, type ChatMessage } from '../lib/tarot/contract'
+import { CARD_BY_ID } from '../data/tarot'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 
@@ -39,6 +51,27 @@ const ERRORS: Record<Exclude<AskError, 'cap'>, { title: string; description: str
   unavailable: { title: 'The Reader is away', description: 'The parlor is closed right now. Come back later.', retry: false },
 }
 
+/** A past sitting as a row: when, what was asked first, and what was drawn. */
+function describeSitting(s: Sitting) {
+  const first = s.messages.find((m) => m.role === 'user')
+  const questions = s.messages.filter((m) => m.role === 'user').length
+  const cards = s.messages.flatMap((m) =>
+    m.role === 'reader' && m.draw ? m.draw.cards.map((c) => CARD_BY_ID.get(c.id)?.name ?? '') : [],
+  )
+  const when = new Date(s.savedAt).toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+  const asked = `${questions} ${questions === 1 ? 'question' : 'questions'}`
+  return {
+    meta: when,
+    title: first?.text ?? 'A sitting',
+    description: cards.length ? `${asked} · ${cards.filter(Boolean).join(', ')}` : asked,
+  }
+}
+
 const ReaderAvatar = ({ size }: { size: 'small' | 'medium' }) => (
   <Avatar size={size} icon={<DitherIcon name="moon" size={size === 'small' ? 12 : 16} />} alt="" />
 )
@@ -48,6 +81,8 @@ export default function TarotLab() {
   const navigate = useNavigate()
   const { award } = useXp()
   const [messages, setMessages] = useState<ChatMessage[]>(() => loadConversation())
+  const [past, setPast] = useState<Sitting[]>(() => loadSittings())
+  const [showPast, setShowPast] = useState(false)
   const [draft, setDraft] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<AskError | null>(null)
@@ -69,6 +104,10 @@ export default function TarotLab() {
   useEffect(() => {
     if (!busy) saveConversation(messages)
   }, [messages, busy])
+
+  useEffect(() => {
+    saveSittings(past)
+  }, [past])
 
   useEffect(() => () => abortRef.current?.abort(), [])
 
@@ -151,15 +190,28 @@ export default function TarotLab() {
     void run(messages.slice(0, lastUser + 1))
   }
 
-  const newSitting = () => {
+  /** Stop any reply in flight and put the current sitting on the shelf. */
+  const leaveSitting = () => {
     abortRef.current?.abort()
     abortRef.current = null
     setBusy(false)
     setError(null)
     setLiveIndex(null)
-    setMessages([])
     setDraft('')
+    setShowPast(false)
+    return shelve(past, messages)
+  }
+
+  const newSitting = () => {
+    setPast(leaveSitting())
+    setMessages([])
     inputRef.current?.focus()
+  }
+
+  /** Reopen a past sitting; the one on the table takes its place on the shelf. */
+  const openSitting = (s: Sitting) => {
+    setPast(leaveSitting().filter((p) => p.id !== s.id))
+    setMessages(s.messages)
   }
 
   const errorInfo = error && error !== 'cap' ? ERRORS[error] : null
@@ -176,7 +228,32 @@ export default function TarotLab() {
           </div>
         </div>
         <div className="tarot-bar-actions">
-          {!empty && (
+          {showPast ? (
+            <Button
+              variant="secondary"
+              size="small"
+              type="button"
+              className="tarot-new"
+              onClick={() => setShowPast(false)}
+              iconLeft={<DitherIcon name="arrow-left" size={12} />}
+            >
+              Back
+            </Button>
+          ) : (
+            past.length > 0 && (
+              <Button
+                variant="secondary"
+                size="small"
+                type="button"
+                className="tarot-new"
+                onClick={() => setShowPast(true)}
+                iconLeft={<DitherIcon name="clock" size={12} />}
+              >
+                {handheld ? 'Past' : 'Past sittings'}
+              </Button>
+            )
+          )}
+          {!empty && !showPast && (
             <Button
               variant="secondary"
               size="small"
@@ -194,120 +271,138 @@ export default function TarotLab() {
         </div>
       </header>
 
-      <section className="tarot-thread" aria-label="Conversation with the Reader" aria-live="polite">
-        {empty && (
-          <div className="tarot-empty">
-            <div className="tarot-fan" aria-hidden="true">
-              {[0, 1, 2].map((i) => (
-                <TileBox
-                  key={i}
-                  x={TAROT_BACK[0]}
-                  y={TAROT_BACK[1]}
-                  w={TAROT_TILE_W}
-                  h={TAROT_TILE_H}
-                  scale={2}
-                  tint="var(--body)"
-                  className={`tarot-fan-card f${i}`}
-                />
-              ))}
-            </div>
-            <div className="tarot-empty-copy">
-              <h2 className="tarot-empty-title">What's on your mind?</h2>
-              <p className="tarot-empty-sub">
-                Ask the Reader anything. She'll draw from a real 78-card deck when the cards can help.
-              </p>
-            </div>
-            <div className="tarot-starters">
-              {STARTERS.map((s) => (
-                <ListRow
-                  key={s}
-                  title={s}
-                  onClick={() => send(s)}
-                  thumb={<DitherIcon name="arrow-right" size={16} />}
-                  thumbPosition="end"
-                />
+      {showPast ? (
+        <section className="tarot-thread" aria-label="Past sittings">
+          <div className="tarot-past">
+            <h2 className="tarot-past-title">Past sittings</h2>
+            <p className="tarot-empty-sub">
+              Reopen one to read it again or keep asking. The sitting on the table now takes its place here.
+            </p>
+            <div className="tarot-past-list">
+              {past.map((s) => (
+                <ListRow key={s.id} {...describeSitting(s)} onClick={() => openSitting(s)} />
               ))}
             </div>
           </div>
-        )}
-
-        {messages.map((m, i) =>
-          m.role === 'user' ? (
-            <p key={i} className="tm tm-user">
-              {m.text}
-            </p>
-          ) : (
-            <div key={i} className="tm tm-reader">
-              <ReaderAvatar size="small" />
-              <div className="tm-body">
-                {m.text && <p className="tm-text">{m.text}</p>}
-                {m.draw && <CardStrip draw={m.draw} animate={i === liveIndex} />}
-                {m.after && <p className="tm-text">{m.after}</p>}
-                {busy && i === liveIndex && !m.text && !m.draw && <p className="tm-wait">The Reader considers…</p>}
-                {busy && i === liveIndex && m.draw && !m.after && <p className="tm-wait">She studies the cards…</p>}
+        </section>
+      ) : (
+        <section className="tarot-thread" aria-label="Conversation with the Reader" aria-live="polite">
+          {empty && (
+            <div className="tarot-empty">
+              <div className="tarot-fan" aria-hidden="true">
+                {[0, 1, 2].map((i) => (
+                  <TileBox
+                    key={i}
+                    x={TAROT_BACK[0]}
+                    y={TAROT_BACK[1]}
+                    w={TAROT_TILE_W}
+                    h={TAROT_TILE_H}
+                    scale={2}
+                    tint="var(--body)"
+                    className={`tarot-fan-card f${i}`}
+                  />
+                ))}
+              </div>
+              <div className="tarot-empty-copy">
+                <h2 className="tarot-empty-title">What's on your mind?</h2>
+                <p className="tarot-empty-sub">
+                  Ask the Reader anything. She'll draw from a real 78-card deck when the cards can help.
+                </p>
+              </div>
+              <div className="tarot-starters">
+                {STARTERS.map((s) => (
+                  <ListRow
+                    key={s}
+                    title={s}
+                    onClick={() => send(s)}
+                    thumb={<DitherIcon name="arrow-right" size={16} />}
+                    thumbPosition="end"
+                  />
+                ))}
               </div>
             </div>
-          ),
-        )}
+          )}
 
-        {errorInfo && (
-          <Alert
-            variant="default"
-            title={errorInfo.title}
-            iconLeft={<DitherIcon name="warning" size={16} />}
-            description={
-              <span className="tarot-alert-body">
-                <span>{errorInfo.description}</span>
-                {errorInfo.retry && (
-                  <Button variant="secondary" size="small" type="button" onClick={retry} disabled={busy}>
-                    Ask again
-                  </Button>
-                )}
-              </span>
-            }
-          />
-        )}
+          {messages.map((m, i) =>
+            m.role === 'user' ? (
+              <p key={i} className="tm tm-user">
+                {m.text}
+              </p>
+            ) : (
+              <div key={i} className="tm tm-reader">
+                <ReaderAvatar size="small" />
+                <div className="tm-body">
+                  {m.text && <p className="tm-text">{m.text}</p>}
+                  {m.draw && <CardStrip draw={m.draw} animate={i === liveIndex} />}
+                  {m.after && <p className="tm-text">{m.after}</p>}
+                  {busy && i === liveIndex && !m.text && !m.draw && <p className="tm-wait">The Reader considers…</p>}
+                  {busy && i === liveIndex && m.draw && !m.after && <p className="tm-wait">She studies the cards…</p>}
+                </div>
+              </div>
+            ),
+          )}
 
-        {closed && <Divider variant="withText" text="This sitting has run its course" spacing="small" />}
-        <div ref={endRef} className="tarot-end" />
-      </section>
+          {errorInfo && (
+            <Alert
+              variant="default"
+              title={errorInfo.title}
+              iconLeft={<DitherIcon name="warning" size={16} />}
+              description={
+                <span className="tarot-alert-body">
+                  <span>{errorInfo.description}</span>
+                  {errorInfo.retry && (
+                    <Button variant="secondary" size="small" type="button" onClick={retry} disabled={busy}>
+                      Ask again
+                    </Button>
+                  )}
+                </span>
+              }
+            />
+          )}
+
+          {closed && <Divider variant="withText" text="This sitting has run its course" spacing="small" />}
+          <div ref={endRef} className="tarot-end" />
+        </section>
+      )}
 
       {/* composer: pinned above the dock; the footnote rides under it */}
-      <div className="tarot-chatbar">
-        <div className="tarot-chatbar-in">
-          {closed ? (
-            <Button variant="primary" type="button" className="tarot-restart" onClick={newSitting}>
-              Begin a new sitting
-            </Button>
-          ) : (
-            <form
-              className="tarot-composer"
-              onSubmit={(e) => {
-                e.preventDefault()
-                send(draft)
-              }}
-            >
-              <Input
-                ref={inputRef}
-                aria-label="Message the Reader"
-                type="text"
-                value={draft}
-                maxLength={USER_TEXT_MAX}
-                placeholder={busy ? 'The Reader is speaking…' : 'Ask the Reader'}
-                onChange={(e) => setDraft(e.target.value)}
-              />
-              <Button variant="primary" size="icon" type="submit" disabled={busy || !draft.trim()} aria-label="Send">
-                <DitherIcon name="arrow-up" size={16} />
+      {!showPast && (
+        <div className="tarot-chatbar">
+          <div className="tarot-chatbar-in">
+            {closed ? (
+              <Button variant="primary" type="button" className="tarot-restart" onClick={newSitting}>
+                Begin a new sitting
               </Button>
-            </form>
-          )}
-          <p className="tarot-foot">
-            {closed
-              ? `Up to ${USER_TURNS_MAX} questions per sitting. Start fresh any time.`
-              : 'For insight and entertainment. Sent to an AI provider for replies; saved only in this browser.'}
-          </p>
+            ) : (
+              <form
+                className="tarot-composer"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  send(draft)
+                }}
+              >
+                <Input
+                  ref={inputRef}
+                  aria-label="Message the Reader"
+                  type="text"
+                  value={draft}
+                  maxLength={USER_TEXT_MAX}
+                  placeholder={busy ? 'The Reader is speaking…' : 'Ask the Reader'}
+                  onChange={(e) => setDraft(e.target.value)}
+                />
+                <Button variant="primary" size="icon" type="submit" disabled={busy || !draft.trim()} aria-label="Send">
+                  <DitherIcon name="arrow-up" size={16} />
+                </Button>
+              </form>
+            )}
+            <p className="tarot-foot">
+              {closed
+                ? `Up to ${USER_TURNS_MAX} questions per sitting. Start fresh any time.`
+                : 'For insight and entertainment. Sent to an AI provider for replies; saved only in this browser.'}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

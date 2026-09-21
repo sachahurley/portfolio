@@ -72,16 +72,19 @@ function trimHistory(messages: ChatMessage[]): ChatMessage[] {
 
 const KEY = 'sh_tarot_chat'
 
+/** Drop anything malformed, or whose cards no longer resolve against the deck. */
+function validMessages(msgs: unknown): ChatMessage[] {
+  if (!Array.isArray(msgs)) return []
+  return (msgs as ChatMessage[]).filter(
+    (m) => m && (m.role === 'user' || m.role === 'reader') && (m.role === 'user' || !m.draw || m.draw.cards.every((c) => CARD_BY_ID.has(c.id))),
+  )
+}
+
 export function loadConversation(): ChatMessage[] {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return []
-    const data = JSON.parse(raw) as { messages?: ChatMessage[] }
-    const msgs = Array.isArray(data.messages) ? data.messages : []
-    // Drop anything whose cards no longer resolve against the deck.
-    return msgs.filter(
-      (m) => m && (m.role === 'user' || m.role === 'reader') && (m.role === 'user' || !m.draw || m.draw.cards.every((c) => CARD_BY_ID.has(c.id))),
-    )
+    return validMessages((JSON.parse(raw) as { messages?: unknown }).messages)
   } catch {
     return []
   }
@@ -95,4 +98,46 @@ export function saveConversation(messages: ChatMessage[]): void {
   } catch {
     /* private mode: the conversation just won't survive a reload */
   }
+}
+
+// -- past sittings -----------------------------------------------------------
+
+/** A finished conversation, shelved by "New sitting" so it can be reopened. */
+export interface Sitting {
+  id: string
+  savedAt: number
+  messages: ChatMessage[]
+}
+
+const PAST_KEY = 'sh_tarot_sittings'
+/** Oldest sittings fall off past this many. */
+const PAST_MAX = 30
+
+export function loadSittings(): Sitting[] {
+  try {
+    const raw = localStorage.getItem(PAST_KEY)
+    const data = raw ? (JSON.parse(raw) as unknown) : []
+    if (!Array.isArray(data)) return []
+    return (data as Sitting[])
+      .map((s) => ({ id: String(s?.id), savedAt: Number(s?.savedAt) || 0, messages: validMessages(s?.messages) }))
+      .filter((s) => s.messages.some((m) => m.role === 'user'))
+  } catch {
+    return []
+  }
+}
+
+export function saveSittings(sittings: Sitting[]): void {
+  try {
+    if (sittings.length) localStorage.setItem(PAST_KEY, JSON.stringify(sittings))
+    else localStorage.removeItem(PAST_KEY)
+  } catch {
+    /* private mode or full storage: past sittings just won't persist */
+  }
+}
+
+/** `past` with `messages` shelved on top, if it holds a question worth keeping. */
+export function shelve(past: Sitting[], messages: ChatMessage[]): Sitting[] {
+  if (!messages.some((m) => m.role === 'user')) return past
+  const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+  return [{ id, savedAt: Date.now(), messages }, ...past].slice(0, PAST_MAX)
 }

@@ -1387,6 +1387,11 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tarot-empty-sub { margin: 0; font-size: 13px; line-height: 20px; color: var(--body); }
 .tarot-starters { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 4px; text-align: left; }
 
+/* past sittings: the shelf "New sitting" fills */
+.tarot-past { display: flex; flex-direction: column; gap: 8px; }
+.tarot-past-title { margin: 0; font-size: 18px; line-height: 24px; color: var(--fg); font-weight: 400; }
+.tarot-past-list { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
+
 /* the draw: DS Card around the strip */
 .tarot-draw-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
 .tarot-draw-name { font-size: 12px; color: var(--mut); letter-spacing: 1px; text-transform: uppercase; }
