@@ -26,6 +26,7 @@ export declare const TUI_ICON_GLYPHS: {
     readonly Copy: "⎘";
     readonly Download: "⤓";
     readonly Edit: "✎";
+    readonly ExternalLink: "↗";
     readonly Eye: "◉";
     readonly EyeOff: "◌";
     readonly FileText: "☷";

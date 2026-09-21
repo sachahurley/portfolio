@@ -44,6 +44,8 @@ export { CaseStudyBlocks } from './components/CaseStudy';
 export type { CaseStudyBlock } from './components/CaseStudy';
 export { ListRow } from './components/ListRow';
 export type { ListRowProps } from './components/ListRow';
+export { Link } from './components/Link';
+export type { LinkProps } from './components/Link';
 export { Toast, Toaster } from './components/Toast';
 export type { ToastItem, ToasterProps } from './components/Toast';
 export { BottomSheet } from './components/BottomSheet';
