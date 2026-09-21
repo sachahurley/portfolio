@@ -2,19 +2,19 @@ import React from "react";
 /**
  * TuiIcon -- Terminal UI Icon component (Tier 2)
  *
- * Replaces Lucide SVG icons with Unicode characters for a true
- * terminal aesthetic. Each icon name maps to a single Unicode glyph
- * rendered in a monospace font at the same sizes Lucide used
- * (w-4 h-4, w-5 h-5, w-6 h-6).
+ * Every icon is drawn as inline SVG on a 16px grid in the plate language:
+ * 2px strokes, square caps, miter joins, filled forms only where filled is
+ * the convention (media controls, star). Drawing instead of typing a glyph
+ * makes icons identical on every OS: Fragment Mono lacks nearly all symbol
+ * glyphs, so typed icons fell back to per-platform system fonts.
  *
- * Exception: `X` (close/dismiss) is drawn, not typed. Fragment Mono has no
- * ballot or dingbat X, so the glyph fell back to a per-OS system font and
- * rendered as a slanted hand-drawn tick; the in-font `×` is too small to
- * read as a control. See {@link DRAWN_ICONS}.
+ * TUI_ICON_GLYPHS keeps each icon's Unicode form for plain-text contexts
+ * (tui-art frames, terminal-style strings); those render consistently via
+ * the Scorp Symbols face in --font-family-mono.
  */
 /**
- * Canonical Unicode glyph for each supported icon name (Lucide-compatible keys).
- * Exported for catalogs, tooling, and tests — keep in sync with {@link TuiIcon}.
+ * Unicode text form of each icon name (Lucide-compatible keys), for plain-text
+ * contexts. TuiIcon itself renders the drawings in {@link TUI_ICON_DRAWINGS}.
  */
 export declare const TUI_ICON_GLYPHS: {
     readonly AlertCircle: "⚠";
@@ -65,10 +65,20 @@ export declare const TUI_ICON_GLYPHS: {
     readonly User: "@";
     readonly Volume2: "♫";
     readonly VolumeX: "✖";
-    readonly X: "×";
+    readonly X: "✕";
 };
 /** Keys of {@link TUI_ICON_GLYPHS} — use for typed catalogs or selects. */
 export type TuiIconName = keyof typeof TUI_ICON_GLYPHS;
+/** One icon: `stroke` paths draw at 2px in currentColor, `fill` paths fill solid. */
+interface IconDrawing {
+    stroke?: string;
+    fill?: string;
+}
+/**
+ * The drawn icon set, 16x16 viewBox. Keyed by every {@link TuiIconName}, so
+ * adding a glyph name without a drawing is a type error.
+ */
+export declare const TUI_ICON_DRAWINGS: Record<TuiIconName, IconDrawing>;
 export interface TuiIconProps {
     /** Icon name -- must match a key in {@link TUI_ICON_GLYPHS} (same as the Lucide component name). */
     name: string;
