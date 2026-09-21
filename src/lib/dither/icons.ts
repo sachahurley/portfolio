@@ -4,7 +4,7 @@
  * export, generator commit 23c786f).
  */
 
-export type DitherIconName = "arrow-down" | "arrow-left" | "arrow-right" | "arrow-up" | "bell" | "bookmark" | "calendar" | "camera" | "cart" | "chat" | "check" | "chevron-down" | "chevron-right" | "clock" | "close" | "copy" | "download" | "edit" | "eye" | "file" | "filter" | "folder" | "globe" | "grid" | "heart" | "home" | "image" | "info" | "list" | "lock" | "mail" | "menu" | "minus" | "moon" | "pause" | "pin" | "play" | "plus" | "question" | "refresh" | "search" | "settings" | "share" | "star" | "stop" | "sun" | "trash" | "upload" | "user" | "volume" | "warning"
+export type DitherIconName = "arrow-down" | "arrow-left" | "arrow-right" | "arrow-up" | "bell" | "bookmark" | "calendar" | "camera" | "cart" | "chat" | "check" | "chevron-down" | "chevron-right" | "clock" | "close" | "copy" | "download" | "edit" | "enter" | "eye" | "file" | "filter" | "folder" | "globe" | "grid" | "heart" | "home" | "image" | "info" | "list" | "lock" | "mail" | "menu" | "minus" | "moon" | "pause" | "pin" | "play" | "plus" | "question" | "refresh" | "search" | "settings" | "share" | "star" | "stop" | "sun" | "trash" | "upload" | "user" | "volume" | "warning"
 
 export type DitherIconStyle = "filled" | "outline"
 
@@ -29,6 +29,7 @@ export const DITHER_ICON_NAMES: DitherIconName[] = [
   "copy",
   "download",
   "edit",
+  "enter",
   "eye",
   "file",
   "filter",

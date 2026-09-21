@@ -1,182 +1,123 @@
 /**
  * Tarot reader (/lab/tarot)
  *
- * A full-screen parlor where a pixel mystic deals a real 78-card draw and
- * reads the visitor: their level title, the places they have walked, the
- * gear they carry, the hour. The reading itself comes from the serverless
- * /api/tarot (a cheap LLM in a sincere-mystic register); every failure,
- * rate limit, or timeout silently swaps in the canned fallback reading, so
- * the parlor never breaks and never shows an error.
+ * A chat with the Seer. Ask anything about your life or the cards; she
+ * draws when a draw would help (server-side, from the real 78-card deck)
+ * and the cards land in her message. One conversation on the table, saved
+ * in this browser; "New sitting" shelves it under Past sittings, where it
+ * can be reopened.
  *
- * Choreography hides latency: cards are drawn client-side the moment the
- * visitor commits, the API call departs in parallel, and the shuffle/flip
- * theater plays while it travels. Text then types out per section.
- *
- * Finished readings land in the Reader's ledger (lib/tarot/archive):
- * reopening one restores the table fully revealed, text whole, with the
- * follow-up audience resumable until its turns are spent.
+ * Layout (top to bottom): header bar (avatar, title, Past sittings, New
+ * sitting, close), the thread (empty state with starters, or messages), and
+ * the composer pinned above the dock with the footnote under it. Built from scorp-ds
+ * parts: Avatar, Button, ListRow, Card (the draw), Badge, Alert, Divider,
+ * Input.
  */
 
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
-import { Button, Input } from '@scorp-ds/components'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Alert, Avatar, Button, Divider, Input, ListRow, Tooltip } from '@scorp-ds/components'
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
-import TarotCardView from '../components/tarot/TarotCardView'
-import TarotLedger from '../components/tarot/TarotLedger'
-import TarotScene from '../components/tarot/TarotScene'
-import Typewriter from '../components/tarot/Typewriter'
-import { SPREADS, CARD_BY_ID, type SpreadDef } from '../data/tarot'
+import type { DitherIconName } from '../lib/dither/icons'
+import { TileBox } from '../components/TileSprite'
+import CardStrip from '../components/tarot/CardStrip'
+import { TAROT_BACK, TAROT_TILE_H, TAROT_TILE_W } from '../game/tarotTiles'
 import {
-  loadLedger,
-  rehydrate,
-  saveReading,
-  updateReading,
-  type SavedReading,
-} from '../lib/tarot/archive'
-import { drawSpread, type DrawnCard } from '../lib/tarot/draw'
-import { chatFallback, fallbackReading } from '../lib/tarot/fallbackReading'
-import { requestChat, requestReading } from '../lib/tarot/client'
-import { summarizeVisitor } from '../lib/tarot/summarizeVisitor'
-import {
-  CHAT_MESSAGE_MAX,
-  CHAT_TURNS_MAX,
-  QUESTION_MAX,
-  type ChatExchange,
-  type Reading,
-  type TarotChatRequest,
-} from '../lib/tarot/contract'
+  askReader,
+  loadConversation,
+  loadSittings,
+  saveConversation,
+  saveSittings,
+  shelve,
+  type AskError,
+  type Sitting,
+} from '../lib/tarot/chat'
+import { USER_TEXT_MAX, USER_TURNS_MAX, type ChatMessage } from '../lib/tarot/contract'
+import { quickReplies } from '../lib/tarot/suggest'
+import { CARD_BY_ID } from '../data/tarot'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 
-/** Client half of the rate limiting: one draw per cooldown window. */
-const COOLDOWN_MS = 30_000
-const LAST_KEY = 'sh_tarot_last'
+type ReaderMsg = Extract<ChatMessage, { role: 'reader' }>
 
-const SHUFFLE_MS = 1200
-const AFTER_FLIPS_MS = 500
+const STARTERS = [
+  'Pull a card for my day',
+  'Do a three-card reading on my career',
+  'What does the Tower mean?',
+]
 
-type Status = 'idle' | 'shuffling' | 'revealing' | 'reading' | 'done'
-
-interface State {
-  status: Status
-  spread: SpreadDef | null
-  drawn: DrawnCard[]
-  /** Per-card face-up flags: the visitor taps each card to turn it. */
-  flipped: boolean[]
-  reading: Reading | null
-  /** Which reading section is currently typing (greeting=0, cards=1..n,
-   *  synthesis=n+1, farewell=n+2). */
-  section: number
-  /** The question this sitting was asked with (captured at begin/restore,
-   *  so the live setup input can change without rewriting history). */
-  asked: string
+const ERRORS: Record<Exclude<AskError, 'cap'>, { title: string; description: string; retry: boolean }> = {
+  failed: { title: 'The candle gutters', description: 'The Seer lost the thread. Your message is safe.', retry: true },
+  rate_limited: { title: 'The Seer needs a moment', description: 'Too many questions at once. Try again shortly.', retry: true },
+  unavailable: { title: 'The Seer is away', description: 'The parlor is closed right now. Come back later.', retry: false },
 }
 
-type Action =
-  | { type: 'begin'; spread: SpreadDef; drawn: DrawnCard[]; asked: string }
-  | { type: 'shuffled' }
-  | { type: 'reveal'; index: number }
-  | { type: 'reading'; reading: Reading }
-  | { type: 'section-done' }
-  | { type: 'reset' }
-  /** Reopen a ledger entry: everything revealed, no theater to run. */
-  | { type: 'restore'; spread: SpreadDef; drawn: DrawnCard[]; reading: Reading; asked: string }
-
-const initial: State = {
-  status: 'idle',
-  spread: null,
-  drawn: [],
-  flipped: [],
-  reading: null,
-  section: 0,
-  asked: '',
-}
-
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case 'begin':
-      return {
-        ...initial,
-        status: 'shuffling',
-        spread: action.spread,
-        drawn: action.drawn,
-        flipped: action.drawn.map(() => false),
-        asked: action.asked,
-      }
-    case 'shuffled':
-      return { ...state, status: 'revealing' }
-    case 'reveal':
-      return { ...state, flipped: state.flipped.map((f, i) => (i === action.index ? true : f)) }
-    case 'reading':
-      return { ...state, status: 'reading', flipped: state.flipped.map(() => true), reading: action.reading }
-    case 'section-done': {
-      const total = state.drawn.length + 3
-      const section = state.section + 1
-      return section >= total
-        ? { ...state, section, status: 'done' }
-        : { ...state, section }
-    }
-    case 'reset':
-      return initial
-    case 'restore':
-      return {
-        status: 'done',
-        spread: action.spread,
-        drawn: action.drawn,
-        flipped: action.drawn.map(() => true),
-        reading: action.reading,
-        section: action.drawn.length + 3,
-        asked: action.asked,
-      }
+/** A past sitting as a row: when, what was asked first, and what was drawn. */
+function describeSitting(s: Sitting) {
+  const first = s.messages.find((m) => m.role === 'user')
+  const questions = s.messages.filter((m) => m.role === 'user').length
+  const cards = s.messages.flatMap((m) =>
+    m.role === 'reader' && m.draw ? m.draw.cards.map((c) => CARD_BY_ID.get(c.id)?.name ?? '') : [],
+  )
+  const when = new Date(s.savedAt).toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+  const asked = `${questions} ${questions === 1 ? 'question' : 'questions'}`
+  return {
+    meta: when,
+    title: first?.text ?? 'A sitting',
+    description: cards.length ? `${asked} · ${cards.filter(Boolean).join(', ')}` : asked,
   }
 }
 
-function readLast(): number {
-  try {
-    return Number(localStorage.getItem(LAST_KEY)) || 0
-  } catch {
-    return 0
-  }
-}
+const ReaderAvatar = ({ size }: { size: 'small' | 'medium' }) => (
+  <Avatar size={size} icon={<DitherIcon name="moon" size={size === 'small' ? 12 : 16} />} alt="" />
+)
 
 export default function TarotLab() {
   usePageTitle('Tarot reader')
   const navigate = useNavigate()
-  const { award, logLine, xp, gems, items, equipment, isReturning, getEarned } = useXp()
-  const [state, dispatch] = useReducer(reducer, initial)
-  const [spreadId, setSpreadId] = useState<SpreadDef['id']>('one')
-  const [question, setQuestion] = useState('')
-  const [skipAll, setSkipAll] = useState(false)
-  const [cooldownLeft, setCooldownLeft] = useState(0)
-  // Chatting with the Reader about the finished reading (capped audience;
-  // any failure closes the chat with an in-fiction final line).
-  const [exchanges, setExchanges] = useState<ChatExchange[]>([])
-  const [chatMsg, setChatMsg] = useState('')
-  const [chatState, setChatState] = useState<'open' | 'waiting' | 'closed'>('open')
-  // The Reader's ledger: past sittings, plus which surface is showing.
-  const [ledger, setLedger] = useState<SavedReading[]>(() => loadLedger())
-  const [view, setView] = useState<'parlor' | 'ledger'>('parlor')
-  /** Ledger id of the sitting on the table (set on archive or restore);
-   *  doubles as the archived-already guard for the save effect. */
-  const entryIdRef = useRef<string | null>(null)
-  const readingRef = useRef<Reading | null>(null)
-  const waitingRef = useRef(false)
-  const timersRef = useRef<number[]>([])
+  const { award } = useXp()
+  const [messages, setMessages] = useState<ChatMessage[]>(() => loadConversation())
+  const [past, setPast] = useState<Sitting[]>(() => loadSittings())
+  const [showPast, setShowPast] = useState(false)
+  const [draft, setDraft] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<AskError | null>(null)
+  /** Index of the Reader message streaming right now (its cards animate). */
+  const [liveIndex, setLiveIndex] = useState<number | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
+  const endRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const reduced =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  // Matches the stylesheet's 600px card-size step so JS and CSS agree.
-  const handheld =
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches
+  const userTurns = messages.filter((m) => m.role === 'user').length
+  const closed = userTurns >= USER_TURNS_MAX || error === 'cap'
+  const empty = messages.length === 0
+  const handheld = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches
 
-  // Dedicated lab pages award their own visit XP (the LabItem template only
-  // covers template-rendered experiments).
   useEffect(() => {
     award(XP_AWARDS.lab, 'entered the tarot parlor', 'lab:tarot')
   }, [award])
 
-  // Close: back into history when the visitor came from the site, else /lab.
+  useEffect(() => {
+    if (!busy) saveConversation(messages)
+  }, [messages, busy])
+
+  useEffect(() => {
+    saveSittings(past)
+  }, [past])
+
+  useEffect(() => () => abortRef.current?.abort(), [])
+
+  // Follow the conversation as it grows.
+  useEffect(() => {
+    if (empty) return
+    endRef.current?.scrollIntoView({ block: 'end', behavior: busy ? 'auto' : 'smooth' })
+  }, [messages, busy, error, empty])
+
   const closePage = useCallback(() => {
     const s = window.history.state as { idx?: number } | null
     if (s?.idx && s.idx > 0) navigate(-1)
@@ -184,434 +125,289 @@ export default function TarotLab() {
   }, [navigate])
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      // Escape peels one layer: the ledger first, then the parlor itself.
-      if (e.key === 'Escape') {
-        if (view === 'ledger') setView('parlor')
-        else closePage()
-      }
+      if (e.key === 'Escape') closePage()
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [closePage, view])
+  }, [closePage])
 
-  // Clear pending theater timers on unmount.
-  useEffect(
-    () => () => {
-      timersRef.current.forEach((t) => window.clearTimeout(t))
-    },
-    [],
+  /** Stream a Reader reply to `history` (which ends on the user's turn). */
+  const run = async (history: ChatMessage[]) => {
+    const readerIndex = history.length
+    const reply: ReaderMsg = { role: 'reader', text: '' }
+    setMessages([...history, reply])
+    setLiveIndex(readerIndex)
+    setBusy(true)
+    setError(null)
+    const ctrl = new AbortController()
+    abortRef.current = ctrl
+
+    const update = (patch: Partial<ReaderMsg>) => {
+      Object.assign(reply, patch)
+      setMessages((prev) => prev.map((m, i) => (i === readerIndex ? { ...reply } : m)))
+    }
+
+    try {
+      await askReader(
+        history,
+        history.filter((m) => m.role === 'user').length,
+        (e) => {
+          if (e.t === 'text') {
+            if (reply.draw) update({ after: (reply.after ?? '') + e.d })
+            else update({ text: reply.text + e.d })
+          } else if (e.t === 'draw') {
+            update({ draw: e.draw })
+            award(XP_AWARDS.tarot, 'received a reading', 'lab:tarot-reading')
+          }
+        },
+        ctrl.signal,
+      )
+    } catch (err) {
+      if (ctrl.signal.aborted) return
+      setError(typeof err === 'string' ? (err as AskError) : 'failed')
+      // Drop an empty reply; keep partial text so nothing said is lost.
+      if (!reply.text.trim() && !reply.draw) setMessages(history)
+    } finally {
+      if (abortRef.current === ctrl) {
+        abortRef.current = null
+        setBusy(false)
+      }
+    }
+  }
+
+  const send = (text: string) => {
+    const msg = text.trim().slice(0, USER_TEXT_MAX)
+    if (!msg || busy || closed) return
+    setDraft('')
+    void run([...messages, { role: 'user', text: msg }])
+  }
+
+  /** Re-ask after a failure: resend up to the last user message. */
+  const retry = () => {
+    if (busy) return
+    let lastUser = messages.length - 1
+    while (lastUser >= 0 && messages[lastUser].role !== 'user') lastUser--
+    if (lastUser < 0) return
+    void run(messages.slice(0, lastUser + 1))
+  }
+
+  /** Stop any reply in flight and put the current sitting on the shelf. */
+  const leaveSitting = () => {
+    abortRef.current?.abort()
+    abortRef.current = null
+    setBusy(false)
+    setError(null)
+    setLiveIndex(null)
+    setDraft('')
+    setShowPast(false)
+    return shelve(past, messages)
+  }
+
+  const newSitting = () => {
+    setPast(leaveSitting())
+    setMessages([])
+    inputRef.current?.focus()
+  }
+
+  /** Reopen a past sitting; the one on the table takes its place on the shelf. */
+  const openSitting = (s: Sitting) => {
+    setPast(leaveSitting().filter((p) => p.id !== s.id))
+    setMessages(s.messages)
+  }
+
+  const errorInfo = error && error !== 'cap' ? ERRORS[error] : null
+  const replies = busy || closed || error ? [] : quickReplies(messages)
+
+  /** Icon-only header action, square like the close button; the tooltip names it. */
+  const iconAction = (label: string, icon: DitherIconName, onClick: () => void) => (
+    <Tooltip content={label} position="bottom">
+      <Button variant="icon" size="icon" type="button" onClick={onClick} aria-label={label}>
+        <DitherIcon name={icon} size={16} />
+      </Button>
+    </Tooltip>
   )
 
-  // Cooldown ticker (only runs while one is active).
-  useEffect(() => {
-    const update = () => setCooldownLeft(Math.max(0, readLast() + COOLDOWN_MS - Date.now()))
-    update()
-    const iv = window.setInterval(update, 1000)
-    return () => window.clearInterval(iv)
-  }, [state.status])
+  /** Suggested asks (the empty-state starters, the quick replies after a reading). */
+  const chips = (asks: string[], className: string, label: string) => (
+    <div className={`tarot-chips ${className}`} aria-label={label}>
+      {asks.map((q) => (
+        <Button
+          key={q}
+          variant="outline"
+          size="small"
+          type="button"
+          className="tarot-chip"
+          onClick={() => send(q)}
+          iconRight={<DitherIcon name="arrow-right" size={16} />}
+        >
+          {q}
+        </Button>
+      ))}
+    </div>
+  )
 
-  // Keep the newest typed section in view as the reading unrolls (chat
-  // replies included). A restored sitting is exempt for a beat: its whole
-  // text mounts at once (and the Typewriter onDone cascade still bumps
-  // `section` a few times), and it should open at the greeting, not the end.
-  const readingEndRef = useRef<HTMLDivElement | null>(null)
-  const restoredAtRef = useRef(0)
-  useEffect(() => {
-    if (state.status !== 'reading' && state.status !== 'done') return
-    if (Date.now() - restoredAtRef.current < 500) return
-    readingEndRef.current?.scrollIntoView({
-      behavior: reduced ? 'auto' : 'smooth',
-      block: 'end',
-    })
-  }, [state.status, state.section, exchanges.length, reduced])
-
-  // Hand-off to the reading once every card has been turned: a short beat,
-  // then either the reading that already arrived or a waiting flag its
-  // .then() checks. (The request departed when the visitor committed.)
-  const allFlipped = state.drawn.length > 0 && state.flipped.every(Boolean)
-  useEffect(() => {
-    if (state.status !== 'revealing' || !allFlipped) return
-    const t = window.setTimeout(
-      () => {
-        if (readingRef.current) dispatch({ type: 'reading', reading: readingRef.current })
-        else waitingRef.current = true
-      },
-      reduced ? 0 : AFTER_FLIPS_MS,
-    )
-    timersRef.current.push(t)
-  }, [state.status, allFlipped, reduced])
-
-  // First finished reading pays out (and, being a lab: key, may roll a chest).
-  const paidRef = useRef(false)
-  useEffect(() => {
-    if (state.status !== 'done' || paidRef.current) return
-    paidRef.current = true
-    award(XP_AWARDS.tarot, 'received a reading', 'lab:tarot-reading')
-  }, [state.status, award])
-
-  // Both the ledger and a reopened reading enter at their top, not at
-  // whatever depth the finished reading had scrolled to.
-  const scrollTop = () => {
-    document.querySelector('.gf-viewport')?.scrollTo(0, 0)
-    window.scrollTo(0, 0)
-  }
-
-  const later = (fn: () => void, ms: number) => {
-    timersRef.current.push(window.setTimeout(fn, ms))
-  }
-
-  const begin = () => {
-    if (state.status !== 'idle' && state.status !== 'done') return
-    if (cooldownLeft > 0 && state.status === 'done') return
-    const spread = SPREADS.find((s) => s.id === spreadId) ?? SPREADS[0]
-    const drawn = drawSpread(spread)
-    const q = question.trim().slice(0, QUESTION_MAX)
-    setSkipAll(false)
-    setExchanges([])
-    setChatMsg('')
-    setChatState('open')
-    entryIdRef.current = null
-    readingRef.current = null
-    waitingRef.current = false
-    try {
-      localStorage.setItem(LAST_KEY, String(Date.now()))
-    } catch {
-      /* private mode: the server still enforces its own limits */
-    }
-    dispatch({ type: 'begin', spread, drawn, asked: q })
-    logLine('The Reader lays out the cards.', 'arrive')
-
-    // The request departs while the theater plays. Every failure becomes
-    // the canned reading; the visitor never sees the difference announced.
-    const payload = {
-      spread: spread.id,
-      question: q || undefined,
-      cards: drawn.map((d) => ({
-        id: d.card.id,
-        name: d.card.name,
-        position: d.position.id,
-        reversed: d.reversed,
-      })),
-      visitor: summarizeVisitor({ xp, earned: getEarned(), gems, items, equipment, isReturning }),
-    }
-    requestReading(payload)
-      .catch(() => {
-        if (import.meta.env.DEV) console.info('[tarot] using fallback reading')
-        return fallbackReading(drawn)
-      })
-      .then((reading) => {
-        readingRef.current = reading
-        // The sitting enters the ledger the moment its reading exists (the
-        // theater is presentation, not state), so even a visitor who leaves
-        // mid-shuffle finds it remembered.
-        const entry: SavedReading = {
-          id: crypto.randomUUID(),
-          at: Date.now(),
-          spreadId: spread.id,
-          question: q || undefined,
-          cards: drawn.map((d) => ({
-            id: d.card.id,
-            position: d.position.id,
-            reversed: d.reversed,
-          })),
-          reading,
-          exchanges: [],
-          chatClosed: false,
-        }
-        entryIdRef.current = entry.id
-        setLedger(saveReading(entry))
-        if (waitingRef.current) dispatch({ type: 'reading', reading })
-      })
-
-    // Theater: shuffle, then the cards wait for the visitor's taps; the
-    // all-flipped effect hands off to the reading.
-    if (reduced) {
-      // No animation: cards appear face up at once; text arrives whole.
-      dispatch({ type: 'shuffled' })
-      drawn.forEach((_, i) => dispatch({ type: 'reveal', index: i }))
-      return
-    }
-    later(() => dispatch({ type: 'shuffled' }), SHUFFLE_MS)
-  }
-
-  const { status, drawn, flipped, reading, section, asked } = state
-  const inSession = status !== 'idle'
-  const cardName = (cardId: string, reversed: boolean) => {
-    const card = CARD_BY_ID.get(cardId)
-    return card ? `${card.name}${reversed ? ', reversed' : ''}` : cardId
-  }
-
-  // Ask the Reader a follow-up about the finished reading. One in flight at
-  // a time (the bar disables while waiting); any failure closes the chat
-  // with an in-fiction final line, the parlor's no-error rule.
-  const ask = () => {
-    const msg = chatMsg.trim().slice(0, CHAT_MESSAGE_MAX)
-    if (!msg || chatState !== 'open' || status !== 'done' || !reading || !state.spread) return
-    const turn = exchanges.length + 1
-    setChatState('waiting')
-    setChatMsg('')
-    const payload: TarotChatRequest = {
-      spread: state.spread.id,
-      question: asked || undefined,
-      cards: drawn.map((d) => ({
-        id: d.card.id,
-        name: d.card.name,
-        position: d.position.id,
-        reversed: d.reversed,
-      })),
-      visitor: summarizeVisitor({ xp, earned: getEarned(), gems, items, equipment, isReturning }),
-      reading,
-      exchanges,
-      message: msg,
-    }
-    // One turn in flight at a time, so the closure's transcript is current.
-    const settle = (reply: string, closed: boolean) => {
-      const next = [...exchanges, { question: msg, reply }]
-      setExchanges(next)
-      setChatState(closed ? 'closed' : 'open')
-      if (entryIdRef.current) setLedger(updateReading(entryIdRef.current, next, closed))
-    }
-    requestChat(payload)
-      .then((reply) => settle(reply, turn >= CHAT_TURNS_MAX))
-      .catch(() => settle(chatFallback(), true))
-  }
-
-  // Reopen a past sitting: the table restores fully revealed, text whole,
-  // and the audience resumes if turns remain.
-  const openEntry = (entry: SavedReading) => {
-    const live = rehydrate(entry)
-    if (!live) return
-    entryIdRef.current = entry.id
-    restoredAtRef.current = Date.now()
-    readingRef.current = null
-    waitingRef.current = false
-    setSkipAll(true)
-    setExchanges(entry.exchanges)
-    setChatMsg('')
-    setChatState(
-      entry.chatClosed || entry.exchanges.length >= CHAT_TURNS_MAX ? 'closed' : 'open',
-    )
-    dispatch({
-      type: 'restore',
-      spread: live.spread,
-      drawn: live.drawn,
-      reading: entry.reading,
-      asked: entry.question ?? '',
-    })
-    setView('parlor')
-    scrollTop()
-  }
-
-  const openLedger = () => {
-    setView('ledger')
-    scrollTop()
-  }
-  const inParlor = view === 'parlor'
+  /** Back from Past sittings, at the close button's size; icon-only on handhelds. */
+  const backButton = handheld ? (
+    <Button variant="icon" size="icon" type="button" onClick={() => setShowPast(false)} aria-label="Back">
+      <DitherIcon name="arrow-left" size={16} />
+    </Button>
+  ) : (
+    <Button
+      variant="secondary"
+      size="medium"
+      type="button"
+      className="tarot-new"
+      onClick={() => setShowPast(false)}
+      iconLeft={<DitherIcon name="arrow-left" size={16} />}
+    >
+      Back
+    </Button>
+  )
 
   return (
-    <div className={`tarot-page${inParlor && status === 'done' && reading ? ' has-chat' : ''}`}>
-      {/* .ch-close is a layout hook only; the control is the DS icon Button */}
-      <Button variant="icon" size="icon" type="button" className="ch-close" onClick={closePage} aria-label="Close tarot reader">
-        <DitherIcon name="close" size={16} />
-      </Button>
-
-      <TarotScene />
-
-      <header className="tarot-head">
-        <h1 className="tarot-title">The Reader</h1>
-        <p className="tarot-sub">
-          {!inParlor
-            ? 'The sittings the Reader remembers.'
-            : inSession
-              ? status === 'done'
-                ? 'The cards rest.'
-                : status === 'revealing' && !allFlipped
-                  ? 'Tap a card to turn it.'
-                  : 'The cards are speaking.'
-              : 'A real draw from a full 78-card deck, read for whoever sits down.'}
-        </p>
+    <div className="tarot-page tarot-chat-page">
+      {/* header bar: who you're talking to, and the two session controls */}
+      <header className="tarot-bar">
+        <div className="tarot-bar-id">
+          <ReaderAvatar size="medium" />
+          <div className="tarot-bar-text">
+            <h1 className="tarot-title">The Seer</h1>
+            <p className="tarot-sub">Tarot, one conversation at a time</p>
+          </div>
+        </div>
+        <div className="tarot-bar-actions">
+          {showPast
+            ? backButton
+            : past.length > 0 && iconAction('Past sittings', 'clock', () => setShowPast(true))}
+          {!empty && !showPast && iconAction('New sitting', 'plus', newSitting)}
+          <Button variant="icon" size="icon" type="button" onClick={closePage} aria-label="Close tarot reader">
+            <DitherIcon name="close" size={16} />
+          </Button>
+        </div>
       </header>
 
-      {!inParlor && (
-        <TarotLedger entries={ledger} onOpen={openEntry} onBack={() => setView('parlor')} />
-      )}
-
-      {inParlor && !inSession && (
-        <section className="tarot-setup" aria-label="Choose your reading">
-          <div className="tarot-spreads" role="radiogroup" aria-label="Spread">
-            {SPREADS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                role="radio"
-                aria-checked={spreadId === s.id}
-                className={`tarot-spread${spreadId === s.id ? ' sel' : ''}`}
-                onClick={() => setSpreadId(s.id)}
-              >
-                <span className="ts-name">{s.name}</span>
-                <span className="ts-desc">{s.desc}</span>
-              </button>
-            ))}
+      {showPast ? (
+        <section className="tarot-thread" aria-label="Past sittings">
+          <div className="tarot-past">
+            <h2 className="tarot-past-title">Past sittings</h2>
+            <p className="tarot-empty-sub">
+              Reopen one to read it again or keep asking. The sitting on the table now takes its place here.
+            </p>
+            <div className="tarot-past-list">
+              {past.map((s) => (
+                <ListRow key={s.id} {...describeSitting(s)} onClick={() => openSitting(s)} />
+              ))}
+            </div>
           </div>
-          <div className="tarot-ask">
-            <Input
-              label="A question for the cards (optional)"
-              type="text"
-              value={question}
-              maxLength={QUESTION_MAX}
-              placeholder="Ask, or let the cards decide."
-              onChange={(e) => setQuestion(e.target.value)}
-            />
-          </div>
-          <Button variant="primary" onClick={begin} disabled={cooldownLeft > 0}>
-            {cooldownLeft > 0 ? `The deck rests (${Math.ceil(cooldownLeft / 1000)}s)` : 'Draw the cards'}
-          </Button>
-          {ledger.length > 0 && (
-            <Button variant="ghost" type="button" onClick={openLedger}>
-              Past readings ({ledger.length})
-            </Button>
-          )}
-          <p className="tarot-note">For insight and entertainment; the walking is still yours.</p>
         </section>
-      )}
+      ) : (
+        <section className="tarot-thread" aria-label="Conversation with the Seer" aria-live="polite">
+          {empty && (
+            <div className="tarot-empty">
+              <div className="tarot-fan" aria-hidden="true">
+                {[0, 1, 2].map((i) => (
+                  <TileBox
+                    key={i}
+                    x={TAROT_BACK[0]}
+                    y={TAROT_BACK[1]}
+                    w={TAROT_TILE_W}
+                    h={TAROT_TILE_H}
+                    scale={2}
+                    tint="var(--body)"
+                    className={`tarot-fan-card f${i}`}
+                  />
+                ))}
+              </div>
+              <div className="tarot-empty-copy">
+                <h2 className="tarot-empty-title">What's on your mind?</h2>
+                <p className="tarot-empty-sub">
+                  Ask the Seer anything. She'll draw from a real 78-card deck when the cards can help.
+                </p>
+              </div>
+              {chips(STARTERS, 'tarot-starters', 'Suggested questions')}
+            </div>
+          )}
 
-      {inParlor && inSession && (
-        <section className="tarot-table" aria-label="The spread">
-          <div className={`tarot-cards n${drawn.length}${status === 'shuffling' ? ' shuffling' : ''}`}>
-            {drawn.map((d, i) => (
-              <TarotCardView
-                key={d.card.id}
-                drawn={d}
-                faceUp={flipped[i]}
-                scale={handheld ? 3 : 4}
-                onReveal={() => {
-                  if (status === 'revealing' && !flipped[i]) dispatch({ type: 'reveal', index: i })
-                }}
-              />
-            ))}
-          </div>
-
-          {(status === 'reading' || status === 'done') && reading && (
-            <div
-              className="tarot-reading"
-              onClick={() => setSkipAll(true)}
-              title={status === 'reading' ? 'Tap to reveal the whole reading' : undefined}
-            >
-              {asked && <p className="tr-asked">You asked: {asked}</p>}
-              <p className="tr-text">
-                <Typewriter
-                  text={reading.greeting}
-                  active
-                  skip={skipAll}
-                  onDone={() => dispatch({ type: 'section-done' })}
-                />
+          {messages.map((m, i) =>
+            m.role === 'user' ? (
+              <p key={i} className="tm tm-user">
+                {m.text}
               </p>
-              {reading.cards.map((c, i) => (
-                <div key={c.position} className="tr-section">
-                  {section >= i + 1 && (
-                    <h2 className="tr-head">
-                      {drawn[i]?.position.label} · {cardName(c.cardId, drawn[i]?.reversed ?? false)}
-                    </h2>
+            ) : (
+              <div key={i} className="tm tm-reader">
+                <ReaderAvatar size="small" />
+                <div className="tm-body">
+                  {m.text && <p className="tm-text">{m.text}</p>}
+                  {m.draw && <CardStrip draw={m.draw} animate={i === liveIndex} />}
+                  {m.after && <p className="tm-text">{m.after}</p>}
+                  {i === messages.length - 1 && replies.length > 0 && chips(replies, 'tarot-quick', 'Quick replies')}
+                  {busy && i === liveIndex && !m.text && !m.draw && <p className="tm-wait">The Seer considers…</p>}
+                  {busy && i === liveIndex && m.draw && !m.after && <p className="tm-wait">She studies the cards…</p>}
+                </div>
+              </div>
+            ),
+          )}
+
+          {errorInfo && (
+            <Alert
+              variant="default"
+              title={errorInfo.title}
+              iconLeft={<DitherIcon name="warning" size={16} />}
+              description={
+                <span className="tarot-alert-body">
+                  <span>{errorInfo.description}</span>
+                  {errorInfo.retry && (
+                    <Button variant="secondary" size="small" type="button" onClick={retry} disabled={busy}>
+                      Ask again
+                    </Button>
                   )}
-                  <p className="tr-text">
-                    <Typewriter
-                      text={c.text}
-                      active={section >= i + 1}
-                      skip={skipAll}
-                      onDone={() => dispatch({ type: 'section-done' })}
-                    />
-                  </p>
-                </div>
-              ))}
-              <p className="tr-text tr-synth">
-                <Typewriter
-                  text={reading.synthesis}
-                  active={section >= drawn.length + 1}
-                  skip={skipAll}
-                  onDone={() => dispatch({ type: 'section-done' })}
-                />
-              </p>
-              <p className="tr-text tr-farewell">
-                <Typewriter
-                  text={reading.farewell}
-                  active={section >= drawn.length + 2}
-                  skip={skipAll}
-                  onDone={() => dispatch({ type: 'section-done' })}
-                />
-              </p>
-              {/* Follow-up audience with the Reader, typed like the reading */}
-              {exchanges.map((e, i) => (
-                <div key={i} className="tr-section tr-chat">
-                  <p className="tr-asked">You ask: {e.question}</p>
-                  <p className="tr-text">
-                    <Typewriter text={e.reply} active skip={skipAll} />
-                  </p>
-                </div>
-              ))}
-              {status === 'reading' && !skipAll && (
-                <p className="tr-skiphint">tap the reading to reveal it all</p>
-              )}
-              <div ref={readingEndRef} />
-            </div>
+                </span>
+              }
+            />
           )}
 
-          {/* After the farewell: quiet session controls. Secondary/ghost on
-              purpose, so the chat bar's Ask keeps the only primary, and
-              "new reading" can never read as "re-ask my question". */}
-          {status === 'done' && (
-            <div className="tarot-actions">
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={() => dispatch({ type: 'reset' })}
-                disabled={cooldownLeft > 0}
-              >
-                {cooldownLeft > 0
-                  ? `The deck rests (${Math.ceil(cooldownLeft / 1000)}s)`
-                  : 'A new reading'}
-              </Button>
-              {ledger.length > 0 && (
-                <Button variant="ghost" type="button" onClick={openLedger}>
-                  Past readings
-                </Button>
-              )}
-            </div>
-          )}
+          {closed && <Divider variant="withText" text="This sitting has run its course" spacing="small" />}
+          <div ref={endRef} className="tarot-end" />
         </section>
       )}
 
-      {/* Footer chat bar: ask the Reader about the finished reading (the
-          replies land in the reading column above). DS Input + Button on
-          the ring-recipe plate. */}
-      {inParlor && status === 'done' && reading && (
-        <form
-          className="tarot-chatbar"
-          onSubmit={(e) => {
-            e.preventDefault()
-            ask()
-          }}
-        >
+      {/* composer: pinned above the dock; the footnote rides under it */}
+      {!showPast && (
+        <div className="tarot-chatbar">
           <div className="tarot-chatbar-in">
-            <Input
-              aria-label="Ask the Reader about your reading"
-              type="text"
-              value={chatMsg}
-              maxLength={CHAT_MESSAGE_MAX}
-              placeholder={
-                chatState === 'closed'
-                  ? 'The Reader has said what she will say.'
-                  : chatState === 'waiting'
-                    ? 'The Reader considers…'
-                    : 'Ask the Reader about your reading'
-              }
-              disabled={chatState !== 'open'}
-              onChange={(e) => setChatMsg(e.target.value)}
-            />
-            <Button variant="primary" type="submit" disabled={chatState !== 'open' || !chatMsg.trim()}>
-              Ask
-            </Button>
+            {closed ? (
+              <Button variant="primary" type="button" className="tarot-restart" onClick={newSitting}>
+                Begin a new sitting
+              </Button>
+            ) : (
+              <form
+                className="tarot-composer"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  send(draft)
+                }}
+              >
+                <Input
+                  ref={inputRef}
+                  aria-label="Message the Seer"
+                  type="text"
+                  value={draft}
+                  maxLength={USER_TEXT_MAX}
+                  placeholder={busy ? 'The Seer is speaking…' : 'Ask the Seer'}
+                  onChange={(e) => setDraft(e.target.value)}
+                />
+                <Button variant="primary" size="icon" type="submit" disabled={busy || !draft.trim()} aria-label="Send">
+                  <DitherIcon name="enter" size={16} />
+                </Button>
+              </form>
+            )}
+            <p className="tarot-foot">
+              {closed
+                ? `Up to ${USER_TURNS_MAX} questions per sitting. Start fresh any time.`
+                : 'For entertainment. Messages may be sent to an AI provider; saved only in this browser.'}
+            </p>
           </div>
-        </form>
+        </div>
       )}
     </div>
   )
