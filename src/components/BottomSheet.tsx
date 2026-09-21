@@ -14,6 +14,7 @@ import { BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds/compon
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
+import { inkColor } from '../game/avatarInks'
 import ChestSignal from './game/ChestSignal'
 import DitherIcon from './DitherIcon'
 import VillageIcon from './village/VillageIcon'
@@ -27,7 +28,7 @@ export default function BottomSheet({
   onClose: () => void
 }) {
   const location = useLocation()
-  const { level, award, name, avatarSeed, pendingLevels, chests } = useXp()
+  const { level, award, name, avatarSeed, avatarInk, pendingLevels, chests } = useXp()
   const displayLevel = level.level + 1
 
   const isActive = (path: string) =>
@@ -89,11 +90,13 @@ export default function BottomSheet({
             } Open character screen.`,
           }}
           className="sheet-char"
-          thumb={<PortraitPlate seed={avatarSeed} cell={2} tiny />}
+          thumb={<PortraitPlate seed={avatarSeed} cell={2} ink={inkColor(avatarInk)} tiny />}
           title={name}
           // the chest overlay owns the row's right side; the chevron only
           // returns when nothing waits there
-          titleSuffix={chests.length === 0 ? <span className="sheet-char-go">›</span> : undefined}
+          titleSuffix={
+            pendingLevels.length + chests.length === 0 ? <span className="sheet-char-go">›</span> : undefined
+          }
           description={
             // level line + the same mini XP readout as the game frame's
             // character strip (.xp-mini), so the sheet row reads level
@@ -107,7 +110,7 @@ export default function BottomSheet({
           }
         />
         {/* the waiting-chest art, centred on the row's far right */}
-        {chests.length > 0 && (
+        {pendingLevels.length + chests.length > 0 && (
           <span className="sheet-char-chest">
             <ChestSignal />
           </span>

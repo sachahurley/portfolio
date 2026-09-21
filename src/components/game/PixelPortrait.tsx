@@ -4,9 +4,10 @@
  *
  * The pool (AVATAR_TILES) is baked by scripts/bake-avatars.mjs: races with
  * distinct silhouettes, each in every class loadout. Figures render as a
- * single-ink silhouette in --fg, so they follow the active theme like the
- * rest of the site's 1-bit art. Existing saves keep their seed and simply
- * map onto a figure.
+ * single-ink silhouette: --fg by default, so they follow the active theme
+ * like the rest of the site's 1-bit art, or the visitor's chosen ink from
+ * the avatar palette (game/avatarInks). Existing saves keep their seed and
+ * simply map onto a figure.
  */
 
 import { TileBox } from '../TileSprite'
@@ -21,9 +22,12 @@ function avatarTile(seed: number): readonly [number, number, number, number] {
 export default function PixelPortrait({
   seed,
   cell = 4,
+  ink = 'var(--fg)',
   className,
 }: {
   seed: number
+  /** CSS color the silhouette is painted in. */
+  ink?: string
   /** Screen pixels per sheet pixel (4 = the site's standard art scale). */
   cell?: number
   className?: string
@@ -34,7 +38,7 @@ export default function PixelPortrait({
       x={x}
       y={y}
       scale={cell}
-      tint="var(--fg)"
+      tint={ink}
       className={className}
       // the baked shift centers the figure's ink in the tile box; purely
       // visual, so the layout box stays where the row put it

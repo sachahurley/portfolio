@@ -19,6 +19,7 @@ export default function PixelItem({
   base = 0,
   rarity,
   cell = 4,
+  tint,
   className,
 }: {
   kind: Slot | 'chest'
@@ -27,6 +28,8 @@ export default function PixelItem({
   rarity: Rarity
   /** Screen pixels per sheet pixel (3 pack, 4 slots and dialogs). */
   cell?: number
+  /** Overrides the rarity ink (the level chest wears --accent). */
+  tint?: string
   className?: string
 }) {
   const [x, y, dx, dy] = kind === 'chest' ? CHEST_TILE : (GEAR_TILES[kind][base] ?? GEAR_TILES[kind][0])
@@ -36,7 +39,7 @@ export default function PixelItem({
       x={x}
       y={y}
       scale={cell}
-      tint={RARITY_COLORS[rarity]}
+      tint={tint ?? RARITY_COLORS[rarity]}
       className={className}
       // the baked shift centers the glyph's ink in the tile box; purely
       // visual, so the layout box stays where the grid put it. Shifts come

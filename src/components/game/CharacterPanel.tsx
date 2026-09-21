@@ -1,19 +1,19 @@
 /**
  * CharacterPanel, the identity block of the character screen. Avatar
- * (click to open the picker: 8 procedural candidates + reroll), editable
+ * (click to open the appearance modal: figure + ink), editable
  * name (random RPG default; commits on blur or Enter), level + title + XP
- * bar, and the ▴ LEVEL UP badge that opens the celebration modal. Progress
+ * bar, and the level chest (an unclaimed level-up) that opens the
+ * celebration modal; the same chest also waits in the pack. Progress
  * saves automatically, so nothing here is a save button.
  */
 
 import { useState } from 'react'
 import { useXp } from '../../context/XpProvider'
-import { randomSeed } from '../../game/names'
-import PixelPortrait from './PixelPortrait'
+import { inkColor } from '../../game/avatarInks'
+import AvatarModal from './AvatarModal'
+import ChestSignal from './ChestSignal'
 import PortraitPlate from './PortraitPlate'
-import { Button, Input } from '@scorp-ds/components'
-
-const rollCandidates = () => Array.from({ length: 8 }, () => randomSeed())
+import { Input } from '@scorp-ds/components'
 
 export default function CharacterPanel() {
   const {
@@ -22,17 +22,11 @@ export default function CharacterPanel() {
     name,
     setName,
     avatarSeed,
-    setAvatarSeed,
+    avatarInk,
     pendingLevels,
     celebrateLevel,
   } = useXp()
   const [picking, setPicking] = useState(false)
-  const [candidates, setCandidates] = useState<number[]>([])
-
-  const togglePicker = () => {
-    if (!picking) setCandidates(rollCandidates())
-    setPicking(!picking)
-  }
 
   const commitName = (value: string) => {
     setName(value)
@@ -40,17 +34,30 @@ export default function CharacterPanel() {
 
   return (
     <section className="cs" aria-label="Character sheet">
-      <div className="gf-label">character</div>
+      <div className="cs-top">
+        <div className="gf-label">character</div>
+        {pendingLevels.length > 0 && (
+          <button
+            type="button"
+            className="cs-levelchest"
+            onClick={celebrateLevel}
+            aria-label="Level up: open your level chest to claim your gem"
+            title="Level up"
+          >
+            <ChestSignal tint="var(--accent)" />
+          </button>
+        )}
+      </div>
 
       <div className="cs-head">
         <button
           className="cs-avatarbtn"
-          onClick={togglePicker}
-          aria-expanded={picking}
-          aria-label="Change avatar"
-          title="Change avatar"
+          onClick={() => setPicking(true)}
+          aria-haspopup="dialog"
+          aria-label="Change appearance"
+          title="Change appearance"
         >
-          <PortraitPlate seed={avatarSeed} cell={4} />
+          <PortraitPlate seed={avatarSeed} cell={4} ink={inkColor(avatarInk)} />
         </button>
 
         <div className="cs-id">
@@ -82,42 +89,11 @@ export default function CharacterPanel() {
           </div>
           <div className="gf-xpnum">
             {level.need != null ? `${level.cur}/${level.need} XP` : `${xp} XP · max`}
-            {/* levelling is an XP event, so its call to action lives on the
-                XP line (and frees the name row for identity alone) */}
-            {pendingLevels.length > 0 && (
-              <Button
-                variant="primary"
-                size="small"
-                className="cs-levelup"
-                onClick={celebrateLevel}
-              >
-                ▴ Level up
-              </Button>
-            )}
           </div>
         </div>
       </div>
 
-      {picking && (
-        <div className="cs-picker" role="group" aria-label="Choose an avatar">
-          {candidates.map((s) => (
-            <button
-              key={s}
-              className="cs-cand"
-              onClick={() => {
-                setAvatarSeed(s)
-                setPicking(false)
-              }}
-              aria-label="Pick this avatar"
-            >
-              <PixelPortrait seed={s} cell={3} />
-            </button>
-          ))}
-          <Button variant="ghost" size="small"  onClick={() => setCandidates(rollCandidates())}>
-            ↻ Reroll
-          </Button>
-        </div>
-      )}
+      <AvatarModal isOpen={picking} onClose={() => setPicking(false)} />
     </section>
   )
 }

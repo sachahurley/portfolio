@@ -152,16 +152,14 @@ strong, b { font-weight: 400; }
 /* pressed into the stone: the notch sinks, keeping its centring transform
    (its own fast transition so the press never rides the sink timing) */
 .gf-tab:active { transform: translateY(2px); transition: transform .06s; }
-/* rewards-waiting pip on the menu notch (collapsed state only; Dock
-   unmounts it while the sheet is up): bone for a pending level claim,
-   accent when an unopened chest waits (the sheet row's chest art is the
-   answer to it). Centred ON the notch's top-right corner, half on the
+/* chest-waiting pip on the menu notch (collapsed state only; Dock
+   unmounts it while the sheet is up); the sheet row's chest art is the
+   answer to it. Centred ON the notch's top-right corner, half on the
    plate and half off; it sits on the holder, outside the clip-path. */
 .gf-tab-dot {
   position: absolute; top: -4px; right: -4px; width: 8px; height: 8px;
-  background: var(--rar-common); pointer-events: none;
+  background: var(--accent); pointer-events: none;
 }
-.gf-tab-dot.is-chest { background: var(--accent); }
 /* ---- pixel-RPG bottom sheet (desktop + mobile) ---- */
 /* Bayer-checker scrim (classic-Mac dither, kin to the welcome dissolve)
    instead of iOS blur: a black checkerboard at the site's 2px dither cell
@@ -688,12 +686,6 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   font-family: var(--mono); color: var(--fg); position: relative;
 }
 @media (hover: hover) { .gf-charstrip:hover { background: var(--bg); } }
-/* level-claim pip: the dock notch's dot recipe (one dot, one meaning);
-   an inline badge crushed the strip's narrow text column */
-.gf-cs-dot {
-  position: absolute; top: 10px; right: 10px; width: 8px; height: 8px;
-  background: var(--rar-common); pointer-events: none;
-}
 /* an unopened chest waits: the chest art itself, trailing the row (the
    sheet's character row wears the same asset via .sheet-char-chest) */
 .gf-cs-chest { flex: none; }
@@ -834,14 +826,29 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .cs-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 /* .cs-name retired: the rename field is the DS Input (quiet). */
 .cs-lvl { font-size: 12px; color: var(--body); }
-/* layout hook only (quiet by design: no pulse on persistent signals) */
-.cs-levelup { margin-left: 10px; vertical-align: middle; }
-.cs-picker {
-  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-  margin-top: 12px; padding: 12px; border: 1px solid var(--border); background: var(--hover);
-}
+/* section label + the level chest (an unclaimed level-up; the same chest
+   waits in the pack). The row owns the label's bottom margin; the fixed
+   height keeps the row from jumping when the chest comes and goes. */
+.cs-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 24px; margin-bottom: 12px; }
+.cs-top .gf-label { margin: 0; }
+.cs-levelchest { padding: 2px; background: none; border: 0; cursor: pointer; line-height: 0; }
+.cs-levelchest:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+@media (hover: hover) { .cs-levelchest:hover { background: var(--hover); } }
+/* avatar candidates (AvatarModal's figure grid); pressed = the worn figure */
 .cs-cand { padding: 3px; background: transparent; border: 1px solid var(--border); cursor: pointer; line-height: 0; }
 @media (hover: hover) { .cs-cand:hover { border-color: var(--accent); } }
+.cs-cand[aria-pressed='true'] { border-color: var(--accent); background: var(--hover); }
+/* AvatarModal: figure grid, reroll, then the ink swatches */
+.av-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.av-cand { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; }
+.av-reroll { margin-top: 8px; }
+.av-inklabel { margin-top: 20px; }
+.av-inks { display: flex; flex-wrap: wrap; gap: 8px; }
+.av-ink { padding: 3px; background: transparent; border: 1px solid var(--border); cursor: pointer; line-height: 0; }
+@media (hover: hover) { .av-ink:hover { border-color: var(--accent); } }
+.av-ink[aria-pressed='true'] { border-color: var(--accent); }
+.av-ink-fill { display: block; width: 28px; height: 28px; }
+.cs-cand:focus-visible, .av-ink:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 /* .cs-reroll retired: those text actions are the DS Button (ghost). */
 
 /* 13px sides align the contact text with the nav links' text column (the
@@ -955,6 +962,8 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   background: var(--hover); border: 0; clip-path: var(--notch4); cursor: pointer; padding: 0;
 }
 @media (hover: hover) { .ch-invbtn:hover { background: var(--surface-muted); } }
+/* level chest cell: ringed in the accent, like its art */
+.ch-levelwrap { background: var(--accent); }
 
 /* loot on a plate: the paperdoll/pack cell rebuilt for the dialogs (chest
    reveal, item card) via ItemPlate, so an item is the same size and wears
