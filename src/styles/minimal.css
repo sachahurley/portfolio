@@ -94,10 +94,17 @@ strong, b { font-weight: 400; }
    are notched. It sits ON the band (bottom rides the safe area, as the
    frame does) rather than floating, so there is no drop shadow. z-index
    clears the sheet (75) because the notch is also the sheet's close. */
-.gf-tab {
+/* the holder carries the fixed centring and the sink travel; the button
+   inside keeps the clip-path, so the corner pip (a holder sibling) can
+   straddle the notch edge without being sliced by the clip */
+.gf-tab-holder {
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  z-index: calc(var(--z-index-modal) + 1); display: flex; align-items: center; gap: 8px; /* dock: above the sheet */
+  z-index: calc(var(--z-index-modal) + 1); /* dock: above the sheet */
+  transition: transform .26s steps(5) .12s;
+}
+.gf-tab {
+  position: relative; display: flex; align-items: center; gap: 8px;
   font-family: var(--mono); font-size: 13px; line-height: 16px;
   border: 0; padding: 10px 16px 12px; cursor: pointer;
   /* isolation (not position) so the ring pseudo can sit at z-index -1
@@ -116,15 +123,16 @@ strong, b { font-weight: 400; }
     calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
     100% 100%, 0 100%
   );
-  /* the return from .is-sunk waits .12s so the sheet is mostly down
-     before the notch resurfaces from the band */
+  /* the return from .is-sunk (on the holder) waits .12s so the sheet is
+     mostly down before the notch resurfaces from the band; the button's
+     own transform transition serves the :active press */
   transition: color .12s, transform .26s steps(5) .12s;
 }
 /* sheet open: the notch sinks below the screen edge (its straight bottom
    already merges with the stonework, so it reads as diving into the band)
    while the sheet's own Close notch rises in its place. Stepped travel,
    like the toast, so the plate hops on the pixel grid. */
-.gf-tab.is-sunk {
+.gf-tab-holder.is-sunk {
   transform: translateX(-50%) translateY(calc(100% + 24px + env(safe-area-inset-bottom, 0px)));
   visibility: hidden; pointer-events: none;
   /* below the scrim and sheet while it sinks, so the rising sheet passes
@@ -143,13 +151,17 @@ strong, b { font-weight: 400; }
 @media (hover: hover) { .gf-tab:hover::before { background: var(--color-sepia-800); } }
 /* pressed into the stone: the notch sinks, keeping its centring transform
    (its own fast transition so the press never rides the sink timing) */
-.gf-tab:active { transform: translateX(-50%) translateY(2px); transition: transform .06s; }
-/* rewards-waiting pip on the menu notch: one dot, one meaning (a pending
-   level claim or an unopened chest waits on the character screen) */
+.gf-tab:active { transform: translateY(2px); transition: transform .06s; }
+/* rewards-waiting pip on the menu notch (collapsed state only; Dock
+   unmounts it while the sheet is up): bone for a pending level claim,
+   accent when an unopened chest waits (the sheet row's chest art is the
+   answer to it). Centred ON the notch's top-right corner, half on the
+   plate and half off; it sits on the holder, outside the clip-path. */
 .gf-tab-dot {
-  position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+  position: absolute; top: -4px; right: -4px; width: 8px; height: 8px;
   background: var(--rar-common); pointer-events: none;
 }
+.gf-tab-dot.is-chest { background: var(--accent); }
 /* ---- pixel-RPG bottom sheet (desktop + mobile) ---- */
 /* Bayer-checker scrim (classic-Mac dither, kin to the welcome dissolve)
    instead of iOS blur: a black checkerboard at the site's 2px dither cell
@@ -553,7 +565,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
     display: block; left: auto; right: 40px; bottom: 40px;
     width: min(440px, calc(100vw - 80px));
   }
-  .gf-tab { display: none; }
+  .gf-tab-holder { display: none; }
   /* collapsible side column: a drawer-pull tab grown out of the seam (the
      column's 2px left border) at mid-height — 18px wide so it covers the
      border behind it, corners notched on its outer (left) side only, so
@@ -676,11 +688,47 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   font-family: var(--mono); color: var(--fg); position: relative;
 }
 @media (hover: hover) { .gf-charstrip:hover { background: var(--bg); } }
-/* rewards-waiting pip: the dock notch's dot recipe (one dot, one meaning);
+/* level-claim pip: the dock notch's dot recipe (one dot, one meaning);
    an inline badge crushed the strip's narrow text column */
 .gf-cs-dot {
   position: absolute; top: 10px; right: 10px; width: 8px; height: 8px;
   background: var(--rar-common); pointer-events: none;
+}
+/* an unopened chest waits: the chest art itself, trailing the row (the
+   sheet's character row wears the same asset via .sheet-char-chest) */
+.gf-cs-chest { flex: none; }
+/* the sheet row's chest: a sibling overlay on the row's far right,
+   centred on the row (the holder is the positioned ancestor; the row's
+   own text column is transformed, which would hijack absolute
+   descendants); 14px matches the plate's inner inset */
+.sheet-char-holder { position: relative; }
+.sheet-char-chest {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  pointer-events: none;
+}
+/* ChestSignal: the village tappables' twin glints on the chest art
+   (villageKit renderScene bakes stars into canvas: a 14-frame cycle on
+   the 300ms beat — dot, 5px burst, dot, dark — two per item, half a
+   cycle apart, accent-inked). Rebuilt as CSS pixels at the chest's 2x
+   scale; step-end holds each frame crisp. */
+.chest-signal { position: relative; display: block; }
+.chest-glint {
+  position: absolute; width: 2px; height: 2px; background: var(--accent);
+  opacity: 0; pointer-events: none;
+  animation: chest-glint 4.2s step-end infinite;
+}
+.chest-glint-a { right: 0; top: -4px; }
+.chest-glint-b { left: 2px; top: 4px; animation-delay: -2.1s; }
+@keyframes chest-glint {
+  0%     { opacity: 1; box-shadow: none; }
+  7.15%  { opacity: 1; box-shadow: 2px 0 var(--accent), -2px 0 var(--accent), 0 2px var(--accent), 0 -2px var(--accent); }
+  14.3%  { opacity: 1; box-shadow: none; }
+  21.45% { opacity: 0; box-shadow: none; }
+}
+/* the village's reduced-motion beat never starts: one static dot */
+@media (prefers-reduced-motion: reduce) {
+  .chest-glint { animation: none; }
+  .chest-glint-a { opacity: 1; }
 }
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -711,7 +759,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .sheet-sep { margin-top: 16px; border-top-color: var(--border); }
 /* the seam after the character row hugs it (margin 0): the row's own 12px
    plate padding is the gap, matching the seam above for an even sandwich */
-.sheet-char + .sheet-sep { margin-top: 0; }
+.sheet-char-holder + .sheet-sep { margin-top: 0; }
 /* sheet: compact character row linking to /character (full sheet there) */
 /* LAYOUT hook only: the row itself is the DS ListRow (thumb + title +
    badge suffix); this seats the mini XP bar under the level line and

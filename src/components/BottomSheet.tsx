@@ -10,10 +10,11 @@
  */
 
 import { Link, useLocation } from 'react-router-dom'
-import { Badge, BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds/components'
+import { BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
+import ChestSignal from './game/ChestSignal'
 import DitherIcon from './DitherIcon'
 import VillageIcon from './village/VillageIcon'
 import { ArrowUpRight } from './icons'
@@ -67,27 +68,32 @@ export default function BottomSheet({
         <Divider spacing="none" className="sheet-sep" />
 
         {/* Compact character row (DS ListRow; the full sheet lives at
-            /character). .sheet-char is only the layout hook for the bar. */}
+            /character). .sheet-char is only the layout hook for the bar.
+            The holder exists for the chest overlay: the row's text column
+            carries a translateY nudge, and a transformed ancestor would
+            hijack the chest's absolute positioning. */}
+        <div className="sheet-char-holder">
         <ListRow
           as={Link}
           asProps={{
             to: '/character',
             onClick: onClose,
-            'aria-label': `Character: ${name}. Open character screen.`,
+            // waiting rewards live in the label (the visual signal is the
+            // chest overlay; the count itself never renders)
+            'aria-label': `Character: ${name}.${
+              pendingLevels.length + chests.length > 0
+                ? ` ${pendingLevels.length + chests.length} reward${
+                    pendingLevels.length + chests.length > 1 ? 's' : ''
+                  } waiting.`
+                : ''
+            } Open character screen.`,
           }}
           className="sheet-char"
           thumb={<PortraitPlate seed={avatarSeed} cell={2} tiny />}
           title={name}
-          titleSuffix={
-            // one quiet signal for all waiting rewards (claims + chests)
-            pendingLevels.length + chests.length > 0 ? (
-              <Badge variant="bone" size="small" caps>
-                ▴ {pendingLevels.length + chests.length} waiting
-              </Badge>
-            ) : (
-              <span className="sheet-char-go">›</span>
-            )
-          }
+          // the chest overlay owns the row's right side; the chevron only
+          // returns when nothing waits there
+          titleSuffix={chests.length === 0 ? <span className="sheet-char-go">›</span> : undefined}
           description={
             // level line + the same mini XP readout as the game frame's
             // character strip (.xp-mini), so the sheet row reads level
@@ -100,6 +106,13 @@ export default function BottomSheet({
             </>
           }
         />
+        {/* the waiting-chest art, centred on the row's far right */}
+        {chests.length > 0 && (
+          <span className="sheet-char-chest">
+            <ChestSignal />
+          </span>
+        )}
+        </div>
 
         <Divider spacing="none" className="sheet-sep" />
 

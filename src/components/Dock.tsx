@@ -17,25 +17,36 @@ import { useXp } from '../context/XpProvider'
 export default function Dock({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   // Any waiting reward (pending level claim or unopened chest) gets one
   // pip on the notch: mobile's single persistent signal beyond the
-  // transient toast. No level/chest distinction; one dot, one meaning.
+  // transient toast. A waiting chest turns it accent (the sheet row's
+  // chest art answers it); level-claims-only stays bone. Collapsed state
+  // only: the pip unmounts the moment the sheet opens, rather than just
+  // sinking with the notch.
   const { chests, pendingLevels } = useXp()
   const waiting = pendingLevels.length + chests.length > 0
+  const chestWaiting = chests.length > 0
 
   // Stays mounted while the sheet is open: the notch sinks into the stone
   // band (CSS .is-sunk) as the sheet rises carrying its twin, so the two
   // tabs read as one plate diving under and resurfacing. visibility:hidden
   // at the end of the sink keeps it out of the tab order.
+  // The holder owns the fixed centring and the sink: the button's
+  // clip-path clips every descendant, and the pip straddles the notch
+  // corner, so it must live OUTSIDE the clipped element as a sibling.
   return (
-    <button
-      className={`gf-tab${open ? ' is-sunk' : ''}`}
-      aria-haspopup="dialog"
-      aria-expanded={open}
-      aria-label={waiting ? 'Menu, rewards waiting' : undefined}
-      onClick={onToggle}
-    >
-      <DitherIcon name="home" size={16} className="ic-home" />
-      Menu
-      {waiting && <span className="gf-tab-dot" aria-hidden="true" />}
-    </button>
+    <div className={`gf-tab-holder${open ? ' is-sunk' : ''}`}>
+      <button
+        className="gf-tab"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={waiting ? 'Menu, rewards waiting' : undefined}
+        onClick={onToggle}
+      >
+        <DitherIcon name="home" size={16} className="ic-home" />
+        Menu
+      </button>
+      {!open && waiting && (
+        <span className={`gf-tab-dot${chestWaiting ? ' is-chest' : ''}`} aria-hidden="true" />
+      )}
+    </div>
   )
 }
