@@ -1,7 +1,7 @@
 import { jsxs as v, jsx as o, Fragment as te } from "react/jsx-runtime";
 import Ee, { forwardRef as O, useEffect as M, useId as me, useRef as W, useState as B, useImperativeHandle as lt, createContext as Fe, useContext as ze, useCallback as ct, useMemo as dt, useLayoutEffect as ut } from "react";
 import { useTheme as mt, ThemeProvider as ft } from "next-themes";
-const Ge = O(
+const Ve = O(
   ({
     variant: e = "primary",
     size: t = "medium",
@@ -160,7 +160,7 @@ const Ge = O(
     );
   }
 );
-Ge.displayName = "Button";
+Ve.displayName = "Button";
 const pt = O(
   ({
     size: e = "medium",
@@ -222,17 +222,17 @@ const pt = O(
   }
 );
 pt.displayName = "Input";
-function Ve(e) {
+function Ge(e) {
   var t, r, n = "";
   if (typeof e == "string" || typeof e == "number") n += e;
   else if (typeof e == "object") if (Array.isArray(e)) {
     var a = e.length;
-    for (t = 0; t < a; t++) e[t] && (r = Ve(e[t])) && (n && (n += " "), n += r);
+    for (t = 0; t < a; t++) e[t] && (r = Ge(e[t])) && (n && (n += " "), n += r);
   } else for (r in e) e[r] && (n && (n += " "), n += r);
   return n;
 }
 function bt() {
-  for (var e, t, r = 0, n = "", a = arguments.length; r < a; r++) (e = arguments[r]) && (t = Ve(e)) && (n && (n += " "), n += t);
+  for (var e, t, r = 0, n = "", a = arguments.length; r < a; r++) (e = arguments[r]) && (t = Ge(e)) && (n && (n += " "), n += t);
   return n;
 }
 const gt = (e, t) => {
@@ -242,14 +242,14 @@ const gt = (e, t) => {
   for (let n = 0; n < t.length; n++)
     r[e.length + n] = t[n];
   return r;
-}, ht = (e, t) => ({
+}, xt = (e, t) => ({
   classGroupId: e,
   validator: t
 }), Be = (e = /* @__PURE__ */ new Map(), t = null, r) => ({
   nextPart: e,
   validators: t,
   classGroupId: r
-}), ye = "-", Re = [], xt = "arbitrary..", vt = (e) => {
+}), ye = "-", Re = [], ht = "arbitrary..", vt = (e) => {
   const t = wt(e), {
     conflictingClassGroups: r,
     conflictingClassGroupModifiers: n
@@ -288,7 +288,7 @@ const gt = (e, t) => {
   }
 }, yt = (e) => e.slice(1, -1).indexOf(":") === -1 ? void 0 : (() => {
   const t = e.slice(1, -1), r = t.indexOf(":"), n = t.slice(0, r);
-  return n ? xt + n : void 0;
+  return n ? ht + n : void 0;
 })(), wt = (e) => {
   const {
     theme: t,
@@ -326,7 +326,7 @@ const gt = (e, t) => {
     Ie(e(n), t, r, n);
     return;
   }
-  t.validators === null && (t.validators = []), t.validators.push(ht(r, e));
+  t.validators === null && (t.validators = []), t.validators.push(xt(r, e));
 }, zt = (e, t, r, n) => {
   const a = Object.entries(e), s = a.length;
   for (let i = 0; i < s; i++) {
@@ -509,12 +509,12 @@ const gt = (e, t) => {
 }, Lt = [], L = (e) => {
   const t = (r) => r[e] || Lt;
   return t.isThemeGetter = !0, t;
-}, Xe = /^\[(?:(\w[\w-]*):)?(.+)\]$/i, He = /^\((?:(\w[\w-]*):)?(.+)\)$/i, Mt = /^\d+(?:\.\d+)?\/\d+(?:\.\d+)?$/, Ot = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/, Ft = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/, Gt = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/, Vt = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/, Bt = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/, Q = (e) => Mt.test(e), S = (e) => !!e && !Number.isNaN(Number(e)), ee = (e) => !!e && Number.isInteger(Number(e)), ke = (e) => e.endsWith("%") && S(e.slice(0, -1)), Y = (e) => Ot.test(e), Ye = () => !0, Ut = (e) => (
+}, Xe = /^\[(?:(\w[\w-]*):)?(.+)\]$/i, He = /^\((?:(\w[\w-]*):)?(.+)\)$/i, Mt = /^\d+(?:\.\d+)?\/\d+(?:\.\d+)?$/, Ot = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/, Ft = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/, Vt = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/, Gt = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/, Bt = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/, Q = (e) => Mt.test(e), S = (e) => !!e && !Number.isNaN(Number(e)), ee = (e) => !!e && Number.isInteger(Number(e)), ke = (e) => e.endsWith("%") && S(e.slice(0, -1)), Y = (e) => Ot.test(e), Ye = () => !0, Ut = (e) => (
   // `colorFunctionRegex` check is necessary because color functions can have percentages in them which which would be incorrectly classified as lengths.
   // For example, `hsl(0 0% 0%)` would be classified as a length without this check.
   // I could also use lookbehind assertion in `lengthUnitRegex` but that isn't supported widely enough.
-  Ft.test(e) && !Gt.test(e)
-), Te = () => !1, Wt = (e) => Vt.test(e), qt = (e) => Bt.test(e), Xt = (e) => !f(e) && !p(e), Ht = (e) => re(e, Ze, Te), f = (e) => Xe.test(e), oe = (e) => re(e, Qe, Ut), Pe = (e) => re(e, rr, S), Yt = (e) => re(e, tt, Ye), Kt = (e) => re(e, et, Te), De = (e) => re(e, Ke, Te), Jt = (e) => re(e, Je, qt), ge = (e) => re(e, rt, Wt), p = (e) => He.test(e), ue = (e) => ae(e, Qe), Zt = (e) => ae(e, et), Le = (e) => ae(e, Ke), Qt = (e) => ae(e, Ze), er = (e) => ae(e, Je), he = (e) => ae(e, rt, !0), tr = (e) => ae(e, tt, !0), re = (e, t, r) => {
+  Ft.test(e) && !Vt.test(e)
+), Te = () => !1, Wt = (e) => Gt.test(e), qt = (e) => Bt.test(e), Xt = (e) => !f(e) && !p(e), Ht = (e) => re(e, Ze, Te), f = (e) => Xe.test(e), oe = (e) => re(e, Qe, Ut), Pe = (e) => re(e, rr, S), Yt = (e) => re(e, tt, Ye), Kt = (e) => re(e, et, Te), De = (e) => re(e, Ke, Te), Jt = (e) => re(e, Je, qt), ge = (e) => re(e, rt, Wt), p = (e) => He.test(e), ue = (e) => ae(e, Qe), Zt = (e) => ae(e, et), Le = (e) => ae(e, Ke), Qt = (e) => ae(e, Ze), er = (e) => ae(e, Je), xe = (e) => ae(e, rt, !0), tr = (e) => ae(e, tt, !0), re = (e, t, r) => {
   const n = Xe.exec(e);
   return n ? n[1] ? t(n[1]) : r(n[2]) : !1;
 }, ae = (e, t, r = !1) => {
@@ -541,7 +541,7 @@ const gt = (e, t) => {
     "left-bottom"
   ], z = () => [...I(), p, f], j = () => ["auto", "hidden", "clip", "visible", "scroll"], E = () => ["auto", "contain", "none"], b = () => [p, f, l], D = () => [Q, "full", "auto", ...b()], se = () => [ee, "none", "subgrid", p, f], X = () => ["auto", {
     span: ["full", ee, p, f]
-  }, ee, p, f], K = () => [ee, "auto", p, f], fe = () => ["auto", "min", "max", "fr", p, f], ie = () => ["start", "end", "center", "between", "around", "evenly", "stretch", "baseline", "center-safe", "end-safe"], q = () => ["start", "end", "center", "stretch", "center-safe", "end-safe"], V = () => ["auto", ...b()], J = () => [Q, "auto", "full", "dvw", "dvh", "lvw", "lvh", "svw", "svh", "min", "max", "fit", ...b()], H = () => [Q, "screen", "full", "dvw", "lvw", "svw", "min", "max", "fit", ...b()], le = () => [Q, "screen", "full", "lh", "dvh", "lvh", "svh", "min", "max", "fit", ...b()], h = () => [e, p, f], ce = () => [...I(), Le, De, {
+  }, ee, p, f], K = () => [ee, "auto", p, f], fe = () => ["auto", "min", "max", "fr", p, f], ie = () => ["start", "end", "center", "between", "around", "evenly", "stretch", "baseline", "center-safe", "end-safe"], q = () => ["start", "end", "center", "stretch", "center-safe", "end-safe"], G = () => ["auto", ...b()], J = () => [Q, "auto", "full", "dvw", "dvh", "lvw", "lvh", "svw", "svh", "min", "max", "fit", ...b()], H = () => [Q, "screen", "full", "dvw", "lvw", "svw", "min", "max", "fit", ...b()], le = () => [Q, "screen", "full", "lh", "dvh", "lvh", "svh", "min", "max", "fit", ...b()], h = () => [e, p, f], ce = () => [...I(), Le, De, {
     position: [p, f]
   }], de = () => ["no-repeat", {
     repeat: ["", "x", "y", "space", "round"]
@@ -1136,77 +1136,77 @@ const gt = (e, t) => {
        * @see https://tailwindcss.com/docs/margin
        */
       m: [{
-        m: V()
+        m: G()
       }],
       /**
        * Margin Inline
        * @see https://tailwindcss.com/docs/margin
        */
       mx: [{
-        mx: V()
+        mx: G()
       }],
       /**
        * Margin Block
        * @see https://tailwindcss.com/docs/margin
        */
       my: [{
-        my: V()
+        my: G()
       }],
       /**
        * Margin Inline Start
        * @see https://tailwindcss.com/docs/margin
        */
       ms: [{
-        ms: V()
+        ms: G()
       }],
       /**
        * Margin Inline End
        * @see https://tailwindcss.com/docs/margin
        */
       me: [{
-        me: V()
+        me: G()
       }],
       /**
        * Margin Block Start
        * @see https://tailwindcss.com/docs/margin
        */
       mbs: [{
-        mbs: V()
+        mbs: G()
       }],
       /**
        * Margin Block End
        * @see https://tailwindcss.com/docs/margin
        */
       mbe: [{
-        mbe: V()
+        mbe: G()
       }],
       /**
        * Margin Top
        * @see https://tailwindcss.com/docs/margin
        */
       mt: [{
-        mt: V()
+        mt: G()
       }],
       /**
        * Margin Right
        * @see https://tailwindcss.com/docs/margin
        */
       mr: [{
-        mr: V()
+        mr: G()
       }],
       /**
        * Margin Bottom
        * @see https://tailwindcss.com/docs/margin
        */
       mb: [{
-        mb: V()
+        mb: G()
       }],
       /**
        * Margin Left
        * @see https://tailwindcss.com/docs/margin
        */
       ml: [{
-        ml: V()
+        ml: G()
       }],
       /**
        * Space Between X
@@ -2043,7 +2043,7 @@ const gt = (e, t) => {
           "",
           "none",
           u,
-          he,
+          xe,
           ge
         ]
       }],
@@ -2059,7 +2059,7 @@ const gt = (e, t) => {
        * @see https://tailwindcss.com/docs/box-shadow#adding-an-inset-shadow
        */
       "inset-shadow": [{
-        "inset-shadow": ["none", m, he, ge]
+        "inset-shadow": ["none", m, xe, ge]
       }],
       /**
        * Inset Box Shadow Color
@@ -2126,7 +2126,7 @@ const gt = (e, t) => {
        * @see https://tailwindcss.com/docs/text-shadow
        */
       "text-shadow": [{
-        "text-shadow": ["none", x, he, ge]
+        "text-shadow": ["none", x, xe, ge]
       }],
       /**
        * Text Shadow Color
@@ -2399,7 +2399,7 @@ const gt = (e, t) => {
           "",
           "none",
           w,
-          he,
+          xe,
           ge
         ]
       }],
@@ -3150,7 +3150,7 @@ const gt = (e, t) => {
     orderSensitiveModifiers: ["*", "**", "after", "backdrop", "before", "details-content", "file", "first-letter", "first-line", "marker", "placeholder", "selection"]
   };
 }, or = /* @__PURE__ */ Dt(nr);
-function G(...e) {
+function V(...e) {
   return or(bt(e));
 }
 const Me = {
@@ -3267,7 +3267,7 @@ const Me = {
   return /* @__PURE__ */ o(
     "span",
     {
-      className: G(
+      className: V(
         "inline-flex items-center justify-center font-mono leading-none select-none",
         a,
         r
@@ -3322,7 +3322,7 @@ function Er({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, wi
         /* @__PURE__ */ v("div", { className: "flex items-center justify-between px-6 py-5 border-b-[0.5px] border-solid border-[var(--surface-container-stroke)]", children: [
           /* @__PURE__ */ o("h2", { className: "text-base font-mono text-[var(--text-primary)] font-medium flex-1 min-w-0 truncate", children: r }),
           /* @__PURE__ */ o(
-            Ge,
+            Ve,
             {
               variant: "secondary",
               size: "small",
@@ -3408,19 +3408,20 @@ function _r({
   variant: e = "default",
   size: t = "medium",
   caps: r = !1,
-  children: n,
-  iconLeft: a,
-  onClose: s,
-  className: i = ""
+  dashed: n = !1,
+  children: a,
+  iconLeft: s,
+  onClose: i,
+  className: c = ""
 }) {
-  const c = {
+  const l = {
     small: "h-5 px-2 py-1 text-xs",
     // h-5 = 20px, px-2 = 8px, text-xs = 12px
     medium: "h-6 px-2.5 py-1 text-xs",
     // h-6 = 24px, px-2.5 = 10px, text-xs = 12px
     large: "h-7 px-3 py-1.5 text-sm"
     // h-7 = 28px, px-3 = 12px, text-sm = 14px
-  }, l = {
+  }, d = {
     default: `
       bg-[var(--surface-muted)]
       text-secondary-800 dark:text-secondary-200
@@ -3451,7 +3452,15 @@ function _r({
     bone: `
       bg-secondary-500 text-secondary-950
     `
-  }, d = {
+  }, u = {
+    default: "border-current text-secondary-800 dark:text-secondary-200",
+    primary: "border-current text-primary-800 dark:text-primary-300",
+    success: "border-current text-success-800 dark:text-success-300",
+    warning: "border-current text-warning-800 dark:text-warning-300",
+    error: "border-current text-error-800 dark:text-error-300",
+    info: "border-current text-info-800 dark:text-info-300",
+    bone: "border-secondary-500 text-secondary-800 dark:text-secondary-200"
+  }, m = {
     small: "w-3 h-3",
     // 12px
     medium: "w-3.5 h-3.5",
@@ -3465,21 +3474,20 @@ function _r({
       className: `
         inline-flex items-center gap-1.5
         font-mono font-medium
-        plate-round
-        ${c[t]}
-        ${l[e]}
+        ${n ? `rounded-none border border-dashed bg-transparent ${u[e]}` : `plate-round ${d[e]}`}
+        ${l[t]}
         ${r ? "uppercase [letter-spacing:.08em]" : ""}
-        ${i}
+        ${c}
       `,
       children: [
-        a && /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center ${d[t]} flex-shrink-0`, children: a }),
-        /* @__PURE__ */ o("span", { className: "inline-flex items-center", children: n }),
-        s && /* @__PURE__ */ o(
+        s && /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center ${m[t]} flex-shrink-0`, children: s }),
+        /* @__PURE__ */ o("span", { className: "inline-flex items-center", children: a }),
+        i && /* @__PURE__ */ o(
           "button",
           {
             type: "button",
-            onClick: (u) => {
-              u.stopPropagation(), s();
+            onClick: (x) => {
+              x.stopPropagation(), i();
             },
             className: `
             inline-flex items-center justify-center
@@ -3904,7 +3912,7 @@ const sr = O(function({
     n || (I(!C), C || j(-1));
   }, q = () => {
     I(!1), j(-1);
-  }, V = (R) => {
+  }, G = (R) => {
     i === void 0 && b(R), X.current && (X.current.value = R), l && l({
       target: { value: R, name: d },
       currentTarget: { value: R, name: d }
@@ -3950,7 +3958,7 @@ const sr = O(function({
           break;
         case "Enter":
         case " ":
-          T.preventDefault(), P >= 0 && P < A.length && V(A[P].value);
+          T.preventDefault(), P >= 0 && P < A.length && G(A[P].value);
           break;
       }
     }
@@ -4074,7 +4082,7 @@ const sr = O(function({
                   role: "option",
                   "aria-selected": P,
                   disabled: A,
-                  onClick: () => !A && V(R.value),
+                  onClick: () => !A && G(R.value),
                   className: `
                   w-full flex items-center gap-2
                   px-4 py-3
@@ -4657,7 +4665,7 @@ function Lr({
     )
   ] });
 }
-const xe = "text-secondary-700 dark:text-secondary-600", ve = "text-secondary-800 dark:text-secondary-500", ur = {
+const he = "text-secondary-700 dark:text-secondary-600", ve = "text-secondary-800 dark:text-secondary-500", ur = {
   background: "repeating-linear-gradient(45deg, var(--surface-subtle), var(--surface-subtle) 8px, var(--surface-muted) 8px, var(--surface-muted) 16px)"
 }, at = (e) => e === "wide" ? " [--csb-bw:min(calc(100%+240px),calc(100cqw-48px))] w-[var(--csb-bw)] ml-[calc((100%-var(--csb-bw))/2)]" : e === "full" ? " [--csb-bw:calc(100cqw-48px)] w-[var(--csb-bw)] ml-[calc((100%-var(--csb-bw))/2)]" : "";
 function Ne({
@@ -4673,7 +4681,7 @@ function Ne({
         style: { aspectRatio: e ?? "16 / 9", ...ur }
       }
     ) }),
-    t && /* @__PURE__ */ o("figcaption", { className: `mt-2 text-xs ${xe}`, children: t })
+    t && /* @__PURE__ */ o("figcaption", { className: `mt-2 text-xs ${he}`, children: t })
   ] });
 }
 function $e({ title: e, text: t }) {
@@ -4687,12 +4695,12 @@ function mr({ b: e }) {
   switch (e.type) {
     case "meta":
       return /* @__PURE__ */ o("dl", { className: "mb-11 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(130px,1fr))]", children: e.items.map((n) => /* @__PURE__ */ v("div", { children: [
-        /* @__PURE__ */ o("dt", { className: `text-xs uppercase tracking-[0.08em] ${xe}`, children: n.label }),
+        /* @__PURE__ */ o("dt", { className: `text-xs uppercase tracking-[0.08em] ${he}`, children: n.label }),
         /* @__PURE__ */ o("dd", { className: `m-0 mt-1 text-sm leading-normal ${ve}`, children: n.value })
       ] }, n.label)) });
     case "headline":
       return /* @__PURE__ */ v("header", { className: "mb-7 mt-16 first:mt-0 sm:mt-24 sm:first:mt-0", children: [
-        e.kicker && /* @__PURE__ */ o("div", { className: `text-xs first-letter:uppercase ${xe}`, children: e.kicker }),
+        e.kicker && /* @__PURE__ */ o("div", { className: `text-xs first-letter:uppercase ${he}`, children: e.kicker }),
         /* @__PURE__ */ o("h2", { className: "mt-2 text-xl text-[var(--text-primary)]", children: e.title }),
         e.text && /* @__PURE__ */ o("p", { className: `mt-3 text-base leading-relaxed ${ve}`, children: e.text })
       ] });
@@ -4720,7 +4728,7 @@ function mr({ b: e }) {
           /* @__PURE__ */ o(ar, { size: "medium", src: e.image, alt: "" }),
           /* @__PURE__ */ v("span", { children: [
             /* @__PURE__ */ o("span", { className: "block text-[var(--text-primary)]", children: e.name }),
-            e.role && /* @__PURE__ */ o("span", { className: `block text-xs ${xe}`, children: e.role })
+            e.role && /* @__PURE__ */ o("span", { className: `block text-xs ${he}`, children: e.role })
           ] })
         ] })
       ] });
@@ -4775,7 +4783,7 @@ const fr = O(function({ meta: t, title: r, description: n, titleSuffix: a, thumb
 });
 fr.displayName = "ListRow";
 const pr = O(function({ variant: t = "inline", external: r = !1, className: n = "", children: a, ...s }, i) {
-  const c = G(
+  const c = V(
     "font-mono text-[var(--accent)] transition-colors [transition-duration:var(--duration-fast)] hover:text-[var(--text-link-hover)]",
     "focus:outline-none focus-visible:[outline:var(--focus-ring-width)_solid_var(--focus-ring-primary)] focus-visible:[outline-offset:var(--focus-ring-offset)]",
     t === "inline" ? "underline underline-offset-2" : "no-underline hover:underline focus-visible:underline",
@@ -4880,7 +4888,7 @@ function Fr({ isOpen: e, onClose: t, ariaLabel: r, children: n }) {
     )
   ] }) : null;
 }
-function Gr() {
+function Vr() {
   const { theme: e, setTheme: t } = mt(), [r, n] = B(!1);
   if (M(() => {
     n(!0);
@@ -4913,7 +4921,7 @@ function Ce(e) {
     throw new Error(`[@scorp-ds/components] ${e} must be used inside <Tabs>.`);
   return t;
 }
-function Vr({
+function Gr({
   value: e,
   defaultValue: t,
   onValueChange: r,
@@ -4935,7 +4943,7 @@ function Vr({
     }),
     [l, m, d, s]
   );
-  return /* @__PURE__ */ o(st.Provider, { value: x, children: /* @__PURE__ */ o("div", { className: G("w-full", a), children: n }) });
+  return /* @__PURE__ */ o(st.Provider, { value: x, children: /* @__PURE__ */ o("div", { className: V("w-full", a), children: n }) });
 }
 function gr(e) {
   const t = [];
@@ -4947,7 +4955,7 @@ function gr(e) {
     }
   }), t;
 }
-function hr({
+function xr({
   children: e,
   className: t,
   "aria-label": r,
@@ -4965,7 +4973,7 @@ function hr({
       role: "tablist",
       "aria-label": r,
       "aria-labelledby": n,
-      className: G(
+      className: V(
         "flex flex-wrap gap-0 border-b-[0.5px] border-solid border-[var(--surface-container-stroke)]",
         t
       ),
@@ -4973,8 +4981,8 @@ function hr({
     }
   );
 }
-hr.displayName = "TabsList";
-const xr = O(function({ value: t, children: r, className: n, disabled: a, onKeyDown: s, onClick: i, type: c = "button", ...l }, d) {
+xr.displayName = "TabsList";
+const hr = O(function({ value: t, children: r, className: n, disabled: a, onKeyDown: s, onClick: i, type: c = "button", ...l }, d) {
   const { value: u, onValueChange: m, baseId: x, listValuesRef: w } = Ce("TabsTrigger"), k = u === t, N = `${x}-tab-${t}`, g = `${x}-panel-${t}`, $ = (I) => {
     m(I), requestAnimationFrame(() => {
       var z;
@@ -5016,7 +5024,7 @@ const xr = O(function({ value: t, children: r, className: n, disabled: a, onKeyD
       "aria-controls": g,
       tabIndex: k ? 0 : -1,
       disabled: a,
-      className: G(
+      className: V(
         "-mb-px rounded-none border-b-2 px-4 py-2 font-mono text-sm transition-colors [transition-duration:var(--duration-normal)]",
         k ? "border-[var(--button-primary-background)] bg-transparent text-[var(--text-primary)]" : "border-transparent text-secondary-700 hover:text-[var(--text-primary)] dark:text-secondary-300",
         a && "cursor-not-allowed opacity-50",
@@ -5031,7 +5039,7 @@ const xr = O(function({ value: t, children: r, className: n, disabled: a, onKeyD
     }
   );
 });
-xr.displayName = "TabsTrigger";
+hr.displayName = "TabsTrigger";
 function vr({ value: e, children: t, className: r, forceMount: n = !1 }) {
   const { value: a, baseId: s } = Ce("TabsContent"), i = a === e, c = `${s}-tab-${e}`, l = `${s}-panel-${e}`;
   return !n && !i ? null : !i && n ? /* @__PURE__ */ o(
@@ -5041,7 +5049,7 @@ function vr({ value: e, children: t, className: r, forceMount: n = !1 }) {
       role: "tabpanel",
       "aria-labelledby": c,
       hidden: !0,
-      className: G("p-4 font-mono outline-none", r),
+      className: V("p-4 font-mono outline-none", r),
       children: t
     }
   ) : /* @__PURE__ */ o(
@@ -5051,7 +5059,7 @@ function vr({ value: e, children: t, className: r, forceMount: n = !1 }) {
       role: "tabpanel",
       "aria-labelledby": c,
       tabIndex: 0,
-      className: G(
+      className: V(
         "p-4 font-mono outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--focus-offset-color)]",
         r
       ),
@@ -5072,7 +5080,7 @@ const it = {
     "table",
     {
       ref: c,
-      className: G(
+      className: V(
         "w-full border-collapse font-mono text-sm text-[var(--text-primary)]",
         r && "[&_tbody_tr:nth-child(even)]:bg-[var(--surface-subtle)]",
         t
@@ -5089,7 +5097,7 @@ const wr = O(function({ className: t, ...r }, n) {
     "thead",
     {
       ref: n,
-      className: G(
+      className: V(
         "border-b-[0.5px] border-solid border-[var(--surface-container-stroke)] bg-[var(--surface-subtle)]",
         t
       ),
@@ -5099,7 +5107,7 @@ const wr = O(function({ className: t, ...r }, n) {
 });
 wr.displayName = "TableHeader";
 const kr = O(function({ className: t, ...r }, n) {
-  return /* @__PURE__ */ o("tbody", { ref: n, className: G(t), ...r });
+  return /* @__PURE__ */ o("tbody", { ref: n, className: V(t), ...r });
 });
 kr.displayName = "TableBody";
 const Nr = O(function({ className: t, ...r }, n) {
@@ -5107,7 +5115,7 @@ const Nr = O(function({ className: t, ...r }, n) {
     "tfoot",
     {
       ref: n,
-      className: G(
+      className: V(
         "border-t-[0.5px] border-solid border-[var(--surface-container-stroke)] bg-[var(--surface-subtle)]",
         t
       ),
@@ -5121,7 +5129,7 @@ const $r = O(function({ className: t, ...r }, n) {
     "tr",
     {
       ref: n,
-      className: G(
+      className: V(
         "border-b-[0.5px] border-solid border-[var(--surface-container-stroke)] transition-colors [transition-duration:var(--duration-normal)]",
         t
       ),
@@ -5137,7 +5145,7 @@ const Sr = O(function({ className: t, scope: r = "col", ...n }, a) {
     {
       ref: a,
       scope: r,
-      className: G(
+      className: V(
         it[s],
         "text-left font-semibold text-[var(--text-primary)]",
         t
@@ -5153,7 +5161,7 @@ const zr = O(function({ className: t, ...r }, n) {
     "td",
     {
       ref: n,
-      className: G(
+      className: V(
         it[a],
         "align-middle text-secondary-800 dark:text-secondary-200",
         t
@@ -5176,7 +5184,7 @@ function Br({ children: e, gap: t = "4", className: r, axis: n = "vertical" }) {
   return /* @__PURE__ */ o(
     "div",
     {
-      className: G(
+      className: V(
         "flex",
         n === "vertical" ? "flex-col" : "flex-row flex-wrap items-center",
         Ir[t],
@@ -5204,7 +5212,7 @@ export {
   ar as Avatar,
   _r as Badge,
   Fr as BottomSheet,
-  Ge as Button,
+  Ve as Button,
   Rr as Card,
   Mr as CaseStudyBlocks,
   ir as Checkbox,
@@ -5227,17 +5235,17 @@ export {
   Sr as TableHead,
   wr as TableHeader,
   $r as TableRow,
-  Vr as Tabs,
+  Gr as Tabs,
   vr as TabsContent,
-  hr as TabsList,
-  xr as TabsTrigger,
+  xr as TabsList,
+  hr as TabsTrigger,
   dr as Textarea,
   Ur as ThemeProvider,
-  Gr as ThemeToggle,
+  Vr as ThemeToggle,
   br as Toast,
   Or as Toaster,
   Dr as Tooltip,
   nt as TuiIcon,
-  G as cn
+  V as cn
 };
 //# sourceMappingURL=index.esm.js.map

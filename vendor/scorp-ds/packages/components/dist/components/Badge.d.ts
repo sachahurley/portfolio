@@ -25,6 +25,10 @@
  * - Icon support (iconLeft prop)
  * - caps: uppercase eyebrow voice (uppercase + .08em tracking) for state
  *   chips ("EQUIPPED", "LEVEL UP") without per-site className overrides
+ * - dashed: the not-yet-real voice — transparent fill with a dashed
+ *   hairline for placeholders, empty slots, and free tiers ("FREE").
+ *   Composes with any variant; the dash rides the variant's text color,
+ *   except bone whose dash stays theme-stable sepia-500.
  * - Full light/dark theme support
  */
 import { type ReactNode } from "react";
@@ -33,6 +37,13 @@ export interface BadgeProps {
     size?: "small" | "medium" | "large";
     /** Uppercase eyebrow voice: uppercase text with .08em tracking. */
     caps?: boolean;
+    /**
+     * Not-yet-real voice: transparent fill with a 1px dashed border in the
+     * variant's text color, for placeholders, empty slots, and free tiers.
+     * Dashed chips drop the plate clip for sharp corners (the notched clip
+     * would slice the dashes).
+     */
+    dashed?: boolean;
     children: ReactNode;
     iconLeft?: ReactNode;
     onClose?: () => void;
@@ -48,5 +59,5 @@ export interface BadgeProps {
  * @param onClose - Optional callback when close button is clicked
  * @param className - Additional CSS classes
  */
-export declare function Badge({ variant, size, caps, children, iconLeft, onClose, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
+export declare function Badge({ variant, size, caps, dashed, children, iconLeft, onClose, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Badge.d.ts.map
