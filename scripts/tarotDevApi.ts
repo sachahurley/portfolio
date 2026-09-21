@@ -2,7 +2,7 @@
  * Dev-only /api/tarot-chat, so `npm run dev` exercises the real streaming
  * chat without `vercel dev`. Serves the exact handler the deployed function
  * uses (api/_lib/chat.ts). Put ANTHROPIC_API_KEY in .env.local; without it
- * dev falls back to the canned Reader in scripts/tarotDevMock.ts.
+ * the templated Seer answers, exactly as in production.
  */
 
 import type { Connect, Plugin } from 'vite'
@@ -55,11 +55,7 @@ export function tarotDevApi(): Plugin {
 
       server.middlewares.use(
         '/api/tarot-chat',
-        serve('/api/tarot-chat', async () =>
-          process.env.ANTHROPIC_API_KEY
-            ? (await import('../api/_lib/chat')).handleTarotChat
-            : (await import('./tarotDevMock')).handleMockChat,
-        ),
+        serve('/api/tarot-chat', async () => (await import('../api/_lib/chat')).handleTarotChat),
       )
     },
   }

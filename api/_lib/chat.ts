@@ -9,6 +9,8 @@
  *
  * Cost ceilings: the feature flag, the Anthropic workspace spend limit (the
  * real one), per-IP + per-instance limits, input caps, and max_tokens.
+ * Without ANTHROPIC_API_KEY the templated Seer (./templated.ts) answers
+ * instead, at no cost.
  */
 
 import Anthropic from '@anthropic-ai/sdk'
@@ -27,6 +29,7 @@ import { CARD_BY_ID, SPREADS } from '../../src/data/tarot'
 import { drawSpread } from '../../src/lib/tarot/draw'
 import { makeLimiter } from './limits'
 import { rejectCrossSite, tarotApiEnabled } from './guard'
+import { templatedReply } from './templated'
 
 const MODEL = () => process.env.TAROT_MODEL ?? 'claude-haiku-4-5'
 const MAX_BODY = 64 * 1024
@@ -161,7 +164,6 @@ export async function handleTarotChat(request: Request): Promise<Response> {
   if (request.method !== 'POST') return json(405, { error: 'method' })
   const crossSite = rejectCrossSite(request)
   if (crossSite) return crossSite
-  if (!process.env.ANTHROPIC_API_KEY) return json(503, { error: 'unavailable' })
 
   let body: unknown
   try {
@@ -182,6 +184,9 @@ export async function handleTarotChat(request: Request): Promise<Response> {
   // Soft conversation cap: the client counts the whole sitting and sends it.
   const turns = Number(request.headers.get('x-tarot-turn') ?? 0)
   if (turns > USER_TURNS_MAX) return json(403, { error: 'cap' })
+
+  // No key connected yet: the templated Seer answers (free, so no rate limit).
+  if (!process.env.ANTHROPIC_API_KEY) return templatedReply(history)
 
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   if (rateLimited(ip)) return json(429, { error: 'rate_limited' })
