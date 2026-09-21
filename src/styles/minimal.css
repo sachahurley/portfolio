@@ -1353,7 +1353,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 /* thread */
 .tarot-thread {
   width: 100%; max-width: 720px; padding-top: 28px;
-  display: flex; flex-direction: column; gap: 24px;
+  flex: 1; display: flex; flex-direction: column; gap: 24px;
 }
 .tm { margin: 0; font-size: 14px; line-height: 22px; color: var(--body); }
 .tm-user {
@@ -1375,9 +1375,13 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tarot-end { scroll-margin-bottom: 190px; }
 
 /* empty state: a fan of card backs, the prompt, three starters */
+/* fills the thread, which fills the space between the header and the
+   composer, so the empty state sits centered in it. The page's bottom
+   padding reserves more than the composer covers; padding-top evens that
+   out so the gaps above and below the content match. */
 .tarot-empty {
-  min-height: 46vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 24px; text-align: center;
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 24px; text-align: center; padding-top: 52px;
 }
 .tarot-fan { display: flex; gap: 6px; }
 .tarot-fan-card.f0 { transform: rotate(-8deg) translateY(4px); }
@@ -1456,5 +1460,6 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   .tarot-cards { gap: 10px; }
   .tc-card { width: 75px; height: 114px; }
   .tarot-chatbar { width: calc(100% - 32px); bottom: 56px; }
+  .tarot-empty { padding-top: 34px; }
   .tarot-empty-title { font-size: 18px; line-height: 24px; }
 }
