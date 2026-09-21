@@ -5,14 +5,14 @@
  * tarotApiEnabled is the server half of TAROT_ENABLED (src/lib/flags.ts):
  * the client flag removes the parlor's UI from the bundle at build time,
  * this one hides the endpoints at runtime, so a flagged-off deploy has no
- * reachable spend surface even for someone who knows the URLs. It reads
- * the same Vercel env var (VITE_TAROT) on purpose: one env flip arms the
- * API immediately and the UI at the next build. The Vite dev middleware
+ * reachable surface even for someone who knows the URLs. It reads the same
+ * Vercel env var (VITE_TAROT, on unless set to 0) on purpose: one env flip
+ * shuts the API immediately and the UI at the next build. The Vite dev middleware
  * (scripts/tarotDevApi.ts) force-enables it, matching the client flag
  * being always on in dev.
  */
 
-export const tarotApiEnabled = () => process.env.VITE_TAROT === '1'
+export const tarotApiEnabled = () => process.env.VITE_TAROT !== '0'
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), {

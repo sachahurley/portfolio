@@ -1,7 +1,8 @@
 /**
- * POST /api/tarot-chat: the Reader, streaming. All the work lives in
+ * POST /api/tarot-chat: the Seer, streaming. All the work lives in
  * _lib/chat.ts (shared with the dev middleware); this is only the Vercel
- * entry. Env: ANTHROPIC_API_KEY, VITE_TAROT=1, optional TAROT_MODEL.
+ * entry. Env: optional ANTHROPIC_API_KEY (templated replies without it),
+ * VITE_TAROT=0 to switch off, optional TAROT_MODEL.
  */
 
 import { handleTarotChat } from './_lib/chat.js'
