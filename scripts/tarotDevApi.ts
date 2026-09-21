@@ -46,6 +46,10 @@ export function tarotDevApi(): Plugin {
         if (!process.env[key] && env[key]) process.env[key] = env[key]
       }
 
+      // The server half of TAROT_ENABLED (api/_lib/guard.ts) is always on
+      // in dev, matching the client flag in src/lib/flags.ts.
+      process.env.VITE_TAROT = '1'
+
       // chat first: connect matches prefixes, and the longer route must win
       server.middlewares.use(
         '/api/tarot-chat',

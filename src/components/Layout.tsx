@@ -21,6 +21,7 @@ import JeweledFrame from './JeweledFrame'
 import Compass from './game/Compass'
 import MessageLog from './game/MessageLog'
 import CharacterStrip from './game/CharacterStrip'
+import { TAROT_ENABLED } from '../lib/flags'
 
 interface LayoutProps {
   children: ReactNode
@@ -41,7 +42,7 @@ export default function Layout({ children }: LayoutProps) {
   })
   // Pages that take the whole frame: no side column, single grid area.
   const path = useLocation().pathname
-  const fullPage = path === '/character' || path === '/lab/tarot'
+  const fullPage = path === '/character' || (TAROT_ENABLED && path === '/lab/tarot')
 
   const toggleSide = () => {
     setSideCollapsed((collapsed) => {
