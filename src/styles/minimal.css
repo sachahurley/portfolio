@@ -1280,6 +1280,8 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   width: min(var(--vg-bw), var(--col, 644px));
   margin-left: calc((100% - min(var(--vg-bw), var(--col, 644px))) / 2);
 }
+/* desktop: more air between the intro/bio and the village */
+@media (min-width: 720px) { .vg-frame { margin-top: 72px; } }
 .vg-frame canvas { position: relative; display: block; image-rendering: pixelated; }
 .vg-label {
   position: absolute; transform: translateX(-50%);
