@@ -22,10 +22,17 @@ import TarotScene from '../components/tarot/TarotScene'
 import Typewriter from '../components/tarot/Typewriter'
 import { SPREADS, CARD_BY_ID, type SpreadDef } from '../data/tarot'
 import { drawSpread, type DrawnCard } from '../lib/tarot/draw'
-import { fallbackReading } from '../lib/tarot/fallbackReading'
-import { requestReading } from '../lib/tarot/client'
+import { chatFallback, fallbackReading } from '../lib/tarot/fallbackReading'
+import { requestChat, requestReading } from '../lib/tarot/client'
 import { summarizeVisitor } from '../lib/tarot/summarizeVisitor'
-import { QUESTION_MAX, type Reading } from '../lib/tarot/contract'
+import {
+  CHAT_MESSAGE_MAX,
+  CHAT_TURNS_MAX,
+  QUESTION_MAX,
+  type ChatExchange,
+  type Reading,
+  type TarotChatRequest,
+} from '../lib/tarot/contract'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 
@@ -34,7 +41,6 @@ const COOLDOWN_MS = 30_000
 const LAST_KEY = 'sh_tarot_last'
 
 const SHUFFLE_MS = 1200
-const FLIP_STAGGER_MS = 450
 const AFTER_FLIPS_MS = 500
 
 type Status = 'idle' | 'shuffling' | 'revealing' | 'reading' | 'done'
@@ -43,7 +49,8 @@ interface State {
   status: Status
   spread: SpreadDef | null
   drawn: DrawnCard[]
-  revealed: number
+  /** Per-card face-up flags: the visitor taps each card to turn it. */
+  flipped: boolean[]
   reading: Reading | null
   /** Which reading section is currently typing (greeting=0, cards=1..n,
    *  synthesis=n+1, farewell=n+2). */
@@ -53,23 +60,29 @@ interface State {
 type Action =
   | { type: 'begin'; spread: SpreadDef; drawn: DrawnCard[] }
   | { type: 'shuffled' }
-  | { type: 'reveal' }
+  | { type: 'reveal'; index: number }
   | { type: 'reading'; reading: Reading }
   | { type: 'section-done' }
   | { type: 'reset' }
 
-const initial: State = { status: 'idle', spread: null, drawn: [], revealed: 0, reading: null, section: 0 }
+const initial: State = { status: 'idle', spread: null, drawn: [], flipped: [], reading: null, section: 0 }
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'begin':
-      return { ...initial, status: 'shuffling', spread: action.spread, drawn: action.drawn }
+      return {
+        ...initial,
+        status: 'shuffling',
+        spread: action.spread,
+        drawn: action.drawn,
+        flipped: action.drawn.map(() => false),
+      }
     case 'shuffled':
       return { ...state, status: 'revealing' }
     case 'reveal':
-      return { ...state, revealed: Math.min(state.revealed + 1, state.drawn.length) }
+      return { ...state, flipped: state.flipped.map((f, i) => (i === action.index ? true : f)) }
     case 'reading':
-      return { ...state, status: 'reading', revealed: state.drawn.length, reading: action.reading }
+      return { ...state, status: 'reading', flipped: state.flipped.map(() => true), reading: action.reading }
     case 'section-done': {
       const total = state.drawn.length + 3
       const section = state.section + 1
@@ -99,6 +112,11 @@ export default function TarotLab() {
   const [question, setQuestion] = useState('')
   const [skipAll, setSkipAll] = useState(false)
   const [cooldownLeft, setCooldownLeft] = useState(0)
+  // Chatting with the Reader about the finished reading (capped audience;
+  // any failure closes the chat with an in-fiction final line).
+  const [exchanges, setExchanges] = useState<ChatExchange[]>([])
+  const [chatMsg, setChatMsg] = useState('')
+  const [chatState, setChatState] = useState<'open' | 'waiting' | 'closed'>('open')
   const readingRef = useRef<Reading | null>(null)
   const waitingRef = useRef(false)
   const timersRef = useRef<number[]>([])
@@ -146,7 +164,8 @@ export default function TarotLab() {
     return () => window.clearInterval(iv)
   }, [state.status])
 
-  // Keep the newest typed section in view as the reading unrolls.
+  // Keep the newest typed section in view as the reading unrolls (chat
+  // replies included).
   const readingEndRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     if (state.status !== 'reading' && state.status !== 'done') return
@@ -154,7 +173,23 @@ export default function TarotLab() {
       behavior: reduced ? 'auto' : 'smooth',
       block: 'end',
     })
-  }, [state.status, state.section, reduced])
+  }, [state.status, state.section, exchanges.length, reduced])
+
+  // Hand-off to the reading once every card has been turned: a short beat,
+  // then either the reading that already arrived or a waiting flag its
+  // .then() checks. (The request departed when the visitor committed.)
+  const allFlipped = state.drawn.length > 0 && state.flipped.every(Boolean)
+  useEffect(() => {
+    if (state.status !== 'revealing' || !allFlipped) return
+    const t = window.setTimeout(
+      () => {
+        if (readingRef.current) dispatch({ type: 'reading', reading: readingRef.current })
+        else waitingRef.current = true
+      },
+      reduced ? 0 : AFTER_FLIPS_MS,
+    )
+    timersRef.current.push(t)
+  }, [state.status, allFlipped, reduced])
 
   // First finished reading pays out (and, being a lab: key, may roll a chest).
   const paidRef = useRef(false)
@@ -175,6 +210,9 @@ export default function TarotLab() {
     const drawn = drawSpread(spread)
     const q = question.trim().slice(0, QUESTION_MAX)
     setSkipAll(false)
+    setExchanges([])
+    setChatMsg('')
+    setChatState('open')
     readingRef.current = null
     waitingRef.current = false
     try {
@@ -208,34 +246,61 @@ export default function TarotLab() {
         if (waitingRef.current) dispatch({ type: 'reading', reading })
       })
 
-    // Theater: shuffle, then flips, then hold for the reading.
-    const flipsDone = () => {
-      if (readingRef.current) dispatch({ type: 'reading', reading: readingRef.current })
-      else waitingRef.current = true
-    }
+    // Theater: shuffle, then the cards wait for the visitor's taps; the
+    // all-flipped effect hands off to the reading.
     if (reduced) {
       // No animation: cards appear face up at once; text arrives whole.
       dispatch({ type: 'shuffled' })
-      drawn.forEach(() => dispatch({ type: 'reveal' }))
-      flipsDone()
+      drawn.forEach((_, i) => dispatch({ type: 'reveal', index: i }))
       return
     }
     later(() => dispatch({ type: 'shuffled' }), SHUFFLE_MS)
-    drawn.forEach((_, i) => {
-      later(() => dispatch({ type: 'reveal' }), SHUFFLE_MS + FLIP_STAGGER_MS * (i + 1))
-    })
-    later(flipsDone, SHUFFLE_MS + FLIP_STAGGER_MS * drawn.length + AFTER_FLIPS_MS)
   }
 
-  const { status, drawn, revealed, reading, section } = state
+  const { status, drawn, flipped, reading, section } = state
   const inSession = status !== 'idle'
+  const asked = question.trim().slice(0, QUESTION_MAX)
   const cardName = (cardId: string, reversed: boolean) => {
     const card = CARD_BY_ID.get(cardId)
     return card ? `${card.name}${reversed ? ', reversed' : ''}` : cardId
   }
 
+  // Ask the Reader a follow-up about the finished reading. One in flight at
+  // a time (the bar disables while waiting); any failure closes the chat
+  // with an in-fiction final line, the parlor's no-error rule.
+  const ask = () => {
+    const msg = chatMsg.trim().slice(0, CHAT_MESSAGE_MAX)
+    if (!msg || chatState !== 'open' || status !== 'done' || !reading || !state.spread) return
+    const turn = exchanges.length + 1
+    setChatState('waiting')
+    setChatMsg('')
+    const payload: TarotChatRequest = {
+      spread: state.spread.id,
+      question: asked || undefined,
+      cards: drawn.map((d) => ({
+        id: d.card.id,
+        name: d.card.name,
+        position: d.position.id,
+        reversed: d.reversed,
+      })),
+      visitor: summarizeVisitor({ xp, earned: getEarned(), gems, items, equipment, isReturning }),
+      reading,
+      exchanges,
+      message: msg,
+    }
+    requestChat(payload)
+      .then((reply) => {
+        setExchanges((prev) => [...prev, { question: msg, reply }])
+        setChatState(turn >= CHAT_TURNS_MAX ? 'closed' : 'open')
+      })
+      .catch(() => {
+        setExchanges((prev) => [...prev, { question: msg, reply: chatFallback() }])
+        setChatState('closed')
+      })
+  }
+
   return (
-    <div className="tarot-page">
+    <div className={`tarot-page${status === 'done' && reading ? ' has-chat' : ''}`}>
       {/* .ch-close is a layout hook only; the control is the DS icon Button */}
       <Button variant="icon" size="icon" type="button" className="ch-close" onClick={closePage} aria-label="Close tarot reader">
         <DitherIcon name="close" size={16} />
@@ -249,7 +314,9 @@ export default function TarotLab() {
           {inSession
             ? status === 'done'
               ? 'The cards rest.'
-              : 'The cards are speaking.'
+              : status === 'revealing' && !allFlipped
+                ? 'Tap a card to turn it.'
+                : 'The cards are speaking.'
             : 'A real draw from a full 78-card deck, read for whoever sits down.'}
         </p>
       </header>
@@ -273,7 +340,6 @@ export default function TarotLab() {
           </div>
           <div className="tarot-ask">
             <Input
-              variant="quiet"
               label="A question for the cards (optional)"
               type="text"
               value={question}
@@ -296,8 +362,11 @@ export default function TarotLab() {
               <TarotCardView
                 key={d.card.id}
                 drawn={d}
-                faceUp={status !== 'shuffling' && i < revealed}
+                faceUp={flipped[i]}
                 scale={handheld ? 3 : 4}
+                onReveal={() => {
+                  if (status === 'revealing' && !flipped[i]) dispatch({ type: 'reveal', index: i })
+                }}
               />
             ))}
           </div>
@@ -308,6 +377,7 @@ export default function TarotLab() {
               onClick={() => setSkipAll(true)}
               title={status === 'reading' ? 'Tap to reveal the whole reading' : undefined}
             >
+              {asked && <p className="tr-asked">You asked: {asked}</p>}
               <p className="tr-text">
                 <Typewriter
                   text={reading.greeting}
@@ -349,6 +419,18 @@ export default function TarotLab() {
                   onDone={() => dispatch({ type: 'section-done' })}
                 />
               </p>
+              {/* Follow-up audience with the Reader, typed like the reading */}
+              {exchanges.map((e, i) => (
+                <div key={i} className="tr-section tr-chat">
+                  <p className="tr-asked">You ask: {e.question}</p>
+                  <p className="tr-text">
+                    <Typewriter text={e.reply} active skip={skipAll} />
+                  </p>
+                </div>
+              ))}
+              {status === 'reading' && !skipAll && (
+                <p className="tr-skiphint">tap the reading to reveal it all</p>
+              )}
               <div ref={readingEndRef} />
             </div>
           )}
@@ -365,6 +447,40 @@ export default function TarotLab() {
             </div>
           )}
         </section>
+      )}
+
+      {/* Footer chat bar: ask the Reader about the finished reading (the
+          replies land in the reading column above). DS Input + Button on
+          the ring-recipe plate. */}
+      {status === 'done' && reading && (
+        <form
+          className="tarot-chatbar"
+          onSubmit={(e) => {
+            e.preventDefault()
+            ask()
+          }}
+        >
+          <div className="tarot-chatbar-in">
+            <Input
+              aria-label="Ask the Reader about your reading"
+              type="text"
+              value={chatMsg}
+              maxLength={CHAT_MESSAGE_MAX}
+              placeholder={
+                chatState === 'closed'
+                  ? 'The Reader has said what she will say.'
+                  : chatState === 'waiting'
+                    ? 'The Reader considers…'
+                    : 'Ask the Reader about your reading'
+              }
+              disabled={chatState !== 'open'}
+              onChange={(e) => setChatMsg(e.target.value)}
+            />
+            <Button variant="primary" type="submit" disabled={chatState !== 'open' || !chatMsg.trim()}>
+              Ask
+            </Button>
+          </div>
+        </form>
       )}
     </div>
   )
