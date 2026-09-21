@@ -29,19 +29,24 @@ export default function Dock({ open, onToggle }: { open: boolean; onToggle: () =
   // band (CSS .is-sunk) as the sheet rises carrying its twin, so the two
   // tabs read as one plate diving under and resurfacing. visibility:hidden
   // at the end of the sink keeps it out of the tab order.
+  // The holder owns the fixed centring and the sink: the button's
+  // clip-path clips every descendant, and the pip straddles the notch
+  // corner, so it must live OUTSIDE the clipped element as a sibling.
   return (
-    <button
-      className={`gf-tab${open ? ' is-sunk' : ''}`}
-      aria-haspopup="dialog"
-      aria-expanded={open}
-      aria-label={waiting ? 'Menu, rewards waiting' : undefined}
-      onClick={onToggle}
-    >
-      <DitherIcon name="home" size={16} className="ic-home" />
-      Menu
+    <div className={`gf-tab-holder${open ? ' is-sunk' : ''}`}>
+      <button
+        className="gf-tab"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={waiting ? 'Menu, rewards waiting' : undefined}
+        onClick={onToggle}
+      >
+        <DitherIcon name="home" size={16} className="ic-home" />
+        Menu
+      </button>
       {!open && waiting && (
         <span className={`gf-tab-dot${chestWaiting ? ' is-chest' : ''}`} aria-hidden="true" />
       )}
-    </button>
+    </div>
   )
 }
