@@ -4,7 +4,7 @@
  * a reading wants to differ every time the cards are asked.
  */
 
-import { TAROT_DECK, type SpreadDef, type SpreadPosition, type TarotCard } from '../../data/tarot'
+import { TAROT_DECK, type SpreadDef, type SpreadPosition, type TarotCard } from '../../data/tarot.js'
 
 /** Chance a drawn card lands reversed. Below a coin flip on purpose: a
  *  spread that is mostly upright reads as counsel, mostly reversed as doom. */

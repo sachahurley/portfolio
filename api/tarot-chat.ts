@@ -4,7 +4,7 @@
  * entry. Env: ANTHROPIC_API_KEY, VITE_TAROT=1, optional TAROT_MODEL.
  */
 
-import { handleTarotChat } from './_lib/chat'
+import { handleTarotChat } from './_lib/chat.js'
 
 export async function POST(request: Request): Promise<Response> {
   return handleTarotChat(request)
