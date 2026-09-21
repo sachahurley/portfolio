@@ -1459,7 +1459,8 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
    else. .has-chat pads the page so the typed column scrolls clear of it. */
 /* padding clears the fixed bar plus the session-controls row above it */
 .tarot-page.has-chat { padding-bottom: 200px; }
-.tarot-page.has-chat .tarot-reading > div:last-child { scroll-margin-bottom: 150px; }
+/* the thread's scroll anchor keeps the newest line clear of the fixed bar */
+.pt-end { scroll-margin-bottom: 180px; }
 .tarot-chatbar {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: 64px;
   width: min(640px, calc(100% - 64px)); z-index: 5;
@@ -1600,6 +1601,54 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   font-size: 11px; color: var(--mut); cursor: pointer;
 }
 .pt-share-q input { accent-color: var(--accent); }
+
+/* ---- phase 5: the wider spreads ----
+   Five and six cards wrap into centered rows; the Celtic Cross lays out
+   as the true cross on a 4-column grid: crown above, behind/heart/before
+   across, root below, the staff of four rising on the right, and the
+   crossing card turned sideways over the heart. Fits both card scales
+   (4 cols x 100px + gaps under the 640px table; x 75px on handhelds). */
+.tarot-cards { flex-wrap: wrap; }
+.tarot-cards.n10 {
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  grid-template-rows: repeat(4, max-content);
+  gap: 14px 18px;
+  justify-content: center;
+  align-items: center;
+}
+/* slots hold the card's width so long captions wrap under it instead of
+   stretching their whole column */
+.tarot-cards.n10 .tc-slot { width: 100px; }
+.tarot-cards.n10 .tc-poslabel { max-width: 100px; text-align: center; }
+.tarot-cards.n10 .tc-slot:nth-child(1) { grid-column: 2; grid-row: 2; } /* heart */
+.tarot-cards.n10 .tc-slot:nth-child(2) { /* crossing: turned over the heart */
+  grid-column: 2; grid-row: 2; z-index: 2;
+  /* slight rightward lie, clear of the heart's caption below */
+  transform: translate(14%, -8%) rotate(90deg);
+}
+.tarot-cards.n10 .tc-slot:nth-child(2) .tc-poslabel { display: none; }
+.tarot-cards.n10 .tc-slot:nth-child(3) { grid-column: 2; grid-row: 3; } /* root */
+.tarot-cards.n10 .tc-slot:nth-child(4) { grid-column: 1; grid-row: 2; } /* behind */
+.tarot-cards.n10 .tc-slot:nth-child(5) { grid-column: 2; grid-row: 1; } /* crown */
+.tarot-cards.n10 .tc-slot:nth-child(6) { grid-column: 3; grid-row: 2; } /* before */
+.tarot-cards.n10 .tc-slot:nth-child(7) { grid-column: 4; grid-row: 4; } /* self */
+.tarot-cards.n10 .tc-slot:nth-child(8) { grid-column: 4; grid-row: 3; } /* house */
+.tarot-cards.n10 .tc-slot:nth-child(9) { grid-column: 4; grid-row: 2; } /* hopes */
+.tarot-cards.n10 .tc-slot:nth-child(10) { grid-column: 4; grid-row: 1; } /* outcome */
+
+/* the picker grows to five spreads: two columns of chips */
+.pt-spreads-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pt-spread-locked { opacity: .45; cursor: default; }
+.pt-spread-locked .ts-name { color: var(--body); }
+
+/* handhelds: the cross squeezes to 4 x 75px columns inside the page
+   padding (this block must follow the desktop n10 rules to win) */
+@media (max-width: 600px) {
+  .tarot-cards.n10 { gap: 10px 8px; }
+  .tarot-cards.n10 .tc-slot { width: 75px; }
+  .tarot-cards.n10 .tc-poslabel { max-width: 75px; }
+}
 
 /* the compendium: suit grids of 2x3-tile faces at scale 2 (50x74), backs
    dimmed with a quiet question mark; the detail entry reads like a page

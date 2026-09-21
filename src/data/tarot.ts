@@ -961,9 +961,11 @@ export interface SpreadPosition {
 }
 
 export interface SpreadDef {
-  id: 'one' | 'three'
+  id: 'one' | 'three' | 'situation' | 'crossroads' | 'celtic'
   name: string // 'One card', 'Three cards'
   desc: string // short chooser blurb, e.g. 'A single card for the question at hand.'
+  /** Display level that unlocks this spread (spec §6.3). */
+  level: number
   positions: SpreadPosition[]
 }
 
@@ -972,6 +974,7 @@ export const SPREADS: SpreadDef[] = [
     id: 'one',
     name: 'One card',
     desc: 'A single card for the question at hand.',
+    level: 1,
     positions: [
       {
         id: 'guidance',
@@ -984,6 +987,7 @@ export const SPREADS: SpreadDef[] = [
     id: 'three',
     name: 'Three cards',
     desc: 'Past, present, and future; the shape of the road.',
+    level: 1,
     positions: [
       {
         id: 'past',
@@ -1000,6 +1004,51 @@ export const SPREADS: SpreadDef[] = [
         label: 'Future',
         prompt: 'where the current course is heading',
       },
+    ],
+  },
+  {
+    id: 'situation',
+    name: 'Situation',
+    desc: 'Five cards around the matter at hand.',
+    level: 2,
+    positions: [
+      { id: 'situation', label: 'Situation', prompt: 'the matter as it truly stands' },
+      { id: 'challenge', label: 'Challenge', prompt: 'what resists or complicates it' },
+      { id: 'advice', label: 'Advice', prompt: 'what the cards counsel doing' },
+      { id: 'hidden', label: 'Hidden', prompt: 'what works unseen beneath it' },
+      { id: 'outcome', label: 'Outcome', prompt: 'where it tends if nothing changes' },
+    ],
+  },
+  {
+    id: 'crossroads',
+    name: 'Crossroads',
+    desc: 'Two roads weighed, and counsel between.',
+    level: 3,
+    positions: [
+      { id: 'you', label: 'You', prompt: 'the querent as they stand at the fork' },
+      { id: 'path_a', label: 'Path A', prompt: 'the first road, as it is' },
+      { id: 'end_a', label: 'Where A leads', prompt: 'what the first road comes to' },
+      { id: 'path_b', label: 'Path B', prompt: 'the second road, as it is' },
+      { id: 'end_b', label: 'Where B leads', prompt: 'what the second road comes to' },
+      { id: 'counsel', label: 'Counsel', prompt: 'what should weigh most in the choosing' },
+    ],
+  },
+  {
+    id: 'celtic',
+    name: 'Celtic Cross',
+    desc: 'The full ten-card cross; the deep reading.',
+    level: 4,
+    positions: [
+      { id: 'heart', label: 'Heart', prompt: 'what lies at the heart of the matter' },
+      { id: 'crossing', label: 'Crossing', prompt: 'what crosses it, for good or ill' },
+      { id: 'root', label: 'Root', prompt: 'the foundation beneath, long in place' },
+      { id: 'behind', label: 'Behind', prompt: 'what is passing out of the matter' },
+      { id: 'crown', label: 'Crown', prompt: 'what crowns it, the best that may be reached' },
+      { id: 'before', label: 'Before', prompt: 'what approaches next' },
+      { id: 'self', label: 'Self', prompt: 'the querent as they carry themselves in this' },
+      { id: 'house', label: 'House', prompt: 'the influence of others around them' },
+      { id: 'hopes', label: 'Hopes', prompt: 'hopes and fears, entwined as they are' },
+      { id: 'outcome', label: 'Outcome', prompt: 'where the whole of it resolves' },
     ],
   },
 ]

@@ -19,7 +19,7 @@ export const VISITED_MAX = 40
 /** Generous ceiling on a real save's XP; anything above is a forged body. */
 export const XP_MAX = 1_000_000
 
-export type SpreadId = 'one' | 'three'
+export type SpreadId = 'one' | 'three' | 'situation' | 'crossroads' | 'celtic'
 
 export interface DrawnCardPayload {
   id: string // deck id, e.g. 'major/the_tower'
@@ -57,8 +57,12 @@ export const PARLOR_USER_MESSAGES_MAX = 8
 export const PARLOR_USER_MESSAGES_HARD_MAX = 10
 /** Transcript window sent per turn ("cards are the memory" carries the rest). */
 export const PARLOR_RECENT_MAX = 6
-/** Upper bound on one signed reader text carried back (reading or reply). */
-export const PARLOR_READER_TEXT_MAX = 6000
+/** Upper bound on one signed reader text carried back (reading or reply);
+ *  sized for a full Celtic Cross reading with headroom. */
+export const PARLOR_READER_TEXT_MAX = 12000
+/** Client-side character budget for the draws carried per request, so a
+ *  book of long readings never outgrows the server's body cap. */
+export const PARLOR_DRAWS_CHAR_BUDGET = 24000
 /** Draws carried per thread. */
 export const PARLOR_DRAWS_MAX = 12
 export const PARLOR_TITLE_MAX = 40

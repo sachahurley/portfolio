@@ -18,6 +18,7 @@
 
 import { CARD_BY_ID, SPREADS } from '../../data/tarot'
 import {
+  PARLOR_DRAWS_CHAR_BUDGET,
   PARLOR_DRAWS_MAX,
   PARLOR_RECENT_MAX,
   type ParlorDraw,
@@ -359,10 +360,22 @@ export function buildParlorRequest(
       })
     }
   }
+  // Newest draws first priority: keep the freshest readings within both
+  // the count cap and a character budget, so a book of Celtic Crosses
+  // never outgrows the server's body cap. Order is preserved.
+  const kept: ParlorDraw[] = []
+  let chars = 0
+  for (let i = draws.length - 1; i >= 0; i--) {
+    const size = draws[i].reading.text.length
+    if (kept.length >= PARLOR_DRAWS_MAX || chars + size > PARLOR_DRAWS_CHAR_BUDGET) break
+    kept.unshift(draws[i])
+    chars += size
+  }
+
   return {
     threadId: thread.id,
     turn,
-    draws: draws.slice(-PARLOR_DRAWS_MAX),
+    draws: kept,
     recent: recent.slice(-PARLOR_RECENT_MAX),
     userMessageCount: thread.userMsgCount,
     unlockedSpreads,

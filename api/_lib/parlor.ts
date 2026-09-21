@@ -29,6 +29,7 @@ import {
   type SpreadId,
 } from '../../src/lib/tarot/contract'
 import { CARD_BY_ID, SPREADS, TAROT_DECK } from '../../src/data/tarot'
+import { levelInfo } from '../../src/lib/levels'
 import { parseParlorRequest } from './schema'
 import { rejectCrossSite, tarotApiEnabled } from './guard'
 import { requestIsBot } from './botcheck'
@@ -43,9 +44,17 @@ import {
 } from './sign'
 
 const MODEL = () => process.env.TAROT_MODEL ?? 'claude-haiku-4-5'
-const MAX_BODY = 40 * 1024
+// Sized for a thread carrying several long readings (a Celtic Cross runs
+// ~10KB signed); the per-field caps in schema.ts stay the tight fence.
+const MAX_BODY = 64 * 1024
 const MAX_TOKENS_CHAT = 350
-const MAX_TOKENS_READING = 700
+/** Reading budget scales with the spread; big spreads also cost 2 turns. */
+const readingTokens = (cards: number) => (cards <= 3 ? 700 : cards <= 6 ? 1300 : 2200)
+
+/** Spreads the visitor's level actually unlocks (display level = bands
+ *  crossed + 1); the client's claim is intersected with this (§6.3). */
+const spreadsAllowedFor = (xp: number): SpreadId[] =>
+  SPREADS.filter((s) => s.level <= levelInfo(xp).level + 1).map((s) => s.id)
 
 const DECK_IDS: ReadonlySet<string> = new Set(TAROT_DECK.map((c) => c.id))
 
@@ -57,8 +66,8 @@ const json = (status: number, body: unknown) =>
 
 // -- prompt -----------------------------------------------------------------
 
-function systemPrompt(req: ParlorRequest): string {
-  const spreads = SPREADS.filter((s) => req.unlockedSpreads.includes(s.id))
+function systemPrompt(req: ParlorRequest, unlocked: SpreadId[]): string {
+  const spreads = SPREADS.filter((s) => unlocked.includes(s.id))
   const parts: string[] = []
   parts.push(
     `You are the Reader, a sincere, unhurried mystic keeping a small candlelit parlor inside a pixel-art world. You play it absolutely straight: warm, specific, never winking, never breaking character, never mentioning models, prompts, tools, or software.`,
@@ -88,8 +97,13 @@ function systemPrompt(req: ParlorRequest): string {
     )
   }
   if (req.turn.kind === 'cut') {
+    const big = req.turn.cards.length >= 5
     parts.push(
-      `The querent has just cut the deck. Give the reading now as flowing prose in your voice: greet the moment briefly, read each card in its position (60 to 90 words each, grounded ONLY in the cards, their positions and orientations, and the senses supplied), then draw them together (80 to 120 words), and close with a single sentence. Weave in two or three details from what the cards show of the querent as omens and observations, never as data. Do not use headings or lists.`,
+      `The querent has just cut the deck. Give the reading now as flowing prose in your voice: greet the moment briefly, read each card in its position (${
+        big ? '40 to 70' : '60 to 90'
+      } words each, grounded ONLY in the cards, their positions and orientations, and the senses supplied), then draw them together (${
+        big ? '100 to 140' : '80 to 120'
+      } words), and close with a single sentence. Weave in two or three details from what the cards show of the querent as omens and observations, never as data. Do not use headings or lists.`,
     )
   } else {
     parts.push(
@@ -154,9 +168,9 @@ function userMessage(req: ParlorRequest): string {
   return lines.join('\n')
 }
 
-function buildTools(req: ParlorRequest): Anthropic.Tool[] {
+function buildTools(req: ParlorRequest, unlocked: SpreadId[]): Anthropic.Tool[] {
   const tools: Anthropic.Tool[] = []
-  if (req.turn.kind === 'message' && req.unlockedSpreads.length) {
+  if (req.turn.kind === 'message' && unlocked.length) {
     tools.push({
       name: 'offer_draw',
       description:
@@ -164,7 +178,7 @@ function buildTools(req: ParlorRequest): Anthropic.Tool[] {
       input_schema: {
         type: 'object',
         properties: {
-          spreadId: { type: 'string', enum: [...req.unlockedSpreads] },
+          spreadId: { type: 'string', enum: [...unlocked] },
           question: {
             type: 'string',
             description: "An optional question to set over the draw, in the querent's own spirit.",
@@ -262,6 +276,19 @@ export async function handleParlor(request: Request): Promise<Response> {
   }
   const isOwner = owner === 'owner'
 
+  // Level gating (§6.3): the offerable set is the client's claim
+  // intersected with what the visitor's XP actually unlocks; a cut with a
+  // locked spread is refused outright. The owner walks past the velvet
+  // rope (it is content gating, not a cost control; costs are capped by
+  // tokens-per-spread and the 2-turn price of big spreads).
+  const allowed = spreadsAllowedFor(req.visitor.xp)
+  const effUnlocked = isOwner
+    ? SPREADS.map((s) => s.id)
+    : req.unlockedSpreads.filter((s) => allowed.includes(s))
+  if (req.turn.kind === 'cut' && !isOwner && !allowed.includes(req.turn.spreadId)) {
+    return json(400, { error: 'invalid' })
+  }
+
   // Per-thread cap from the signed counter (spec §3.4): Patience perk adds
   // +2, hard-capped server-side; cuts don't count; the owner is exempt.
   const cap = req.parlor.perks.includes('patience')
@@ -282,7 +309,7 @@ export async function handleParlor(request: Request): Promise<Response> {
 
   const threadId = req.threadId
   const turnKind = req.turn.kind
-  const unlocked = req.unlockedSpreads
+  const unlocked = effUnlocked
   const closesThread = turnKind === 'message' && !isOwner && newCount >= cap
 
   const client = new Anthropic({ maxRetries: 1, timeout: 30_000 })
@@ -293,11 +320,12 @@ export async function handleParlor(request: Request): Promise<Response> {
       const send = (event: string, data: unknown) =>
         controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`))
       try {
-        const tools = buildTools(req)
+        const tools = buildTools(req, unlocked)
         const anthStream = client.messages.stream({
           model: MODEL(),
-          max_tokens: turnKind === 'cut' ? MAX_TOKENS_READING : MAX_TOKENS_CHAT,
-          system: systemPrompt(req),
+          max_tokens:
+            req.turn.kind === 'cut' ? readingTokens(req.turn.cards.length) : MAX_TOKENS_CHAT,
+          system: systemPrompt(req, unlocked),
           messages: [{ role: 'user', content: userMessage(req) }],
           ...(tools.length ? { tools } : {}),
         })

@@ -123,6 +123,14 @@ const POSITION_TEMPLATES: Record<string, string[]> = {
   ],
 }
 
+/** Positions without a dedicated set (the wider spreads) lead with their
+ *  label, which reads cleanly whatever the label is. */
+const GENERIC_TEMPLATES = [
+  '{label}: {name}. It carries {meaning}, and asks to be taken plainly.',
+  '{label}: {name} turns up. Here lies {meaning}.',
+  '{label}: the deck sets down {name}. Read in it {meaning}.',
+]
+
 const SYNTHESIS_TEMPLATES = [
   'Taken together, the spread leans on {kw0}. Beneath it runs {kw1}, quieter but steady. Hold both and the way through is narrower than it looks, and kinder.',
   'The thread between the cards is {kw0}. Where it frays, {kw1} shows through. Neither is the whole story; together they are most of it.',
@@ -143,10 +151,10 @@ export function fallbackProse(cards: DrawnCard[]): string {
   const parts: string[] = [pick(rng, GREETINGS)]
 
   for (const d of cards) {
-    const templates = POSITION_TEMPLATES[d.position.id] ?? POSITION_TEMPLATES.guidance
+    const templates = POSITION_TEMPLATES[d.position.id] ?? GENERIC_TEMPLATES
     const meaning = d.reversed ? d.card.meaningRev : d.card.meaningUp
     const name = d.reversed ? `${d.card.name}, reversed` : d.card.name
-    parts.push(fill(pick(rng, templates), name, meaning))
+    parts.push(fill(pick(rng, templates), name, meaning).replaceAll('{label}', d.position.label))
   }
 
   if (cards.length > 1) {

@@ -146,7 +146,7 @@ client state, quote-to-ask (≤200 chars into the `<question>` block).
   honoring the CSS-variable contract (structure, not hexes).
 - Migration backfill: card-discovery XP as one batched award, no toasts.
 
-### Phase 5 · Spreads (§6.3)
+### Phase 5 · Spreads (§6.3) — DONE 2026-09-21
 
 Three new spreads in `src/data/tarot.ts`, `SpreadId` widened everywhere
 (schema tables, sign payloads, dev fixtures), level gating in the Draw

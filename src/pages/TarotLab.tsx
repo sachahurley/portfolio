@@ -61,6 +61,7 @@ import {
   type SpreadId,
 } from '../lib/tarot/contract'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
+import { levelInfo } from '../lib/levels'
 import { usePageTitle } from '../lib/usePageTitle'
 
 /** Client half of the cut rate limiting: one draw per window (owner exempt). */
@@ -69,8 +70,12 @@ const LAST_KEY = 'sh_tarot_last'
 const SHUFFLE_MS = 1200
 const BREATHER_MS = 60_000
 
-/** Level gating arrives in phase 5; today the whole deck of spreads is open. */
-const UNLOCKED: SpreadId[] = SPREADS.map((s) => s.id)
+/** Spreads open at a display level (spec §6.3); the server enforces the
+ *  same gate from the visitor's XP, so this is presentation, not trust. */
+const unlockedFor = (xp: number, owner: boolean): SpreadId[] =>
+  owner
+    ? SPREADS.map((s) => s.id)
+    : SPREADS.filter((s) => s.level <= levelInfo(xp).level + 1).map((s) => s.id)
 
 /** The tarot XP table (spec §6.2). Milestones carry award keys (de-duped,
  *  chest-eligible); daily and discovery ride the codex, keyless. */
@@ -279,7 +284,7 @@ export default function TarotLab() {
     let title: string | null = null
 
     streamParlor(
-      buildParlorRequest(base, { kind: 'message', text }, visitorNow(), settings, UNLOCKED),
+      buildParlorRequest(base, { kind: 'message', text }, visitorNow(), settings, unlockedFor(xp, isOwner)),
       {
         onText: (delta) => {
           streamTextRef.current += delta
@@ -443,7 +448,7 @@ export default function TarotLab() {
           reversed: c.reversed,
         })),
       }
-      streamParlor(buildParlorRequest(t, turn, visitorNow(), settings, UNLOCKED), {
+      streamParlor(buildParlorRequest(t, turn, visitorNow(), settings, unlockedFor(xp, isOwner)), {
         onText: (delta) => {
           streamTextRef.current += delta
           setStream({ targetId: drawId, text: streamTextRef.current })
@@ -721,6 +726,7 @@ export default function TarotLab() {
 
           {picker && !thread.closed && (
             <SpreadPicker
+              unlocked={unlockedFor(xp, isOwner)}
               disabled={busy || (!isOwner && cooldownLeft > 0)}
               onCut={(spreadId, q) => cut(spreadId, q)}
               onClose={() => setPicker(false)}
@@ -750,7 +756,7 @@ export default function TarotLab() {
             </div>
           )}
 
-          <div ref={endRef} />
+          <div ref={endRef} className="pt-end" />
         </section>
       )}
 

@@ -187,10 +187,16 @@ export async function renderReadingSnapshot(
   meter.font = `14px ${mono}`
   const excerptLines = wrapText(meter, excerpt.replace(/\n+/g, '  '), textWidth)
 
+  // Big spreads wrap the strip into rows (a Celtic Cross is three).
+  const perRow = Math.max(1, Math.floor((textWidth + gap) / (cardW + gap)))
+  const rows: (typeof draw.cards)[] = []
+  for (let i = 0; i < draw.cards.length; i += perRow) rows.push(draw.cards.slice(i, i + perRow))
+  const rowH = cardH + 34
+
   let y = 0
   const headerH = 46 + 20 // title + date
   const questionH = questionLines.length ? questionLines.length * 18 + 14 : 0
-  const stripH = cardH + 34
+  const stripH = rows.length * rowH
   const excerptH = excerptLines.length * 22 + 20
   const H = PAD + headerH + questionH + stripH + excerptH + PAD
 
@@ -239,19 +245,21 @@ export async function renderReadingSnapshot(
     y += 14
   }
 
-  // The strip, centered.
-  const n = draw.cards.length
-  const stripW = n * cardW + (n - 1) * gap
-  let x = (W - stripW) / 2
-  for (const c of draw.cards) {
-    drawCard(ctx, sheet, c.id, x, y, c.reversed, fg)
-    ctx.fillStyle = mut
-    ctx.font = `10px ${mono}`
-    const label = spread?.positions.find((p) => p.id === c.position)?.label ?? c.position
-    ctx.fillText(label.toUpperCase(), x + cardW / 2, y + cardH + 10)
-    x += cardW + gap
+  // The strip, centered, row by row.
+  for (const row of rows) {
+    const stripW = row.length * cardW + (row.length - 1) * gap
+    let x = (W - stripW) / 2
+    for (const c of row) {
+      drawCard(ctx, sheet, c.id, x, y, c.reversed, fg)
+      ctx.fillStyle = mut
+      ctx.font = `10px ${mono}`
+      const label = spread?.positions.find((p) => p.id === c.position)?.label ?? c.position
+      ctx.fillText(label.toUpperCase(), x + cardW / 2, y + cardH + 10)
+      x += cardW + gap
+    }
+    y += rowH
   }
-  y += stripH + 8
+  y += 8
 
   ctx.fillStyle = body
   ctx.font = `14px ${mono}`
