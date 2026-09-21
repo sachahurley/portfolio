@@ -8,11 +8,22 @@
  * can be imported anywhere without dragging in React context.
  */
 
-// Cumulative XP thresholds for levels 2..4 (display level = bands crossed + 1).
-export const LEVELS = [100, 250, 500]
+// Cumulative XP thresholds for levels 2..8 (display level = bands crossed + 1).
+// 5..8 are the tarot economy's long tail (spec docs/tarot-chat-spec.md §6.1):
+// site content is ~500 XP, one-time tarot ~450, the rest daily draws.
+export const LEVELS = [100, 250, 500, 800, 1200, 1700, 2300]
 
 // Display-level titles, index = display level - 1.
-export const LEVEL_TITLES = ['Traveller', 'Apprentice', 'Journeyfolk', 'Archmage']
+export const LEVEL_TITLES = [
+  'Traveller',
+  'Apprentice',
+  'Journeyfolk',
+  'Archmage',
+  'Seer',
+  'Oracle',
+  'Starwalker',
+  'Fatebinder',
+]
 
 export function levelInfo(xp: number) {
   const level = LEVELS.filter((t) => xp >= t).length // 0..3 thresholds crossed

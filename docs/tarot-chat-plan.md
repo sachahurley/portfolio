@@ -131,7 +131,7 @@ filters, export as Markdown (escaped) and PNG snapshot (canvas-drawn text
 only, no HTML path, question behind a toggle), suggestion chips built from
 client state, quote-to-ask (≤200 chars into the `<question>` block).
 
-### Phase 4 · RPG economy (§6.1, §6.2) **[blocked on decisions D1/D2]**
+### Phase 4 · RPG economy (§6.1, §6.2) — DONE 2026-09-21 (D1 spec defaults; D2 draft palettes pending Sacha review)
 
 - `src/lib/tarot/codex.ts` (`sh_tarot_codex`): per-card counts, day streaks.
 - Compendium drawer tab: 78-card grid, undiscovered backs, detail view,

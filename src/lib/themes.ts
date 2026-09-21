@@ -16,7 +16,7 @@
  * --fire1/2/3, --fg, --body) and the Theme shape, not the hexes.
  */
 
-export type GemId = 'ember' | 'tide' | 'dusk'
+export type GemId = 'ember' | 'tide' | 'dusk' | 'moss' | 'rose' | 'nova' | 'gold'
 export type ThemeId = 'default' | GemId
 
 export interface Theme {
@@ -27,8 +27,9 @@ export interface Theme {
   fire: [string, string, string] // [bright, mid, dim] flame hues
 }
 
-// Gems awarded at levels 1/2/3 (index = level - 1).
-export const LEVEL_GEMS: GemId[] = ['ember', 'tide', 'dusk']
+// Gems awarded at levels 1..7 (index = level - 1). 4..7 arrived with the
+// tarot economy's levels 5..8 (Seer/Oracle/Starwalker/Fatebinder).
+export const LEVEL_GEMS: GemId[] = ['ember', 'tide', 'dusk', 'moss', 'rose', 'nova', 'gold']
 
 /**
  * Read a scorp-ds CSS custom property, falling back to the given hex when
@@ -78,6 +79,37 @@ export const THEMES: Record<ThemeId, Theme> = {
     head: '#ece6f4',
     text: '#c0b9cb',
     fire: ['#ecdcff', '#a567f2', '#5a2da0'],
+  },
+  // Levels 5..8. DRAFT palettes in the ember/tide/dusk register (mid-sat
+  // accent, tinted near-white head, grayed body, bright/mid/dim fire);
+  // hexes are art direction to tune, the variable contract is the law.
+  moss: {
+    name: 'Moss',
+    accent: '#7fbf55',
+    head: '#e9f2e1',
+    text: '#bcc8ae',
+    fire: ['#e4ffc8', '#7cc24a', '#33641d'],
+  },
+  rose: {
+    name: 'Rose',
+    accent: '#ef6a9d',
+    head: '#f4e7ec',
+    text: '#ccb6bf',
+    fire: ['#ffd6e6', '#f26a9e', '#8e1d4e'],
+  },
+  nova: {
+    name: 'Nova',
+    accent: '#6f9ff2',
+    head: '#e9eef7',
+    text: '#b7c1cf',
+    fire: ['#dbe8ff', '#6f9ff2', '#2b4fa0'],
+  },
+  gold: {
+    name: 'Gold',
+    accent: '#e8bb3a',
+    head: '#f6f0dd',
+    text: '#cdc4ab',
+    fire: ['#fff0b8', '#eaba3a', '#96690f'],
   },
 }
 

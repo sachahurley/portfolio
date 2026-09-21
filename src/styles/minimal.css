@@ -1601,6 +1601,38 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 }
 .pt-share-q input { accent-color: var(--accent); }
 
+/* the compendium: suit grids of 2x3-tile faces at scale 2 (50x74), backs
+   dimmed with a quiet question mark; the detail entry reads like a page
+   from the book */
+.pt-comp { gap: 18px; }
+.pt-comp-suit { display: flex; flex-direction: column; gap: 8px; }
+.pt-comp-head {
+  font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent); font-weight: 400;
+}
+.pt-comp-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.pt-comp-cell {
+  position: relative; display: inline-flex; padding: 2px; border: 0;
+  background: none; cursor: pointer;
+  transition: background-color .12s;
+  clip-path: var(--plate-round-lg);
+}
+@media (hover: hover) { .pt-comp-cell:not(.unknown):hover { background: var(--hover); } }
+.pt-comp-cell:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.pt-comp-cell.unknown { cursor: default; opacity: .5; }
+.pt-comp-q {
+  position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; font-size: 14px; color: var(--mut);
+}
+.pt-comp-stats { font-size: 12px; line-height: 18px; color: var(--mut); }
+.pt-comp-kw { font-size: 11px; line-height: 16px; color: var(--mut); }
+.pt-comp-detail { display: flex; flex-direction: column; gap: 14px; }
+.pt-comp-art { display: flex; justify-content: center; }
+.pt-comp-name { font-size: 18px; line-height: 24px; color: var(--fg); font-weight: 400; text-align: center; }
+.pt-comp-detail .pt-comp-stats { text-align: center; }
+.pt-comp-sense { display: flex; flex-direction: column; gap: 6px; }
+.pt-comp-threads { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+
 /* quote-to-ask: the floating offer above the composer, and the pinned
    quote strip inside the chat bar plate */
 .pt-quote-offer { margin-top: 16px; display: flex; justify-content: center; }

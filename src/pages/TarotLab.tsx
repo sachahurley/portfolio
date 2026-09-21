@@ -23,6 +23,7 @@ import Composer from '../components/tarot/Composer'
 import SpreadPicker from '../components/tarot/SpreadPicker'
 import ThreadsPanel from '../components/tarot/ThreadsPanel'
 import ParlorSettingsPanel from '../components/tarot/ParlorSettingsPanel'
+import CompendiumPanel from '../components/tarot/CompendiumPanel'
 import { CARD_BY_ID, SPREADS } from '../data/tarot'
 import { drawSpread } from '../lib/tarot/draw'
 import { ParlorError, streamParlor, type ParlorDone } from '../lib/tarot/client'
@@ -41,6 +42,7 @@ import {
   type Thread,
 } from '../lib/tarot/threads'
 import { suggestionChips, type SuggestionChip } from '../lib/tarot/suggest'
+import { absorbDraws, recordDraw, RARE_LABELS } from '../lib/tarot/codex'
 import {
   BREATHER_LINE,
   CHAT_CLOSERS,
@@ -69,6 +71,13 @@ const BREATHER_MS = 60_000
 
 /** Level gating arrives in phase 5; today the whole deck of spreads is open. */
 const UNLOCKED: SpreadId[] = SPREADS.map((s) => s.id)
+
+/** The tarot XP table (spec §6.2). Milestones carry award keys (de-duped,
+ *  chest-eligible); daily and discovery ride the codex, keyless. */
+const DAILY_XP = 10
+const CARD_XP = 3
+const RARE_XP = 20
+const STREAK_XP: Record<number, number> = { 3: 15, 7: 30, 30: 75 }
 
 const readLast = () => {
   try {
@@ -102,7 +111,7 @@ export default function TarotLab() {
   const [thread, setThreadState] = useState<Thread>(freshThread)
   const threadRef = useRef(thread)
   const [starters, setStarters] = useState(pickStarters)
-  const [view, setView] = useState<'table' | 'threads' | 'parlor'>('table')
+  const [view, setView] = useState<'table' | 'threads' | 'parlor' | 'compendium'>('table')
   const [settings, setSettings] = useState(() => loadParlorSettings())
 
   const [busy, setBusy] = useState(false)
@@ -139,6 +148,21 @@ export default function TarotLab() {
 
   useEffect(() => {
     award(XP_AWARDS.lab, 'entered the tarot parlor', 'lab:tarot')
+  }, [award])
+
+  // Codex backfill: draws that predate the codex (migrated v1 sittings)
+  // are absorbed as discoveries, one batched award, no per-card toasts
+  // (spec §7 / open question 3). Idempotent, so StrictMode is harmless.
+  useEffect(() => {
+    const draws = loadThreads().flatMap((t) =>
+      t.messages
+        .filter((m): m is Extract<Msg, { kind: 'draw' }> => m.kind === 'draw')
+        .map((m) => ({ cards: m.cards, at: m.at })),
+    )
+    const added = absorbDraws(draws)
+    if (added > 0) {
+      award(CARD_XP * added, `the compendium takes stock: ${added} cards known`)
+    }
   }, [award])
 
   // Close: back into history when the visitor came from the site, else /lab.
@@ -360,6 +384,29 @@ export default function TarotLab() {
         drawMsg,
       ],
     }))
+    // The codex counts the cut itself (retries re-send the same cards and
+    // never come back through here). Discovery toasts stay nameless so the
+    // unturned cards keep their surprise; milestones and rares carry keys.
+    const record = recordDraw(drawMsg.cards, drawMsg.at)
+    if (record.daily) award(DAILY_XP, "the day's first draw")
+    if (record.newCards.length > 0) {
+      award(
+        CARD_XP * record.newCards.length,
+        record.newCards.length === 1
+          ? 'a new card for the compendium'
+          : `${record.newCards.length} new cards for the compendium`,
+      )
+    }
+    if (record.streakMilestone && STREAK_XP[record.streakMilestone]) {
+      award(
+        STREAK_XP[record.streakMilestone],
+        `a ${record.streakMilestone}-day streak with the cards`,
+        `tarot:streak:${record.streakMilestone}`,
+      )
+    }
+    for (const rare of record.rares) {
+      award(RARE_XP, `a rare pull: ${RARE_LABELS[rare]}`, `tarot:rare:${rare}`)
+    }
     if (reduced) {
       setShuffling(false)
       setPending({ msgId: drawMsg.id, flipped: drawn.map(() => true) })
@@ -491,9 +538,20 @@ export default function TarotLab() {
     setStarters(pickStarters())
     setPending(null)
     setPicker(false)
+    setQuote(null)
+    setQuoteCandidate(null)
     sentRef.current = null
     setView('table')
     scrollTop()
+  }
+
+  /** Compendium: open a fresh sitting already asking about one card. */
+  const askAboutCard = (cardId: string) => {
+    if (busy) return
+    const name = CARD_BY_ID.get(cardId)?.name
+    if (!name) return
+    startNewSitting()
+    sendMessage(`Tell me about ${name}. What does it carry when it visits me?`)
   }
 
   const openThread = (t: Thread) => {
@@ -553,6 +611,8 @@ export default function TarotLab() {
   const subline =
     view === 'threads'
       ? 'The sittings the Reader remembers.'
+      : view === 'compendium'
+        ? 'Every card the deck has shown you.'
       : view === 'parlor'
         ? 'The parlor, behind the curtain.'
         : busy
@@ -581,6 +641,9 @@ export default function TarotLab() {
             <button type="button" className="pt-nav-link" onClick={() => setView('threads')}>
               Sittings{threads.length ? ` (${threads.length})` : ''}
             </button>
+            <button type="button" className="pt-nav-link" onClick={() => setView('compendium')}>
+              Compendium
+            </button>
             <button type="button" className="pt-nav-link" onClick={() => setView('parlor')}>
               Parlor
             </button>
@@ -604,6 +667,15 @@ export default function TarotLab() {
       {view === 'parlor' && (
         <ParlorSettingsPanel
           onChanged={() => setSettings(loadParlorSettings())}
+          onBack={() => setView('table')}
+        />
+      )}
+
+      {view === 'compendium' && (
+        <CompendiumPanel
+          threads={threads}
+          onOpenThread={openThread}
+          onAskAbout={askAboutCard}
           onBack={() => setView('table')}
         />
       )}

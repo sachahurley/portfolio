@@ -144,9 +144,11 @@ export function hashString(s: string): number {
 
 /** Which dedup keys are chest-eligible: first-time content interactions.
  *  Deliberately excludes visit: (arrivals stay clean narrative beats) and
- *  follow (rewarding an external link with loot feels transactional). */
+ *  follow (rewarding an external link with loot feels transactional).
+ *  tarot: covers the parlor economy (streaks, rare pulls); those chests
+ *  will roll the parlor loot table once it exists (spec §6.4). */
 export function isChestKey(key: string): boolean {
-  return /^(project|questdone|note|lab):/.test(key)
+  return /^(project|questdone|note|lab|tarot):/.test(key)
 }
 
 /** Chance a chest drops alongside a first-time interaction. */
