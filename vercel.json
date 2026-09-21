@@ -2,7 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
   "functions": {
-    "api/tarot.ts": { "maxDuration": 30 },
-    "api/tarot-chat.ts": { "maxDuration": 30 }
+    "api/tarot-chat.ts": { "maxDuration": 60 }
   }
 }

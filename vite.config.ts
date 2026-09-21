@@ -6,7 +6,7 @@ import { tarotDevApi } from './scripts/tarotDevApi'
 // https://vite.dev/config/
 export default defineConfig({
   // tilesDevApi: dev-only save endpoint for /dev/tiles
-  // tarotDevApi: dev-only /api/tarot, same handler the Vercel function serves
+  // tarotDevApi: dev-only /api/tarot-chat, same handler the Vercel function serves
   plugins: [react(), tilesDevApi(), tarotDevApi()],
   // Bind on all interfaces so both 127.0.0.1 (IPv4) and ::1 (IPv6) work
   server: {

@@ -1,10 +1,8 @@
 /**
- * Dev-only /api/tarot and /api/tarot-chat, so `npm run dev` exercises the
- * real reading and chat paths without `vercel dev`. Serves the exact
- * handlers the deployed functions use (api/_lib/reading.ts, _lib/chat.ts).
- * With no ANTHROPIC_API_KEY in .env.local both answer 503 and the client's
- * canned paths take over (fallback reading; the Reader ends the audience),
- * which is also the honest default for development.
+ * Dev-only /api/tarot-chat, so `npm run dev` exercises the real streaming
+ * chat without `vercel dev`. Serves the exact handler the deployed function
+ * uses (api/_lib/chat.ts). Put ANTHROPIC_API_KEY in .env.local; without it
+ * the endpoint answers 503 and the parlor shows its "away" line.
  */
 
 import type { Connect, Plugin } from 'vite'
@@ -30,7 +28,12 @@ function serve(route: string, load: () => Promise<(r: Request) => Promise<Respon
       const response = await handler(request)
       res.statusCode = response.status
       response.headers.forEach((value, key) => res.setHeader(key, value))
-      res.end(await response.text())
+      // Pipe, don't buffer: the chat streams, and one flush at the end
+      // would hide token streaming in dev.
+      if (response.body) {
+        for await (const chunk of response.body) res.write(chunk)
+      }
+      res.end()
     })
   }
 }
@@ -50,14 +53,9 @@ export function tarotDevApi(): Plugin {
       // in dev, matching the client flag in src/lib/flags.ts.
       process.env.VITE_TAROT = '1'
 
-      // chat first: connect matches prefixes, and the longer route must win
       server.middlewares.use(
         '/api/tarot-chat',
         serve('/api/tarot-chat', async () => (await import('../api/_lib/chat')).handleTarotChat),
-      )
-      server.middlewares.use(
-        '/api/tarot',
-        serve('/api/tarot', async () => (await import('../api/_lib/reading')).handleTarot),
       )
     },
   }

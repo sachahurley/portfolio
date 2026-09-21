@@ -1321,77 +1321,66 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .vk-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
 
 /* ---- tarot reader (/lab/tarot) ----
-   Full-page parlor (gframe.gf-full, like /character). The card flip is the
+   Full-page parlor (gframe.gf-full, like /character): the scene banner, then
+   a chat thread with the Reader and a fixed composer. The card flip is the
    site's one piece of 3D: a rotateY on .tc-inner, with reversed cards
-   landing rotated 180 so the orientation is legible before a word types.
-   All colors via tokens; the card face is typographic until the baked
-   tarot/* tiles land. */
+   landing rotated 180. All colors via tokens. */
 .tarot-page {
   min-height: 100%;
   display: flex; flex-direction: column; align-items: center;
   padding: 72px 24px calc(48px + env(safe-area-inset-bottom, 0px));
   font-family: var(--mono);
 }
-.tarot-head { text-align: center; max-width: 560px; }
+.tarot-chat-page { padding-bottom: 180px; }
+.tarot-head { text-align: center; max-width: 560px; display: flex; flex-direction: column; align-items: center; }
 .tarot-title { font-size: 22px; line-height: 28px; color: var(--fg); font-weight: 400; }
 .tarot-sub { margin-top: 8px; font-size: 13px; line-height: 20px; color: var(--body); }
+.tarot-new { margin-top: 12px; }
+.tarot-note { margin-top: 8px; font-size: 11px; line-height: 16px; color: var(--mut); text-align: center; }
 
-/* choosing: two spread plates, the question line, the draw button */
-.tarot-setup {
-  margin-top: 32px; width: 100%; max-width: 480px;
-  display: flex; flex-direction: column; gap: 20px; align-items: center;
+/* the thread: user lines right-aligned on a plate, Reader prose full width */
+.tarot-thread {
+  margin-top: 28px; width: 100%; max-width: 560px;
+  display: flex; flex-direction: column; gap: 20px;
 }
-.tarot-spreads { display: flex; gap: 12px; width: 100%; }
-/* Deliberately NOT the DS Radio: that's a dot-and-label form control,
-   and these are rich chip cards (name + description). The radiogroup
-   semantics live in the markup (role=radio / aria-checked).
-   Selection is the DS pattern (fill + accent title, per ListRow selected /
-   SideNavigation), never a ring: an inset box-shadow ring is rectangular
-   and the stepped plate clip slices its corners off. */
-.tarot-spread {
-  flex: 1; display: flex; flex-direction: column; gap: 6px; text-align: left;
-  font-family: var(--mono); padding: 14px 14px 12px; border: 0; cursor: pointer;
-  background: transparent; color: var(--body);
+.tm { margin: 0; font-size: 14px; line-height: 22px; color: var(--body); }
+.tm-user {
+  align-self: flex-end; max-width: 85%;
+  padding: 10px 14px; background: var(--hover); color: var(--fg);
+  clip-path: var(--plate-round-lg);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.tm-reader { display: flex; flex-direction: column; gap: 16px; }
+.tm-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tm-wait { margin: 0; color: var(--mut); }
+@media (prefers-reduced-motion: no-preference) {
+  .tm-wait { animation: tarot-breathe 1.2s ease-in-out infinite alternate; }
+}
+@keyframes tarot-breathe { from { opacity: .45; } to { opacity: 1; } }
+.tm-system { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; color: var(--mut); }
+.tm-system p { margin: 0; }
+/* scroll anchor: land the newest line above the fixed composer */
+.tarot-end { scroll-margin-bottom: 170px; }
+
+/* empty state: three starter prompts (spread-chip recipe) */
+.tarot-starters { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+.tarot-chip {
+  font-family: var(--mono); font-size: 13px; line-height: 18px; text-align: left;
+  padding: 12px 14px; border: 0; cursor: pointer;
+  background: transparent; color: var(--accent);
   clip-path: var(--plate-round-lg);
   transition: background-color .12s, color .12s;
 }
-@media (hover: hover) { .tarot-spread:hover { background: var(--hover); color: var(--fg); } }
-.tarot-spread.sel { background: var(--hover); color: var(--fg); }
-/* keyboard-only inset ring, accepting the clipped corners (DS ListRow
-   ships the same focus recipe on the same clip) */
-.tarot-spread:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
-.tarot-spread .ts-name { font-size: 14px; color: var(--accent); }
-.tarot-spread .ts-desc { font-size: 12px; line-height: 17px; }
-.tarot-ask { width: 100%; }
-/* question field is the DS Input (quiet). */
-/* .tarot-draw retired: draw actions are the DS Button (primary). */
-.tarot-note { font-size: 11px; color: var(--mut); }
+@media (hover: hover) { .tarot-chip:hover { background: var(--hover); } }
+.tarot-chip:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
 
-/* the table: spread slots, then the typed reading */
-.tarot-table { margin-top: 36px; width: 100%; max-width: 640px; display: flex; flex-direction: column; align-items: center; }
+/* cards */
 .tarot-cards { display: flex; gap: 24px; justify-content: center; perspective: 900px; }
-.tarot-cards.shuffling .tc-card { animation: tarot-riffle .5s ease-in-out infinite alternate; }
-@keyframes tarot-riffle {
-  from { transform: translateY(0); }
-  to { transform: translateY(-6px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tarot-cards.shuffling .tc-card { animation: none; }
-}
+.tarot-strip { gap: 16px; padding: 4px 0; }
 .tc-slot { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 0; }
-/* tap-to-turn: the face-down card is a bare button (the card art is the
-   whole affordance); once turned it stays mounted, disabled */
-.tc-tap { display: block; padding: 0; background: none; border: 0; cursor: pointer; }
-.tc-tap:disabled { cursor: default; }
-.tc-tap:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
-/* unturned cards keep a slow float after the shuffle: the invitation */
-@media (prefers-reduced-motion: no-preference) {
-  .tarot-cards:not(.shuffling) .tc-tap:not(:disabled) .tc-card {
-    animation: tarot-riffle 1.8s ease-in-out infinite alternate;
-  }
-}
-/* dims match the baked 25x38 face at TileBox scale 4 (3 on handhelds) */
+/* dims match the baked 25x38 face at the TileBox scale in use */
 .tc-card { width: 100px; height: 152px; }
+.tarot-strip .tc-card { width: 75px; height: 114px; }
 .tc-inner {
   position: relative; width: 100%; height: 100%;
   transform-style: preserve-3d;
@@ -1402,69 +1391,24 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 @media (prefers-reduced-motion: reduce) {
   .tc-inner { transition: none; }
 }
-/* the border and fill live in the baked art; these are bare easels */
 .tc-back, .tc-face {
   position: absolute; inset: 0; backface-visibility: hidden;
   display: flex; align-items: center; justify-content: center;
 }
 .tc-face { transform: rotateY(180deg); }
+.tc-tap { display: block; padding: 0; background: none; border: 0; cursor: pointer; }
+.tc-tap:disabled { cursor: default; }
 .tc-poslabel {
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   font-size: 11px; color: var(--mut); letter-spacing: 1px; text-transform: uppercase;
 }
-.tc-poslabel .tc-name { font-size: 12px; color: var(--accent); letter-spacing: 0; text-transform: none; }
+.tc-poslabel .tc-name { font-size: 12px; color: var(--accent); letter-spacing: 0; text-transform: none; text-align: center; max-width: 110px; }
 
-.tarot-reading { margin-top: 32px; width: 100%; max-width: 480px; cursor: pointer; }
-/* the visitor's own words, echoed: the original question above the
-   greeting, and each follow-up above the Reader's reply */
-.tarot-reading .tr-asked { margin-bottom: 10px; font-size: 12px; line-height: 18px; color: var(--mut); }
-.tarot-reading .tr-chat { margin-top: 24px; }
-.tarot-reading .tr-chat .tr-asked { margin-bottom: 6px; }
-/* the skip affordance, visible while the reading types */
-.tarot-reading .tr-skiphint { margin-top: 16px; font-size: 11px; color: var(--mut); }
-.tarot-reading .tr-head {
-  margin: 20px 0 6px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--accent); font-weight: 400;
-}
-.tarot-reading .tr-text { font-size: 14px; line-height: 22px; color: var(--body); min-height: 22px; }
-.tarot-reading .tr-synth { margin-top: 20px; }
-.tarot-reading .tr-farewell { margin-top: 14px; color: var(--mut); }
-/* after the farewell: the quiet session controls (new reading / ledger);
-   the DS buttons own their look, this row only places them */
-.tarot-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-
-/* the ledger: past sittings, newest first. Rows reuse the spread-chip
-   recipe (plate clip, hover fill, inset focus ring); text is name/date,
-   the question in the visitor's own words, then the cards drawn */
-.tarot-ledger {
-  margin-top: 32px; width: 100%; max-width: 480px;
-  display: flex; flex-direction: column; gap: 10px;
-}
-.tl-row {
-  display: flex; flex-direction: column; gap: 4px; text-align: left;
-  font-family: var(--mono); padding: 12px 14px; border: 0; cursor: pointer;
-  background: transparent; color: var(--body);
-  clip-path: var(--plate-round-lg);
-  transition: background-color .12s, color .12s;
-}
-@media (hover: hover) { .tl-row:hover { background: var(--hover); color: var(--fg); } }
-.tl-row:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
-.tl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.tl-name { font-size: 14px; color: var(--accent); }
-.tl-date { font-size: 11px; color: var(--mut); }
-.tl-q { font-size: 12px; line-height: 17px; }
-.tl-cards { font-size: 11px; line-height: 16px; color: var(--mut); }
-.tl-back { margin-top: 12px; display: flex; justify-content: center; }
-
-/* footer chat bar: fixed above the dock notch; ring recipe (stroke layer
-   + fill layer, both clipped) so the plate corners step like everything
-   else. .has-chat pads the page so the typed column scrolls clear of it. */
-/* padding clears the fixed bar plus the session-controls row above it */
-.tarot-page.has-chat { padding-bottom: 200px; }
-.tarot-page.has-chat .tarot-reading > div:last-child { scroll-margin-bottom: 150px; }
+/* composer: fixed above the dock notch; ring recipe (stroke layer + fill
+   layer, both clipped) so the plate corners step like everything else */
 .tarot-chatbar {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: 64px;
-  width: min(640px, calc(100% - 64px)); z-index: 5;
+  width: min(560px, calc(100% - 64px)); z-index: 5;
   padding: 1px; background: var(--surface-container-stroke);
   clip-path: var(--plate-round-lg);
 }
@@ -1473,12 +1417,15 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   padding: 10px; background: var(--bg);
   clip-path: var(--plate-round-lg);
 }
+.tarot-chatbar-in > :first-child { flex: 1; min-width: 0; }
 
 @media (max-width: 600px) {
   .tarot-page { padding-top: 64px; }
+  .tarot-page { padding-left: 16px; padding-right: 16px; }
+  .tarot-chat-page { padding-bottom: 170px; }
   .tarot-cards { gap: 12px; }
   .tc-card { width: 75px; height: 114px; }
-  .tarot-spreads { flex-direction: column; }
+  .tarot-strip .tc-card { width: 50px; height: 76px; }
   .tarot-chatbar { width: calc(100% - 32px); bottom: 56px; }
 }
 .tarot-scene { display: block; width: min(432px, 100%); margin: 0 auto; image-rendering: pixelated; }
