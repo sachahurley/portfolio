@@ -57,7 +57,7 @@ export const projects: Project[] = [
     img: true,
     imgRight: true, // demo: two-column portrait thumbnail on mobile
     longDescription:
-      'ColDAW is a cloud-based, collaborative digital audio workstation. Placeholder case study - replace with the real write-up.',
+      'ColDAW is a cloud-based, collaborative digital audio workstation. Full case study coming soon.',
   },
   {
     slug: 'thinkle',
@@ -67,7 +67,7 @@ export const projects: Project[] = [
     tags: ['Product Design', 'Hardware', 'Learning'],
     featured: false,
     longDescription:
-      'Thinkle is a smart-glasses learning system. Placeholder case study - replace with the real write-up.',
+      'Thinkle is a smart-glasses learning system. Full case study coming soon.',
   },
 ]
 

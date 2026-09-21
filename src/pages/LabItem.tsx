@@ -2,16 +2,22 @@
  * Lab experiment (/lab/:slug)
  *
  * Title + a live demo. "reactive-grid" ships a cursor-reactive dot grid on a
- * canvas; other experiments are placeholders.
+ * canvas and "tile-atlas" a sprite browser; other experiments are placeholders.
+ * An experiment with a `lock` shows the code gate until it is unlocked.
  */
 
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
 import { getLabBySlug } from '../data/lab'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
+import { useUnlocked } from '../lib/unlocks'
+import LockGate from '../components/lab/LockGate'
 import NotFound from './NotFound'
 import { usePageTitle } from '../lib/usePageTitle'
+
+// The atlas pulls in its own data fetch and styles, so it loads only when opened.
+const TileAtlas = lazy(() => import('../components/lab/TileAtlas'))
 
 export default function LabItem() {
   const { slug } = useParams<{ slug: string }>()
@@ -19,11 +25,14 @@ export default function LabItem() {
   usePageTitle(item?.title)
   const { award } = useXp()
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const unlocked = useUnlocked()
+  const locked = !!item?.lock && !unlocked.includes(item.slug)
   const hasDemo = item?.demo === 'reactive-grid'
+  const isAtlas = item?.demo === 'tile-atlas' && !locked
 
   useEffect(() => {
-    if (item) award(XP_AWARDS.lab, 'played in the lab', `lab:${item.slug}`)
-  }, [item, award])
+    if (item && !locked) award(XP_AWARDS.lab, 'played in the lab', `lab:${item.slug}`)
+  }, [item, locked, award])
 
   useEffect(() => {
     if (!hasDemo) return
@@ -92,6 +101,35 @@ export default function LabItem() {
   }, [hasDemo])
 
   if (!item) return <NotFound />
+
+  if (locked) {
+    return (
+      <MinimalPage>
+        <h1 className="page">{item.title}</h1>
+        <p className="lead">{item.desc}</p>
+        <div className="mn-block">
+          <LockGate slug={item.slug} code={item.lock!.code} hint={item.lock!.hint} />
+        </div>
+      </MinimalPage>
+    )
+  }
+
+  if (isAtlas) {
+    return (
+      <MinimalPage wide>
+        <h1 className="page">{item.title}</h1>
+        <p className="lead">
+          Every sprite from the Urizen OneBit sheet, named and sorted. Click one to copy its id — the same
+          ids the site uses to draw tiles.
+        </p>
+        <div className="mn-block">
+          <Suspense fallback={<p className="meta">Loading sprites...</p>}>
+            <TileAtlas />
+          </Suspense>
+        </div>
+      </MinimalPage>
+    )
+  }
 
   return (
     <MinimalPage>

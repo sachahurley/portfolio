@@ -9,6 +9,7 @@
 import { type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from './icons'
+import { TileBox } from './TileSprite'
 
 interface ItemProps {
   to?: string        // internal route (React Router)
@@ -20,6 +21,7 @@ interface ItemProps {
   img?: boolean      // show a placeholder 16:9 thumbnail
   imgSrc?: string    // a real thumbnail image (overrides the placeholder)
   imgRight?: boolean // on mobile, keep a two-column row with a portrait (4:3) image on the right, instead of stacking it below
+  locked?: boolean   // gated row: padlock before the title, muted styling
   onClick?: () => void
 }
 
@@ -39,9 +41,9 @@ function clampSentences(s: string, max = 2): string {
   return sentences.slice(0, max).join(' ').trim()
 }
 
-export function Item({ to, href, external, date, title, desc, img, imgSrc, imgRight, onClick }: ItemProps) {
+export function Item({ to, href, external, date, title, desc, img, imgSrc, imgRight, locked, onClick }: ItemProps) {
   const hasImg = !!img || !!imgSrc
-  const className = `item${hasImg ? ' has-img' : ''}${hasImg && imgRight ? ' img-right' : ''}`
+  const className = `item${hasImg ? ' has-img' : ''}${hasImg && imgRight ? ' img-right' : ''}${locked ? ' is-locked' : ''}`
 
   const displayTitle = stripTrailingPeriod(title)
   const displayDesc = typeof desc === 'string' ? clampSentences(desc) : desc
@@ -50,6 +52,7 @@ export function Item({ to, href, external, date, title, desc, img, imgSrc, imgRi
     <>
       {date && <span className="nd">{date}</span>}
       <span className="t">
+        {locked && <TileBox x={10} y={45} scale={2} className="lockicon" tint="currentColor" />}
         {displayTitle}
         {external && <span className="ext"><ArrowUpRight /></span>}
       </span>

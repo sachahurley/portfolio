@@ -1,14 +1,18 @@
 /**
  * Project detail (/projects/:slug)
  *
- * Title + role meta + prose body (problem / outcome subheads). External
- * projects keep a "View project ↗" CTA. No back button - the dock handles it.
+ * Long-form article template: title + meta header from projects.ts data,
+ * then the project's lazy-loaded content file (src/content/projects) or the
+ * minimal FallbackArticle when none exists. External projects keep a
+ * "view project ↗" CTA. No back button - the dock handles it.
  */
 
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
 import { getProjectBySlug } from '../data/projects'
+import { projectContent } from '../content/projects/registry'
+import FallbackArticle from '../components/article/FallbackArticle'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
 import { ArrowUpRight } from '../components/icons'
@@ -26,47 +30,30 @@ export default function ProjectDetail() {
 
   if (!project) return <NotFound />
 
+  const Content = projectContent[project.slug]
+  const meta = [project.role, project.year].filter(Boolean).join(' · ')
+
   return (
     <MinimalPage>
       <h1 className="page">{project.title}</h1>
-      {project.role && <div className="meta" style={{ marginTop: 4 }}>{project.role}</div>}
+      {meta && <div className="meta" style={{ marginTop: 4 }}>{meta}</div>}
 
       <div className="prose">
-        <div className="thumb" />
-        <p>
-          {project.longDescription || project.description} Placeholder case study -
-          in the real build this is a full write-up with the same prose rhythm as
-          the notes pages.
-        </p>
-        <h2>The problem</h2>
-        <p>
-          What you set out to solve, and the constraints you were working within.
-          Subheadings use the same spacing rhythm as the notes pages.
-        </p>
-        <h2>The outcome</h2>
-        <p>
-          What shipped and what it changed. Inline{' '}
-          <a href="https://x.com/sacha_hurley" target="_blank" rel="noopener noreferrer">
-            links
-          </a>{' '}
-          are amber and underlined.
-        </p>
-        {project.externalUrl && (
-          <p>
-            <a href={project.externalUrl} target="_blank" rel="noopener noreferrer">
-              View project <ArrowUpRight />
-            </a>
-          </p>
+        {Content ? (
+          <Suspense fallback={<div className="art-loading" aria-hidden />}>
+            <Content />
+          </Suspense>
+        ) : (
+          <FallbackArticle project={project} />
         )}
       </div>
 
       {project.externalUrl && (
         <a
-          className="btn"
+          className="btn art-cta"
           href={project.externalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ marginTop: 28 }}
         >
           view project <ArrowUpRight />
         </a>

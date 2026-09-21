@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from '@scorp-ds/components'
 
@@ -18,6 +18,9 @@ import Lab from './pages/Lab'
 import LabItem from './pages/LabItem'
 import About from './pages/About'
 import NotFound from './pages/NotFound'
+
+// Dev-only tools (tree-shaken out of production builds)
+const TileBrowser = import.meta.env.DEV ? lazy(() => import('./pages/dev/TileBrowser')) : null
 
 const SECTION_LABELS: Record<string, string> = {
   projects: 'projects',
@@ -70,6 +73,11 @@ function App() {
 
               {/* About */}
               <Route path="/about" element={<About />} />
+
+              {/* Dev-only: tile asset browser */}
+              {TileBrowser && (
+                <Route path="/dev/tiles" element={<Suspense fallback={null}><TileBrowser /></Suspense>} />
+              )}
 
               {/* 404 - any unmatched route */}
               <Route path="*" element={<NotFound />} />

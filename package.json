@@ -10,7 +10,8 @@
     "vendor:icons": "node scripts/vendor-icons.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tiles": "node scripts/index-tiles.mjs"
   },
   "dependencies": {
     "@fontsource/fragment-mono": "^5.2.8",
@@ -19,7 +20,8 @@
     "lucide-react": "^0.564.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.13.0"
+    "react-router-dom": "^7.13.0",
+    "shiki": "^4.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

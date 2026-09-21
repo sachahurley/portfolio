@@ -46,21 +46,47 @@ const TURN_TIME_MAX = 0.42
 // (then auto-resumes), with its pincers easing open/closed the whole time.
 const TAP_HOLD_MIN = 2.6 // s
 const TAP_HOLD_MAX = 3.6
-// The two claws sit at the BOTTOM CORNERS of the 46x64 top-down sprite (tail
-// curls at the top; legs/body run down the center). Slice JUST those two corners
-// so they can hinge open/closed about a pivot like a pair of scissors, leaving
-// the center body static. Tune these rects/pivots if the claws look off.
-const CLAW_TOP_Y = 42 // claw band starts this far down
-const CLAW_BOT_H = 22 // ...and runs to the bottom (42..64)
-const CLAW_L_W = 18 // left claw:  x 0..18  (bottom-left corner)
-const CLAW_R_X = 28 // right claw starts at x 28
-const CLAW_R_W = 18 // right claw: x 28..46 (bottom-right corner)
-// Hinge points (sprite px) each claw rotates about, near where it meets the body.
-const CLAW_PIVOT_Y = 46
-const CLAW_L_PIVOT_X = 16
-const CLAW_R_PIVOT_X = 30
-const CLAW_MAX_ANGLE = 0.34 // radians (~19°) of swing per claw at full open
+// Each pincer ends in a pac-man-like claw at a bottom corner of the 46x64
+// top-down sprite: a static outer palm and a movable inner jaw, separated by
+// the dark diagonal "mouth" crease drawn in the art. The movable jaw is split
+// from the sprite ALONG that crease (the cut leans like a clock hand — 11
+// o'clock on the left claw, 1 o'clock on the right), so the seam coincides
+// with the mouth line and never shows. Only the jaw rotates, hinging at the
+// top of the crease where the claw meets the arm; palm/arm/body stay static.
+interface JawDef {
+  x0: number // cut line top endpoint (sprite px, pixel-center space)
+  y0: number
+  dx: number // cut line direction: runs (x0,y0) -> (x0+dx, y0+dy)
+  dy: number
+  sign: 1 | -1 // which side of the line is the movable jaw
+  xMin: number // claw's column range, so the test can't leak elsewhere
+  xMax: number
+  pivotX: number // hinge point at the top of the crease
+  pivotY: number
+}
+const JAW_TOP_Y = 50 // jaws live below this row
+const JAW_L: JawDef = { x0: 3.5, y0: 50, dx: 5, dy: 13, sign: 1, xMin: 0, xMax: 12, pivotX: 4, pivotY: 51 }
+const JAW_R: JawDef = { x0: 42.5, y0: 50, dx: -5, dy: 13, sign: -1, xMin: 33, xMax: 45, pivotX: 42, pivotY: 51 }
+const CLAW_MAX_ANGLE = 0.34 // radians (~19°) of swing per jaw at full open
 const CLAW_HZ = 1.1 // open/close cycles per second
+// The whole pedipalp (arm + claw) also swings outward from a shoulder pivot in
+// time with the jaws, so the scorpion spreads its arms wider as it threatens.
+// The arm/body cut is a short vertical line where the limb merges into the
+// torso (rows 40-43); the pivot sits ON that cut so rotation barely disturbs
+// the junction. The jaw layers are drawn inside the arm's rotated frame, so
+// the claws ride along with the spread while still chomping.
+interface ArmDef {
+  bandXEnd: number // shoulder band (y 39-43): arm pixels up to/from this column
+  lowXEnd: number // below the band (y 44+): claw region column bound
+  sign: 1 | -1 // 1 = left arm (x <= bounds), -1 = right arm (x >= bounds)
+  pivotX: number // shoulder hinge, centered on the vertical cut
+  pivotY: number
+}
+const ARM_BAND_TOP = 39
+const ARM_BAND_BOT = 43
+const ARM_L: ArmDef = { bandXEnd: 16, lowXEnd: 12, sign: 1, pivotX: 17, pivotY: 41.5 }
+const ARM_R: ArmDef = { bandXEnd: 29, lowXEnd: 33, sign: -1, pivotX: 29, pivotY: 41.5 }
+const ARM_MAX_ANGLE = 0.18 // radians (~10°) of outward spread per arm
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t
@@ -93,29 +119,48 @@ function recolor(img: HTMLImageElement): HTMLCanvasElement {
   return off
 }
 
-// Copy a sub-rect of a sprite into a same-size canvas (rest transparent), so the
-// piece can be drawn shifted while staying aligned to the full sprite's box.
-function sliceLayer(src: HTMLCanvasElement, rx: number, ry: number, rw: number, rh: number): HTMLCanvasElement {
-  const c = document.createElement('canvas')
-  c.width = src.width
-  c.height = src.height
-  const cx = c.getContext('2d')!
-  cx.imageSmoothingEnabled = false
-  cx.drawImage(src, rx, ry, rw, rh, rx, ry, rw, rh)
-  return c
+// True when sprite pixel (x,y) belongs to a claw's movable jaw: inside the
+// claw's column band, below the claw top, and on the mouth side of the cut.
+function inJaw(x: number, y: number, j: JawDef): boolean {
+  if (y < JAW_TOP_Y || x < j.xMin || x > j.xMax) return false
+  const cross = j.dy * (x + 0.5 - j.x0) - j.dx * (y + 0.5 - j.y0)
+  return j.sign * cross > 0
 }
 
-// The full sprite with the two pincer rects erased (the static "body" layer).
-function bodyLayer(src: HTMLCanvasElement): HTMLCanvasElement {
+// True when sprite pixel (x,y) belongs to an arm assembly (arm + claw palm),
+// excluding the jaw, which is its own layer nested inside the arm's transform.
+function inArm(x: number, y: number, arm: ArmDef): boolean {
+  if (y < ARM_BAND_TOP) return false
+  if (inJaw(x, y, arm.sign === 1 ? JAW_L : JAW_R)) return false
+  const bound = y <= ARM_BAND_BOT ? arm.bandXEnd : arm.lowXEnd
+  return arm.sign === 1 ? x <= bound : x >= bound
+}
+
+// Copy only the pixels passing `test` into a same-size transparent canvas, so
+// the piece can be rotated while staying aligned to the full sprite's box.
+function maskLayer(src: HTMLCanvasElement, test: (x: number, y: number) => boolean): HTMLCanvasElement {
   const c = document.createElement('canvas')
   c.width = src.width
   c.height = src.height
   const cx = c.getContext('2d')!
   cx.imageSmoothingEnabled = false
   cx.drawImage(src, 0, 0)
-  cx.clearRect(0, CLAW_TOP_Y, CLAW_L_W, CLAW_BOT_H)
-  cx.clearRect(CLAW_R_X, CLAW_TOP_Y, CLAW_R_W, CLAW_BOT_H)
+  const data = cx.getImageData(0, 0, c.width, c.height)
+  for (let y = 0; y < c.height; y++) {
+    for (let x = 0; x < c.width; x++) {
+      if (!test(x, y)) data.data[(y * c.width + x) * 4 + 3] = 0
+    }
+  }
+  cx.putImageData(data, 0, 0)
   return c
+}
+
+const inAnyMoving = (x: number, y: number) =>
+  inJaw(x, y, JAW_L) || inJaw(x, y, JAW_R) || inArm(x, y, ARM_L) || inArm(x, y, ARM_R)
+
+// The full sprite with all moving pieces (arms + jaws) erased.
+function bodyLayer(src: HTMLCanvasElement): HTMLCanvasElement {
+  return maskLayer(src, (x, y) => !inAnyMoving(x, y))
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -149,9 +194,11 @@ export default function RoamingScorpion({ className }: { className?: string }) {
           left: HTMLCanvasElement
           right: HTMLCanvasElement
           idle: HTMLCanvasElement
-          idleBody: HTMLCanvasElement // south sprite with pincers removed
-          clawL: HTMLCanvasElement // left pincer only (full-size layer)
-          clawR: HTMLCanvasElement // right pincer only (full-size layer)
+          idleBody: HTMLCanvasElement // south sprite with arms + jaws removed
+          armL: HTMLCanvasElement // left arm + claw palm (full-size layer)
+          armR: HTMLCanvasElement // right arm + claw palm (full-size layer)
+          clawL: HTMLCanvasElement // left claw's movable jaw only (full-size layer)
+          clawR: HTMLCanvasElement // right claw's movable jaw only (full-size layer)
         }
       | null = null
 
@@ -217,19 +264,38 @@ export default function RoamingScorpion({ className }: { className?: string }) {
       ctx!.drawImage(sheet, 0, sy, WALK_FW, WALK_FH, Math.round(x), dy, walkW, walkH)
     }
 
-    // Draw a claw layer rotated by `ang` about a pivot (canvas px) — only the
-    // claw pixels exist in the layer, so just the claw hinges.
-    function drawHinged(layer: HTMLCanvasElement, dx: number, dy: number, w: number, h: number, px: number, py: number, ang: number) {
+    // Draw one pedipalp: the arm layer rotated by `armAng` about the shoulder,
+    // then the jaw layer rotated by `jawAng` about its own pivot INSIDE the
+    // arm's already-rotated frame, so the claw rides along with the spread.
+    function drawPedipalp(
+      arm: HTMLCanvasElement,
+      jaw: HTMLCanvasElement,
+      dx: number,
+      dy: number,
+      w: number,
+      h: number,
+      apx: number,
+      apy: number,
+      armAng: number,
+      jpx: number,
+      jpy: number,
+      jawAng: number,
+    ) {
       ctx!.save()
-      ctx!.translate(px, py)
-      ctx!.rotate(ang)
-      ctx!.translate(-px, -py)
-      ctx!.drawImage(layer, dx, dy, w, h)
+      ctx!.translate(apx, apy)
+      ctx!.rotate(armAng)
+      ctx!.translate(-apx, -apy)
+      ctx!.drawImage(arm, dx, dy, w, h)
+      ctx!.translate(jpx, jpy)
+      ctx!.rotate(jawAng)
+      ctx!.translate(-jpx, -jpy)
+      ctx!.drawImage(jaw, dx, dy, w, h)
       ctx!.restore()
     }
 
-    // Held south pose after a tap: body stays put while the two corner claws
-    // hinge open/closed like scissors.
+    // Held south pose after a tap: the body stays put while both pedipalps
+    // spread outward from the shoulders and each claw's movable inner jaw
+    // hinges open/closed along the mouth crease.
     function drawTapped() {
       if (!sheets) return
       const h = walkH
@@ -240,10 +306,19 @@ export default function RoamingScorpion({ className }: { className?: string }) {
       const sy = h / IDLE_FH
       const open = Math.sin(clawPhase) * 0.5 + 0.5 // 0..1
       const ang = open * CLAW_MAX_ANGLE
+      const spread = open * ARM_MAX_ANGLE
       ctx!.drawImage(sheets.idleBody, dx, dy, w, h)
-      // left claw swings out (CCW), right claw mirrors (CW)
-      drawHinged(sheets.clawL, dx, dy, w, h, dx + CLAW_L_PIVOT_X * sx, dy + CLAW_PIVOT_Y * sy, -ang)
-      drawHinged(sheets.clawR, dx, dy, w, h, dx + CLAW_R_PIVOT_X * sx, dy + CLAW_PIVOT_Y * sy, ang)
+      // left arm spreads CW (outward-left), its jaw swings CCW; right mirrors
+      drawPedipalp(
+        sheets.armL, sheets.clawL, dx, dy, w, h,
+        dx + ARM_L.pivotX * sx, dy + ARM_L.pivotY * sy, spread,
+        dx + JAW_L.pivotX * sx, dy + JAW_L.pivotY * sy, -ang,
+      )
+      drawPedipalp(
+        sheets.armR, sheets.clawR, dx, dy, w, h,
+        dx + ARM_R.pivotX * sx, dy + ARM_R.pivotY * sy, -spread,
+        dx + JAW_R.pivotX * sx, dy + JAW_R.pivotY * sy, ang,
+      )
     }
 
     // --- mode transitions -------------------------------------------------
@@ -384,8 +459,10 @@ export default function RoamingScorpion({ className }: { className?: string }) {
           right: recolor(r),
           idle,
           idleBody: bodyLayer(idle),
-          clawL: sliceLayer(idle, 0, CLAW_TOP_Y, CLAW_L_W, CLAW_BOT_H),
-          clawR: sliceLayer(idle, CLAW_R_X, CLAW_TOP_Y, CLAW_R_W, CLAW_BOT_H),
+          armL: maskLayer(idle, (px, py) => inArm(px, py, ARM_L)),
+          armR: maskLayer(idle, (px, py) => inArm(px, py, ARM_R)),
+          clawL: maskLayer(idle, (px, py) => inJaw(px, py, JAW_L)),
+          clawR: maskLayer(idle, (px, py) => inJaw(px, py, JAW_R)),
         }
         x = Math.max(0, (bandW - walkW) / 2) // start centred
         if (reduce) {
