@@ -2,11 +2,11 @@ import React from "react";
 /**
  * TuiIcon -- Terminal UI Icon component (Tier 2)
  *
- * Every icon is drawn as inline SVG on a 16px grid in the plate language:
- * 2px strokes, square caps, miter joins, filled forms only where filled is
- * the convention (media controls, star). Drawing instead of typing a glyph
- * makes icons identical on every OS: Fragment Mono lacks nearly all symbol
- * glyphs, so typed icons fell back to per-platform system fonts.
+ * Every icon is 1-bit pixel art on a 7x7 grid (TUI_ICON_BITMAPS), drawn as
+ * crisp SVG squares. One art pixel is 2px at the default size, the same
+ * 2px step the plates and the portfolio's Urizen tiles use; larger sizes
+ * step in whole pixels so edges never blur. The odd grid gives every icon a
+ * true center column, so 1-pixel lines stay symmetric.
  *
  * TUI_ICON_GLYPHS keeps each icon's Unicode form for plain-text contexts
  * (tui-art frames, terminal-style strings); those render consistently via
@@ -14,7 +14,7 @@ import React from "react";
  */
 /**
  * Unicode text form of each icon name (Lucide-compatible keys), for plain-text
- * contexts. TuiIcon itself renders the drawings in {@link TUI_ICON_DRAWINGS}.
+ * contexts. TuiIcon itself renders the bitmaps in {@link TUI_ICON_BITMAPS}.
  */
 export declare const TUI_ICON_GLYPHS: {
     readonly AlertCircle: "⚠";
@@ -69,16 +69,13 @@ export declare const TUI_ICON_GLYPHS: {
 };
 /** Keys of {@link TUI_ICON_GLYPHS} — use for typed catalogs or selects. */
 export type TuiIconName = keyof typeof TUI_ICON_GLYPHS;
-/** One icon: `stroke` paths draw at 2px in currentColor, `fill` paths fill solid. */
-interface IconDrawing {
-    stroke?: string;
-    fill?: string;
-}
 /**
- * The drawn icon set, 16x16 viewBox. Keyed by every {@link TuiIconName}, so
- * adding a glyph name without a drawing is a type error.
+ * The 1-bit icon set: seven rows of seven pixels each, `#` on and `.` off.
+ * Keyed by every {@link TuiIconName}, so a name without a bitmap is a type
+ * error. Filled silhouettes with knocked-out detail (the ! in AlertTriangle)
+ * follow the Urizen 1-bit tileset the portfolio uses.
  */
-export declare const TUI_ICON_DRAWINGS: Record<TuiIconName, IconDrawing>;
+export declare const TUI_ICON_BITMAPS: Record<TuiIconName, readonly string[]>;
 export interface TuiIconProps {
     /** Icon name -- must match a key in {@link TUI_ICON_GLYPHS} (same as the Lucide component name). */
     name: string;
