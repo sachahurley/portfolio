@@ -24,12 +24,12 @@ import {
   type ChatMessage,
   type Draw,
   type SpreadId,
-} from '../../src/lib/tarot/contract'
-import { CARD_BY_ID, SPREADS } from '../../src/data/tarot'
-import { drawSpread } from '../../src/lib/tarot/draw'
-import { makeLimiter } from './limits'
-import { rejectCrossSite, tarotApiEnabled } from './guard'
-import { templatedReply } from './templated'
+} from '../../src/lib/tarot/contract.js'
+import { CARD_BY_ID, SPREADS } from '../../src/data/tarot.js'
+import { drawSpread } from '../../src/lib/tarot/draw.js'
+import { makeLimiter } from './limits.js'
+import { rejectCrossSite, tarotApiEnabled } from './guard.js'
+import { templatedReply } from './templated.js'
 
 const MODEL = () => process.env.TAROT_MODEL ?? 'claude-haiku-4-5'
 const MAX_BODY = 64 * 1024

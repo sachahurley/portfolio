@@ -7,9 +7,9 @@
  * the endpoint to the model with no other change.
  */
 
-import type { ChatEvent, ChatMessage, Draw, SpreadId } from '../../src/lib/tarot/contract'
-import { CARD_BY_ID, SPREADS, type TarotCard } from '../../src/data/tarot'
-import { drawSpread } from '../../src/lib/tarot/draw'
+import type { ChatEvent, ChatMessage, Draw, SpreadId } from '../../src/lib/tarot/contract.js'
+import { CARD_BY_ID, SPREADS, type TarotCard } from '../../src/data/tarot.js'
+import { drawSpread } from '../../src/lib/tarot/draw.js'
 
 type DrawnRef = Draw['cards'][number]
 type Placed = { card: TarotCard; ref: DrawnRef; label: string }
