@@ -79,11 +79,11 @@ export const projects: Project[] = [
     tags: ['Design System', 'React', 'TypeScript'],
     featured: true,
     img: true,
-    externalUrl: 'https://sachahurley.github.io/scorpion-ui-v2/',
+    externalUrl: 'https://sachahurley.github.io/scorpion-design-system/',
     tools: ['Cursor', 'Claude', 'React', 'Tailwind CSS'],
     year: '2025',
     longDescription:
-      'Scorpion UI is a token-based design system built from the ground up using AI tools. It includes a complete component library, design token system, and interactive documentation site.',
+      'Scorpion Design System is a token-based design system built from the ground up using AI tools. It includes a complete component library, design token system, and interactive documentation site.',
   },
   {
     // Fake project: a working template exercising every extended layout
