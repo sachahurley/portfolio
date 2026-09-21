@@ -676,6 +676,12 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   font-family: var(--mono); color: var(--fg); position: relative;
 }
 @media (hover: hover) { .gf-charstrip:hover { background: var(--bg); } }
+/* rewards-waiting pip: the dock notch's dot recipe (one dot, one meaning);
+   an inline badge crushed the strip's narrow text column */
+.gf-cs-dot {
+  position: absolute; top: 10px; right: 10px; width: 8px; height: 8px;
+  background: var(--rar-common); pointer-events: none;
+}
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gf-cs-lvl { font-size: 11px; color: var(--body); }
