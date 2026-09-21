@@ -1,5 +1,5 @@
 import { jsxs as v, jsx as o, Fragment as te } from "react/jsx-runtime";
-import Ee, { forwardRef as O, useEffect as M, useId as me, useRef as W, useState as B, useImperativeHandle as lt, createContext as Fe, useContext as ze, useCallback as ct, useMemo as dt, useLayoutEffect as ut } from "react";
+import Ee, { forwardRef as O, useEffect as M, useId as me, useRef as U, useState as B, useImperativeHandle as lt, createContext as Fe, useContext as ze, useCallback as ct, useMemo as dt, useLayoutEffect as ut } from "react";
 import { useTheme as mt, ThemeProvider as ft } from "next-themes";
 const Ve = O(
   ({
@@ -259,7 +259,7 @@ const gt = (e, t) => {
       if (i.startsWith("[") && i.endsWith("]"))
         return yt(i);
       const c = i.split(ye), l = c[0] === "" && c.length > 1 ? 1 : 0;
-      return Ue(c, l, t);
+      return We(c, l, t);
     },
     getConflictingClassGroupIds: (i, c) => {
       if (c) {
@@ -269,12 +269,12 @@ const gt = (e, t) => {
       return r[i] || Re;
     }
   };
-}, Ue = (e, t, r) => {
+}, We = (e, t, r) => {
   if (e.length - t === 0)
     return r.classGroupId;
   const a = e[t], s = r.nextPart.get(a);
   if (s) {
-    const d = Ue(e, t + 1, s);
+    const d = We(e, t + 1, s);
     if (d) return d;
   }
   const i = r.validators;
@@ -319,7 +319,7 @@ const gt = (e, t) => {
   }
   zt(e, t, r, n);
 }, $t = (e, t, r) => {
-  const n = e === "" ? t : We(t, e);
+  const n = e === "" ? t : Ue(t, e);
   n.classGroupId = r;
 }, St = (e, t, r, n) => {
   if (It(e)) {
@@ -331,9 +331,9 @@ const gt = (e, t) => {
   const a = Object.entries(e), s = a.length;
   for (let i = 0; i < s; i++) {
     const [c, l] = a[i];
-    Ie(l, We(t, c), r, n);
+    Ie(l, Ue(t, c), r, n);
   }
-}, We = (e, t) => {
+}, Ue = (e, t) => {
   let r = e;
   const n = t.split(ye), a = n.length;
   for (let s = 0; s < a; s++) {
@@ -509,12 +509,12 @@ const gt = (e, t) => {
 }, Lt = [], L = (e) => {
   const t = (r) => r[e] || Lt;
   return t.isThemeGetter = !0, t;
-}, Xe = /^\[(?:(\w[\w-]*):)?(.+)\]$/i, He = /^\((?:(\w[\w-]*):)?(.+)\)$/i, Mt = /^\d+(?:\.\d+)?\/\d+(?:\.\d+)?$/, Ot = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/, Ft = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/, Vt = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/, Gt = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/, Bt = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/, Q = (e) => Mt.test(e), S = (e) => !!e && !Number.isNaN(Number(e)), ee = (e) => !!e && Number.isInteger(Number(e)), ke = (e) => e.endsWith("%") && S(e.slice(0, -1)), Y = (e) => Ot.test(e), Ye = () => !0, Ut = (e) => (
+}, Xe = /^\[(?:(\w[\w-]*):)?(.+)\]$/i, He = /^\((?:(\w[\w-]*):)?(.+)\)$/i, Mt = /^\d+(?:\.\d+)?\/\d+(?:\.\d+)?$/, Ot = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/, Ft = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/, Vt = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/, Gt = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/, Bt = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/, Q = (e) => Mt.test(e), S = (e) => !!e && !Number.isNaN(Number(e)), ee = (e) => !!e && Number.isInteger(Number(e)), ke = (e) => e.endsWith("%") && S(e.slice(0, -1)), Y = (e) => Ot.test(e), Ye = () => !0, Wt = (e) => (
   // `colorFunctionRegex` check is necessary because color functions can have percentages in them which which would be incorrectly classified as lengths.
   // For example, `hsl(0 0% 0%)` would be classified as a length without this check.
   // I could also use lookbehind assertion in `lengthUnitRegex` but that isn't supported widely enough.
   Ft.test(e) && !Vt.test(e)
-), Te = () => !1, Wt = (e) => Gt.test(e), qt = (e) => Bt.test(e), Xt = (e) => !f(e) && !p(e), Ht = (e) => re(e, Ze, Te), f = (e) => Xe.test(e), oe = (e) => re(e, Qe, Ut), Pe = (e) => re(e, rr, S), Yt = (e) => re(e, tt, Ye), Kt = (e) => re(e, et, Te), De = (e) => re(e, Ke, Te), Jt = (e) => re(e, Je, qt), ge = (e) => re(e, rt, Wt), p = (e) => He.test(e), ue = (e) => ae(e, Qe), Zt = (e) => ae(e, et), Le = (e) => ae(e, Ke), Qt = (e) => ae(e, Ze), er = (e) => ae(e, Je), xe = (e) => ae(e, rt, !0), tr = (e) => ae(e, tt, !0), re = (e, t, r) => {
+), Te = () => !1, Ut = (e) => Gt.test(e), qt = (e) => Bt.test(e), Xt = (e) => !f(e) && !p(e), Ht = (e) => re(e, Ze, Te), f = (e) => Xe.test(e), oe = (e) => re(e, Qe, Wt), Pe = (e) => re(e, rr, S), Yt = (e) => re(e, tt, Ye), Kt = (e) => re(e, et, Te), De = (e) => re(e, Ke, Te), Jt = (e) => re(e, Je, qt), ge = (e) => re(e, rt, Ut), p = (e) => He.test(e), ue = (e) => ae(e, Qe), Zt = (e) => ae(e, et), Le = (e) => ae(e, Ke), Qt = (e) => ae(e, Ze), er = (e) => ae(e, Je), xe = (e) => ae(e, rt, !0), tr = (e) => ae(e, tt, !0), re = (e, t, r) => {
   const n = Xe.exec(e);
   return n ? n[1] ? t(n[1]) : r(n[2]) : !1;
 }, ae = (e, t, r = !1) => {
@@ -555,7 +555,7 @@ const gt = (e, t) => {
     d,
     p,
     f
-  ], P = () => ["", S, ue, oe], U = () => ["solid", "dashed", "dotted", "double"], ne = () => ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"], _ = () => [S, ke, Le, De], F = () => [
+  ], P = () => ["", S, ue, oe], W = () => ["solid", "dashed", "dotted", "double"], ne = () => ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"], _ = () => [S, ke, Le, De], F = () => [
     // Deprecated since Tailwind CSS v4.0.0
     "",
     "none",
@@ -1499,7 +1499,7 @@ const gt = (e, t) => {
        * @see https://tailwindcss.com/docs/text-decoration-style
        */
       "text-decoration-style": [{
-        decoration: [...U(), "wavy"]
+        decoration: [...W(), "wavy"]
       }],
       /**
        * Text Decoration Thickness
@@ -1909,14 +1909,14 @@ const gt = (e, t) => {
        * @see https://tailwindcss.com/docs/border-style
        */
       "border-style": [{
-        border: [...U(), "hidden", "none"]
+        border: [...W(), "hidden", "none"]
       }],
       /**
        * Divide Style
        * @see https://tailwindcss.com/docs/border-style#setting-the-divider-style
        */
       "divide-style": [{
-        divide: [...U(), "hidden", "none"]
+        divide: [...W(), "hidden", "none"]
       }],
       /**
        * Border Color
@@ -2007,7 +2007,7 @@ const gt = (e, t) => {
        * @see https://tailwindcss.com/docs/outline-style
        */
       "outline-style": [{
-        outline: [...U(), "none", "hidden"]
+        outline: [...W(), "none", "hidden"]
       }],
       /**
        * Outline Offset
@@ -3250,8 +3250,10 @@ const Me = {
   // ♫ music note
   VolumeX: "✖",
   // ✖ heavy X
-  X: "✗"
-  // ✗ ballot X
+  X: "×"
+  // × multiplication sign: text fallback only; TuiIcon draws X (see DRAWN_ICONS)
+}, ar = {
+  X: /* @__PURE__ */ o("svg", { viewBox: "0 0 16 16", className: "h-full w-full", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "square", children: /* @__PURE__ */ o("path", { d: "M3 3L13 13M13 3L3 13" }) })
 }, Oe = {
   3: "w-3 h-3 text-[14px]",
   4: "w-4 h-4 text-[20px]",
@@ -3263,22 +3265,22 @@ const Me = {
   size: t = "4",
   className: r
 }) => {
-  const n = e in Me ? Me[e] : "?", a = Oe[t] ?? Oe[4];
+  const n = ar[e], a = e in Me ? Me[e] : "?", s = Oe[t] ?? Oe[4];
   return /* @__PURE__ */ o(
     "span",
     {
       className: V(
         "inline-flex items-center justify-center font-mono leading-none select-none",
-        a,
+        s,
         r
       ),
       "aria-hidden": "true",
-      children: n
+      children: n ?? a
     }
   );
 };
-function Er({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, width: s = 740, docked: i = !1 }) {
-  const c = W(null), l = W(null), [d, u] = B(e);
+function Rr({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, width: s = 740, docked: i = !1 }) {
+  const c = U(null), l = U(null), [d, u] = B(e);
   M(() => {
     e && u(!0);
   }, [e]);
@@ -3367,7 +3369,7 @@ function Er({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, wi
     }
   ) });
 }
-function Rr({
+function _r({
   title: e,
   subtitle: t,
   headerContent: r,
@@ -3404,7 +3406,7 @@ function Rr({
     }
   );
 }
-function _r({
+function jr({
   variant: e = "default",
   size: t = "medium",
   caps: r = !1,
@@ -3507,7 +3509,7 @@ function _r({
     }
   );
 }
-function jr({
+function Pr({
   variant: e = "default",
   title: t,
   description: r,
@@ -3598,7 +3600,7 @@ function jr({
     }
   ) });
 }
-function ar({
+function sr({
   src: e,
   alt: t,
   initials: r,
@@ -3711,7 +3713,7 @@ function ar({
     )
   ] });
 }
-function Pr({
+function Dr({
   variant: e = "horizontal",
   text: t,
   spacing: r = "medium",
@@ -3786,7 +3788,7 @@ function Pr({
     }
   );
 }
-function Dr({
+function Lr({
   content: e,
   children: t,
   position: r = "top",
@@ -3794,7 +3796,7 @@ function Dr({
   maxWidth: a = "200px",
   className: s = ""
 }) {
-  const [i, c] = B(!1), [l, d] = B(!1), u = W(null), m = W(null), x = W(null), w = () => {
+  const [i, c] = B(!1), [l, d] = B(!1), u = U(null), m = U(null), x = U(null), w = () => {
     u.current && clearTimeout(u.current), u.current = setTimeout(() => {
       c(!0), setTimeout(() => d(!0), 50);
     }, n);
@@ -3864,7 +3866,7 @@ function Dr({
     }
   );
 }
-const sr = O(function({
+const ir = O(function({
   size: t = "medium",
   error: r = !1,
   disabled: n = !1,
@@ -3904,7 +3906,7 @@ const sr = O(function({
     return R;
   })(), [C, I] = B(!1), [z, j] = B(-1), [E, b] = B(
     i !== void 0 ? String(i) : c !== void 0 ? String(c) : ((de = y[0]) == null ? void 0 : de.value) || ""
-  ), D = W(null), se = W(null), X = W(null);
+  ), D = U(null), se = U(null), X = U(null);
   M(() => {
     i !== void 0 && (b(String(i)), X.current && (X.current.value = String(i)));
   }, [i]), lt(k, () => X.current);
@@ -3928,8 +3930,8 @@ const sr = O(function({
       };
   }, [C]), M(() => {
     function R(T) {
-      var U, ne;
-      if (!((U = D.current) != null && U.contains(T.target)) && !C)
+      var W, ne;
+      if (!((W = D.current) != null && W.contains(T.target)) && !C)
         return;
       if (!C) {
         if ((T.key === "Enter" || T.key === " " || T.key === "ArrowDown" || T.key === "ArrowUp") && (ne = D.current) != null && ne.contains(T.target)) {
@@ -3969,10 +3971,10 @@ const sr = O(function({
     if (z >= 0 && se.current) {
       const R = se.current.querySelectorAll('[role="option"]');
       let T = 0, A = 0;
-      for (let U = 0; U < R.length; U++)
-        if (!y[U].disabled) {
+      for (let W = 0; W < R.length; W++)
+        if (!y[W].disabled) {
           if (A === z) {
-            T = U;
+            T = W;
             break;
           }
           A++;
@@ -4117,8 +4119,8 @@ const sr = O(function({
     ce
   ] });
 });
-sr.displayName = "Select";
-const ir = O(
+ir.displayName = "Select";
+const lr = O(
   ({
     size: e = "medium",
     label: t,
@@ -4211,8 +4213,8 @@ const ir = O(
     ) : /* @__PURE__ */ o("span", { className: "inline-flex items-center gap-2", children: g }) });
   }
 );
-ir.displayName = "Checkbox";
-const lr = O(function({ label: t, id: r, className: n = "", disabled: a, ...s }, i) {
+lr.displayName = "Checkbox";
+const cr = O(function({ label: t, id: r, className: n = "", disabled: a, ...s }, i) {
   const c = me(), l = r ?? c;
   return /* @__PURE__ */ v("span", { className: `inline-flex flex-col gap-1.5 font-mono ${n}`, children: [
     t && /* @__PURE__ */ o("label", { htmlFor: l, className: "text-sm text-secondary-800 dark:text-secondary-300", children: t }),
@@ -4249,8 +4251,8 @@ const lr = O(function({ label: t, id: r, className: n = "", disabled: a, ...s },
     )
   ] });
 });
-lr.displayName = "Slider";
-const cr = O(
+cr.displayName = "Slider";
+const dr = O(
   ({
     size: e = "medium",
     label: t,
@@ -4355,8 +4357,8 @@ const cr = O(
     ) : /* @__PURE__ */ o("span", { className: "inline-flex items-center gap-2", children: g }) });
   }
 );
-cr.displayName = "Radio";
-const dr = O(
+dr.displayName = "Radio";
+const ur = O(
   ({
     size: e = "medium",
     error: t = !1,
@@ -4407,7 +4409,7 @@ const dr = O(
     ] });
   }
 );
-dr.displayName = "Textarea";
+ur.displayName = "Textarea";
 const ot = O(
   ({
     checked: e = !1,
@@ -4509,14 +4511,14 @@ const ot = O(
   }
 );
 ot.displayName = "Switch";
-function Lr({
+function Mr({
   trigger: e,
   items: t,
   align: r = "left",
   label: n = "Actions",
   size: a = "medium"
 }) {
-  const [s, i] = B(!1), [c, l] = B(-1), d = W(null), u = W(null), m = () => {
+  const [s, i] = B(!1), [c, l] = B(-1), d = U(null), u = U(null), m = () => {
     i(!s), s || l(-1);
   }, x = () => {
     i(!1), l(-1);
@@ -4665,7 +4667,7 @@ function Lr({
     )
   ] });
 }
-const he = "text-secondary-700 dark:text-secondary-600", ve = "text-secondary-800 dark:text-secondary-500", ur = {
+const he = "text-secondary-700 dark:text-secondary-600", ve = "text-secondary-800 dark:text-secondary-500", mr = {
   background: "repeating-linear-gradient(45deg, var(--surface-subtle), var(--surface-subtle) 8px, var(--surface-muted) 8px, var(--surface-muted) 16px)"
 }, at = (e) => e === "wide" ? " [--csb-bw:min(calc(100%+240px),calc(100cqw-48px))] w-[var(--csb-bw)] ml-[calc((100%-var(--csb-bw))/2)]" : e === "full" ? " [--csb-bw:calc(100cqw-48px)] w-[var(--csb-bw)] ml-[calc((100%-var(--csb-bw))/2)]" : "";
 function Ne({
@@ -4678,7 +4680,7 @@ function Ne({
       "div",
       {
         className: "plate-round w-full",
-        style: { aspectRatio: e ?? "16 / 9", ...ur }
+        style: { aspectRatio: e ?? "16 / 9", ...mr }
       }
     ) }),
     t && /* @__PURE__ */ o("figcaption", { className: `mt-2 text-xs ${he}`, children: t })
@@ -4690,7 +4692,7 @@ function $e({ title: e, text: t }) {
     /* @__PURE__ */ o("p", { className: `m-0 text-sm leading-relaxed ${ve}`, children: t })
   ] });
 }
-function mr({ b: e }) {
+function fr({ b: e }) {
   var t, r;
   switch (e.type) {
     case "meta":
@@ -4725,7 +4727,7 @@ function mr({ b: e }) {
         /* @__PURE__ */ o("span", { "aria-hidden": "true", className: "mb-2 block text-3xl leading-none text-[var(--accent)]", children: "“" }),
         /* @__PURE__ */ o("blockquote", { className: "m-0 p-0", children: e.text }),
         e.name && /* @__PURE__ */ v("figcaption", { className: "mt-4 flex items-center gap-3 text-sm", children: [
-          /* @__PURE__ */ o(ar, { size: "medium", src: e.image, alt: "" }),
+          /* @__PURE__ */ o(sr, { size: "medium", src: e.image, alt: "" }),
           /* @__PURE__ */ v("span", { children: [
             /* @__PURE__ */ o("span", { className: "block text-[var(--text-primary)]", children: e.name }),
             e.role && /* @__PURE__ */ o("span", { className: `block text-xs ${he}`, children: e.role })
@@ -4736,13 +4738,13 @@ function mr({ b: e }) {
       return /* @__PURE__ */ o("ul", { className: "my-11 flex list-none flex-col gap-7 p-0", children: e.items.map((n) => /* @__PURE__ */ o("li", { children: /* @__PURE__ */ o($e, { title: n.title, text: n.text }) }, n.title)) });
   }
 }
-function Mr({
+function Or({
   blocks: e,
   className: t = ""
 }) {
-  return /* @__PURE__ */ o("div", { className: `font-mono ${t}`, children: e.map((r, n) => /* @__PURE__ */ o(mr, { b: r }, n)) });
+  return /* @__PURE__ */ o("div", { className: `font-mono ${t}`, children: e.map((r, n) => /* @__PURE__ */ o(fr, { b: r }, n)) });
 }
-const fr = O(function({ meta: t, title: r, description: n, titleSuffix: a, thumb: s, thumbPosition: i = "start", selected: c = !1, className: l = "", ...d }, u) {
+const pr = O(function({ meta: t, title: r, description: n, titleSuffix: a, thumb: s, thumbPosition: i = "start", selected: c = !1, className: l = "", ...d }, u) {
   const m = "as" in d && d.as ? d.as : null, x = m ? "as" : "href" in d && d.href != null ? "a" : "onClick" in d && d.onClick != null ? "button" : "div", w = `
     block w-full text-left p-3 plate-round
     transition-colors [transition-duration:var(--duration-fast)]
@@ -4781,8 +4783,8 @@ const fr = O(function({ meta: t, title: r, description: n, titleSuffix: a, thumb
   }
   return /* @__PURE__ */ o("div", { ref: u, className: w, children: N });
 });
-fr.displayName = "ListRow";
-const pr = O(function({ variant: t = "inline", external: r = !1, className: n = "", children: a, ...s }, i) {
+pr.displayName = "ListRow";
+const br = O(function({ variant: t = "inline", external: r = !1, className: n = "", children: a, ...s }, i) {
   const c = V(
     "font-mono text-[var(--accent)] transition-colors [transition-duration:var(--duration-fast)] hover:text-[var(--text-link-hover)]",
     "focus:outline-none focus-visible:[outline:var(--focus-ring-width)_solid_var(--focus-ring-primary)] focus-visible:[outline-offset:var(--focus-ring-offset)]",
@@ -4813,8 +4815,8 @@ const pr = O(function({ variant: t = "inline", external: r = !1, className: n = 
     }
   );
 });
-pr.displayName = "Link";
-function br({ children: e, onClick: t }) {
+br.displayName = "Link";
+function gr({ children: e, onClick: t }) {
   const [r, n] = B(!1);
   return M(() => {
     const a = requestAnimationFrame(() => n(!0));
@@ -4834,18 +4836,18 @@ function br({ children: e, onClick: t }) {
     }
   );
 }
-function Or({ toasts: e, onDismiss: t }) {
+function Fr({ toasts: e, onDismiss: t }) {
   return /* @__PURE__ */ o(
     "div",
     {
       "aria-live": "polite",
       className: "fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2",
       style: { zIndex: "var(--z-index-popover)" },
-      children: e.map((r) => /* @__PURE__ */ o(br, { onClick: t ? () => t(r.id) : void 0, children: r.message }, r.id))
+      children: e.map((r) => /* @__PURE__ */ o(gr, { onClick: t ? () => t(r.id) : void 0, children: r.message }, r.id))
     }
   );
 }
-function Fr({ isOpen: e, onClose: t, ariaLabel: r, children: n }) {
+function Vr({ isOpen: e, onClose: t, ariaLabel: r, children: n }) {
   const [a, s] = B(e);
   M(() => {
     e && s(!0);
@@ -4888,7 +4890,7 @@ function Fr({ isOpen: e, onClose: t, ariaLabel: r, children: n }) {
     )
   ] }) : null;
 }
-function Vr() {
+function Gr() {
   const { theme: e, setTheme: t } = mt(), [r, n] = B(!1);
   if (M(() => {
     n(!0);
@@ -4921,14 +4923,14 @@ function Ce(e) {
     throw new Error(`[@scorp-ds/components] ${e} must be used inside <Tabs>.`);
   return t;
 }
-function Gr({
+function Br({
   value: e,
   defaultValue: t,
   onValueChange: r,
   children: n,
   className: a
 }) {
-  const s = e !== void 0, [i, c] = B(() => t ?? ""), l = s ? e : i, d = me().replace(/:/g, ""), u = W([]), m = ct(
+  const s = e !== void 0, [i, c] = B(() => t ?? ""), l = s ? e : i, d = me().replace(/:/g, ""), u = U([]), m = ct(
     (w) => {
       s || c(w), r == null || r(w);
     },
@@ -4945,7 +4947,7 @@ function Gr({
   );
   return /* @__PURE__ */ o(st.Provider, { value: x, children: /* @__PURE__ */ o("div", { className: V("w-full", a), children: n }) });
 }
-function gr(e) {
+function xr(e) {
   const t = [];
   return Ee.Children.forEach(e, (r) => {
     if (!Ee.isValidElement(r)) return;
@@ -4955,13 +4957,13 @@ function gr(e) {
     }
   }), t;
 }
-function xr({
+function hr({
   children: e,
   className: t,
   "aria-label": r,
   "aria-labelledby": n
 }) {
-  const { value: a, isControlled: s, onValueChange: i, listValuesRef: c } = Ce("TabsList"), l = gr(e);
+  const { value: a, isControlled: s, onValueChange: i, listValuesRef: c } = Ce("TabsList"), l = xr(e);
   c.current = l;
   const d = l.join("\0");
   return ut(() => {
@@ -4981,8 +4983,8 @@ function xr({
     }
   );
 }
-xr.displayName = "TabsList";
-const hr = O(function({ value: t, children: r, className: n, disabled: a, onKeyDown: s, onClick: i, type: c = "button", ...l }, d) {
+hr.displayName = "TabsList";
+const vr = O(function({ value: t, children: r, className: n, disabled: a, onKeyDown: s, onClick: i, type: c = "button", ...l }, d) {
   const { value: u, onValueChange: m, baseId: x, listValuesRef: w } = Ce("TabsTrigger"), k = u === t, N = `${x}-tab-${t}`, g = `${x}-panel-${t}`, $ = (I) => {
     m(I), requestAnimationFrame(() => {
       var z;
@@ -5039,8 +5041,8 @@ const hr = O(function({ value: t, children: r, className: n, disabled: a, onKeyD
     }
   );
 });
-hr.displayName = "TabsTrigger";
-function vr({ value: e, children: t, className: r, forceMount: n = !1 }) {
+vr.displayName = "TabsTrigger";
+function yr({ value: e, children: t, className: r, forceMount: n = !1 }) {
   const { value: a, baseId: s } = Ce("TabsContent"), i = a === e, c = `${s}-tab-${e}`, l = `${s}-panel-${e}`;
   return !n && !i ? null : !i && n ? /* @__PURE__ */ o(
     "div",
@@ -5067,7 +5069,7 @@ function vr({ value: e, children: t, className: r, forceMount: n = !1 }) {
     }
   );
 }
-vr.displayName = "TabsContent";
+yr.displayName = "TabsContent";
 const it = {
   compact: "px-3 py-2",
   // 12 / 8
@@ -5075,7 +5077,7 @@ const it = {
   // 16 / 12
   spacious: "px-5 py-4"
   // 20 / 16
-}, Ae = Fe("compact"), yr = O(function({ className: t, striped: r, bordered: n, density: a = "compact", children: s, ...i }, c) {
+}, Ae = Fe("compact"), wr = O(function({ className: t, striped: r, bordered: n, density: a = "compact", children: s, ...i }, c) {
   const l = /* @__PURE__ */ o(Ae.Provider, { value: a, children: /* @__PURE__ */ o(
     "table",
     {
@@ -5091,8 +5093,8 @@ const it = {
   ) });
   return n ? /* @__PURE__ */ o("div", { className: "plate-round-lg p-px bg-[var(--surface-container-stroke)]", children: /* @__PURE__ */ o("div", { className: "plate-round-lg bg-[var(--surface-card)]", children: l }) }) : l;
 });
-yr.displayName = "Table";
-const wr = O(function({ className: t, ...r }, n) {
+wr.displayName = "Table";
+const kr = O(function({ className: t, ...r }, n) {
   return /* @__PURE__ */ o(
     "thead",
     {
@@ -5105,12 +5107,12 @@ const wr = O(function({ className: t, ...r }, n) {
     }
   );
 });
-wr.displayName = "TableHeader";
-const kr = O(function({ className: t, ...r }, n) {
+kr.displayName = "TableHeader";
+const Nr = O(function({ className: t, ...r }, n) {
   return /* @__PURE__ */ o("tbody", { ref: n, className: V(t), ...r });
 });
-kr.displayName = "TableBody";
-const Nr = O(function({ className: t, ...r }, n) {
+Nr.displayName = "TableBody";
+const $r = O(function({ className: t, ...r }, n) {
   return /* @__PURE__ */ o(
     "tfoot",
     {
@@ -5123,8 +5125,8 @@ const Nr = O(function({ className: t, ...r }, n) {
     }
   );
 });
-Nr.displayName = "TableFooter";
-const $r = O(function({ className: t, ...r }, n) {
+$r.displayName = "TableFooter";
+const Sr = O(function({ className: t, ...r }, n) {
   return /* @__PURE__ */ o(
     "tr",
     {
@@ -5137,8 +5139,8 @@ const $r = O(function({ className: t, ...r }, n) {
     }
   );
 });
-$r.displayName = "TableRow";
-const Sr = O(function({ className: t, scope: r = "col", ...n }, a) {
+Sr.displayName = "TableRow";
+const zr = O(function({ className: t, scope: r = "col", ...n }, a) {
   const s = ze(Ae);
   return /* @__PURE__ */ o(
     "th",
@@ -5154,8 +5156,8 @@ const Sr = O(function({ className: t, scope: r = "col", ...n }, a) {
     }
   );
 });
-Sr.displayName = "TableHead";
-const zr = O(function({ className: t, ...r }, n) {
+zr.displayName = "TableHead";
+const Ir = O(function({ className: t, ...r }, n) {
   const a = ze(Ae);
   return /* @__PURE__ */ o(
     "td",
@@ -5170,8 +5172,8 @@ const zr = O(function({ className: t, ...r }, n) {
     }
   );
 });
-zr.displayName = "TableCell";
-const Ir = {
+Ir.displayName = "TableCell";
+const Tr = {
   none: "gap-0",
   1: "gap-1",
   2: "gap-2",
@@ -5180,14 +5182,14 @@ const Ir = {
   6: "gap-6",
   8: "gap-8"
 };
-function Br({ children: e, gap: t = "4", className: r, axis: n = "vertical" }) {
+function Wr({ children: e, gap: t = "4", className: r, axis: n = "vertical" }) {
   return /* @__PURE__ */ o(
     "div",
     {
       className: V(
         "flex",
         n === "vertical" ? "flex-col" : "flex-row flex-wrap items-center",
-        Ir[t],
+        Tr[t],
         r
       ),
       children: e
@@ -5208,43 +5210,43 @@ function Ur({ children: e, ...t }) {
   );
 }
 export {
-  jr as Alert,
-  ar as Avatar,
-  _r as Badge,
-  Fr as BottomSheet,
+  Pr as Alert,
+  sr as Avatar,
+  jr as Badge,
+  Vr as BottomSheet,
   Ve as Button,
-  Rr as Card,
-  Mr as CaseStudyBlocks,
-  ir as Checkbox,
-  Pr as Divider,
-  Lr as Dropdown,
+  _r as Card,
+  Or as CaseStudyBlocks,
+  lr as Checkbox,
+  Dr as Divider,
+  Mr as Dropdown,
   pt as Input,
-  pr as Link,
-  fr as ListRow,
-  Er as Modal,
-  cr as Radio,
-  sr as Select,
-  lr as Slider,
-  Br as Stack,
+  br as Link,
+  pr as ListRow,
+  Rr as Modal,
+  dr as Radio,
+  ir as Select,
+  cr as Slider,
+  Wr as Stack,
   ot as Switch,
   Me as TUI_ICON_GLYPHS,
-  yr as Table,
-  kr as TableBody,
-  zr as TableCell,
-  Nr as TableFooter,
-  Sr as TableHead,
-  wr as TableHeader,
-  $r as TableRow,
-  Gr as Tabs,
-  vr as TabsContent,
-  xr as TabsList,
-  hr as TabsTrigger,
-  dr as Textarea,
+  wr as Table,
+  Nr as TableBody,
+  Ir as TableCell,
+  $r as TableFooter,
+  zr as TableHead,
+  kr as TableHeader,
+  Sr as TableRow,
+  Br as Tabs,
+  yr as TabsContent,
+  hr as TabsList,
+  vr as TabsTrigger,
+  ur as Textarea,
   Ur as ThemeProvider,
-  Vr as ThemeToggle,
-  br as Toast,
-  Or as Toaster,
-  Dr as Tooltip,
+  Gr as ThemeToggle,
+  gr as Toast,
+  Fr as Toaster,
+  Lr as Tooltip,
   nt as TuiIcon,
   V as cn
 };

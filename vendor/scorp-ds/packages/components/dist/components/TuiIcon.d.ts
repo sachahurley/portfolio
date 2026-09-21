@@ -6,6 +6,11 @@ import React from "react";
  * terminal aesthetic. Each icon name maps to a single Unicode glyph
  * rendered in a monospace font at the same sizes Lucide used
  * (w-4 h-4, w-5 h-5, w-6 h-6).
+ *
+ * Exception: `X` (close/dismiss) is drawn, not typed. Fragment Mono has no
+ * ballot or dingbat X, so the glyph fell back to a per-OS system font and
+ * rendered as a slanted hand-drawn tick; the in-font `×` is too small to
+ * read as a control. See {@link DRAWN_ICONS}.
  */
 /**
  * Canonical Unicode glyph for each supported icon name (Lucide-compatible keys).
@@ -60,7 +65,7 @@ export declare const TUI_ICON_GLYPHS: {
     readonly User: "@";
     readonly Volume2: "♫";
     readonly VolumeX: "✖";
-    readonly X: "✗";
+    readonly X: "×";
 };
 /** Keys of {@link TUI_ICON_GLYPHS} — use for typed catalogs or selects. */
 export type TuiIconName = keyof typeof TUI_ICON_GLYPHS;
