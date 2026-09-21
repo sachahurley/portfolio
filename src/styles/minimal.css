@@ -178,11 +178,13 @@ strong, b { font-weight: 400; }
    so titles clear the floating back button with real air on every page */
 .mn-main { position: relative; max-width: var(--col); margin: 0 auto; padding: 112px 24px 160px; }
 /* phones: wider side margins so text never runs up against the stonework.
+   44px leaves the list rows' bled hover plate (12px wider than the text
+   column) 16px clear of the 16px stone band, matching the frame's rhythm.
    The back plate is defined further down, so it needs the extra specificity
    to follow the column in. */
 @media (max-width: 600px) {
-  .mn-main { padding-left: 32px; padding-right: 32px; }
-  .mn-main .pageback { left: 32px; }
+  .mn-main { padding-left: 44px; padding-right: 44px; }
+  .mn-main .pageback { left: 44px; }
 }
 /* Home starts at the back-plate line (.pageback sits at top: 48px): with
    no plate of its own, matching the plate's start keeps the top gap equal
