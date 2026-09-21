@@ -8,9 +8,8 @@
  * can be reopened.
  *
  * Layout (top to bottom): header bar (avatar, title, Past sittings, New
- * sitting, close),
- * the thread (empty state with starters, or messages), and the composer
- * pinned above the dock with the footnote under it. Built from scorp-ds
+ * sitting, close), the thread (empty state with starters, or messages), and
+ * the composer pinned above the dock with the footnote under it. Built from scorp-ds
  * parts: Avatar, Button, ListRow, Card (the draw), Badge, Alert, Divider,
  * Input.
  */
@@ -19,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Alert, Avatar, Button, Divider, Input, ListRow } from '@scorp-ds/components'
 import { useNavigate } from 'react-router-dom'
 import DitherIcon from '../components/DitherIcon'
+import type { DitherIconName } from '../lib/dither/icons'
 import { TileBox } from '../components/TileSprite'
 import CardStrip from '../components/tarot/CardStrip'
 import { TAROT_BACK, TAROT_TILE_H, TAROT_TILE_W } from '../game/tarotTiles'
@@ -216,6 +216,25 @@ export default function TarotLab() {
 
   const errorInfo = error && error !== 'cap' ? ERRORS[error] : null
 
+  /** Header action at the close button's size; icon-only on handhelds so the title keeps its room. */
+  const barButton = (label: string, icon: DitherIconName, onClick: () => void) =>
+    handheld ? (
+      <Button variant="icon" size="icon" type="button" onClick={onClick} aria-label={label}>
+        <DitherIcon name={icon} size={16} />
+      </Button>
+    ) : (
+      <Button
+        variant="secondary"
+        size="medium"
+        type="button"
+        className="tarot-new"
+        onClick={onClick}
+        iconLeft={<DitherIcon name={icon} size={16} />}
+      >
+        {label}
+      </Button>
+    )
+
   return (
     <div className="tarot-page tarot-chat-page">
       {/* header bar: who you're talking to, and the two session controls */}
@@ -228,43 +247,10 @@ export default function TarotLab() {
           </div>
         </div>
         <div className="tarot-bar-actions">
-          {showPast ? (
-            <Button
-              variant="secondary"
-              size="small"
-              type="button"
-              className="tarot-new"
-              onClick={() => setShowPast(false)}
-              iconLeft={<DitherIcon name="arrow-left" size={12} />}
-            >
-              Back
-            </Button>
-          ) : (
-            past.length > 0 && (
-              <Button
-                variant="secondary"
-                size="small"
-                type="button"
-                className="tarot-new"
-                onClick={() => setShowPast(true)}
-                iconLeft={<DitherIcon name="clock" size={12} />}
-              >
-                {handheld ? 'Past' : 'Past sittings'}
-              </Button>
-            )
-          )}
-          {!empty && !showPast && (
-            <Button
-              variant="secondary"
-              size="small"
-              type="button"
-              className="tarot-new"
-              onClick={newSitting}
-              iconLeft={<DitherIcon name="plus" size={12} />}
-            >
-              {handheld ? 'New' : 'New sitting'}
-            </Button>
-          )}
+          {showPast
+            ? barButton('Back', 'arrow-left', () => setShowPast(false))
+            : past.length > 0 && barButton('Past sittings', 'clock', () => setShowPast(true))}
+          {!empty && !showPast && barButton('New sitting', 'plus', newSitting)}
           <Button variant="icon" size="icon" type="button" onClick={closePage} aria-label="Close tarot reader">
             <DitherIcon name="close" size={16} />
           </Button>
@@ -391,7 +377,7 @@ export default function TarotLab() {
                   onChange={(e) => setDraft(e.target.value)}
                 />
                 <Button variant="primary" size="icon" type="submit" disabled={busy || !draft.trim()} aria-label="Send">
-                  <DitherIcon name="arrow-up" size={16} />
+                  <DitherIcon name="enter" size={16} />
                 </Button>
               </form>
             )}
