@@ -14,17 +14,22 @@ export default function Composer({
   closed,
   busy,
   breatherLeft,
+  quote,
   onSend,
   onToggleDraw,
   onNewSitting,
+  onClearQuote,
 }: {
   closed: boolean
   busy: boolean
   /** Seconds until a rate-limited parlor accepts the next ask. */
   breatherLeft: number
+  /** Quote-to-ask (spec §3.6): selected reading text riding as context. */
+  quote: string | null
   onSend: (text: string) => void
   onToggleDraw: () => void
   onNewSitting: () => void
+  onClearQuote: () => void
 }) {
   const [text, setText] = useState('')
   const waiting = busy || breatherLeft > 0
@@ -57,6 +62,14 @@ export default function Composer({
         send()
       }}
     >
+      {quote && (
+        <div className="pt-quote">
+          <span className="pt-quote-text">About: “{quote}”</span>
+          <button type="button" className="pt-act" onClick={onClearQuote} aria-label="Drop the quote">
+            drop
+          </button>
+        </div>
+      )}
       <div className="tarot-chatbar-in">
         <Button variant="secondary" type="button" onClick={onToggleDraw} disabled={waiting}>
           Draw

@@ -9,6 +9,7 @@
  * stored message yet; a draw message's id while its reading streams).
  */
 
+import { useState } from 'react'
 import { Button } from '@scorp-ds/components'
 import TarotCardView from './TarotCardView'
 import CardMentionText from './CardMentionText'
@@ -16,12 +17,44 @@ import DrawOffer from './DrawOffer'
 import { CARD_BY_ID, SPREADS } from '../../data/tarot'
 import type { DrawnCard } from '../../lib/tarot/draw'
 import type { Msg, Thread } from '../../lib/tarot/threads'
+import { downloadReadingSnapshot } from '../../lib/tarot/export'
+import type { SuggestionChip } from '../../lib/tarot/suggest'
 
 export const PENDING_READER = 'pending-reader'
 
 export interface StreamState {
   targetId: string
   text: string
+}
+
+/** "Save as picture" under a finished reading; the question rides along
+ *  only when its toggle says so (spec §11.8 default: include, togglable). */
+function ShareRow({ draw }: { draw: Extract<Msg, { kind: 'draw' }> }) {
+  const [withQuestion, setWithQuestion] = useState(true)
+  const [state, setState] = useState<'idle' | 'busy' | 'done'>('idle')
+  const save = () => {
+    setState('busy')
+    downloadReadingSnapshot(draw, { includeQuestion: withQuestion && !!draw.question })
+      .then(() => setState('done'))
+      .catch(() => setState('idle'))
+  }
+  return (
+    <div className="pt-share">
+      {draw.question && (
+        <label className="pt-share-q">
+          <input
+            type="checkbox"
+            checked={withQuestion}
+            onChange={(e) => setWithQuestion(e.target.checked)}
+          />
+          with your question
+        </label>
+      )}
+      <button type="button" className="pt-act" onClick={save} disabled={state === 'busy'}>
+        {state === 'done' ? 'Saved' : 'Save as picture'}
+      </button>
+    </div>
+  )
 }
 
 function drawnOf(msg: Extract<Msg, { kind: 'draw' }>): DrawnCard[] | null {
@@ -44,10 +77,12 @@ export default function ParlorThread({
   shuffling,
   busy,
   handheld,
+  chips,
   onReveal,
   onRetryCut,
   onCutOffer,
   onDeclineOffer,
+  onChip,
 }: {
   thread: Thread
   stream: StreamState | null
@@ -56,10 +91,13 @@ export default function ParlorThread({
   shuffling: boolean
   busy: boolean
   handheld: boolean
+  /** Suggestion chips for the current state; rendered under the transcript. */
+  chips: SuggestionChip[]
   onReveal: (index: number) => void
   onRetryCut: (msgId: string) => void
   onCutOffer: (offerId: string, question: string) => void
   onDeclineOffer: (offerId: string) => void
+  onChip: (chip: SuggestionChip) => void
 }) {
   return (
     <div className="parlor-thread" aria-live="polite">
@@ -146,6 +184,9 @@ export default function ParlorThread({
                     </Button>
                   </div>
                 )}
+                {/* Canned readings share too: to the visitor they are simply
+                    the reading they received (retry stays alongside). */}
+                {m.reading && !isPending && !streamingHere && <ShareRow draw={m} />}
               </div>
             )
           }
@@ -154,6 +195,15 @@ export default function ParlorThread({
       {stream?.targetId === PENDING_READER && (
         <div className="pt-reader">
           <CardMentionText text={stream.text} />
+        </div>
+      )}
+      {chips.length > 0 && (
+        <div className="pt-chips" aria-label="Suggested asks">
+          {chips.map((chip) => (
+            <button key={chip.label} type="button" className="pt-chip" onClick={() => onChip(chip)}>
+              {chip.label}
+            </button>
+          ))}
         </div>
       )}
     </div>

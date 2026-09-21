@@ -219,6 +219,60 @@ export function deleteThread(id: string): Thread[] {
   return persist(rest)
 }
 
+/** Rename by hand; a hand-given title is final (titled = true, so the
+ *  model's title_thread is never asked for again). */
+export function renameThread(id: string, title: string): Thread[] {
+  const trimmed = title.trim().slice(0, 60)
+  if (!trimmed) return loadThreads()
+  const next = loadThreads().map((t) =>
+    t.id === id ? { ...t, title: trimmed, titled: true } : t,
+  )
+  return persist(next)
+}
+
+/** Toggle a pin; capped at PINS_MAX (the request is ignored past it). */
+export function setPinned(id: string, pinned: boolean): Thread[] {
+  const all = loadThreads()
+  if (pinned && all.filter((t) => t.pinned).length >= PINS_MAX) return all
+  return persist(all.map((t) => (t.id === id ? { ...t, pinned } : t)))
+}
+
+// -- search (§3.5) ----------------------------------------------------------
+
+/** Everything a thread can be found by: title, spoken text, questions,
+ *  and the names of its cards. */
+function searchableText(thread: Thread): string {
+  const parts: string[] = [thread.title]
+  for (const m of thread.messages) {
+    if (m.kind === 'user' || m.kind === 'system' || m.kind === 'reader') parts.push(m.text)
+    if (m.kind === 'draw') {
+      if (m.question) parts.push(m.question)
+      if (m.reading) parts.push(m.reading.text)
+      for (const c of m.cards) parts.push(CARD_BY_ID.get(c.id)?.name ?? c.id)
+    }
+    if (m.kind === 'offer' && m.question) parts.push(m.question)
+  }
+  return parts.join('\n').toLowerCase()
+}
+
+export interface ThreadFilter {
+  query?: string
+  spreadId?: SpreadId | null
+  cardId?: string | null
+}
+
+export function searchThreads(threads: Thread[], filter: ThreadFilter): Thread[] {
+  const q = filter.query?.trim().toLowerCase() ?? ''
+  return threads.filter((t) => {
+    const draws = t.messages.filter((m) => m.kind === 'draw')
+    if (filter.spreadId && !draws.some((d) => d.spreadId === filter.spreadId)) return false
+    if (filter.cardId && !draws.some((d) => d.cards.some((c) => c.id === filter.cardId)))
+      return false
+    if (q && !searchableText(t).includes(q)) return false
+    return true
+  })
+}
+
 // -- parlor settings (sh_tarot_parlor) --------------------------------------
 
 const PARLOR_KEY = 'sh_tarot_parlor'

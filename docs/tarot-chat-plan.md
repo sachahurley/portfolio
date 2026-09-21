@@ -124,7 +124,7 @@ budget; Upstash fallback engages without env.
 Exit: full sitting end-to-end in dev with a real key in `.env.local`, plus
 the headless CDP pass; migration fixture round-trips.
 
-### Phase 3 · Thread management + drawer (§3.5, §3.6)
+### Phase 3 · Thread management + drawer (§3.5, §3.6) — DONE 2026-09-21
 
 Rename, inline delete, pin (max 5), client-side search with spread/card
 filters, export as Markdown (escaped) and PNG snapshot (canvas-drawn text

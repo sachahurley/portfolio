@@ -29,14 +29,18 @@ import { ParlorError, streamParlor, type ParlorDone } from '../lib/tarot/client'
 import { migrateLedger } from '../lib/tarot/migrate'
 import {
   buildParlorRequest,
+  deleteThread,
   loadParlorSettings,
   loadThreads,
   msgId,
   newThread,
+  renameThread,
   saveThread,
+  setPinned,
   type Msg,
   type Thread,
 } from '../lib/tarot/threads'
+import { suggestionChips, type SuggestionChip } from '../lib/tarot/suggest'
 import {
   BREATHER_LINE,
   CHAT_CLOSERS,
@@ -48,7 +52,12 @@ import {
   pickFrom,
 } from '../lib/tarot/fallbackReading'
 import { summarizeVisitor } from '../lib/tarot/summarizeVisitor'
-import { PARLOR_TITLE_MAX, type SpreadId } from '../lib/tarot/contract'
+import {
+  PARLOR_MESSAGE_MAX,
+  PARLOR_TITLE_MAX,
+  PARLOR_USER_MESSAGES_MAX,
+  type SpreadId,
+} from '../lib/tarot/contract'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 
@@ -106,6 +115,9 @@ export default function TarotLab() {
   const breatherUntilRef = useRef(0)
   const [cooldownLeft, setCooldownLeft] = useState(0)
   const timersRef = useRef<number[]>([])
+  // Quote-to-ask (§3.6): a selection in the transcript can ride along.
+  const [quote, setQuote] = useState<string | null>(null)
+  const [quoteCandidate, setQuoteCandidate] = useState<string | null>(null)
 
   const reduced =
     typeof window !== 'undefined' &&
@@ -166,6 +178,27 @@ export default function TarotLab() {
     return () => window.clearInterval(iv)
   }, [busy])
 
+  // Selection in the Reader's prose becomes a quote-to-ask candidate.
+  useEffect(() => {
+    const onSelection = () => {
+      const sel = document.getSelection()
+      if (!sel || sel.isCollapsed) {
+        setQuoteCandidate(null)
+        return
+      }
+      const node = sel.anchorNode
+      const host = node instanceof Element ? node : node?.parentElement
+      if (!host?.closest('.parlor-thread')) {
+        setQuoteCandidate(null)
+        return
+      }
+      const text = sel.toString().replace(/\s+/g, ' ').trim().slice(0, 200)
+      setQuoteCandidate(text.length >= 8 ? text : null)
+    }
+    document.addEventListener('selectionchange', onSelection)
+    return () => document.removeEventListener('selectionchange', onSelection)
+  }, [])
+
   // Keep the newest line in view as replies stream and messages land.
   const endRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
@@ -197,8 +230,13 @@ export default function TarotLab() {
 
   // -- chat turns -----------------------------------------------------------
 
-  const sendMessage = (text: string) => {
+  const sendMessage = (raw: string) => {
     if (busy || threadRef.current.closed || breatherLeft > 0) return
+    // A pinned quote rides inside the message (the server wraps the whole
+    // thing in <question>); the combined length honors the message cap.
+    const text = (quote ? `Regarding "${quote}": ${raw}` : raw).slice(0, PARLOR_MESSAGE_MAX)
+    setQuote(null)
+    setQuoteCandidate(null)
     setPicker(false)
     const base = updateThread((t) => {
       const messages: Msg[] = t.messages.map((m) =>
@@ -474,9 +512,44 @@ export default function TarotLab() {
     window.scrollTo(0, 0)
   }
 
+  // -- thread management (panel callbacks) ----------------------------------
+
+  const handleRename = (id: string, title: string) => {
+    setThreads(renameThread(id, title))
+    if (id === thread.id) {
+      const t = { ...threadRef.current, title: title.trim().slice(0, 60), titled: true }
+      threadRef.current = t
+      setThreadState(t)
+    }
+  }
+  const handlePin = (id: string, pinned: boolean) => setThreads(setPinned(id, pinned))
+  const handleDelete = (id: string) => {
+    setThreads(deleteThread(id))
+    if (id === thread.id) {
+      // The active sitting was forgotten; a fresh table waits behind it.
+      const t = freshThread()
+      threadRef.current = t
+      setThreadState(t)
+      setStarters(pickStarters())
+      setPending(null)
+      sentRef.current = null
+    }
+  }
+
+  const onChip = (chip: SuggestionChip) => {
+    if (chip.kind === 'draw') setPicker(true)
+    else sendMessage(chip.label)
+  }
+
   // -- render ---------------------------------------------------------------
 
   const untouched = !thread.messages.some((m) => m.kind === 'user' || m.kind === 'draw')
+  const hasOpenOffer = thread.messages.some((m) => m.kind === 'offer' && m.status === 'open')
+  const remaining = Math.max(0, PARLOR_USER_MESSAGES_MAX - thread.userMsgCount)
+  const chips =
+    !untouched && !busy && !thread.closed && !pending && !picker && !hasOpenOffer
+      ? suggestionChips(thread)
+      : []
   const subline =
     view === 'threads'
       ? 'The sittings the Reader remembers.'
@@ -522,6 +595,9 @@ export default function TarotLab() {
           onOpen={openThread}
           onNew={startNewSitting}
           onBack={() => setView('table')}
+          onRename={handleRename}
+          onPin={handlePin}
+          onDelete={handleDelete}
         />
       )}
 
@@ -541,6 +617,8 @@ export default function TarotLab() {
             shuffling={shuffling}
             busy={busy}
             handheld={handheld}
+            chips={chips}
+            onChip={onChip}
             onReveal={reveal}
             onRetryCut={retryCut}
             onCutOffer={(offerId, q) => {
@@ -580,6 +658,26 @@ export default function TarotLab() {
             <p className="pt-system">The deck rests ({Math.ceil(cooldownLeft / 1000)}s).</p>
           )}
 
+          {!thread.closed && !untouched && remaining === 1 && (
+            <p className="pt-system">One question left in this sitting.</p>
+          )}
+
+          {quoteCandidate && !quote && !thread.closed && (
+            <div className="pt-quote-offer">
+              <button
+                type="button"
+                className="pt-act"
+                onClick={() => {
+                  setQuote(quoteCandidate)
+                  setQuoteCandidate(null)
+                  document.getSelection()?.removeAllRanges()
+                }}
+              >
+                Ask the Reader about “{quoteCandidate.slice(0, 48)}{quoteCandidate.length > 48 ? '…' : ''}”
+              </button>
+            </div>
+          )}
+
           <div ref={endRef} />
         </section>
       )}
@@ -589,9 +687,11 @@ export default function TarotLab() {
           closed={thread.closed}
           busy={busy || !!pending}
           breatherLeft={breatherLeft}
+          quote={quote}
           onSend={sendMessage}
           onToggleDraw={() => setPicker((p) => !p)}
           onNewSitting={startNewSitting}
+          onClearQuote={() => setQuote(null)}
         />
       )}
     </div>
