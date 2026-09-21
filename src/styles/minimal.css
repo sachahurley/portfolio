@@ -140,7 +140,7 @@ strong, b { font-weight: 400; }
   clip-path: inherit;
   transition: background-color .12s;
 }
-.gf-tab:hover::before { background: var(--color-sepia-800); }
+@media (hover: hover) { .gf-tab:hover::before { background: var(--color-sepia-800); } }
 /* pressed into the stone: the notch sinks, keeping its centring transform
    (its own fast transition so the press never rides the sink timing) */
 .gf-tab:active { transform: translateX(-50%) translateY(2px); transition: transform .06s; }
@@ -165,7 +165,7 @@ strong, b { font-weight: 400; }
   clip-path: var(--plate-round);
   transition: color .15s ease, background-color .15s ease;
 }
-.menu-nav a:hover { color: var(--fg); background: var(--hover); }
+@media (hover: hover) { .menu-nav a:hover { color: var(--fg); background: var(--hover); } }
 /* active = the hover state held (fill + accent text), the DS
    SideNavigation pattern; the accent-ring wrapper was retired */
 .menu-nav a.active {
@@ -195,7 +195,7 @@ strong, b { font-weight: 400; }
 .bio p { margin: 0 0 16px; }
 .bio p:last-child { margin-bottom: 0; }
 .bio a { border-bottom: 1px solid var(--mut2); }
-.bio a:hover { border-color: var(--fg); }
+@media (hover: hover) { .bio a:hover { border-color: var(--fg); } }
 
 /* emil rhythm: 128px desktop / 64px mobile between sections.
    Namespaced as .mn-block (NOT .block) to avoid colliding with Tailwind's
@@ -227,8 +227,8 @@ strong, b { font-weight: 400; }
 }
 /* hover matches the compact buttons' accent flip; the accent-inked
    children flip to --bg with it or they'd vanish on the accent fill */
-.pgbtn:hover { background: var(--accent); }
-.pgbtn:hover .pg-title, .pgbtn:hover .pg-kicker, .pgbtn:hover .pg-arrow { color: var(--bg); }
+@media (hover: hover) { .pgbtn:hover { background: var(--accent); } }
+@media (hover: hover) { .pgbtn:hover .pg-title, .pgbtn:hover .pg-kicker, .pgbtn:hover .pg-arrow { color: var(--bg); } }
 .pgbtn--next { flex-direction: row-reverse; text-align: right; }
 .pg-arrow { color: var(--accent); transition: color .12s; }
 .pg-txt { display: flex; flex-direction: column; min-width: 0; }
@@ -260,7 +260,7 @@ strong, b { font-weight: 400; }
   display: flex; flex-direction: column; gap: 10px; font-size: 14px;
 }
 .tool-link { color: var(--accent); }
-.tool-link:hover { text-decoration: underline; }
+@media (hover: hover) { .tool-link:hover { text-decoration: underline; } }
 .tool-link .ext { color: inherit; line-height: 0; margin-left: 4px; }
 .tool-desc { display: block; color: var(--body); margin-top: 1px; }
 .meta { color: var(--mut); font-size: 14px; }
@@ -583,7 +583,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
     clip-path: inherit;
     transition: background-color .12s;
   }
-  .gf-collapse:hover::before { background: var(--color-sepia-800); }
+  @media (hover: hover) { .gf-collapse:hover::before { background: var(--color-sepia-800); } }
   /* clears the stone band when the tab parks at the frame edge */
   .gf-collapse { z-index: 65; }
 }
@@ -628,7 +628,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   clip-path: var(--plate-round);
 }
 /* greyish plate on hover (links only — the sealed span doesn't react) */
-a.gf-dest:hover { color: var(--fg); background: var(--hover); }
+@media (hover: hover) { a.gf-dest:hover { color: var(--fg); background: var(--hover); } }
 /* active row = the hover state held: surface-muted fill + accent text,
    the DS SideNavigation pattern (fill + color, never color alone, never
    weight). The 1px accent-ring wrapper was retired for storybook parity. */
@@ -674,7 +674,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   background: var(--hover); cursor: pointer; text-align: left;
   font-family: var(--mono); color: var(--fg); position: relative;
 }
-.gf-charstrip:hover { background: var(--bg); }
+@media (hover: hover) { .gf-charstrip:hover { background: var(--bg); } }
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gf-cs-lvl { font-size: 11px; color: var(--body); }
@@ -739,7 +739,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
 .cs-head { display: flex; align-items: flex-start; gap: 14px; }
 /* the avatar button is just a hit area; PortraitPlate carries the chrome */
 .cs-avatarbtn { padding: 0; background: none; border: 0; cursor: pointer; line-height: 0; }
-.cs-avatarbtn:hover .pp-plate { background: var(--accent); }
+@media (hover: hover) { .cs-avatarbtn:hover .pp-plate { background: var(--accent); } }
 /* avatar on a plate (PortraitPlate): the equipment slot's ring recipe
    (see .ch-slotwrap) around the portrait, so the character wears the same
    frame as their gear. Default well = the paperdoll's 62px cell; .sm is
@@ -760,12 +760,12 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   margin-top: 12px; padding: 12px; border: 1px solid var(--border); background: var(--hover);
 }
 .cs-cand { padding: 3px; background: transparent; border: 1px solid var(--border); cursor: pointer; line-height: 0; }
-.cs-cand:hover { border-color: var(--accent); }
+@media (hover: hover) { .cs-cand:hover { border-color: var(--accent); } }
 /* .cs-reroll retired: those text actions are the DS Button (ghost). */
 
 .sheet-contact { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
 .sheet-contact a { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--mut); padding: 4px 0; }
-.sheet-contact a:hover { color: var(--fg); }
+@media (hover: hover) { .sheet-contact a:hover { color: var(--fg); } }
 
 /* ---- dot-matrix loading indicator (DotLoader.tsx) ---- */
 .dotloader { display: inline-flex; align-items: center; gap: 12px; font-family: var(--mono); }
@@ -855,10 +855,10 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   background: var(--hover); border: 0; clip-path: var(--notch4); cursor: pointer;
   font-family: var(--mono); padding: 0;
 }
-.ch-slot:hover { background: var(--surface-muted); }
+@media (hover: hover) { .ch-slot:hover { background: var(--surface-muted); } }
 /* empty slots are labels, not controls (slot filtering retired) */
 .ch-slot-empty { cursor: default; }
-.ch-slot-empty:hover { background: var(--hover); }
+@media (hover: hover) { .ch-slot-empty:hover { background: var(--hover); } }
 /* --mut (sepia-600) clears 4.5:1 on the slot surface; --mut2 did not */
 .ch-slotname { font-size: 10px; color: var(--mut); text-transform: lowercase; }
 
@@ -871,7 +871,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
   background: var(--hover); border: 0; clip-path: var(--notch4); cursor: pointer; padding: 0;
 }
-.ch-invbtn:hover { background: var(--surface-muted); }
+@media (hover: hover) { .ch-invbtn:hover { background: var(--surface-muted); } }
 
 /* loot on a plate: the paperdoll/pack cell rebuilt for the dialogs (chest
    reveal, item card) via ItemPlate, so an item is the same size and wears
@@ -1146,7 +1146,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   background: transparent; border: 1px solid var(--border);
   padding: 6px 10px; cursor: pointer;
 }
-.bld-opt:hover { color: var(--fg); border-color: var(--mut); }
+@media (hover: hover) { .bld-opt:hover { color: var(--fg); border-color: var(--mut); } }
 .bld-opt[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); }
 .bld-json {
   font-family: var(--mono); font-size: 12px; color: var(--body);
@@ -1171,7 +1171,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   padding: 6px; background: transparent; cursor: pointer;
   border: 1px solid var(--border); line-height: 0;
 }
-.blk-thumb:hover { border-color: var(--mut); }
+@media (hover: hover) { .blk-thumb:hover { border-color: var(--mut); } }
 .blk-thumb[aria-pressed='true'] { border-color: var(--accent); }
 .blk-stage {
   position: relative; margin-top: 16px;
@@ -1278,7 +1278,7 @@ a.gf-dest:hover { color: var(--fg); background: var(--hover); }
   clip-path: var(--plate-round-lg);
   transition: background-color .12s, color .12s, box-shadow .12s;
 }
-.tarot-spread:hover { color: var(--fg); }
+@media (hover: hover) { .tarot-spread:hover { color: var(--fg); } }
 .tarot-spread.sel { color: var(--fg); box-shadow: inset 0 0 0 1px var(--accent); }
 .tarot-spread:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
 .tarot-spread .ts-name { font-size: 14px; color: var(--accent); }

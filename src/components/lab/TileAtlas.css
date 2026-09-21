@@ -11,7 +11,7 @@
    aria-pressed accent state are the house idiom for lab tooling. */
 .atlas-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
 .atlas-chips button { background: none; border: 1px solid var(--border); padding: 3px 8px; cursor: pointer; color: var(--body); }
-.atlas-chips button:hover { background: var(--hover); color: var(--fg); }
+@media (hover: hover) { .atlas-chips button:hover { background: var(--hover); color: var(--fg); } }
 .atlas-chips button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
 .atlas-chips em { font-style: normal; color: var(--mut); font-size: 12px; font-variant-numeric: tabular-nums; }
 .atlas-subs button { border-style: dashed; }
@@ -21,6 +21,6 @@
 .atlas-grid { display: flex; flex-wrap: wrap; gap: 3px; }
 .atlas-cell { display: grid; place-items: center; padding: 4px; line-height: 0; cursor: pointer;
   background: var(--color-sepia-1000, #0a0704); border: 1px solid transparent; }
-.atlas-cell:hover { border-color: var(--mut2); }
+@media (hover: hover) { .atlas-cell:hover { border-color: var(--mut2); } }
 .atlas-cell[aria-pressed="true"] { border-color: var(--accent); }
 .atlas-note { color: var(--body); }
