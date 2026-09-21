@@ -1,11 +1,12 @@
 /**
  * PackGrid, the character screen's inventory.
  *
- * A fixed 4-wide grid of at least 16 cells (empty cells shown), growing by
- * rows if the pack holds more; there is no pack limit, the 16 is only the
+ * A fixed 4-wide grid of at least 24 cells (empty cells shown), growing by
+ * rows if the pack holds more; there is no pack limit, the 24 is only the
  * visual shelf. Unopened chests lead the grid as cells of their own (tap
  * to open) rather than a separate section, so all loot lives on one
- * shelf. Each item cell can carry a ▲ (beats what's worn in its slot, or
+ * shelf. Level chests (an unclaimed level-up, accent-inked) come first:
+ * opening one plays the level-up celebration, which grants the gem. Each item cell can carry a ▲ (beats what's worn in its slot, or
  * the slot is empty) and an accent pip (not inspected yet).
  */
 
@@ -20,7 +21,7 @@ import {
 } from '../../game/loot'
 import PixelItem from './PixelItem'
 
-const SHELF = 16
+const SHELF = 24
 const COLS = 4
 
 export default function PackGrid({
@@ -29,6 +30,8 @@ export default function PackGrid({
   equipment,
   chests,
   onOpenChest,
+  levelChests,
+  onOpenLevelChest,
   seenItems,
   seenChests,
   onSelect,
@@ -40,14 +43,18 @@ export default function PackGrid({
   /** Unopened chests; they lead the grid as their own cells. */
   chests: SavedChest[]
   onOpenChest: (chest: SavedChest, e: MouseEvent<HTMLButtonElement>) => void
+  /** Unclaimed level-ups (level threshold numbers), one chest each. */
+  levelChests: number[]
+  onOpenLevelChest: () => void
   seenItems: number[]
   /** Chest ids already shown to the visitor; the rest wear the "new" pip
    *  (cleared in bulk when they leave the screen, not per tap). */
   seenChests: number[]
   onSelect: (id: number) => void
 }) {
-  const hasChests = chests.length > 0
-  const cells = Math.max(SHELF, Math.ceil((chests.length + pack.length) / COLS) * COLS)
+  const chestCount = levelChests.length + chests.length
+  const hasChests = chestCount > 0
+  const cells = Math.max(SHELF, Math.ceil((chestCount + pack.length) / COLS) * COLS)
   const worn = (slot: Slot) => {
     const saved = items.find((i) => i.id === equipment[slot])
     return saved ? resolveItem(saved) : null
@@ -69,6 +76,17 @@ export default function PackGrid({
       </div>
       {helper && <div className="gf-dim ch-helper">{helper}</div>}
       <div className="ch-inv ch-pack">
+        {levelChests.map((l) => (
+          <div key={`level-${l}`} className="ch-invwrap ch-levelwrap">
+            <button
+              className="ch-invbtn"
+              onClick={onOpenLevelChest}
+              aria-label={`Level ${l + 1} chest, tap to claim your gem`}
+            >
+              <PixelItem kind="chest" rarity="common" cell={3} tint="var(--accent)" />
+            </button>
+          </div>
+        ))}
         {chests.map((c) => {
           const unseen = !seenChests.includes(c.id)
           return (
@@ -84,7 +102,7 @@ export default function PackGrid({
             </div>
           )
         })}
-        {Array.from({ length: cells - chests.length }, (_, i) => {
+        {Array.from({ length: cells - chestCount }, (_, i) => {
           const saved = pack[i]
           if (!saved) return <div key={`empty-${i}`} className="ch-packempty" aria-hidden="true" />
           const it = resolveItem(saved)

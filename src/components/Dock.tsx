@@ -15,15 +15,13 @@ import DitherIcon from './DitherIcon'
 import { useXp } from '../context/XpProvider'
 
 export default function Dock({ open, onToggle }: { open: boolean; onToggle: () => void }) {
-  // Any waiting reward (pending level claim or unopened chest) gets one
-  // pip on the notch: mobile's single persistent signal beyond the
-  // transient toast. A waiting chest turns it accent (the sheet row's
-  // chest art answers it); level-claims-only stays bone. Collapsed state
-  // only: the pip unmounts the moment the sheet opens, rather than just
-  // sinking with the notch.
+  // Any waiting chest (an unopened loot chest or an unclaimed level-up,
+  // which is a chest too) gets one accent pip on the notch: mobile's single
+  // persistent signal beyond the transient toast (the sheet row's chest art
+  // answers it). Collapsed state only: the pip unmounts the moment the
+  // sheet opens, rather than just sinking with the notch.
   const { chests, pendingLevels } = useXp()
   const waiting = pendingLevels.length + chests.length > 0
-  const chestWaiting = chests.length > 0
 
   // Stays mounted while the sheet is open: the notch sinks into the stone
   // band (CSS .is-sunk) as the sheet rises carrying its twin, so the two
@@ -45,7 +43,7 @@ export default function Dock({ open, onToggle }: { open: boolean; onToggle: () =
         Menu
       </button>
       {!open && waiting && (
-        <span className={`gf-tab-dot${chestWaiting ? ' is-chest' : ''}`} aria-hidden="true" />
+        <span className="gf-tab-dot" aria-hidden="true" />
       )}
     </div>
   )

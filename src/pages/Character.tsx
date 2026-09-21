@@ -64,6 +64,8 @@ export default function Character() {
     logLine,
     toast,
     celebrating,
+    pendingLevels,
+    celebrateLevel,
     seenItems,
     markItemSeen,
     seenChests,
@@ -271,6 +273,8 @@ export default function Character() {
             equipment={equipment}
             chests={chests}
             onOpenChest={onOpenChest}
+            levelChests={pendingLevels}
+            onOpenLevelChest={celebrateLevel}
             seenItems={seenItems}
             seenChests={seenChests}
             onSelect={selectItem}
