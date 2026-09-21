@@ -27,6 +27,17 @@ for (const [rarity, hex] of Object.entries(RARITY_COLORS)) {
   document.documentElement.style.setProperty(`--rar-${rarity}`, hex)
 }
 
+// Vercel BotID guards the parlor endpoint (api/_lib/botcheck.ts is the
+// server half). Only wired when the tarot flag is on: the condition is
+// build-time inlined, so flagged-off production builds ship none of it.
+// Fire-and-forget; never blocks first paint.
+import { TAROT_ENABLED } from './lib/flags'
+if (TAROT_ENABLED) {
+  import('botid/client/core')
+    .then(({ initBotId }) => initBotId({ protect: [{ path: '/api/parlor', method: 'POST' }] }))
+    .catch(() => {})
+}
+
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(

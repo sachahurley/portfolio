@@ -66,6 +66,81 @@ export interface TarotResponse {
   reading: Reading
 }
 
+// -- v2: the parlor (POST /api/parlor, streaming) ---------------------------
+// The v2 chat endpoint. Stateless like v1: every turn carries the thread's
+// draws (cards are the memory), the last few messages, and the new turn.
+// Reader-authored text is HMAC-signed by the server (api/_lib/sign.ts), so
+// carried history cannot be forged and the per-thread message cap holds
+// with zero server storage.
+
+export const PARLOR_MESSAGE_MAX = 280
+/** User messages per thread before the Reader closes the audience. */
+export const PARLOR_USER_MESSAGES_MAX = 8
+/** Absolute ceiling, perks included (the Patience charm adds +2). */
+export const PARLOR_USER_MESSAGES_HARD_MAX = 10
+/** Transcript window sent per turn ("cards are the memory" carries the rest). */
+export const PARLOR_RECENT_MAX = 6
+/** Upper bound on one signed reader text carried back (reading or reply). */
+export const PARLOR_READER_TEXT_MAX = 6000
+/** Draws carried per thread. */
+export const PARLOR_DRAWS_MAX = 12
+export const PARLOR_TITLE_MAX = 40
+/** Reader msgIndex ceiling; far above anything a capped thread can reach. */
+export const PARLOR_MSG_INDEX_MAX = 1000
+
+/** A Reader-authored text plus the server's signature binding it to its
+ *  thread, position, and the user-message count when it was written. */
+export interface SignedReaderText {
+  text: string
+  msgIndex: number // 0-based index among the thread's reader messages
+  userMsgCount: number // user messages in the thread when this was signed
+  sig: string // hex HMAC-SHA256 over {threadId, msgIndex, userMsgCount, sha256(text)}
+}
+
+export type ParlorTurn =
+  | { kind: 'message'; text: string }
+  | { kind: 'cut'; spreadId: SpreadId; question?: string; cards: DrawnCardPayload[] }
+
+/** A completed draw carried back for context; the reading is signed. */
+export interface ParlorDraw {
+  spreadId: SpreadId
+  question?: string
+  cards: DrawnCardPayload[]
+  reading: SignedReaderText
+}
+
+export type ParlorRecent =
+  | { role: 'user'; text: string }
+  | ({ role: 'reader' } & SignedReaderText)
+
+export interface ParlorVisitor extends VisitorSummary {
+  activeGem: string | null
+}
+
+export interface ParlorRequest {
+  threadId: string
+  turn: ParlorTurn
+  draws: ParlorDraw[]
+  recent: ParlorRecent[]
+  userMessageCount: number
+  unlockedSpreads: SpreadId[]
+  visitor: ParlorVisitor
+  parlor: { voice: string | null; perks: string[] }
+  needsTitle: boolean
+}
+
+/** SSE events streamed back by /api/parlor. */
+export type ParlorErrorCode = 'rate_limited' | 'upstream' | 'invalid' | 'cap' | 'closed'
+export type ParlorEvent =
+  | { event: 'text'; data: { delta: string } }
+  | { event: 'offer'; data: { spreadId: SpreadId; question: string | null } }
+  | { event: 'title'; data: { title: string } }
+  | {
+      event: 'done'
+      data: { closed: boolean; msgIndex: number; userMsgCount: number; sig: string }
+    }
+  | { event: 'error'; data: { code: ParlorErrorCode } }
+
 // -- chatting with the Reader (POST /api/tarot-chat) ------------------------
 
 export const CHAT_MESSAGE_MAX = 280

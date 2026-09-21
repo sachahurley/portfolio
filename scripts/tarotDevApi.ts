@@ -30,7 +30,14 @@ function serve(route: string, load: () => Promise<(r: Request) => Promise<Respon
       const response = await handler(request)
       res.statusCode = response.status
       response.headers.forEach((value, key) => res.setHeader(key, value))
-      res.end(await response.text())
+      // Pipe instead of buffering: /api/parlor streams SSE, and one big
+      // flush at the end would silently defeat token streaming in dev.
+      if (response.body) {
+        for await (const chunk of response.body) res.write(chunk)
+        res.end()
+      } else {
+        res.end()
+      }
     })
   }
 }
@@ -42,7 +49,15 @@ export function tarotDevApi(): Plugin {
     configureServer(server) {
       // Surface .env.local values (no VITE_ prefix needed) to the handlers.
       const env = loadEnv('development', process.cwd(), '')
-      for (const key of ['ANTHROPIC_API_KEY', 'TAROT_MODEL']) {
+      for (const key of [
+        'ANTHROPIC_API_KEY',
+        'TAROT_MODEL',
+        'TAROT_SIGNING_KEY',
+        'TAROT_OWNER_KEY',
+        'TAROT_CHAT_ENABLED',
+        'UPSTASH_REDIS_REST_URL',
+        'UPSTASH_REDIS_REST_TOKEN',
+      ]) {
         if (!process.env[key] && env[key]) process.env[key] = env[key]
       }
 
@@ -50,6 +65,11 @@ export function tarotDevApi(): Plugin {
       // in dev, matching the client flag in src/lib/flags.ts.
       process.env.VITE_TAROT = '1'
 
+      // v2 streaming endpoint
+      server.middlewares.use(
+        '/api/parlor',
+        serve('/api/parlor', async () => (await import('../api/_lib/parlor')).handleParlor),
+      )
       // chat first: connect matches prefixes, and the longer route must win
       server.middlewares.use(
         '/api/tarot-chat',
