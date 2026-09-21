@@ -4473,7 +4473,7 @@ const ot = O(
             shrink-0
             ${m.track}
             plate-round
-            transition-colors [transition-duration:var(--duration-slow)]
+            transition-colors [transition-duration:var(--duration-normal)]
             focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]
             ${s ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
             ${e ? "bg-[var(--button-primary-background)]" : "bg-secondary-300 dark:bg-secondary-700"}
@@ -4488,7 +4488,7 @@ const ot = O(
               plate-round
               bg-[var(--field-background)]
               shadow-none
-              transform transition-transform [transition-duration:var(--duration-slow)] [transition-timing-function:steps(3)]
+              transform transition-transform [transition-duration:var(--duration-normal)]
             `,
               style: {
                 transform: m.knobTranslate
