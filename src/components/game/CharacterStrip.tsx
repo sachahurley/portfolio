@@ -10,7 +10,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useXp } from '../../context/XpProvider'
 import PortraitPlate from './PortraitPlate'
-import PixelItem from './PixelItem'
+import ChestSignal from './ChestSignal'
 
 export default function CharacterStrip() {
   const { name, avatarSeed, level, pendingLevels, chests } = useXp()
@@ -43,8 +43,8 @@ export default function CharacterStrip() {
         </span>
       </span>
       {chests.length > 0 && (
-        <span className="gf-cs-chest" aria-hidden="true">
-          <PixelItem kind="chest" rarity="common" cell={2} />
+        <span className="gf-cs-chest">
+          <ChestSignal />
         </span>
       )}
       {pendingLevels.length > 0 && <span className="gf-cs-dot" aria-hidden="true" />}

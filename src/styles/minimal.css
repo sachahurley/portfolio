@@ -683,9 +683,41 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   background: var(--rar-common); pointer-events: none;
 }
 /* an unopened chest waits: the chest art itself, trailing the row (the
-   sheet's character row wears the same asset via .sheet-char-wait) */
+   sheet's character row wears the same asset via .sheet-char-chest) */
 .gf-cs-chest { flex: none; }
-.sheet-char-wait { display: inline-flex; align-items: center; gap: 8px; }
+/* the sheet row's chest: a sibling overlay on the row's far right,
+   centred on the row (the holder is the positioned ancestor; the row's
+   own text column is transformed, which would hijack absolute
+   descendants); 14px matches the plate's inner inset */
+.sheet-char-holder { position: relative; }
+.sheet-char-chest {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  pointer-events: none;
+}
+/* ChestSignal: the village tappables' twin glints on the chest art
+   (villageKit renderScene bakes stars into canvas: a 14-frame cycle on
+   the 300ms beat — dot, 5px burst, dot, dark — two per item, half a
+   cycle apart, accent-inked). Rebuilt as CSS pixels at the chest's 2x
+   scale; step-end holds each frame crisp. */
+.chest-signal { position: relative; display: block; }
+.chest-glint {
+  position: absolute; width: 2px; height: 2px; background: var(--accent);
+  opacity: 0; pointer-events: none;
+  animation: chest-glint 4.2s step-end infinite;
+}
+.chest-glint-a { right: 0; top: -4px; }
+.chest-glint-b { left: 2px; top: 4px; animation-delay: -2.1s; }
+@keyframes chest-glint {
+  0%     { opacity: 1; box-shadow: none; }
+  7.15%  { opacity: 1; box-shadow: 2px 0 var(--accent), -2px 0 var(--accent), 0 2px var(--accent), 0 -2px var(--accent); }
+  14.3%  { opacity: 1; box-shadow: none; }
+  21.45% { opacity: 0; box-shadow: none; }
+}
+/* the village's reduced-motion beat never starts: one static dot */
+@media (prefers-reduced-motion: reduce) {
+  .chest-glint { animation: none; }
+  .chest-glint-a { opacity: 1; }
+}
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gf-cs-lvl { font-size: 11px; color: var(--body); }
@@ -715,7 +747,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .sheet-sep { margin-top: 16px; border-top-color: var(--border); }
 /* the seam after the character row hugs it (margin 0): the row's own 12px
    plate padding is the gap, matching the seam above for an even sandwich */
-.sheet-char + .sheet-sep { margin-top: 0; }
+.sheet-char-holder + .sheet-sep { margin-top: 0; }
 /* sheet: compact character row linking to /character (full sheet there) */
 /* LAYOUT hook only: the row itself is the DS ListRow (thumb + title +
    badge suffix); this seats the mini XP bar under the level line and

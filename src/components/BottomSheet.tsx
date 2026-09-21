@@ -14,7 +14,7 @@ import { Badge, BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
-import PixelItem from './game/PixelItem'
+import ChestSignal from './game/ChestSignal'
 import DitherIcon from './DitherIcon'
 import VillageIcon from './village/VillageIcon'
 import { ArrowUpRight } from './icons'
@@ -68,7 +68,11 @@ export default function BottomSheet({
         <Divider spacing="none" className="sheet-sep" />
 
         {/* Compact character row (DS ListRow; the full sheet lives at
-            /character). .sheet-char is only the layout hook for the bar. */}
+            /character). .sheet-char is only the layout hook for the bar.
+            The holder exists for the chest overlay: the row's text column
+            carries a translateY nudge, and a transformed ancestor would
+            hijack the chest's absolute positioning. */}
+        <div className="sheet-char-holder">
         <ListRow
           as={Link}
           asProps={{
@@ -80,20 +84,11 @@ export default function BottomSheet({
           thumb={<PortraitPlate seed={avatarSeed} cell={2} tiny />}
           title={name}
           titleSuffix={
-            // Waiting rewards: the chest art itself when a chest waits
-            // (mirrors the game frame's character strip), plus the badge
-            // counting everything (claims + chests); quiet chevron otherwise.
+            // one quiet signal for all waiting rewards (claims + chests)
             pendingLevels.length + chests.length > 0 ? (
-              <span className="sheet-char-wait">
-                {chests.length > 0 && (
-                  <span aria-hidden="true">
-                    <PixelItem kind="chest" rarity="common" cell={2} />
-                  </span>
-                )}
-                <Badge variant="bone" size="small" caps>
-                  ▴ {pendingLevels.length + chests.length} waiting
-                </Badge>
-              </span>
+              <Badge variant="bone" size="small" caps>
+                ▴ {pendingLevels.length + chests.length} waiting
+              </Badge>
             ) : (
               <span className="sheet-char-go">›</span>
             )
@@ -110,6 +105,13 @@ export default function BottomSheet({
             </>
           }
         />
+        {/* the waiting-chest art, centred on the row's far right */}
+        {chests.length > 0 && (
+          <span className="sheet-char-chest">
+            <ChestSignal />
+          </span>
+        )}
+        </div>
 
         <Divider spacing="none" className="sheet-sep" />
 
