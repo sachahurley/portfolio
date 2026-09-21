@@ -231,7 +231,15 @@ export default function TarotLab() {
   const chips = (asks: string[], className: string, label: string) => (
     <div className={`tarot-chips ${className}`} aria-label={label}>
       {asks.map((q) => (
-        <Button key={q} variant="outline" size="small" type="button" className="tarot-chip" onClick={() => send(q)}>
+        <Button
+          key={q}
+          variant="outline"
+          size="small"
+          type="button"
+          className="tarot-chip"
+          onClick={() => send(q)}
+          iconRight={<DitherIcon name="arrow-right" size={16} />}
+        >
           {q}
         </Button>
       ))}

@@ -1385,11 +1385,16 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 .tarot-empty-copy { display: flex; flex-direction: column; gap: 8px; max-width: 420px; }
 .tarot-empty-title { margin: 0; font-size: 22px; line-height: 28px; color: var(--fg); font-weight: 400; }
 .tarot-empty-sub { margin: 0; font-size: 13px; line-height: 20px; color: var(--body); }
-/* suggested asks: DS outline buttons (small) that wrap, and whose long
-   labels wrap too instead of spilling out of the fixed 32px height */
-.tarot-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.tarot-chips .tarot-chip { height: auto; min-height: 32px; white-space: normal; text-align: left; }
-.tarot-starters { max-width: 520px; justify-content: center; }
+/* suggested asks: full-width DS outline buttons (small), label flush left
+   and the arrow on the far side; long labels wrap instead of spilling out
+   of the fixed 32px height. The label must stay a plain string: an element
+   child makes the DS Button treat itself as icon-only. */
+.tarot-chips { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.tarot-chips .tarot-chip {
+  width: 100%; height: auto; min-height: 32px;
+  justify-content: space-between; text-align: left; white-space: normal;
+}
+.tarot-starters { max-width: 420px; }
 
 
 /* past sittings: the shelf "New sitting" fills */
