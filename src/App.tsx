@@ -40,12 +40,20 @@ const TarotLab = TAROT_ENABLED ? lazy(() => import('./pages/TarotLab')) : null
 // so returning visitors' save files keep their earlier discoveries).
 function RouteEffects() {
   const location = useLocation()
-  const { award, logLine } = useXp()
+  const { award, logLine, markChestsSeen } = useXp()
   const prevLocRef = useRef<string | null>(null)
+  const prevPathRef = useRef<string | null>(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
     document.getElementById('gf-viewport')?.scrollTo(0, 0)
+    // Chest "new" pips clear when the visitor LEAVES the character screen
+    // (route change, not unmount: StrictMode's dev double-mount would mark
+    // them seen on arrival).
+    if (prevPathRef.current === '/character' && location.pathname !== '/character') {
+      markChestsSeen()
+    }
+    prevPathRef.current = location.pathname
     const loc = locationFor(location.pathname)
     if (!loc) return
     if (prevLocRef.current !== loc.path) {
@@ -53,7 +61,7 @@ function RouteEffects() {
       logLine(loc.arrive, 'arrive')
     }
     award(XP_AWARDS.visit, `discovered ${loc.real}`, `visit:${loc.path}`)
-  }, [location.pathname, award, logLine])
+  }, [location.pathname, award, logLine, markChestsSeen])
 
   return null
 }

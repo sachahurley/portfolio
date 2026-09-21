@@ -30,6 +30,7 @@ export default function PackGrid({
   chests,
   onOpenChest,
   seenItems,
+  seenChests,
   onSelect,
 }: {
   /** Owned, unequipped items. */
@@ -40,6 +41,9 @@ export default function PackGrid({
   chests: SavedChest[]
   onOpenChest: (chest: SavedChest, e: MouseEvent<HTMLButtonElement>) => void
   seenItems: number[]
+  /** Chest ids already shown to the visitor; the rest wear the "new" pip
+   *  (cleared in bulk when they leave the screen, not per tap). */
+  seenChests: number[]
   onSelect: (id: number) => void
 }) {
   const hasChests = chests.length > 0
@@ -65,17 +69,21 @@ export default function PackGrid({
       </div>
       {helper && <div className="gf-dim ch-helper">{helper}</div>}
       <div className="ch-inv ch-pack">
-        {chests.map((c) => (
-          <div key={`chest-${c.id}`} className="ch-invwrap bg-rar-common">
-            <button
-              className="ch-invbtn"
-              onClick={(e) => onOpenChest(c, e)}
-              aria-label={`Chest from ${chestSourceLabel(c.src)}, tap to open`}
-            >
-              <PixelItem kind="chest" rarity="common" cell={3} />
-            </button>
-          </div>
-        ))}
+        {chests.map((c) => {
+          const unseen = !seenChests.includes(c.id)
+          return (
+            <div key={`chest-${c.id}`} className="ch-invwrap bg-rar-common">
+              <button
+                className="ch-invbtn"
+                onClick={(e) => onOpenChest(c, e)}
+                aria-label={`Chest from ${chestSourceLabel(c.src)}${unseen ? ', new' : ''}, tap to open`}
+              >
+                <PixelItem kind="chest" rarity="common" cell={3} />
+                {unseen && <span className="ch-newpip" aria-hidden="true" />}
+              </button>
+            </div>
+          )
+        })}
         {Array.from({ length: cells - chests.length }, (_, i) => {
           const saved = pack[i]
           if (!saved) return <div key={`empty-${i}`} className="ch-packempty" aria-hidden="true" />

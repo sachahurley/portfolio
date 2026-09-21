@@ -66,6 +66,7 @@ export default function Character() {
     celebrating,
     seenItems,
     markItemSeen,
+    seenChests,
     activeGem,
   } = useXp()
   const [selected, setSelected] = useState<number | null>(null)
@@ -271,6 +272,7 @@ export default function Character() {
             chests={chests}
             onOpenChest={onOpenChest}
             seenItems={seenItems}
+            seenChests={seenChests}
             onSelect={selectItem}
           />
         </section>

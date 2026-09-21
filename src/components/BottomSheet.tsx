@@ -14,6 +14,7 @@ import { Badge, BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { LOCATIONS } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
+import PixelItem from './game/PixelItem'
 import DitherIcon from './DitherIcon'
 import VillageIcon from './village/VillageIcon'
 import { ArrowUpRight } from './icons'
@@ -79,11 +80,20 @@ export default function BottomSheet({
           thumb={<PortraitPlate seed={avatarSeed} cell={2} tiny />}
           title={name}
           titleSuffix={
-            // one quiet signal for all waiting rewards (claims + chests)
+            // Waiting rewards: the chest art itself when a chest waits
+            // (mirrors the game frame's character strip), plus the badge
+            // counting everything (claims + chests); quiet chevron otherwise.
             pendingLevels.length + chests.length > 0 ? (
-              <Badge variant="bone" size="small" caps>
-                ▴ {pendingLevels.length + chests.length} waiting
-              </Badge>
+              <span className="sheet-char-wait">
+                {chests.length > 0 && (
+                  <span aria-hidden="true">
+                    <PixelItem kind="chest" rarity="common" cell={2} />
+                  </span>
+                )}
+                <Badge variant="bone" size="small" caps>
+                  ▴ {pendingLevels.length + chests.length} waiting
+                </Badge>
+              </span>
             ) : (
               <span className="sheet-char-go">›</span>
             )

@@ -119,6 +119,12 @@ interface XpValue {
   /** Item ids the visitor has inspected; the rest wear a "new" pip. */
   seenItems: number[]
   markItemSeen: (itemId: number) => void
+  /** Chest ids the visitor has been shown on the character screen; the
+   *  rest wear a "new" pip on the pack's chest cells. Marked in bulk when
+   *  the visitor leaves /character (RouteEffects), never per tap: "seen"
+   *  means "left the screen with this chest on the shelf". */
+  seenChests: number[]
+  markChestsSeen: () => void
   /** Snapshot of the earned award keys (the visitor's activity log). A
    *  getter rather than state: readers want it at a moment in time (the
    *  tarot reading), not re-renders on every award. */
@@ -145,6 +151,7 @@ interface PersistedState {
   items: SavedItem[]
   equip: Partial<Record<Slot, number>>
   seenItems: number[]
+  seenChests: number[]
 }
 
 const isSavedItem = (v: unknown): v is SavedItem => {
@@ -188,6 +195,7 @@ function load(): { state: PersistedState; existed: boolean } {
     items: [],
     equip: {},
     seenItems: [],
+    seenChests: [],
   }
   let existed = false
   try {
@@ -248,6 +256,13 @@ function load(): { state: PersistedState; existed: boolean } {
     state.seenItems = Array.isArray(s.seenItems)
       ? s.seenItems.filter((id): id is number => typeof id === 'number' && owned.has(id))
       : [...owned]
+    // Same rule for chest pips: a pre-feature save's chests count as seen
+    // (the retroactive level-chest grants land after load(), so those still
+    // arrive new).
+    const held = new Set(state.chests.map((c) => c.id))
+    state.seenChests = Array.isArray(s.seenChests)
+      ? s.seenChests.filter((id): id is number => typeof id === 'number' && held.has(id))
+      : [...held]
   } catch {
     /* ignore malformed storage */
   }
@@ -286,6 +301,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<SavedItem[]>(initial.items)
   const [equipment, setEquipment] = useState<Partial<Record<Slot, number>>>(initial.equip)
   const [seenItems, setSeenItems] = useState<number[]>(initial.seenItems)
+  const [seenChests, setSeenChests] = useState<number[]>(initial.seenChests)
   const [celebrating, setCelebrating] = useState(false)
   const [toasts, setToasts] = useState<ToastItem[]>([])
   const [log, setLog] = useState<LogEntry[]>([])
@@ -302,6 +318,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const itemsRef = useRef<SavedItem[]>(initial.items)
   const equipRef = useRef<Partial<Record<Slot, number>>>(initial.equip)
   const seenRef = useRef<number[]>(initial.seenItems)
+  const seenChestsRef = useRef<number[]>(initial.seenChests)
   const idRef = useRef(0)
 
   const persist = useCallback(() => {
@@ -321,6 +338,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
           items: itemsRef.current,
           equip: equipRef.current,
           seenItems: seenRef.current,
+          seenChests: seenChestsRef.current,
         })
       )
     } catch {
@@ -466,6 +484,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
       itemsRef.current = [...itemsRef.current, saved]
       setChests(chestsRef.current)
       setItems(itemsRef.current)
+      seenChestsRef.current = seenChestsRef.current.filter((id) => id !== chestId)
+      setSeenChests(seenChestsRef.current)
       const item = resolveItem(saved)
       logLine(`You open a chest: ${item.name}.`, 'hint')
       persist()
@@ -525,6 +545,15 @@ export function XpProvider({ children }: { children: ReactNode }) {
     },
     [persist]
   )
+
+  const markChestsSeen = useCallback(() => {
+    const ids = chestsRef.current.map((c) => c.id)
+    const seen = new Set(seenChestsRef.current)
+    if (ids.length === seen.size && ids.every((id) => seen.has(id))) return
+    seenChestsRef.current = ids
+    setSeenChests(ids)
+    persist()
+  }, [persist])
 
   const setName = useCallback(
     (n: string) => {
@@ -622,6 +651,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
     destroyItem,
     seenItems,
     markItemSeen,
+    seenChests,
+    markChestsSeen,
     getEarned,
   }
 
