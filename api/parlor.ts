@@ -4,8 +4,7 @@
  * middleware); this is only the Vercel entry. Env: ANTHROPIC_API_KEY and
  * TAROT_SIGNING_KEY (required), TAROT_OWNER_KEY / TAROT_MODEL /
  * TAROT_CHAT_ENABLED / UPSTASH_REDIS_REST_URL+TOKEN (optional; see
- * _lib/parlorLimits.ts for the limit env knobs). The v1 endpoints
- * (api/tarot.ts, api/tarot-chat.ts) stay alive until the v2 client ships.
+ * _lib/parlorLimits.ts for the limit env knobs).
  */
 
 import { handleParlor } from './_lib/parlor'

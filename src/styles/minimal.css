@@ -1480,3 +1480,63 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   .tarot-chatbar { width: calc(100% - 32px); bottom: 56px; }
 }
 .tarot-scene { display: block; width: min(432px, 100%); margin: 0 auto; image-rendering: pixelated; }
+
+/* ---- the parlor thread (tarot v2) ----
+   The sitting as a transcript: the visitor's words muted (the tr-asked
+   voice), the Reader's prose in body text, system lines quieter still.
+   Draw strips reuse .tarot-cards; offer plates reuse the ring recipe. */
+.pt-nav { margin-top: 10px; display: flex; gap: 16px; justify-content: center; }
+.pt-nav-link {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  font-family: var(--mono); font-size: 12px; color: var(--mut);
+  transition: color .12s;
+}
+@media (hover: hover) { .pt-nav-link:hover { color: var(--accent); } }
+.pt-nav-link:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--accent); }
+
+.parlor-thread {
+  margin-top: 28px; width: 100%; max-width: 480px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.pt-user { font-size: 12px; line-height: 18px; color: var(--mut); }
+.pt-system { font-size: 11px; line-height: 16px; color: var(--mut); text-align: center; }
+.pt-reader { font-size: 14px; line-height: 22px; color: var(--body); white-space: pre-line; }
+.pt-mention { color: var(--accent); }
+
+.pt-draw { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.pt-draw .tarot-cards { margin: 4px 0; }
+.pt-draw .pt-user, .pt-draw .pt-reader { align-self: stretch; }
+.pt-retry { display: flex; justify-content: center; }
+
+/* the offer / spread-picker plate: filled plate (the spread-chip recipe,
+   held open), not the ring; one element keeps the clip simple */
+.pt-offer {
+  width: 100%; display: flex; flex-direction: column; gap: 12px;
+  padding: 14px; background: var(--hover);
+  clip-path: var(--plate-round-lg);
+}
+.pt-offer-name { font-size: 14px; color: var(--accent); }
+.pt-offer-pos { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--mut); }
+.pt-offer-ask { width: 100%; }
+.pt-offer-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.pt-offer .tarot-spreads { margin: 0; }
+
+/* starter prompts under a fresh greeting */
+.pt-starters { margin-top: 20px; width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 8px; }
+.pt-starter {
+  text-align: left; font-family: var(--mono); font-size: 12px; line-height: 17px;
+  padding: 10px 14px; border: 0; cursor: pointer;
+  background: transparent; color: var(--body);
+  clip-path: var(--plate-round-lg);
+  transition: background-color .12s, color .12s;
+}
+@media (hover: hover) { .pt-starter:hover { background: var(--hover); color: var(--fg); } }
+.pt-starter:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+
+/* composer states + panels */
+.pt-composer-closed { justify-content: space-between; }
+.pt-composer-closed .pt-system { text-align: left; }
+.pt-panel-actions { display: flex; justify-content: center; margin-bottom: 6px; }
+.pt-row-active { background: var(--hover); color: var(--fg); }
+.pt-parlor-block { display: flex; flex-direction: column; gap: 10px; }
+.pt-parlor-head { font-size: 14px; color: var(--accent); }

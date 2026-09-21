@@ -53,7 +53,7 @@ Rules of the road:
   through Vite `ssrLoadModule`), and a headless CDP click-through for UI
   phases.
 
-### Phase 1 · Contract v2 + streaming server core + security rails (§5, §9)
+### Phase 1 · Contract v2 + streaming server core + security rails (§5, §9) — DONE 2026-09-21
 
 The largest and riskiest phase; everything else builds on its interfaces.
 
@@ -98,7 +98,7 @@ event, `cut` turn cannot; unknown card ids stripped from deltas; kill
 switch yields canned mode; owner bypasses per-IP limits but not the global
 budget; Upstash fallback engages without env.
 
-### Phase 2 · Client chat core + migration + v1 retirement (§3.1 to §3.4, §4, §5, §7)
+### Phase 2 · Client chat core + migration + v1 retirement (§3.1 to §3.4, §4, §5, §7) — DONE 2026-09-21
 
 - `src/lib/tarot/threads.ts` (replaces `archive.ts`): Thread CRUD, prune at
   20 (never pinned), quota-error retry, search index later.

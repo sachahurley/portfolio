@@ -1,6 +1,6 @@
 /**
- * Shared request guards for the tarot endpoints (api/_lib/reading.ts and
- * api/_lib/chat.ts run these before touching the body).
+ * Shared request guards for the parlor endpoint (api/_lib/parlor.ts runs
+ * these before touching the body).
  *
  * tarotApiEnabled is the server half of TAROT_ENABLED (src/lib/flags.ts):
  * the client flag removes the parlor's UI from the bundle at build time,

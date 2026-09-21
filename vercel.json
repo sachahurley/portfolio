@@ -18,8 +18,6 @@
     }
   ],
   "functions": {
-    "api/tarot.ts": { "maxDuration": 30 },
-    "api/tarot-chat.ts": { "maxDuration": 30 },
     "api/parlor.ts": { "maxDuration": 60 }
   }
 }

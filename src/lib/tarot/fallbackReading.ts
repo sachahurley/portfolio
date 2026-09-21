@@ -1,29 +1,69 @@
 /**
- * Canned reading generator: the offline half of the tarot reader. Builds the
- * exact Reading shape the serverless function returns, so the page renders
- * both through one path and a failed (or rate-limited, or absent) API is
- * invisible to the visitor.
+ * Canned parlor text: the offline half of the Reader. When the API is
+ * absent, failing, rate-limited, or closed for the night, these keep the
+ * parlor in fiction; no error UI exists on purpose.
  *
- * Reads okay rather than generic because the per-card meanings in
+ * The fallback reading is prose (v2 renders readings as flowing text).
+ * It reads okay rather than generic because the per-card meanings in
  * src/data/tarot.ts are real sentences; the templates only frame them.
  * Variation is seeded from the drawn card ids, so a given draw always
- * produces the same canned text (stable across re-renders), while different
- * draws phrase things differently.
+ * produces the same canned text, while different draws phrase things
+ * differently.
  */
 
-import type { Reading } from './contract'
 import type { DrawnCard } from './draw'
 
-/** In-fiction closing lines for when the chat's API path fails: the Reader
- *  ends the audience rather than erroring, per the parlor's no-error rule. */
-const CHAT_CLOSERS = [
+/** In-fiction lines for when a chat turn fails: the candle falters but the
+ *  audience continues (the visitor may ask again). */
+export const CHAT_FALTERS = [
+  'The candle gutters; the Reader waits for the flame to steady. Ask again in a moment.',
+  'The Reader tilts her head, listening to something far off. The words did not reach her.',
+  'A draft moves through the parlor and the cards shiver. Whatever was said is lost to it.',
+] as const
+
+/** The gentler line for a rate limit: the Reader needs a moment. */
+export const BREATHER_LINE = 'The Reader needs a moment; the parlor has been busy tonight.'
+
+/** The parlor is closed (kill switch or the nightly budget breaker). */
+export const CLOSED_LINE = 'The parlor is closed for the night; the candles are out. Return with the day.'
+
+/** In-fiction closers for when the audience truly ends (cap reached). */
+export const CHAT_CLOSERS = [
   'The cards have said what they will say tonight; sit with them a while.',
   'The candles gutter; the Reader folds her hands. The rest is yours to walk.',
   'She turns her palm over the spread: what you seek is already in the cards before you.',
 ] as const
 
+/** Rotating canned greetings for a fresh thread (no API call, §3.6). */
+export const GREETING_LINES = [
+  'Sit. The deck has been waiting, and it does not wait idly. What brings you to the table?',
+  'The candles settle as you take the chair. Speak, or let the cards open the matter.',
+  'The Reader looks up as though she expected you at this exact hour. What is on your mind?',
+  'Warm your hands; the parlor keeps its own weather. Tell me what walks with you tonight.',
+] as const
+
+/** Starter prompts offered under the greeting of an empty thread. */
+export const STARTER_PROMPTS = [
+  'What should I be paying attention to right now?',
+  'Read the road ahead for me.',
+  'I have a decision I keep circling.',
+  'What does the deck make of a first-time visitor?',
+  'Something ended recently. Help me sit with it.',
+  'Draw whatever the night calls for.',
+  'What am I not seeing about my work?',
+  'Ask the cards about what I left behind.',
+  'Where is my energy best spent this season?',
+  'I do not believe in this. Convince the cards otherwise.',
+  'What follows me from the past?',
+  'Give me one card and one hard truth.',
+] as const
+
+export function pickFrom(list: readonly string[]): string {
+  return list[Math.floor(Math.random() * list.length)]
+}
+
 export function chatFallback(): string {
-  return CHAT_CLOSERS[Math.floor(Math.random() * CHAT_CLOSERS.length)]
+  return pickFrom(CHAT_FALTERS)
 }
 
 /** Small string hash -> mulberry32, plenty for picking template variants. */
@@ -97,34 +137,30 @@ function fill(template: string, name: string, meaning: string): string {
   return template.replaceAll('{name}', name).replaceAll('{meaning}', meaning)
 }
 
-export function fallbackReading(cards: DrawnCard[]): Reading {
+/** The canned reading as one prose passage (v2's reading shape). */
+export function fallbackProse(cards: DrawnCard[]): string {
   const rng = seedFrom(cards)
-  const greeting = pick(rng, GREETINGS)
-  const farewell = pick(rng, FAREWELLS)
+  const parts: string[] = [pick(rng, GREETINGS)]
 
-  const cardReadings = cards.map((d) => {
+  for (const d of cards) {
     const templates = POSITION_TEMPLATES[d.position.id] ?? POSITION_TEMPLATES.guidance
     const meaning = d.reversed ? d.card.meaningRev : d.card.meaningUp
     const name = d.reversed ? `${d.card.name}, reversed` : d.card.name
-    return {
-      position: d.position.id,
-      cardId: d.card.id,
-      text: fill(pick(rng, templates), name, meaning),
-    }
-  })
+    parts.push(fill(pick(rng, templates), name, meaning))
+  }
 
-  // Two keywords from different cards where possible, first-and-last so a
-  // three-card spread synthesizes its ends.
-  const kwOf = (d: DrawnCard) =>
-    pick(rng, d.reversed ? d.card.keywordsRev : d.card.keywordsUp)
-  const first = cards[0]
-  const last = cards[cards.length - 1]
-  const kw0 = kwOf(first)
-  let kw1 = kwOf(last)
-  if (kw1 === kw0) kw1 = kwOf(last)
-  const synthesis = pick(rng, SYNTHESIS_TEMPLATES)
-    .replaceAll('{kw0}', kw0)
-    .replaceAll('{kw1}', kw1)
+  if (cards.length > 1) {
+    // Two keywords from different cards where possible, first-and-last so
+    // a three-card spread synthesizes its ends.
+    const kwOf = (d: DrawnCard) => pick(rng, d.reversed ? d.card.keywordsRev : d.card.keywordsUp)
+    const first = cards[0]
+    const last = cards[cards.length - 1]
+    const kw0 = kwOf(first)
+    let kw1 = kwOf(last)
+    if (kw1 === kw0) kw1 = kwOf(last)
+    parts.push(pick(rng, SYNTHESIS_TEMPLATES).replaceAll('{kw0}', kw0).replaceAll('{kw1}', kw1))
+  }
 
-  return { greeting, cards: cardReadings, synthesis, farewell }
+  parts.push(pick(rng, FAREWELLS))
+  return parts.join('\n\n')
 }

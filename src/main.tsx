@@ -28,11 +28,13 @@ for (const [rarity, hex] of Object.entries(RARITY_COLORS)) {
 }
 
 // Vercel BotID guards the parlor endpoint (api/_lib/botcheck.ts is the
-// server half). Only wired when the tarot flag is on: the condition is
-// build-time inlined, so flagged-off production builds ship none of it.
-// Fire-and-forget; never blocks first paint.
+// server half). Production-only on purpose: in dev its challenge script
+// has no Vercel to load from and its fetch interception then hangs
+// protected requests (the server bypasses BotID in dev anyway). The
+// condition is build-time inlined, so flagged-off production builds ship
+// none of it. Fire-and-forget; never blocks first paint.
 import { TAROT_ENABLED } from './lib/flags'
-if (TAROT_ENABLED) {
+if (TAROT_ENABLED && import.meta.env.PROD) {
   import('botid/client/core')
     .then(({ initBotId }) => initBotId({ protect: [{ path: '/api/parlor', method: 'POST' }] }))
     .catch(() => {})
