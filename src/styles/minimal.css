@@ -263,17 +263,21 @@ strong, b { font-weight: 400; }
 /* 4px breath between the row's title and its description */
 .list .ext { color: inherit; line-height: 0; }
 
-/* ---- tools (About): compact plain list, not Item rows. The row is not a
-   button; only the tool name links out, inline with the external arrow.
-   Two lines per row: the name link, then the description below it. ---- */
-.tool-list {
+/* ---- LinkList (About's tools + reach me): compact plain list, not Item
+   rows. The row is not a button; only the name links out, inline with the
+   external arrow. Two lines per row: the name link, then the description
+   below it. ---- */
+.link-list {
   list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 10px; font-size: 14px;
+  /* the row gap reads as the grouping cue: it has to beat the 4px that
+     binds a name to its own description, or the rows run together */
+  display: flex; flex-direction: column; gap: 20px; font-size: 14px;
 }
-.tool-link { color: var(--accent); }
-@media (hover: hover) { .tool-link:hover { text-decoration: underline; } }
-.tool-link .ext { color: inherit; line-height: 0; margin-left: 4px; }
-.tool-desc { display: block; color: var(--body); margin-top: 1px; }
+.link-list-name { color: var(--accent); }
+@media (hover: hover) { .link-list-name:hover { text-decoration: underline; } }
+.link-list-name .ext { color: inherit; line-height: 0; margin-left: 4px; }
+/* 4px name-to-description gap, the DS ListRow's title/description rhythm */
+.link-list-desc { display: block; color: var(--body); margin-top: 4px; }
 .meta { color: var(--mut); font-size: 14px; }
 /* optional 16:9 thumbnail on the far right of a row */
 .thumbimg {

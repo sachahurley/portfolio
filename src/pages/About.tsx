@@ -1,14 +1,14 @@
 /**
  * About (/about)
  *
- * Lead paragraph, a Tools linked list, and "Reach me" (X + GitHub).
+ * Lead paragraph, then Tools and "Reach me" (X + GitHub), both as the
+ * compact LinkList.
  * No skills bars. The old Contact page folded into "Reach me" here.
  */
 
 import MinimalPage from '../components/MinimalPage'
 import BackButton from '../components/BackButton'
-import { Item, List } from '../components/Item'
-import { ArrowUpRight } from '../components/icons'
+import { LinkList, LinkListItem } from '../components/LinkList'
 import { tools } from '../data/tools'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
@@ -28,38 +28,29 @@ export default function About() {
 
       <div className="mn-block">
         <div className="label">tools</div>
-        {/* Compact plain list, not Item rows: only the tool name links out. */}
-        <ul className="tool-list">
+        <LinkList>
           {tools.map((t) => (
-            <li key={t.name}>
-              <a className="tool-link" href={t.url} target="_blank" rel="noreferrer">
-                {t.name}
-                <span className="ext"><ArrowUpRight /></span>
-              </a>
-              <span className="tool-desc">{t.use} · {t.tier}</span>
-            </li>
+            <LinkListItem key={t.name} href={t.url} name={t.name} desc={`${t.use} · ${t.tier}`} />
           ))}
-        </ul>
+        </LinkList>
       </div>
 
       <div className="mn-block">
         <div className="label">reach me</div>
-        <List>
-          <Item
+        <LinkList>
+          <LinkListItem
             href="https://x.com/sacha_hurley"
-            external
-            title="X"
+            name="X"
             desc="@sacha_hurley"
             onClick={() => award(XP_AWARDS.follow, 'followed on X', 'follow')}
           />
-          <Item
+          <LinkListItem
             href="https://github.com/sachahurley"
-            external
-            title="GitHub"
+            name="GitHub"
             desc="@sachahurley"
             onClick={() => award(XP_AWARDS.follow, 'followed on GitHub', 'follow-github')}
           />
-        </List>
+        </LinkList>
       </div>
     </MinimalPage>
   )
