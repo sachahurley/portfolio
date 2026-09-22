@@ -41,7 +41,7 @@ export type { SwitchProps } from './components/Switch';
 export { Dropdown } from './components/Dropdown';
 export type { DropdownProps, DropdownItem } from './components/Dropdown';
 export { CaseStudyBlocks } from './components/CaseStudy';
-export type { CaseStudyBlock } from './components/CaseStudy';
+export type { CaseStudyBlock, CaseStudySlots } from './components/CaseStudy';
 export { ListRow } from './components/ListRow';
 export type { ListRowProps } from './components/ListRow';
 export { Link } from './components/Link';

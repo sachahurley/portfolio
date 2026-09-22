@@ -285,6 +285,10 @@ strong, b { font-weight: 400; }
   object-fit: cover; display: block;
   background: repeating-linear-gradient(45deg, var(--color-secondary-975), var(--color-secondary-975) 8px, var(--color-secondary-950) 8px, var(--color-secondary-950) 16px);
 }
+/* the hatch is the empty-slot texture; a real thumbnail replaces it rather
+   than sitting on it, which matters for the 1-bit art (transparent by
+   design, so the stripes would show straight through the picture) */
+img.thumbimg { background: none; }
 @media (max-width: 480px) { .thumbimg { width: 104px; } }
 /* tight rows opt into a portrait (3:4) thumbnail column; on phones every
    thumb narrows further so the text column keeps room (ListRow keeps the
