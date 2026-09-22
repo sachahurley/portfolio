@@ -7,8 +7,8 @@
  *
  * An error message replaces the helper text while it is present (the Carbon /
  * Polaris convention), so the field never shows two lines of small print.
- * The error line carries a `[er]` prefix, the same severity glyph as Alert,
- * so meaning never rides on color alone.
+ * The error line leads with the 1-bit AlertCircle icon, the same severity
+ * icon as Alert's error variant, so meaning never rides on color alone.
  *
  * Not exported from the package barrel: this is plumbing, not a component.
  */

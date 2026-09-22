@@ -12,8 +12,10 @@
  * - info: Blue for informational messages
  *
  * FEATURES:
- * - Optional icon (iconLeft prop)
- * - Optional close button (onClose prop)
+ * - Severity icon per variant from the 1-bit set: default Bell, info Info,
+ *   success CheckCircle, warning AlertTriangle, error AlertCircle
+ *   (override with iconLeft)
+ * - Optional close button (onClose prop), a 1-bit X
  * - Optional title and description
  * - Full light/dark theme support
  * - Accessible (ARIA attributes)
