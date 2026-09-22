@@ -12,9 +12,18 @@
  * STATES:
  * - default: Standard input appearance
  * - hover: Subtle border change on mouse over
- * - focused: Primary color focus ring (keyboard accessible)
- * - disabled: Reduced opacity, not interactive
- * - error: Red border to indicate validation issues
+ * - focused: the system's 2px inset ring (`--focus-ring-width`) drawn inside
+ *   the plate, on top of the ring wrapper's accent colour. The error state
+ *   keeps its red ring wrapper and draws the inset ring in
+ *   `--focus-ring-error`, so focus is visible in every state.
+ * - disabled: the whole field (ring wrapper included) drops to 50% opacity;
+ *   dimming only the inner fill used to leave a full-strength border.
+ * - error: Red ring to indicate validation issues
+ *
+ * PLACEHOLDERS: `--field-placeholder` is sepia-700 in light (6.28:1 on the
+ * white field) and sepia-500 in dark (9.45:1). Placeholders still must never
+ * carry essential information (they vanish on input), so put format hints in
+ * `helperText` and the name in `label`.
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
 import { type ControlSizeProp } from "../lib/size";

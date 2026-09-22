@@ -14,8 +14,10 @@
  * STATES:
  * - unchecked: Default state with border
  * - checked: Filled with primary color, checkmark icon
- * - disabled: Reduced opacity, not interactive
- * - error: Red border to indicate validation issues
+ * - disabled: 50% opacity, applied once on the <label> so the box and the
+ *   label dim together (stacking it on the box too rendered it at ~25%)
+ * - error: Red border to indicate validation issues; the mark switches to
+ *   `--button-destructive-text`, the system's ink for a destructive fill
  *
  * Features:
  * - Accessible (ARIA attributes, keyboard support)

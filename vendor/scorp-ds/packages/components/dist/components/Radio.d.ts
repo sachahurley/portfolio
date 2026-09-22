@@ -24,6 +24,8 @@
  * - Focus states matching design system
  * - Smooth transitions
  * - Optional label
+ * - Optional helperText / errorMessage under the label, wired through
+ *   `aria-describedby` by the shared field helper (same as Checkbox)
  * - Works with radio groups (use same name prop)
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
@@ -31,8 +33,19 @@ import { type ControlSizeProp } from "../lib/size";
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
     /** Box size: sm 16px, md 20px (default), lg 24px. The tap target is 44×44px at every size. */
     size?: ControlSizeProp;
+    /** Visible label next to the box; clicking it selects the radio. Without one, pass `aria-label`. */
     label?: string | ReactNode;
+    /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
+    /** Secondary line under the label (explains what picking this option means). */
+    helperText?: ReactNode;
+    /** Validation message under the label. Sets the error state and replaces `helperText`. */
+    errorMessage?: ReactNode;
+    /**
+     * Called with this radio's checked state after a change (alternative to
+     * `onChange`). A radio only fires when it becomes selected, so the value is
+     * `true`; losing selection to a sibling fires nothing, as with a native radio.
+     */
     onCheckedChange?: (checked: boolean) => void;
 }
 /**
@@ -41,6 +54,8 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
  * @param size - Radio size (default: "md")
  * @param label - Optional label text displayed next to radio
  * @param error - Whether radio has a validation error
+ * @param helperText - Secondary line under the label
+ * @param errorMessage - Validation message under the label (implies `error`)
  * @param disabled - Whether radio is disabled
  * @param checked - Controlled checked state; omit it to use the native
  *                  uncontrolled behavior (`defaultChecked` + radio-group name)

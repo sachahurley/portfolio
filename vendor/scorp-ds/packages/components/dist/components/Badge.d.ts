@@ -49,6 +49,13 @@ export interface BadgeProps {
     children: ReactNode;
     iconLeft?: ReactNode;
     onClose?: () => void;
+    /**
+     * Accessible name for the remove button. Defaults to `Remove {children}`
+     * when the badge label is a plain string (so a list of filter chips reads as
+     * "Remove Draft", "Remove Archived"), and to "Remove badge" otherwise. Pass
+     * it explicitly whenever the label alone does not identify what is removed.
+     */
+    onCloseLabel?: string;
     className?: string;
 }
 /**
@@ -59,7 +66,8 @@ export interface BadgeProps {
  * @param children - Badge content (text, numbers, etc.)
  * @param iconLeft - Optional icon to display on the left
  * @param onClose - Optional callback when close button is clicked
+ * @param onCloseLabel - Accessible name for the remove button (defaults to `Remove {children}`)
  * @param className - Additional CSS classes
  */
-export declare function Badge({ variant, size: sizeProp, caps, dashed, children, iconLeft, onClose, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
+export declare function Badge({ variant, size: sizeProp, caps, dashed, children, iconLeft, onClose, onCloseLabel, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Badge.d.ts.map
