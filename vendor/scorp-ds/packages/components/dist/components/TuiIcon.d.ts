@@ -41,6 +41,7 @@ export declare const TUI_ICON_GLYPHS: {
     readonly Lock: "☖";
     readonly LogOut: "→";
     readonly Mail: "✉";
+    readonly Menu: "☰";
     readonly Moon: "☾";
     readonly MoreVertical: "⋮";
     readonly Music2: "♫";
