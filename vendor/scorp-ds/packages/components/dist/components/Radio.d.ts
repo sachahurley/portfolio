@@ -8,12 +8,14 @@
  * - small: 16px × 16px
  * - medium: 20px × 20px (default)
  * - large: 24px × 24px
- * Every size gets an invisible 44×44px hit area centered on the circle (a
+ * SHAPE: the stepped plate silhouette (--plate-round), same as Checkbox;
+ * checked shows a square dot where Checkbox shows a check.
+ * Every size gets an invisible 44×44px hit area centered on the box (a
  * pseudo-element, so layout is unchanged) to meet the touch-target rule.
  *
  * STATES:
  * - unchecked: Default state with border
- * - checked: Filled with primary color, inner dot
+ * - checked: Filled with primary color, inner square dot
  * - disabled: Reduced opacity, not interactive
  * - error: Red border to indicate validation issues
  *
