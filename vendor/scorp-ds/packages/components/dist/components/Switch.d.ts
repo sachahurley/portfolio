@@ -8,9 +8,12 @@
  * - small: 24px height (h-6)
  * - medium: 32px height (h-8) - matches small button/input - default
  * - large: 40px height (h-10) - matches medium button/input
+ * Every size's tap target is at least 44px tall: the (unclipped) button
+ * carries a pseudo-element hit area, so the visual track keeps its size.
  *
  * SHAPE: track and knob are both clipped to the small plate (--plate-round).
- * Focus is an inset ring (the clip swallows outside outlines) and the knob
+ * The clip lives on an inner track span, not the button, so the hit area
+ * isn't clipped away. Focus is an inset ring on the track and the knob
  * glides on the standard ease at duration-normal (200ms) — smooth, inside
  * the 150-200ms interactive-motion ceiling.
  *
@@ -25,7 +28,9 @@ import { type ButtonHTMLAttributes, type ReactNode } from "react";
 export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
     checked?: boolean;
     onCheckedChange?: (checked: boolean) => void;
+    /** Track size. The tap target is at least 44px tall at every size. */
     size?: "small" | "medium" | "large";
+    /** Visible label and accessible name. Use `hideLabel` to keep it aria-only. */
     label?: string;
     /**
      * Keep `label` as the accessible name only (no visible text). Use in

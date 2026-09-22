@@ -26,7 +26,15 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
      * idle hairline → hover mut → focus accent.
      */
     variant?: "box" | "quiet";
+    /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
+    /** Hint shown under the field (format, constraints). Linked via `aria-describedby`. */
+    helperText?: ReactNode;
+    /**
+     * Validation message shown under the field. Sets the error state and
+     * `aria-invalid`, and replaces `helperText` while present.
+     */
+    errorMessage?: ReactNode;
     /**
      * Optional visible label. When set, renders a `<label>` associated with the input via `htmlFor` / `id`.
      * Prefer this or `aria-label` so the field is announced correctly by screen readers.
@@ -41,6 +49,8 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
  * @param disabled - Whether input is disabled
  * @param className - Additional CSS classes to apply
  * @param label - Optional visible label wired to the input with matching `id`
+ * @param helperText - Hint under the field
+ * @param errorMessage - Validation message under the field (implies `error`)
  */
 export declare const Input: import("react").ForwardRefExoticComponent<InputProps & import("react").RefAttributes<HTMLInputElement>>;
 //# sourceMappingURL=Input.d.ts.map

@@ -76,11 +76,13 @@ export type TuiIconName = keyof typeof TUI_ICON_GLYPHS;
  * follow the Urizen 1-bit tileset the portfolio uses.
  */
 export declare const TUI_ICON_BITMAPS: Record<TuiIconName, readonly string[]>;
+/** Icon box sizes, named after the Tailwind size number (4 = 16px). */
+export type TuiIconSize = "3" | "4" | "5" | "6" | "8";
 export interface TuiIconProps {
     /** Icon name -- must match a key in {@link TUI_ICON_GLYPHS} (same as the Lucide component name). */
     name: string;
-    /** Tailwind size number: "3" | "4" | "5" | "6" | "8". Defaults to "4". */
-    size?: string;
+    /** Box size as a Tailwind size number: "3" (12px), "4" (16px, default), "5" (20px), "6" (24px), "8" (32px). */
+    size?: TuiIconSize;
     /** Additional CSS classes (color, margin, etc.) */
     className?: string;
 }
