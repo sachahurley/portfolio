@@ -19,9 +19,11 @@
  *
  * Features:
  * - Custom dropdown menu matching Dropdown component styling
- * - Keyboard navigation (Arrow keys, Escape, Enter)
+ * - Keyboard navigation (Arrow keys, Escape, Enter, Tab closes), announced
+ *   through `aria-activedescendant` on the trigger
  * - Click outside to close
  * - Maintains form compatibility with hidden native select
+ * - Children are flattened, so fragments, arrays and `<optgroup>` all work
  */
 import { type ReactNode, type SelectHTMLAttributes } from "react";
 import { type ControlSizeProp } from "../lib/size";

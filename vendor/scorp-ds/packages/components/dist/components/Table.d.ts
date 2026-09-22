@@ -1,6 +1,11 @@
 /**
  * TABLE — semantic data grid primitives with token-backed chrome.
  * Compose `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, and `TableCell`.
+ *
+ * TOKENS: rules are drawn at `--border-width-hairline` (1px), the system's
+ * only rule weight, replacing the ad hoc 0.5px rules that browsers snapped
+ * unevenly. Column headers are `font-bold` (`--font-weight-bold`, 700);
+ * the weight scale is 400 / 500 / 700, so `font-semibold` (600) was off-token.
  */
 import { type HTMLAttributes, type TdHTMLAttributes, type ThHTMLAttributes, type TableHTMLAttributes } from "react";
 /** Row padding density. `compact` is the default data-grid rhythm; the other

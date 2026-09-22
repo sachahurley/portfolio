@@ -7,9 +7,11 @@
  * FEATURES:
  * - Fixed header with title and a secondary-plate close button (always visible)
  * - Optional fixed footer band for CTAs via `footerContent`
- * - Scrollable content area (max-height: 66vh)
+ * - Scrollable content area (the panel is capped at 80vh; the body takes
+ *   whatever is left after the header and optional footer and scrolls)
  * - Fades in on open and out on close (duration.normal); stays mounted
  *   through the exit animation and unmounts on animationend
+ * - Focus trap: while modal, Tab and Shift+Tab cycle inside the panel
  * - Backdrop scrim (semi-transparent overlay)
  * - `docked` variant: on wide viewports (>=960px) the panel skips the scrim
  *   and pins bottom-center as a NON-modal dialog (no aria-modal, no scroll
