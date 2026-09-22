@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run dev:portfolio-only` - Vite only, no design-system watch (use when not editing scorp-ds)
 - `npm run build` - `tsc -b && vite build` (the typecheck; there is no separate typecheck script)
 - `npm run lint` - ESLint
-- `npm run vendor:ds` - rebuilds `@scorp-ds/components` in the sibling checkout and copies the publishable files into `vendor/scorp-ds/` so the repo stays self-contained for cloud builds. After running: review `git status vendor/`, run `npm run build`, commit `vendor/`
+- `npm run vendor:ds` - rebuilds `@scorp-ds/components` in the sibling checkout and copies the publishable files into `vendor/scorp-ds/` so the repo stays self-contained for cloud builds (source maps are dropped). Prints the DS commit and branch it built from. After running: review `git status vendor/`, run `npm run build`, commit `vendor/`. See "Working on scorp-ds and the portfolio together" before re-vendoring on a shared branch
 - `node scripts/bake-avatars.mjs` - regenerates `src/game/avatarTiles.ts`, the avatar figure pool, from the Urizen tile sheet (`public/tiles/urizen.png`) and `src/data/tileIndex.ts` (deterministic, safe to re-run)
 - `node scripts/bake-gear.mjs` - regenerates `src/game/gearTiles.ts`, the character screen's item art, from the tile ids listed in the script (fails if they drift from `BASES` in `src/game/loot.ts`)
 - `node scripts/bake-dither.mjs` - regenerates the 1-bit case-study art in `public/dither/` from the committed source screenshots in `art/` (never served). Same Bayer doctrine as `src/lib/dither/oneBit.ts`, run offline; deterministic, safe to re-run
@@ -22,10 +22,27 @@ React 19 + TypeScript + Vite SPA using react-router-dom and Tailwind 3.
 
 ### Design system: vendored scorp-ds
 
-`@scorp-ds/components` and `@scorp-ds/tokens` are `file:` dependencies pointing at `vendor/scorp-ds/packages/`. The source of truth is the sibling `~/Projects/scorp-ds` repo; `npm run vendor:ds` syncs it in. Two consequences:
+`@scorp-ds/components` and `@scorp-ds/tokens` are `file:` dependencies pointing at `vendor/scorp-ds/packages/`. The source of truth is the sibling `~/Projects/scorp-ds` repo; `npm run vendor:ds` syncs it in. Three consequences:
 
 - `vite.config.ts` excludes both packages from `optimizeDeps` so edits in the sibling repo reflect immediately in dev, and dedupes `react`/`react-dom` to avoid invalid-hook-call white screens.
 - `tailwind.config.js` gets its entire theme from `@scorp-ds/tokens/tailwind.preset`; do not add raw values to the Tailwind config.
+- Source maps are not vendored (`vendor-ds.sh` deletes them after the copy). They pointed at scorp-ds paths that don't exist here, and as single-line several-hundred-KB files they were the one thing in `vendor/` git could never merge. `check-ds-sync.sh` already excluded them from its diff.
+
+#### Working on scorp-ds and the portfolio together
+
+The `vendor/` directory is committed build output, so two branches that both re-vendor **will** conflict. That is structural, not bad luck. Four rules keep it cheap:
+
+1. **Never hand-merge a conflict in `vendor/`.** The files are minified bundles; a line-wise merge of them is meaningless even when git produces one. Resolve by rebuilding instead: finish the merge for every other file, re-run `vendor:ds` against a scorp-ds checkout that has both sides, then `git add vendor/`. Confirm the result is a superset by diffing a file only the other side touched.
+2. **Re-vendor last.** Do it once, immediately before opening the PR, on a branch already up to date with `main`. Re-vendoring mid-branch just means doing it again later.
+3. **One vendor PR in flight at a time.** A second one is guaranteed to need a rebuild-resolve.
+4. **Point `SCORP_DS_DIR` at a scorp-ds worktree you own**, not the shared `~/Projects/scorp-ds`, which other sessions switch branches in:
+   ```
+   git -C ~/Projects/scorp-ds worktree add ~/conductor/workspaces/scorp-ds/<name> -b <branch>
+   SCORP_DS_DIR=~/conductor/workspaces/scorp-ds/<name> npm run vendor:ds
+   ```
+   `vendor:ds` prints the commit and branch it built from; check that line, because the answer is otherwise unrecoverable after the fact.
+
+A scorp-ds change must land upstream too. Until its PR merges, the `ds-check` CI job fails by design: it diffs the vendored dist against scorp-ds `main`, which doesn't have the change yet. Merge scorp-ds first, then the portfolio.
 
 ### Theming and the XP system (the core cross-file system)
 
