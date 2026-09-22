@@ -15,11 +15,19 @@
  *   secondary scale in AA-passing theme pairs (700/600 and 800/500)
  * - duration.fast (hover), focus inset ring (clip swallows outside outlines)
  */
-import { type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ElementType, type ReactNode } from "react";
+import { type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ElementType, type HTMLAttributes, type ReactNode } from "react";
 type CommonProps = {
-    /** Small line above the title (date, category). Rendered in text.tertiary. */
+    /**
+     * Small line above the title (date, category). Rendered one step darker
+     * than text.tertiary (`secondary-700` in light, `secondary-600` in dark),
+     * so it clears AA (6.13:1 / 5.34:1) at 14px; text.tertiary is 3.31:1 and
+     * only safe for large or decorative text.
+     */
     meta?: ReactNode;
-    /** Row title. Interactive rows (href/onClick) render it in the accent color. */
+    /**
+     * Row title. Interactive rows (href/onClick) render it in the accent color.
+     * Titles are single-line: anything longer than the row ellipsizes.
+     */
     title: ReactNode;
     /** Supporting line below the title. */
     description?: ReactNode;
@@ -56,24 +64,29 @@ export type ListRowProps = CommonProps & (({
  * interactive styling and spreads `asProps` onto it (`to`, `state`,
  * ...), so client-side navigation works without a full page load.
  */
- | {
+ | ({
     as: ElementType;
     asProps?: Record<string, unknown>;
     href?: never;
     onClick?: never;
-} | {
+} & Omit<HTMLAttributes<HTMLElement>, "className" | "title">) | ({
     href?: never;
     onClick?: never;
     as?: never;
-});
+} & Omit<HTMLAttributes<HTMLDivElement>, "className" | "title">));
 /**
  * ListRow Component
  *
  * Renders an `<a>` when `href` is set, a `<button>` when `onClick` is set,
  * and a plain `<div>` for display-only rows.
  *
- * @param meta - Small tertiary line above the title (date, category)
- * @param title - Row title; accent-colored when the row is interactive
+ * Extra native attributes (`aria-*`, `id`, `data-*`) are forwarded in every
+ * form, including display rows and the `as` form.
+ *
+ * @param meta - Small line above the title (date, category), in the AA-passing
+ *               secondary pair (700 light / 600 dark), not text.tertiary
+ * @param title - Row title; accent-colored when the row is interactive, and
+ *                truncated with an ellipsis when it outgrows the row
  * @param description - Supporting copy under the title
  * @param titleSuffix - Trailing glyph beside the title (external-link arrows etc.)
  */

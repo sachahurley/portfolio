@@ -38,7 +38,10 @@ type CommonProps = {
     /**
      * Marks an external destination: opens in a new tab (`target="_blank"`,
      * `rel="noopener noreferrer"`, both overridable), appends the ExternalLink
-     * glyph, and announces "(opens in new tab)" to screen readers.
+     * glyph, and announces "(opens in new tab)" to screen readers. Behaves the
+     * same in the `as` form: the new-tab attributes are passed to the custom
+     * component (router links forward them to the anchor they render), and
+     * anything in `asProps` overrides them.
      */
     external?: boolean;
     /** Additional CSS classes (size, margin, color overrides). */
