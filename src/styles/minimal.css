@@ -732,8 +732,16 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   .chest-glint-a { opacity: 1; }
 }
 .gf-cs-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
-.gf-cs-name { font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* the name's line box is trimmed to its cap height: the leading above the
+   ink otherwise reads as extra top padding against the solid xp bar below */
+.gf-cs-name {
+  font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-box: trim-start cap alphabetic;
+}
 .gf-cs-lvl { font-size: 11px; color: var(--body); }
+/* the frame's corner stonework juts into the strip's bottom-right; the bar
+   is the only content low enough to meet it */
+.gf-charstrip .xp-mini { margin-right: 12px; }
 /* mini XP readout, notched + dithered like .gf-xpbar (see the comment
    there); shared by the character strip and the menu sheet's row */
 .xp-mini {
