@@ -21,7 +21,15 @@
 import { type ReactNode, type TextareaHTMLAttributes } from "react";
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
     size?: "small" | "medium" | "large";
+    /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
+    /** Hint shown under the field (length, format). Linked via `aria-describedby`. */
+    helperText?: ReactNode;
+    /**
+     * Validation message shown under the field. Sets the error state and
+     * `aria-invalid`, and replaces `helperText` while present.
+     */
+    errorMessage?: ReactNode;
     /**
      * Optional visible label. When set, renders a `<label>` associated with the textarea via `htmlFor` / `id`.
      */
@@ -35,6 +43,8 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
  * @param disabled - Whether textarea is disabled
  * @param className - Additional CSS classes to apply
  * @param label - Optional visible label wired to the control with matching `id`
+ * @param helperText - Hint under the field
+ * @param errorMessage - Validation message under the field (implies `error`)
  */
 export declare const Textarea: import("react").ForwardRefExoticComponent<TextareaProps & import("react").RefAttributes<HTMLTextAreaElement>>;
 //# sourceMappingURL=Textarea.d.ts.map

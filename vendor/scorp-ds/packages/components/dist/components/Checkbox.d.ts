@@ -8,6 +8,8 @@
  * - small: 16px × 16px
  * - medium: 20px × 20px (default)
  * - large: 24px × 24px
+ * Every size gets an invisible 44×44px hit area centered on the box (a
+ * pseudo-element, so layout is unchanged) to meet the touch-target rule.
  *
  * STATES:
  * - unchecked: Default state with border
@@ -23,9 +25,17 @@
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+    /** Box size. The tap target is 44×44px at every size. */
     size?: "small" | "medium" | "large";
+    /** Visible label; clicking it toggles the box. Without one, pass `aria-label`. */
     label?: string | ReactNode;
+    /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
+    /** Secondary line under the label (explains the consequence of checking). */
+    helperText?: ReactNode;
+    /** Validation message under the label. Sets the error state and replaces `helperText`. */
+    errorMessage?: ReactNode;
+    /** Called with the new checked state (alternative to `onChange`). */
     onCheckedChange?: (checked: boolean) => void;
 }
 /**
@@ -34,6 +44,8 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
  * @param size - Checkbox size (default: "medium")
  * @param label - Optional label text displayed next to checkbox
  * @param error - Whether checkbox has a validation error
+ * @param helperText - Secondary line under the label
+ * @param errorMessage - Validation message under the label (implies `error`)
  * @param disabled - Whether checkbox is disabled
  * @param checked - Controlled checked state; omit it to use the native
  *                  uncontrolled behavior (`defaultChecked`)

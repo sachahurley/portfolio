@@ -8,6 +8,8 @@
  * - small: 16px × 16px
  * - medium: 20px × 20px (default)
  * - large: 24px × 24px
+ * Every size gets an invisible 44×44px hit area centered on the circle (a
+ * pseudo-element, so layout is unchanged) to meet the touch-target rule.
  *
  * STATES:
  * - unchecked: Default state with border

@@ -26,7 +26,15 @@
 import { type ReactNode, type SelectHTMLAttributes } from "react";
 export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
     size?: "small" | "medium" | "large";
+    /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
+    /** Hint shown under the trigger. Linked via `aria-describedby`. */
+    helperText?: ReactNode;
+    /**
+     * Validation message shown under the trigger. Sets the error state and
+     * `aria-invalid`, and replaces `helperText` while present.
+     */
+    errorMessage?: ReactNode;
     /**
      * Optional visible label; associates with the custom trigger via `htmlFor` / `id` on the button.
      */
@@ -44,6 +52,8 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
  * @param defaultValue - Uncontrolled default value
  * @param onChange - Change handler
  * @param label - Optional visible label for the custom trigger (preferred over relying on `aria-label` alone)
+ * @param helperText - Hint under the trigger
+ * @param errorMessage - Validation message under the trigger (implies `error`)
  */
 export declare const Select: import("react").ForwardRefExoticComponent<SelectProps & import("react").RefAttributes<HTMLSelectElement>>;
 //# sourceMappingURL=Select.d.ts.map
