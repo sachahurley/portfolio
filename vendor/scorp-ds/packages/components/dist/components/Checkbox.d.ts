@@ -5,9 +5,9 @@
  * Built entirely from design tokens defined in tokens.json
  *
  * SIZES: Proportional to button/input height system
- * - small: 16px × 16px
- * - medium: 20px × 20px (default)
- * - large: 24px × 24px
+ * - sm: 16px × 16px
+ * - md: 20px × 20px (default)
+ * - lg: 24px × 24px
  * Every size gets an invisible 44×44px hit area centered on the box (a
  * pseudo-element, so layout is unchanged) to meet the touch-target rule.
  *
@@ -24,9 +24,10 @@
  * - Optional label
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
     /** Box size. The tap target is 44×44px at every size. */
-    size?: "small" | "medium" | "large";
+    size?: ControlSizeProp;
     /** Visible label; clicking it toggles the box. Without one, pass `aria-label`. */
     label?: string | ReactNode;
     /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
@@ -41,7 +42,7 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
 /**
  * Checkbox Component
  *
- * @param size - Checkbox size (default: "medium")
+ * @param size - Checkbox size (default: "md")
  * @param label - Optional label text displayed next to checkbox
  * @param error - Whether checkbox has a validation error
  * @param helperText - Secondary line under the label

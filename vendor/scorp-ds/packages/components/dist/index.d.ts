@@ -61,4 +61,5 @@ export { Stack } from './primitives/Stack';
 export type { StackProps, StackGap } from './primitives/Stack';
 export { ThemeProvider } from './theme/ThemeProvider';
 export { cn } from './lib/utils';
+export type { ControlSize, ControlSizeProp } from './lib/size';
 //# sourceMappingURL=index.d.ts.map

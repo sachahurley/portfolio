@@ -5,9 +5,9 @@
  * Built using design tokens for consistent styling
  *
  * SIZES: Proportional to button/input height system
- * - small: 24px height (h-6)
- * - medium: 32px height (h-8) - matches small button/input - default
- * - large: 40px height (h-10) - matches medium button/input
+ * - sm: 24px height (h-6)
+ * - md: 32px height (h-8) - matches small button/input - default
+ * - lg: 40px height (h-10) - matches medium button/input
  * Every size's tap target is at least 44px tall: the (unclipped) button
  * carries a pseudo-element hit area, so the visual track keeps its size.
  *
@@ -25,11 +25,12 @@
  * - Optional icon inside knob (for special use cases like theme toggle)
  */
 import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
     checked?: boolean;
     onCheckedChange?: (checked: boolean) => void;
     /** Track size. The tap target is at least 44px tall at every size. */
-    size?: "small" | "medium" | "large";
+    size?: ControlSizeProp;
     /** Visible label and accessible name. Use `hideLabel` to keep it aria-only. */
     label?: string;
     /**
@@ -46,7 +47,7 @@ export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
  *
  * @param checked - Whether switch is checked/on (default: false)
  * @param onCheckedChange - Callback when switch state changes
- * @param size - Switch size (default: "medium")
+ * @param size - Switch size (default: "md")
  * @param label - Optional label text displayed next to switch (and the accessible name)
  * @param hideLabel - Use label as the accessible name only; render no visible text
  * @param disabled - Whether switch is disabled

@@ -5,9 +5,9 @@
  * Built entirely from design tokens defined in tokens.json
  *
  * SIZES: Matching input heights
- * - small: 32px min-height (matches small input)
- * - medium: 40px min-height (matches medium input - default)
- * - large: 48px min-height (matches large input)
+ * - sm: 32px min-height (matches small input)
+ * - md: 40px min-height (matches medium input - default)
+ * - lg: 48px min-height (matches large input)
  *
  * SHAPE: plate ring recipe, identical to Input — wrapper = border color clipped
  * to --plate-round, textarea = fill clipped 1px inset. The ring walks the
@@ -19,8 +19,10 @@
  * - error: Red ring + tinted fill
  */
 import { type ReactNode, type TextareaHTMLAttributes } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-    size?: "small" | "medium" | "large";
+    /** Minimum height and padding: sm, md (default), lg, matching Input. Legacy names are deprecated aliases. */
+    size?: ControlSizeProp;
     /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
     /** Hint shown under the field (length, format). Linked via `aria-describedby`. */
@@ -38,7 +40,7 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 /**
  * Textarea Component
  *
- * @param size - Textarea size matching input heights (default: "medium")
+ * @param size - Textarea size matching input heights (default: "md")
  * @param error - Whether textarea has a validation error
  * @param disabled - Whether textarea is disabled
  * @param className - Additional CSS classes to apply

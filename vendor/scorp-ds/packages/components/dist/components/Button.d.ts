@@ -17,11 +17,11 @@
  * bordered plate; its fill is the page surface, not transparent.
  *
  * SIZES: All defined in tokens.json
- * - small: 32px height
- * - medium: 40px height (default)
- * - large: 48px height
+ * - sm: 32px height
+ * - md: 40px height (default)
+ * - lg: 48px height
  * - icon: DEPRECATED alias for a 40px square. Icon-only buttons are detected
- *   automatically and squared at every size, so use `size="medium"` instead.
+ *   automatically and squared at every size, so use `size="md"` instead.
  *
  * ICON-ONLY BUTTONS: `variant` picks the look, `size` picks the dimension.
  * `variant="icon"` is the dedicated icon plate (`--button-icon-*`); any other
@@ -32,6 +32,7 @@
  * another page, use the `Link` component so it has anchor semantics.
  */
 import { type ButtonHTMLAttributes } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     /**
      * Visual style (default: "primary"). One primary per view; "link" is an
@@ -40,10 +41,11 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
      */
     variant?: "primary" | "secondary" | "ghost" | "link" | "outline" | "destructive" | "icon";
     /**
-     * Height: small 32px, medium 40px (default), large 48px. Icon-only buttons
-     * are squared automatically. `"icon"` is deprecated: use "medium".
+     * Height: sm 32px, md 40px (default), lg 48px, from the control-height
+     * tokens. Legacy small/medium/large still work (deprecated). Icon-only buttons
+     * are squared automatically. `"icon"` is deprecated: use "md".
      */
-    size?: "small" | "medium" | "large" | "icon";
+    size?: ControlSizeProp | "icon";
     /** Disables the button (anchors drop `href` and set `aria-disabled`). */
     disabled?: boolean;
     iconLeft?: React.ReactNode;
@@ -63,7 +65,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * Button Component
  *
  * @param variant - Button style variant (default: "primary")
- * @param size - Button size (default: "medium")
+ * @param size - Button size (default: "md")
  * @param disabled - Whether button is disabled
  * @param className - Additional CSS classes to apply
  * @param children - Button content (text, icons, etc.)
