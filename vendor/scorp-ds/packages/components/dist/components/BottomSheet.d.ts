@@ -11,6 +11,7 @@
  *
  * FEATURES:
  * - Scrim backdrop (surface.overlay), click or ESC to close
+ * - Focus moves onto the sheet on open and returns to the invoker on close
  * - Grabber affordance at the top seam
  * - Slides up with the slow duration token
  * - Body scroll is locked while open
