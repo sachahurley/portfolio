@@ -5,9 +5,9 @@
  * Built entirely from design tokens defined in tokens.json
  *
  * SIZES: Matching button heights
- * - small: 32px height
- * - medium: 40px height (default)
- * - large: 48px height
+ * - sm: 32px height
+ * - md: 40px height (default)
+ * - lg: 48px height
  *
  * STATES:
  * - default: Standard input appearance
@@ -17,8 +17,10 @@
  * - error: Red border to indicate validation issues
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-    size?: "small" | "medium" | "large";
+    /** Field height: sm 32px, md 40px (default), lg 48px. Legacy small/medium/large are deprecated aliases. */
+    size?: ControlSizeProp;
     /**
      * Visual variant. "box" (default) is the plate field; "quiet" is the
      * underline recipe — transparent, bottom hairline only, the site's voice
@@ -44,7 +46,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 /**
  * Input Component
  *
- * @param size - Input size matching button heights (default: "medium")
+ * @param size - Input size matching button heights (default: "md")
  * @param error - Whether input has a validation error
  * @param disabled - Whether input is disabled
  * @param className - Additional CSS classes to apply

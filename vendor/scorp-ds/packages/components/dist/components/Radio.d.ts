@@ -5,9 +5,9 @@
  * Built entirely from design tokens defined in tokens.json
  *
  * SIZES: Proportional to button/input height system
- * - small: 16px × 16px
- * - medium: 20px × 20px (default)
- * - large: 24px × 24px
+ * - sm: 16px × 16px
+ * - md: 20px × 20px (default)
+ * - lg: 24px × 24px
  * SHAPE: the stepped plate silhouette (--plate-round), same as Checkbox;
  * checked shows a square dot where Checkbox shows a check.
  * Every size gets an invisible 44×44px hit area centered on the box (a
@@ -27,8 +27,10 @@
  * - Works with radio groups (use same name prop)
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-    size?: "small" | "medium" | "large";
+    /** Box size: sm 16px, md 20px (default), lg 24px. The tap target is 44×44px at every size. */
+    size?: ControlSizeProp;
     label?: string | ReactNode;
     error?: boolean;
     onCheckedChange?: (checked: boolean) => void;
@@ -36,7 +38,7 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 /**
  * Radio Component
  *
- * @param size - Radio size (default: "medium")
+ * @param size - Radio size (default: "md")
  * @param label - Optional label text displayed next to radio
  * @param error - Whether radio has a validation error
  * @param disabled - Whether radio is disabled

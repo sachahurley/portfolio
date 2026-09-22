@@ -13,6 +13,7 @@
  * - Left or right alignment
  */
 import { type ReactNode } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface DropdownItem {
     label: string;
     onClick: () => void;
@@ -26,7 +27,8 @@ export interface DropdownProps {
     items: DropdownItem[];
     align?: "left" | "right";
     label?: string;
-    size?: "small" | "medium" | "large";
+    /** Trigger height, matching Button/Input: sm, md (default), lg. Legacy names are deprecated aliases. */
+    size?: ControlSizeProp;
 }
 /**
  * Dropdown Component
@@ -36,5 +38,5 @@ export interface DropdownProps {
  * @param align - Menu alignment: "left" or "right" (default: "left")
  * @param label - Label text for default trigger button (default: "Actions")
  */
-export declare function Dropdown({ trigger, items, align, label, size }: DropdownProps): import("react/jsx-runtime").JSX.Element;
+export declare function Dropdown({ trigger, items, align, label, size: sizeProp }: DropdownProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Dropdown.d.ts.map

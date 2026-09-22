@@ -6,9 +6,9 @@
  * Built entirely from design tokens defined in tokens.json
  *
  * SIZES: Matching input heights
- * - small: 32px height
- * - medium: 40px height (default)
- * - large: 48px height
+ * - sm: 32px height
+ * - md: 40px height (default)
+ * - lg: 48px height
  *
  * STATES:
  * - default: Standard select appearance
@@ -24,8 +24,10 @@
  * - Maintains form compatibility with hidden native select
  */
 import { type ReactNode, type SelectHTMLAttributes } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
-    size?: "small" | "medium" | "large";
+    /** Trigger height: sm 32px, md 40px (default), lg 48px. Legacy names are deprecated aliases. */
+    size?: ControlSizeProp;
     /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
     /** Hint shown under the trigger. Linked via `aria-describedby`. */
@@ -43,7 +45,7 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
 /**
  * Select Component
  *
- * @param size - Select size matching input heights (default: "medium")
+ * @param size - Select size matching input heights (default: "md")
  * @param error - Whether select has a validation error
  * @param disabled - Whether select is disabled
  * @param className - Additional CSS classes to apply

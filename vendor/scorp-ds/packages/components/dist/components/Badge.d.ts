@@ -16,9 +16,9 @@
  *   or re-theme (the portfolio's equipped/loot chips)
  *
  * SIZES:
- * - small: Compact badge (20px height)
- * - medium: Standard badge (24px height, default)
- * - large: Larger badge (28px height)
+ * - sm: Compact badge (20px height)
+ * - md: Standard badge (24px height, default)
+ * - lg: Larger badge (28px height)
  *
  * FEATURES:
  * - Optional close button (onClose prop)
@@ -32,9 +32,11 @@
  * - Full light/dark theme support
  */
 import { type ReactNode } from "react";
+import { type ControlSizeProp } from "../lib/size";
 export interface BadgeProps {
     variant?: "default" | "primary" | "success" | "warning" | "error" | "info" | "bone";
-    size?: "small" | "medium" | "large";
+    /** Badge height: sm 20px, md 24px (default), lg 28px. Legacy names are deprecated aliases. */
+    size?: ControlSizeProp;
     /** Uppercase eyebrow voice: uppercase text with .08em tracking. */
     caps?: boolean;
     /**
@@ -53,11 +55,11 @@ export interface BadgeProps {
  * Badge Component
  *
  * @param variant - Badge color variant (default: "default")
- * @param size - Badge size (default: "medium")
+ * @param size - Badge size (default: "md")
  * @param children - Badge content (text, numbers, etc.)
  * @param iconLeft - Optional icon to display on the left
  * @param onClose - Optional callback when close button is clicked
  * @param className - Additional CSS classes
  */
-export declare function Badge({ variant, size, caps, dashed, children, iconLeft, onClose, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
+export declare function Badge({ variant, size: sizeProp, caps, dashed, children, iconLeft, onClose, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Badge.d.ts.map
