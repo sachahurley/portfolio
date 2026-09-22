@@ -12,7 +12,10 @@
  *
  * FEATURES:
  * - Arrow/pointer indicator
- * - Auto-positioning (adjusts if near viewport edge)
+ * - Viewport-aware: measured after it opens; if the chosen side would
+ *   overflow the viewport it flips to the opposite side (when that side has
+ *   room), and top/bottom tooltips slide horizontally to stay on screen
+ *   while the caret keeps pointing at the trigger
  * - Delay for show/hide (prevents accidental triggers)
  * - Max width constraint
  * - Full light/dark theme support
@@ -34,7 +37,10 @@ export interface TooltipProps {
     content: ReactNode;
     /** The trigger. Pass one focusable element so keyboard users can open the tooltip and hear it. */
     children: ReactNode;
-    /** Side of the trigger the tooltip sits on (default: "top"). */
+    /**
+     * Preferred side of the trigger (default: "top"). It flips to the opposite
+     * side when this one would overflow the viewport.
+     */
     position?: "top" | "bottom" | "left" | "right";
     /** Milliseconds before showing on hover or focus (default: 200). */
     delay?: number;
