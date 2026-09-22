@@ -80,10 +80,116 @@ export const projects: Project[] = [
     featured: true,
     img: true,
     externalUrl: 'https://sachahurley.github.io/scorpion-design-system/',
-    tools: ['Cursor', 'Claude', 'React', 'Tailwind CSS'],
+    tools: ['Claude Code', 'Cursor', 'React', 'Tailwind CSS', 'Storybook'],
     year: '2025',
     longDescription:
-      'Scorpion Design System is a token-based design system built from the ground up using AI tools. It includes a complete component library, design token system, and interactive documentation site.',
+      'A token-based React component library with a terminal look, built solo and now running three production sites.',
+    blocks: [
+      {
+        type: 'meta',
+        items: [
+          { label: 'Role', value: 'Designer and builder, solo' },
+          { label: 'Timeline', value: 'Aug 2025 to now' },
+          { label: 'Scope', value: '43 components, 378 tokens' },
+          { label: 'Stack', value: 'React, TypeScript, Tailwind, Storybook' },
+        ],
+      },
+      {
+        type: 'headline',
+        kicker: 'overview',
+        title: 'A terminal-flavoured design system I build everything else on.',
+        text:
+          'Scorp DS is a token-based React library with a TUI look: sharp corners, one monospace face, a warm amber and sepia palette, and interaction states that never run past 200ms. This site is built out of it.',
+      },
+      {
+        type: 'headline',
+        kicker: 'the problem',
+        title: 'It took three rewrites to get the foundation right.',
+        text:
+          'Scorpion UI shipped in 2025 as a folder of components with hardcoded values. v2 introduced tokens but left them tangled with the showcase site that displayed them. Either way, starting a new project meant copying components across and re-deciding colour and spacing by hand.',
+      },
+      { type: 'image', aspect: '21 / 9', caption: 'Component library overview', width: 'wide' },
+      {
+        type: 'headline',
+        kicker: 'the system',
+        title: 'Tokens first, then everything else.',
+      },
+      {
+        type: 'list',
+        items: [
+          {
+            title: 'One source of truth',
+            text:
+              'Every colour, size and duration lives in a single tokens.json in W3C design token format. Components are not allowed raw values. A parser turns the file into CSS custom properties and a Tailwind preset, so consumers get the whole theme from one import.',
+          },
+          {
+            title: 'Semantic aliasing',
+            text:
+              'Components reference primary and secondary, never amber and sepia, even though they resolve to the same value. That one rule is what makes retheming possible: the unlockable colour themes on this site work by overriding those variables at runtime, with no component aware of it.',
+          },
+          {
+            title: 'Packages that point one way',
+            text:
+              'Tokens, then tui-art (box-drawing frames as plain strings, no React), then components, then Storybook. Dependencies only flow downhill, so the token layer can never accidentally import a button.',
+          },
+        ],
+      },
+      {
+        type: 'headline',
+        kicker: 'documentation',
+        title: 'Storybook is the contract, not a gallery.',
+        text:
+          '65 stories cover foundations, every component, and full screen samples. Accessibility is tested rather than asserted: the test runner replays each story through axe in both light and dark themes, so a contrast regression fails the build instead of shipping.',
+      },
+      { type: 'image', caption: 'Storybook documentation' },
+      {
+        type: 'headline',
+        kicker: 'in production',
+        title: 'Three sites run on it.',
+      },
+      {
+        type: 'callouts',
+        items: [
+          {
+            title: 'This portfolio',
+            text: 'Every page, and the case study sections you are reading, are scorp-ds components.',
+          },
+          {
+            title: 'The showcase',
+            text: 'A public front door for the system, deployed from its own repo on merge.',
+          },
+          {
+            title: 'Protodash',
+            text: 'A prototyping dashboard where new patterns get pressure-tested before they graduate.',
+          },
+        ],
+      },
+      {
+        type: 'prose',
+        text:
+          'None of the three install from a registry. Each vendors a committed copy of the built packages, so any checkout builds offline and an upgrade is a reviewable diff rather than a version bump that silently moves a hundred pixels.',
+      },
+      {
+        type: 'headline',
+        kicker: 'reflection',
+        title: 'What building it actually taught me.',
+      },
+      {
+        type: 'list',
+        items: [
+          {
+            title: 'Constraints travel further than components',
+            text:
+              'The rules that earned their keep are the boring prohibitions: no raw hex, no border radius, no sans-serif. They hold across every new component without anyone re-litigating them.',
+          },
+          {
+            title: 'A system is only real once something depends on it',
+            text:
+              'The library was tidy in isolation and full of wrong assumptions the moment a second site consumed it. Shipping the portfolio on it found more gaps than any amount of reviewing the components alone.',
+          },
+        ],
+      },
+    ],
   },
   {
     // Fake project: a working template exercising every extended layout
