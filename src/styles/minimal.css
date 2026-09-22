@@ -113,11 +113,12 @@ strong, b { font-weight: 400; }
   /* stone ring: a plain border would be sliced off by the clip-path, so
      the element is the ring colour and ::before paints the stone fill 1px
      inside the same polygon (the .em-card trick). The notch is part of
-     the frame asset, so ring and label wear the frame's DISPLAY ink
-     (the stonework is dithered to sepia-500, see JeweledFrame), a base
-     token themes never override: the frame never re-themes and neither
-     does its notch. */
-  background: var(--color-sepia-500); color: var(--color-sepia-500);
+     the frame asset, so it is a solid plate of the frame's DISPLAY ink
+     (the stonework is dithered to sepia-500, see JeweledFrame) with the
+     label cut out in page ground: a hollow outline vanished into content
+     scrolling past. Base tokens themes never override: the frame never
+     re-themes and neither does its notch. */
+  background: var(--color-sepia-500); color: var(--bg);
   clip-path: polygon(
     0 4px, 4px 4px, 4px 0,
     calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
@@ -142,13 +143,12 @@ strong, b { font-weight: 400; }
 }
 .gf-tab::before {
   content: ""; position: absolute; inset: 1px; z-index: -1;
-  /* the notch is a cut-out of the page, so its fill is the page ground
-     (--bg never re-themes); hover lifts to the stone it used to wear */
-  background: var(--bg);
+  /* stone fill; hover lightens a step, leaving the 1px ring as an edge */
+  background: var(--color-sepia-500);
   clip-path: inherit;
   transition: background-color .12s;
 }
-@media (hover: hover) { .gf-tab:hover::before { background: var(--color-sepia-800); } }
+@media (hover: hover) { .gf-tab:hover::before { background: var(--color-sepia-400); } }
 /* pressed into the stone: the notch sinks, keeping its centring transform
    (its own fast transition so the press never rides the sink timing) */
 .gf-tab:active { transform: translateY(2px); transition: transform .06s; }
@@ -298,9 +298,14 @@ strong, b { font-weight: 400; }
 /* .platebtn retired: plate CTAs are @scorp-ds/components Button (secondary). */
 /* clip-path swallows the global outside focus ring on plate-clipped
    controls; paint an inset ring within the silhouette instead */
-.pgbtn:focus-visible,
-.gf-tab:focus-visible, .gf-dest:focus-visible {
+.pgbtn:focus-visible, .gf-dest:focus-visible {
   outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+/* the stone tabs' fill pseudo covers the element's own box-shadow, so the
+   ring goes on the pseudo */
+.gf-tab:focus-visible, .gf-collapse:focus-visible { outline: none; }
+.gf-tab:focus-visible::before, .gf-collapse:focus-visible::before {
   box-shadow: inset 0 0 0 2px var(--accent);
 }
 
@@ -565,9 +570,10 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   }
   .gf-tab-holder { display: none; }
   /* collapsible side column: a drawer-pull tab grown out of the seam (the
-     column's 2px left border) at mid-height — 18px wide so it covers the
-     border behind it, corners notched on its outer (left) side only, so
-     the straight side merges into the line. It hangs off the column's
+     column's 2px left border) at mid-height, its straight side butted
+     flush against the line (left = -(width + border), since absolute
+     offsets start inside the border), corners notched on its outer (left)
+     side only. It hangs off the column's
      left edge, so as the width animates shut the same tab rides the
      moving seam and ends up waiting at the frame's right edge to pull
      the column back out. */
@@ -575,26 +581,29 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   .gf-collapse {
     display: inline-flex; align-items: center; justify-content: center;
     width: 18px; height: 56px; padding: 0; border: 0; cursor: pointer;
-    position: absolute; top: 50%; left: -16px; transform: translateY(-50%);
+    position: absolute; top: 50%; left: -20px; transform: translateY(-50%);
     isolation: isolate;
-    /* same frame-stone ring as the mobile menu notch (see .gf-tab) */
-    background: var(--color-sepia-500); color: var(--color-sepia-500);
+    /* same solid frame-stone plate as the mobile menu notch (see .gf-tab) */
+    background: var(--color-sepia-500); color: var(--bg);
     font-family: var(--mono); font-size: 13px; line-height: 1;
     clip-path: polygon(
       0 4px, 4px 4px, 4px 0,
       100% 0, 100% 100%,
       4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
     );
-    transition: color .12s;
+    transition: color .12s, left .28s ease;
   }
+  /* closed, the seam is transparent: take its 2px so the tab parks flush
+     against the frame stone instead of leaving a dark sliver */
+  .gf-side.is-closed .gf-collapse { left: -18px; }
   .gf-collapse::before {
     content: ""; position: absolute; inset: 1px; z-index: -1;
-    /* page-ground fill, matching the mobile menu notch (see .gf-tab) */
-    background: var(--bg);
+    /* stone fill, matching the mobile menu notch (see .gf-tab) */
+    background: var(--color-sepia-500);
     clip-path: inherit;
     transition: background-color .12s;
   }
-  @media (hover: hover) { .gf-collapse:hover::before { background: var(--color-sepia-800); } }
+  @media (hover: hover) { .gf-collapse:hover::before { background: var(--color-sepia-400); } }
   /* clears the stone band when the tab parks at the frame edge */
   .gf-collapse { z-index: 65; }
 }
