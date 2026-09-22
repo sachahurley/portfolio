@@ -44,6 +44,9 @@ find "$DEST/components/dist" -name '*.map' -delete
 echo "→ copying tokens (src + preset + manifest) …"
 rm -rf "$DEST/tokens/src"
 cp -R "$DS/packages/tokens/src" "$DEST/tokens/src"
+# Drop the DS's own test files: they resolve paths against the scorp-ds repo
+# layout, so a consumer that globs vendor/ for tests would fail on them.
+find "$DEST/tokens/src" -name '*.test.*' -delete
 cp "$DS/packages/tokens/tailwind.preset.js" "$DEST/tokens/tailwind.preset.js"
 cp "$DS/packages/tokens/package.json" "$DEST/tokens/package.json"
 
