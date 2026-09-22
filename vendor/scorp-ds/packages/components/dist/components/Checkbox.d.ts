@@ -38,6 +38,15 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
     errorMessage?: ReactNode;
     /** Called with the new checked state (alternative to `onChange`). */
     onCheckedChange?: (checked: boolean) => void;
+    /**
+     * Mixed state, for a parent box whose children are partly checked ("select
+     * all" over a half-selected list). Sets the native `indeterminate` property,
+     * so assistive tech announces "mixed", and draws a 1-bit bar instead of the
+     * check. The prop is the source of truth: a click still fires `onChange` /
+     * `onCheckedChange`, and the box stays mixed until you pass `false`
+     * (typically after checking or clearing every child).
+     */
+    indeterminate?: boolean;
 }
 /**
  * Checkbox Component
@@ -51,6 +60,7 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
  * @param checked - Controlled checked state; omit it to use the native
  *                  uncontrolled behavior (`defaultChecked`)
  * @param onCheckedChange - Callback when checkbox state changes (alternative to onChange)
+ * @param indeterminate - Mixed state (native `indeterminate`), drawn as a bar
  */
 export declare const Checkbox: import("react").ForwardRefExoticComponent<CheckboxProps & import("react").RefAttributes<HTMLInputElement>>;
 //# sourceMappingURL=Checkbox.d.ts.map

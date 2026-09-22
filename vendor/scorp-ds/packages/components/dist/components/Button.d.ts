@@ -60,6 +60,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     target?: string;
     /** Anchor rel (only with `href`); pair `target="_blank"` with "noopener noreferrer". */
     rel?: string;
+    /**
+     * Busy state for async actions (submitting, saving). Shows a Spinner over
+     * the label, sets `aria-busy` and `aria-disabled`, and ignores clicks. The
+     * button stays focusable (no native `disabled`, so focus isn't dropped
+     * mid-submit) and keeps its width: the label is hidden in place, not
+     * removed. Works for icon-only buttons too. `disabled` wins over `loading`.
+     */
+    loading?: boolean;
 }
 /**
  * Button Component
@@ -71,6 +79,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * @param children - Button content (text, icons, etc.)
  * @param iconLeft - Icon element to display on the left side of text
  * @param iconRight - Icon element to display on the right side of text
+ * @param loading - Busy state: Spinner over the label, clicks ignored, stays focusable
  *
  * Icon-only usage: pass `aria-label` or `aria-labelledby` (standard button attributes) so assistive tech has an accessible name.
  */
