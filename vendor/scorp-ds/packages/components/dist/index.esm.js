@@ -3984,7 +3984,7 @@ function Pa({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, wi
       "aria-label": r,
       onClick: (h) => h.stopPropagation(),
       children: /* @__PURE__ */ N("div", { className: "w-full plate-round-lg bg-[var(--surface-card)] flex flex-col overflow-hidden", children: [
-        /* @__PURE__ */ N("div", { className: "flex items-center justify-between px-6 py-5 border-b-[0.5px] border-solid border-[var(--surface-container-stroke)]", children: [
+        /* @__PURE__ */ N("div", { className: "flex items-center justify-between px-6 py-5 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: [
           /* @__PURE__ */ o("h2", { className: "text-base font-mono text-[var(--text-primary)] font-medium flex-1 min-w-0 truncate", children: r }),
           /* @__PURE__ */ o(
             "span",
@@ -4008,7 +4008,7 @@ function Pa({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, wi
           )
         ] }),
         /* @__PURE__ */ o("div", { className: "overflow-y-auto px-6 py-5", tabIndex: 0, children: n }),
-        a && /* @__PURE__ */ o("div", { className: "flex items-center justify-end gap-3 px-6 py-5 border-t-[0.5px] border-solid border-[var(--surface-container-stroke)]", children: a })
+        a && /* @__PURE__ */ o("div", { className: "flex items-center justify-end gap-3 px-6 py-5 border-t-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: a })
       ] })
     }
   );
@@ -4018,9 +4018,9 @@ function Pa({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, wi
       className: `fixed inset-x-0 mx-auto w-fit max-w-full ${m ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
       style: {
         zIndex: "var(--z-index-modal)",
-        bottom: "48px",
+        bottom: "var(--spacing-12)",
         animationDuration: "var(--duration-normal)",
-        filter: "drop-shadow(0 10px 40px rgba(0, 0, 0, 0.35))"
+        filter: "var(--elevation-docked-filter)"
       },
       onAnimationEnd: () => {
         m && u(!1);
@@ -4528,11 +4528,11 @@ function Vn({
     bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
     left: "right-full top-1/2 -translate-y-1/2 mr-2",
     right: "left-full top-1/2 -translate-y-1/2 ml-2"
-  }, te = "polygon(0 0, 16px 0, 16px 2px, 14px 2px, 14px 4px, 12px 4px, 12px 6px, 10px 6px, 10px 8px, 6px 8px, 6px 6px, 4px 6px, 4px 4px, 2px 4px, 2px 2px, 0 2px)", Q = "polygon(0 0, 12px 0, 12px 2px, 10px 2px, 10px 4px, 8px 4px, 8px 6px, 4px 6px, 4px 4px, 2px 4px, 2px 2px, 0 2px)", oe = {
+  }, te = "var(--plate-caret-outer)", Q = "var(--plate-caret-inner)", oe = {
     top: "top-full left-1/2 -translate-x-1/2 -translate-y-px",
     bottom: "bottom-full left-1/2 -translate-x-1/2 translate-y-px rotate-180",
-    left: "left-full top-1/2 -translate-y-1/2 -translate-x-[5px] -rotate-90",
-    right: "right-full top-1/2 -translate-y-1/2 translate-x-[5px] rotate-90"
+    left: "left-full top-1/2 -translate-y-1/2 translate-x-[calc(var(--plate-caret-offset)*-1)] -rotate-90",
+    right: "right-full top-1/2 -translate-y-1/2 translate-x-[var(--plate-caret-offset)] rotate-90"
   }, W = {
     top: "top-full inset-x-0 h-2",
     bottom: "bottom-full inset-x-0 h-2",
@@ -4575,7 +4575,7 @@ function Vn({
                   className: `absolute ${oe[g]}`,
                   style: { marginLeft: S || void 0 },
                   "aria-hidden": "true",
-                  children: /* @__PURE__ */ N("div", { className: "relative h-[8px] w-[16px]", children: [
+                  children: /* @__PURE__ */ N("div", { className: "relative h-[var(--plate-caret-height)] w-[var(--plate-caret-width)]", children: [
                     /* @__PURE__ */ o(
                       "div",
                       {
@@ -4586,7 +4586,7 @@ function Vn({
                     /* @__PURE__ */ o(
                       "div",
                       {
-                        className: "absolute left-[2px] top-[-1px] h-[6px] w-[12px] bg-[var(--surface-card)]",
+                        className: "absolute left-[var(--plate-caret-inner-inset-x)] top-[var(--plate-caret-inner-inset-y)] h-[var(--plate-caret-inner-height)] w-[var(--plate-caret-inner-width)] bg-[var(--surface-card)]",
                         style: { clipPath: Q }
                       }
                     )
@@ -6065,7 +6065,7 @@ function so({
       "aria-label": r,
       "aria-labelledby": n,
       className: z(
-        "flex flex-wrap gap-0 border-b-[0.5px] border-solid border-[var(--surface-container-stroke)]",
+        "flex flex-wrap gap-0 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]",
         t
       ),
       children: e
@@ -6736,7 +6736,7 @@ const So = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), $o 
             role: "listbox",
             "aria-labelledby": Ge ? L : void 0,
             "aria-label": Ge ? void 0 : x,
-            className: "max-h-[min(300px,var(--popover-available-height,300px))] overflow-y-auto py-1",
+            className: "max-h-[min(var(--control-menu-max-height),var(--popover-available-height,var(--control-menu-max-height)))] overflow-y-auto py-1",
             children: B.map((A, ne) => {
               const he = A.value === H, ze = ne === ie;
               return /* @__PURE__ */ N(
