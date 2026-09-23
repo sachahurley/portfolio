@@ -4743,7 +4743,7 @@ const Gn = re(function({
       menuItem: "",
       icon: "w-6 h-6"
     }
-  }[h], ie = k ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]", J = k ? "bg-[var(--field-border-error)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", fe = p != null && p !== "", ge = /* @__PURE__ */ N("div", { ref: P, className: "relative inline-block w-full", children: [
+  }[h], ie = k ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]", J = k ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", fe = p != null && p !== "", ge = /* @__PURE__ */ N("div", { ref: P, className: "relative inline-block w-full", children: [
     /* @__PURE__ */ o(
       "select",
       {
@@ -6632,7 +6632,7 @@ const So = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), $o 
     sm: { input: "h-control-sm pl-3 pr-9", icon: "right-3" },
     md: { input: "h-control-md pl-4 pr-10", icon: "right-4" },
     lg: { input: "h-control-lg pl-5 pr-11", icon: "right-5" }
-  }[te], Ze = Q.invalid, Nr = Ze ? "bg-[var(--field-border-error)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", Ge = d != null && d !== "", Sr = T && ie >= 0 && B[ie] ? P(ie) : void 0;
+  }[te], Ze = Q.invalid, Nr = Ze ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", Ge = d != null && d !== "", Sr = T && ie >= 0 && B[ie] ? P(ie) : void 0;
   return /* @__PURE__ */ N("div", { className: z("w-full", S), children: [
     /* @__PURE__ */ N("div", { className: "w-full space-y-1", children: [
       Ge && /* @__PURE__ */ o(
