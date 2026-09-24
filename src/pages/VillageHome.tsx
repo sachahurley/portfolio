@@ -9,6 +9,7 @@
  */
 
 import { useNavigate } from 'react-router-dom'
+import HomeStats from '../components/HomeStats'
 import MinimalPage from '../components/MinimalPage'
 import VillageScene from '../components/village/VillageScene'
 import { VILLAGE_HOME } from '../data/villageHome'
@@ -34,6 +35,10 @@ export default function VillageHome() {
       {/* reward badges retired from the village: the waiting signal
           lives on the character strip / sheet row / dock dot */}
       <VillageScene items={VILLAGE_HOME} onNavigate={(href) => navigate(href)} />
+
+      {/* the page's only footer: lifetime totals across every visitor the
+          site has ever had (renders nothing until they arrive) */}
+      <HomeStats />
     </MinimalPage>
   )
 }

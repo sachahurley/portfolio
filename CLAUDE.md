@@ -50,6 +50,16 @@ A scorp-ds change must land upstream too. Until its PR merges, the `ds-check` CI
 - `src/lib/themes.ts`: each earned gem carries a palette. Activating a gem re-themes the site by writing CSS custom properties inline on `<html>`. The `default` theme is special: it removes the inline overrides so the scorp-ds token aliases in `index.css` remain the stock look. The contract is the variable structure (`--accent`, `--fire1/2/3`, `--fg`, `--body`), not the hex values.
 - All styling routes through these CSS variables. `src/styles/minimal.css` was ported verbatim from a prototype; layout/spacing stays as-is, colors only via token aliases. Site-wide rule: single font weight (400 everywhere); emphasis is carried by color, not weight.
 
+### Lifetime site counters (the home page footer)
+
+The only shared state on an otherwise client-side site: four totals summed across every visitor (`Travellers`, `XP earned`, `Quests read`, `Gems claimed`), shown by `src/components/HomeStats.tsx` under the village.
+
+- `/api/stats` (`api/stats.ts` -> `api/_lib/stats.ts`) serves them. Storage is Upstash Redis over its REST API (`api/_lib/counters.ts`), driven with plain fetch; `INCRBY` is the whole requirement so there is no SDK dependency.
+- Env: `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`, or the `KV_REST_API_URL` / `KV_REST_API_TOKEN` aliases that Vercel's Upstash marketplace integration sets. **Until one pair is set in Vercel, the endpoint answers 503 and the footer does not render at all.** That is deliberate: without a store each serverless instance would keep its own copy and the total would jump between cold starts, and a lifetime counter that is quietly fiction is worse than no counter. Locally (no `VERCEL` env var) it falls back to an in-process store so `npm run dev` exercises the real thing; those numbers reset when Vite restarts.
+- Clients POST deltas since their own last report, never absolute totals; the ledger of what was already sent lives in `sh_site`, beside the save rather than inside it, so resetting progress does not re-count the browser as a new visitor. `SiteStatsReporter` (mounted by Layout) waits for the title screen to be dismissed before reporting, so a crawler or a bounced load never becomes a traveller.
+- The numbers are client-reported and therefore measure browsers that ran the JS, not people. Caps in `counters.ts` plus the rate limiter bound how far a forged request can move a total.
+- `npm run dev` serves the endpoint through `scripts/statsDevApi.ts`, the same handler/entry/dev-middleware split the tarot endpoint uses (shared plumbing in `scripts/devApi.ts`).
+
 ### Page structure
 
 - `src/App.tsx` defines all routes; `ThemeProvider` is locked to dark mode. `RouteEffects` scrolls to top and awards section-visit XP on navigation.
