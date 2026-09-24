@@ -21,6 +21,7 @@ import JeweledFrame from './JeweledFrame'
 import PixelPortrait from './game/PixelPortrait'
 import { inkColor } from '../game/avatarInks'
 import { useXp } from '../context/XpProvider'
+import { dismissTitleScreen } from '../lib/titleScreen'
 
 /** Which welcome lettering to show: 'block' is the 1-bit Helvetica stack,
  *  'wild' the metal drip lettering (kept fully wired; flip to bring it back). */
@@ -60,9 +61,13 @@ export default function Loader() {
   const [gone, setGone] = useState(false)
   const { isReturning, name, avatarSeed, avatarInk, gems } = useXp()
 
-  // Once dismissed, let the 0.4s opacity fade play, then unmount.
+  // Once dismissed, let the 0.4s opacity fade play, then unmount. The gate
+  // is published on the same beat, so entrances underneath the overlay (the
+  // home stat row's count-up) start when the visitor can actually see them
+  // rather than while the title screen is still covering the page.
   useEffect(() => {
     if (!hidden) return
+    dismissTitleScreen()
     const t = setTimeout(() => setGone(true), 450)
     return () => clearTimeout(t)
   }, [hidden])

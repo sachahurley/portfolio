@@ -17,6 +17,7 @@
 import { useState, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import MinimalChrome from './MinimalChrome'
+import SiteStatsReporter from './SiteStatsReporter'
 import JeweledFrame from './JeweledFrame'
 import Compass from './game/Compass'
 import MessageLog from './game/MessageLog'
@@ -100,6 +101,9 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Loader (title screen), dock (Menu + campfire), sheet, toasts, modal */}
       <MinimalChrome sheetOpen={sheetOpen} onSheetOpenChange={setSheetOpen} />
+
+      {/* Contributes this visit to the lifetime counters in Home's footer */}
+      <SiteStatsReporter />
     </div>
   )
 }

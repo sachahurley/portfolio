@@ -5,38 +5,9 @@
  * the templated Seer answers, exactly as in production.
  */
 
-import type { Connect, Plugin } from 'vite'
+import type { Plugin } from 'vite'
 import { loadEnv } from 'vite'
-
-function serve(route: string, load: () => Promise<(r: Request) => Promise<Response>>): Connect.NextHandleFunction {
-  return (req, res) => {
-    const chunks: Buffer[] = []
-    req.on('data', (c: Buffer) => chunks.push(c))
-    req.on('end', async () => {
-      const handler = await load()
-      const headers = new Headers()
-      for (const [k, v] of Object.entries(req.headers)) {
-        if (typeof v === 'string') headers.set(k, v)
-      }
-      const method = req.method ?? 'GET'
-      const body = chunks.length ? Buffer.concat(chunks) : undefined
-      const request = new Request(`http://${req.headers.host}${route}`, {
-        method,
-        headers,
-        body: method === 'POST' ? body : undefined,
-      })
-      const response = await handler(request)
-      res.statusCode = response.status
-      response.headers.forEach((value, key) => res.setHeader(key, value))
-      // Pipe, don't buffer: the chat streams, and one flush at the end
-      // would hide token streaming in dev.
-      if (response.body) {
-        for await (const chunk of response.body) res.write(chunk)
-      }
-      res.end()
-    })
-  }
-}
+import { serveHandler } from './devApi'
 
 export function tarotDevApi(): Plugin {
   return {
@@ -55,7 +26,7 @@ export function tarotDevApi(): Plugin {
 
       server.middlewares.use(
         '/api/tarot-chat',
-        serve('/api/tarot-chat', async () => (await import('../api/_lib/chat')).handleTarotChat),
+        serveHandler('/api/tarot-chat', async () => (await import('../api/_lib/chat')).handleTarotChat),
       )
     },
   }

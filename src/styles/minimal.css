@@ -1497,3 +1497,64 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   .tarot-empty { padding-top: 34px; }
   .tarot-empty-title { font-size: 18px; line-height: 24px; }
 }
+
+/* ---- home stat card (HomeStats.tsx): the home page's only footer ----
+   Four lifetime totals under the village, summed across every visitor
+   (api/_lib/counters.ts). Built as a plate rather than a bordered box: the
+   ring recipe (1px stroke layer, fill layer inset into it, both clipped to
+   --plate-round-lg) is how every other stepped-corner card on the site is
+   drawn, and it is the only way to get corners that step, since a border
+   cannot. Sits in the normal content column so it lines up with the bio. */
+.hs-plate {
+  margin-top: 40px;
+  padding: 1px; background: var(--border);
+  clip-path: var(--plate-round-lg);
+}
+@media (min-width: 720px) { .hs-plate { margin-top: 72px; } }
+.hs-plate-in { background: var(--bg); clip-path: var(--plate-round-lg); }
+
+/* header: the turning globe, then what the figures are the scope of.
+   Without the caption "Travellers" reads as something about you rather
+   than about everyone who has ever been here. */
+/* header: the turning globe with its caption stacked beneath, both
+   centred. No rule under it: the gap down to the figures is the only
+   separation the card needs, and a line there competed with the plate's
+   own edge for a job the whitespace already does. */
+.hs-head {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 22px 16px 0;
+  font-family: var(--mono); font-size: 12px; line-height: 16px;
+  color: var(--body); text-align: center;
+}
+.hs-globe { display: block; flex: none; image-rendering: pixelated; }
+
+/* The figures, split by hairlines. The column gap is zero and the spacing
+   lives in each cell's own padding instead, which is what puts the rule
+   exactly halfway between two figures; with a grid gap the border would
+   hug the right-hand cell and read as attached to it. */
+.hs-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin: 0; padding: 26px 16px 22px; list-style: none;
+}
+.hs-cell {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 0 12px; text-align: center;
+}
+.hs-cell + .hs-cell { border-left: 1px solid var(--border); }
+.hs-val {
+  font-family: var(--mono); font-size: 18px; line-height: 1;
+  color: var(--accent); font-variant-numeric: tabular-nums;
+}
+.hs-label {
+  font-family: var(--mono); font-size: 12px; line-height: 16px;
+  color: var(--mut);
+}
+/* phones: two up. Four 12px mono labels in a 596px column already crowd;
+   at 320px they would wrap mid-word. Only the right-hand column takes a
+   rule: `+ .hs-cell` would also put one on the third cell, which starts
+   the second row and would hang a line off its left edge. */
+@media (max-width: 600px) {
+  .hs-row { grid-template-columns: repeat(2, 1fr); row-gap: 22px; }
+  .hs-cell + .hs-cell { border-left: none; }
+  .hs-cell:nth-child(even) { border-left: 1px solid var(--border); }
+}
