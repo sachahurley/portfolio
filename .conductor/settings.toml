@@ -1,0 +1,33 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+# Conductor workspace config for the portfolio.
+#
+# A workspace is a git worktree, so node_modules (gitignored) never comes
+# along. `setup` installs from the lockfile at creation.
+
+[scripts]
+setup = "npm ci"
+# Each workspace gets its own port and shares no database or Docker stack,
+# so several can serve at once.
+run_mode = "concurrent"
+
+[scripts.run.dev]
+# Portfolio only, against the committed vendor/ copy of the DS.
+# --strictPort so Vite fails loudly rather than drifting off the port
+# Conductor allocated for this workspace.
+command = "npm run dev:portfolio-only -- --port $CONDUCTOR_PORT --strictPort"
+available_in = [ "local" ]
+default = true
+icon = "play"
+
+[scripts.run.ds-check]
+# Reports whether the vendored scorp-ds copy is behind that repo's main.
+# Read-only: it never writes into vendor/.
+command = "npm run ds:check"
+icon = "git-compare"
+
+# Not wired up: `npm run dev` (dev.sh), which additionally watch-builds
+# ~/Projects/scorp-ds and syncs each rebuild into vendor/. It starts three
+# processes with `&` and hardcodes `npx vite` with no port, so it cannot take
+# $CONDUCTOR_PORT without being restructured. Run it from a terminal when you
+# need live DS edits, and remember it dirties vendor/.
