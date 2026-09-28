@@ -11,6 +11,7 @@
  * the buildings and trees are scenery. Taps use the 'invert' style.
  */
 
+import type { SceneLayout } from '../components/village/VillageScene'
 import type { VillageItem } from '../components/village/villageKit'
 import { TAROT_ENABLED } from '../lib/flags'
 
@@ -106,3 +107,21 @@ export const VILLAGE_HOME: VillageItem[] = [
       ]
     : []),
 ]
+
+/**
+ * The village's apps without the village: just the tap targets, for the
+ * scenery-free home alternates (/lab/home-alts). Derived rather than
+ * copied so the labels, routes and Tarot's flag stay in one place. Home
+ * is dropped (you are already there, as on an iOS home screen), and so is
+ * the village-only spacing (lift, gap).
+ */
+export const HOME_APPS: VillageItem[] = VILLAGE_HOME.filter(
+  (it) => it.tap && it.tap.href !== '/',
+).map((it) => ({ ...it, lift: undefined, gap: undefined }))
+
+/**
+ * The home page's arrangement of HOME_APPS: a 3 by 2 home-screen grid of
+ * equal cells, no ground line (alternate B in /lab/home-alts). A module
+ * constant because VillageScene rebuilds whenever its layout changes identity.
+ */
+export const HOME_SCREEN_LAYOUT: SceneLayout = { mode: 'grid', cols: [3], cellPx: 96, ground: false }

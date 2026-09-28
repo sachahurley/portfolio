@@ -234,16 +234,88 @@ export interface Layout {
 }
 
 /**
- * The tool's text-like flow: wrap at W-PAD, row height from the tallest
- * lifted item plus the live cue's 4px headroom, bottoms on the row
- * baseline. footPx reserves label room below each row (art px).
+ * How items are arranged. 'flow' is the tool's text-like wrap (the village
+ * home). 'spread' puts everything on one row, each item centred in an
+ * equal slot at least `cell` wide; when the row won't fit it falls back to
+ * 'grid' if `cols` is given, else to 'flow'. 'grid' is a
+ * home-screen grid of equal cells: the first column count in `cols` that
+ * fits, the block centred, a short last row left-aligned like iOS fills it.
+ */
+export type LayoutMode = 'flow' | 'spread' | 'grid'
+
+export interface LayoutOpts {
+  align: 'left' | 'center'
+  head: number
+  foot: number
+  mode?: LayoutMode
+  /** grid (and spread's fallback): column counts to try, most preferred first. */
+  cols?: number[]
+  /** spread/grid: minimum cell width, art px (never narrower than the widest item + GAP). */
+  cell?: number
+}
+
+/** Row height from the tallest lifted item plus the live cue's headroom. */
+const rowHeight = (row: number[], items: VillageItem[], bs: Bitmap[], head: number) =>
+  Math.max(...row.map((i) => bs[i].h + (items[i].lift || 0))) + head
+
+/** Each row's items centred in `slot`-wide cells from x0, bottoms on the baseline. */
+function layoutSlots(
+  items: VillageItem[],
+  bs: Bitmap[],
+  rowsOf: number[][],
+  x0: number,
+  slot: number,
+  opts: LayoutOpts,
+): Layout {
+  const pos: Placement[] = []
+  const rows: LayoutRow[] = []
+  let rowTop = PAD
+  for (const row of rowsOf) {
+    const h = rowHeight(row, items, bs, opts.head)
+    row.forEach((i, k) => {
+      pos[i] = {
+        x: Math.floor(x0 + slot * k + (slot - bs[i].w) / 2),
+        y: rowTop + h - bs[i].h - (items[i].lift || 0),
+      }
+    })
+    rows.push({ top: rowTop, h })
+    rowTop += h + ROWGAP + opts.foot
+  }
+  return { pos, rows, H: rowTop - ROWGAP + PAD }
+}
+
+/**
+ * Lays items out by opts.mode (see LayoutMode). In every mode: row height
+ * from the tallest lifted item plus the live cue's 4px headroom, bottoms
+ * on the row baseline, foot reserves label room below each row (art px).
  */
 export function layoutItems(
   items: VillageItem[],
   bs: Bitmap[],
   W: number,
-  opts: { align: 'left' | 'center'; head: number; foot: number },
+  opts: LayoutOpts,
 ): Layout {
+  const avail = W - PAD * 2
+  const all = items.map((_, i) => i)
+  if (opts.mode === 'spread' && items.length) {
+    const used = bs.reduce((a, b) => a + b.w, 0) + GAP * (items.length - 1)
+    const slot = avail / items.length
+    if (used <= avail && slot >= (opts.cell ?? 0)) return layoutSlots(items, bs, [all], PAD, slot, opts)
+  }
+  const grid = opts.mode === 'grid' || (opts.mode === 'spread' && !!opts.cols?.length)
+  if (grid && items.length) {
+    const cell = Math.max(opts.cell ?? 0, ...bs.map((b) => b.w + GAP))
+    const tries = opts.cols?.length ? opts.cols : [items.length]
+    const cols = tries.find((c) => c * cell <= avail) ?? Math.max(1, Math.floor(avail / cell))
+    const rowsOf: number[][] = []
+    for (let i = 0; i < all.length; i += cols) rowsOf.push(all.slice(i, i + cols))
+    return layoutSlots(items, bs, rowsOf, PAD + Math.floor((avail - cols * cell) / 2), cell, opts)
+  }
+  return layoutFlow(items, bs, W, opts)
+}
+
+/** The tool's text-like flow: wrap at W-PAD, each row packed and aligned. */
+function layoutFlow(items: VillageItem[], bs: Bitmap[], W: number, opts: LayoutOpts): Layout {
   const pos: Placement[] = []
   const rows: LayoutRow[] = []
   let x = PAD
@@ -251,7 +323,7 @@ export function layoutItems(
   let row: number[] = []
   const flush = () => {
     if (!row.length) return
-    const h = Math.max(...row.map((i) => bs[i].h + (items[i].lift || 0))) + opts.head
+    const h = rowHeight(row, items, bs, opts.head)
     const used = row.reduce((a, i, k) => a + bs[i].w + (k ? (items[i].gap ?? GAP) : 0), 0)
     const off = opts.align === 'center' ? Math.floor((W - PAD * 2 - used) / 2) : 0
     let cx = PAD + off
@@ -354,12 +426,55 @@ function stampHi(b: Bitmap, s: Bitmap, ox: number, oy: number) {
     }
 }
 
+// ---- app tiles ------------------------------------------------------------
+
+export interface Tile {
+  /** The framed bitmap: 1px stepped-corner outline, icon centred inside. */
+  bmp: Bitmap
+  /** The rounded shape for the pressed fill: 1 interior, 2 outline, 0 outside. */
+  mask: Uint8Array
+  /** The bare icon and where it sits in the frame (the live cue's accents
+   *  come from the icon alone; the frame's interior is a hole too). */
+  icon: Bitmap
+  ix: number
+  iy: number
+}
+
+/** Wraps an icon in a square 1-bit "app icon" frame, radius-2 stepped corners. */
+export function tileFrame(icon: Bitmap, size: number): Tile {
+  const S = Math.max(size, icon.w + 4, icon.h + 4)
+  const inset = (y: number) => (y === 0 || y === S - 1 ? 2 : y === 1 || y === S - 2 ? 1 : 0)
+  const inside = (x: number, y: number) =>
+    x >= 0 && y >= 0 && x < S && y < S && x >= inset(y) && x <= S - 1 - inset(y)
+  const b = blank(S, S)
+  const mask = new Uint8Array(S * S)
+  for (let y = 0; y < S; y++)
+    for (let x = 0; x < S; x++) {
+      if (!inside(x, y)) continue
+      const edge = !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)
+      mask[y * S + x] = edge ? 2 : 1
+      if (edge) b.px[y * S + x] = 1
+    }
+  const ix = Math.floor((S - icon.w) / 2)
+  const iy = Math.floor((S - icon.h) / 2)
+  stampBmp(b, icon, ix, iy)
+  return { bmp: b, mask, icon, ix, iy }
+}
+
 // ---- scene render ---------------------------------------------------------
 
 export interface RenderOpts {
   W: number
   align: 'left' | 'center'
   ground: boolean
+  /** Arrangement (default 'flow'); see LayoutMode. */
+  mode?: LayoutMode
+  /** grid (and spread's fallback): column counts to try, most preferred first. */
+  cols?: number[]
+  /** spread/grid: minimum cell width, art px. */
+  cell?: number
+  /** Frame each tap item as an app tile this many art px square. */
+  tile?: number
   /** Reserved label space below each row, art px (0 = no labels). */
   foot: number
   /** 300ms animation frame counter (live cue); pass 0 when reduced. */
@@ -377,11 +492,16 @@ export interface SceneRender {
 }
 
 export function renderScene(items: VillageItem[], opts: RenderOpts): SceneRender {
-  const bs = items.map(itemBmp)
+  const bare = items.map(itemBmp)
+  const tiles = items.map((it, i) => (opts.tile && it.tap ? tileFrame(bare[i], opts.tile) : null))
+  const bs = bare.map((b, i) => tiles[i]?.bmp ?? b)
   const lay = layoutItems(items, bs, opts.W, {
     align: opts.align,
     head: opts.live ? 4 : 0,
     foot: opts.foot,
+    mode: opts.mode,
+    cols: opts.cols,
+    cell: opts.cell,
   })
   const b = blank(opts.W, lay.H)
   let tapN = 0
@@ -392,7 +512,9 @@ export function renderScene(items: VillageItem[], opts: RenderOpts): SceneRender
     let liftUp = i === opts.active && it.tap && it.tap.style === 'lift' ? 2 : 0
     if (live && i !== opts.active && (opts.frame + phase) % 8 < 3) liftUp += 1
     stampBmp(b, bs[i], p.x, p.y - liftUp)
-    if (live) stampHi(b, bs[i], p.x, p.y - liftUp)
+    const t = tiles[i]
+    if (live && t) stampHi(b, t.icon, p.x + t.ix, p.y - liftUp + t.iy)
+    else if (live) stampHi(b, bs[i], p.x, p.y - liftUp)
     if (live && i !== opts.active) {
       const put = (x: number, y: number) => {
         if (x >= 0 && y >= 0 && x < b.w && y < b.h) b.px[y * b.w + x] = 2
@@ -417,7 +539,19 @@ export function renderScene(items: VillageItem[], opts: RenderOpts): SceneRender
     const p = lay.pos[a]
     const sb = bs[a]
     const st = items[a].tap!.style || 'invert'
-    if (st === 'invert') {
+    const t = tiles[a]
+    if (t && st === 'invert') {
+      // Pressed app: the rounded tile fills solid and the icon knocks out.
+      // The outline stays ink so the corners keep their shape.
+      for (let y = 0; y < sb.h; y++)
+        for (let x = 0; x < sb.w; x++) {
+          const X = p.x + x
+          const Y = p.y + y
+          if (!t.mask[y * sb.w + x] || X < 0 || Y < 0 || X >= b.w || Y >= b.h) continue
+          const k = Y * b.w + X
+          b.px[k] = t.mask[y * sb.w + x] === 2 || !b.px[k] ? 1 : 0
+        }
+    } else if (st === 'invert') {
       for (let y = p.y - 1; y < p.y + sb.h + 1; y++)
         for (let x = p.x - 1; x < p.x + sb.w + 1; x++)
           if (x >= 0 && y >= 0 && x < b.w && y < b.h) b.px[y * b.w + x] = b.px[y * b.w + x] ? 0 : 1
