@@ -19,6 +19,7 @@
     "@fontsource/fragment-mono": "^5.2.8",
     "@scorp-ds/components": "file:./vendor/scorp-ds/packages/components",
     "@scorp-ds/tokens": "file:./vendor/scorp-ds/packages/tokens",
+    "@vercel/analytics": "^2.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
