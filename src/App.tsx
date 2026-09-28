@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from '@scorp-ds/components'
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 // Layout wraps every page with the persistent Minimal-mode chrome
 import Layout from './components/Layout'
@@ -116,6 +117,7 @@ function App() {
             </Routes>
           </Layout>
           <Analytics />
+          <SpeedInsights />
         </BrowserRouter>
       </XpProvider>
     </ThemeProvider>
