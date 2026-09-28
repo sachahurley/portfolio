@@ -12,8 +12,9 @@
  */
 
 import type { SceneLayout } from '../components/village/VillageScene'
-import type { VillageItem } from '../components/village/villageKit'
+import { BEAT_MS, type VillageItem } from '../components/village/villageKit'
 import { TAROT_ENABLED } from '../lib/flags'
+import { GLOBE_PERIOD_MS, globeMask } from '../lib/globe'
 
 export const VILLAGE_HOME: VillageItem[] = [
   { tree: { canopy: 'canopy_oak', trunk: 'trunk_oak' } },
@@ -119,9 +120,39 @@ export const HOME_APPS: VillageItem[] = VILLAGE_HOME.filter(
   (it) => it.tap && it.tap.href !== '/',
 ).map((it) => ({ ...it, lift: undefined, gap: undefined }))
 
+/** Globe diameter in art px: a filled disc reads heavier than the line-art
+ *  icons, so it sits a little under their 16 to 22 px. */
+const GLOBE_SIZE = 18
+
 /**
- * The home page's arrangement of HOME_APPS: a 3 by 2 home-screen grid of
- * equal cells, no ground line (alternate B in /lab/home-alts). A module
+ * The World app: the turning globe, redrawn on every live-cue beat (one
+ * turn per GLOBE_PERIOD_MS, the same pace as the dialog's globe), that
+ * opens "Thank you for visiting" instead of navigating. VillageHome only
+ * adds it once the lifetime totals have loaded.
+ */
+export const WORLD_APP: VillageItem = {
+  draw: (frame) => {
+    const turn = ((frame * BEAT_MS) % GLOBE_PERIOD_MS) / GLOBE_PERIOD_MS
+    return { w: GLOBE_SIZE, h: GLOBE_SIZE, px: globeMask(turn * 2 * Math.PI, GLOBE_SIZE, true) }
+  },
+  tap: { label: 'World', action: 'world', style: 'invert' },
+}
+
+/** The home grid with the World app on its own row, under Character. */
+export const HOME_APPS_WITH_WORLD: VillageItem[] = [...HOME_APPS, WORLD_APP]
+
+/**
+ * The home page's arrangement: a 3 by 2 home-screen grid of equal cells,
+ * no ground line (alternate B in /lab/home-alts). Phones keep the compact
+ * cells; wide frames spread the grid across more of the column. A short
+ * last row (the World app) centres under the middle column. A module
  * constant because VillageScene rebuilds whenever its layout changes identity.
  */
-export const HOME_SCREEN_LAYOUT: SceneLayout = { mode: 'grid', cols: [3], cellPx: 96, ground: false }
+export const HOME_SCREEN_LAYOUT: SceneLayout = {
+  mode: 'grid',
+  cols: [3],
+  cellPx: 96,
+  ground: false,
+  lastRow: 'center',
+  wide: { cellPx: 150, rowGapPx: 54 },
+}

@@ -4,22 +4,31 @@
  * Name and bio up top, then the site's apps as a 3 by 2 home-screen grid
  * of 1-bit village-kit icons (VillageScene + data/villageHome.ts
  * HOME_APPS / HOME_SCREEN_LAYOUT): the labeled, glinting icons are the
- * nav. The full scenic village (VILLAGE_HOME) stays in the data file and
- * the other scenery-free takes live at /lab/home-alts. (The old classic
+ * nav. Once the lifetime totals load, a seventh app joins on its own row:
+ * World, the turning globe, which opens "Thank you for visiting"
+ * (WorldStatsModal) rather than navigating. The full scenic village
+ * (VILLAGE_HOME) stays in the data file and the other scenery-free takes
+ * live at /lab/home-alts. (The old classic
  * list home was retired; it lives on in git history under the
  * v4-village-and-vault tag.)
  */
 
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import HomeStats from '../components/HomeStats'
 import MinimalPage from '../components/MinimalPage'
+import WorldStatsModal from '../components/WorldStatsModal'
 import VillageScene from '../components/village/VillageScene'
-import { HOME_APPS, HOME_SCREEN_LAYOUT } from '../data/villageHome'
+import { HOME_APPS, HOME_APPS_WITH_WORLD, HOME_SCREEN_LAYOUT } from '../data/villageHome'
+import { useSiteStats } from '../lib/siteStats'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function VillageHome() {
   usePageTitle()
   const navigate = useNavigate()
+  // The World app only exists once the lifetime totals have loaded: a
+  // counter that is wrong is worse than one that is absent.
+  const stats = useSiteStats()
+  const [worldOpen, setWorldOpen] = useState(false)
 
   return (
     <MinimalPage flushTop>
@@ -37,14 +46,15 @@ export default function VillageHome() {
       {/* reward badges retired from the village: the waiting signal
           lives on the character strip / sheet row / dock dot */}
       <VillageScene
-        items={HOME_APPS}
+        items={stats ? HOME_APPS_WITH_WORLD : HOME_APPS}
         layout={HOME_SCREEN_LAYOUT}
         onNavigate={(href) => navigate(href)}
+        onAction={(action) => action === 'world' && setWorldOpen(true)}
       />
 
-      {/* the page's only footer: lifetime totals across every visitor the
-          site has ever had (renders nothing until they arrive) */}
-      <HomeStats />
+      {stats && (
+        <WorldStatsModal stats={stats} isOpen={worldOpen} onClose={() => setWorldOpen(false)} />
+      )}
     </MinimalPage>
   )
 }

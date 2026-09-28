@@ -30,9 +30,11 @@ export const PAD = 6
 export const LABEL_H = 24 // css px reserved under a labeled row
 export const BEAT_MS = 300 // live-cue animation beat
 
+/** A tappable item: `href` navigates; `action` is handed to the page instead (e.g. opening a dialog). */
 export interface TapSpec {
   label: string
-  href: string
+  href?: string
+  action?: string
   style?: 'invert' | 'lift' | 'outline'
 }
 export interface HouseSpec {
@@ -61,6 +63,9 @@ export interface VillageItem {
   break?: boolean
   gap?: number
   tap?: TapSpec
+  /** Live art: redrawn from the live-cue frame counter on every beat
+   *  (e.g. the turning globe). Takes precedence over part/tree/house. */
+  draw?: (frame: number) => Bitmap
 }
 
 export interface Bitmap {
@@ -239,7 +244,8 @@ export interface Layout {
  * equal slot at least `cell` wide; when the row won't fit it falls back to
  * 'grid' if `cols` is given, else to 'flow'. 'grid' is a
  * home-screen grid of equal cells: the first column count in `cols` that
- * fits, the block centred, a short last row left-aligned like iOS fills it.
+ * fits, the block centred, a short last row left-aligned like iOS fills it
+ * (or centred under the row above, with lastRow: 'center').
  */
 export type LayoutMode = 'flow' | 'spread' | 'grid'
 
@@ -252,36 +258,47 @@ export interface LayoutOpts {
   cols?: number[]
   /** spread/grid: minimum cell width, art px (never narrower than the widest item + GAP). */
   cell?: number
+  /** Space between rows, art px (default ROWGAP). */
+  rowGap?: number
+  /** grid: where a short last row sits (default 'left', like iOS). */
+  lastRow?: 'left' | 'center'
 }
 
 /** Row height from the tallest lifted item plus the live cue's headroom. */
 const rowHeight = (row: number[], items: VillageItem[], bs: Bitmap[], head: number) =>
   Math.max(...row.map((i) => bs[i].h + (items[i].lift || 0))) + head
 
-/** Each row's items centred in `slot`-wide cells from x0, bottoms on the baseline. */
+/**
+ * Each row's items centred in `slot`-wide cells from x0, bottoms on the
+ * baseline. A row shorter than `cols` shifts right by half its missing
+ * cells when lastRow is 'center'.
+ */
 function layoutSlots(
   items: VillageItem[],
   bs: Bitmap[],
   rowsOf: number[][],
   x0: number,
   slot: number,
+  cols: number,
   opts: LayoutOpts,
 ): Layout {
   const pos: Placement[] = []
   const rows: LayoutRow[] = []
+  const gap = opts.rowGap ?? ROWGAP
   let rowTop = PAD
   for (const row of rowsOf) {
     const h = rowHeight(row, items, bs, opts.head)
+    const rx = x0 + (opts.lastRow === 'center' ? ((cols - row.length) * slot) / 2 : 0)
     row.forEach((i, k) => {
       pos[i] = {
-        x: Math.floor(x0 + slot * k + (slot - bs[i].w) / 2),
+        x: Math.floor(rx + slot * k + (slot - bs[i].w) / 2),
         y: rowTop + h - bs[i].h - (items[i].lift || 0),
       }
     })
     rows.push({ top: rowTop, h })
-    rowTop += h + ROWGAP + opts.foot
+    rowTop += h + gap + opts.foot
   }
-  return { pos, rows, H: rowTop - ROWGAP + PAD }
+  return { pos, rows, H: rowTop - gap + PAD }
 }
 
 /**
@@ -300,7 +317,7 @@ export function layoutItems(
   if (opts.mode === 'spread' && items.length) {
     const used = bs.reduce((a, b) => a + b.w, 0) + GAP * (items.length - 1)
     const slot = avail / items.length
-    if (used <= avail && slot >= (opts.cell ?? 0)) return layoutSlots(items, bs, [all], PAD, slot, opts)
+    if (used <= avail && slot >= (opts.cell ?? 0)) return layoutSlots(items, bs, [all], PAD, slot, items.length, opts)
   }
   const grid = opts.mode === 'grid' || (opts.mode === 'spread' && !!opts.cols?.length)
   if (grid && items.length) {
@@ -309,7 +326,8 @@ export function layoutItems(
     const cols = tries.find((c) => c * cell <= avail) ?? Math.max(1, Math.floor(avail / cell))
     const rowsOf: number[][] = []
     for (let i = 0; i < all.length; i += cols) rowsOf.push(all.slice(i, i + cols))
-    return layoutSlots(items, bs, rowsOf, PAD + Math.floor((avail - cols * cell) / 2), cell, opts)
+    const x0 = PAD + Math.floor((avail - cols * cell) / 2)
+    return layoutSlots(items, bs, rowsOf, x0, cell, cols, opts)
   }
   return layoutFlow(items, bs, W, opts)
 }
@@ -473,6 +491,10 @@ export interface RenderOpts {
   cols?: number[]
   /** spread/grid: minimum cell width, art px. */
   cell?: number
+  /** Space between rows, art px (default ROWGAP). */
+  rowGap?: number
+  /** grid: where a short last row sits (default 'left'). */
+  lastRow?: 'left' | 'center'
   /** Frame each tap item as an app tile this many art px square. */
   tile?: number
   /** Reserved label space below each row, art px (0 = no labels). */
@@ -492,7 +514,7 @@ export interface SceneRender {
 }
 
 export function renderScene(items: VillageItem[], opts: RenderOpts): SceneRender {
-  const bare = items.map(itemBmp)
+  const bare = items.map((it) => (it.draw ? it.draw(opts.frame) : itemBmp(it)))
   const tiles = items.map((it, i) => (opts.tile && it.tap ? tileFrame(bare[i], opts.tile) : null))
   const bs = bare.map((b, i) => tiles[i]?.bmp ?? b)
   const lay = layoutItems(items, bs, opts.W, {
@@ -502,6 +524,8 @@ export function renderScene(items: VillageItem[], opts: RenderOpts): SceneRender
     mode: opts.mode,
     cols: opts.cols,
     cell: opts.cell,
+    rowGap: opts.rowGap,
+    lastRow: opts.lastRow,
   })
   const b = blank(opts.W, lay.H)
   let tapN = 0

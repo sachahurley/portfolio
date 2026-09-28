@@ -1505,34 +1505,13 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
   .tarot-empty-title { font-size: 18px; line-height: 24px; }
 }
 
-/* ---- home stat card (HomeStats.tsx): the home page's only footer ----
-   Four lifetime totals under the village, summed across every visitor
-   (api/_lib/counters.ts). Built as a plate rather than a bordered box: the
-   ring recipe (1px stroke layer, fill layer inset into it, both clipped to
-   --plate-round-lg) is how every other stepped-corner card on the site is
-   drawn, and it is the only way to get corners that step, since a border
-   cannot. Sits in the normal content column so it lines up with the bio. */
-.hs-plate {
-  margin-top: 40px;
-  padding: 1px; background: var(--border);
-  clip-path: var(--plate-round-lg);
-}
-@media (min-width: 720px) { .hs-plate { margin-top: 72px; } }
-.hs-plate-in { background: var(--bg); clip-path: var(--plate-round-lg); }
-
-/* header: the turning globe, then what the figures are the scope of.
-   Without the caption "Travellers" reads as something about you rather
-   than about everyone who has ever been here. */
-/* header: the turning globe with its caption stacked beneath, both
-   centred. No rule under it: the gap down to the figures is the only
-   separation the card needs, and a line there competed with the plate's
-   own edge for a job the whitespace already does. */
-.hs-head {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  padding: 22px 16px 0;
-  font-family: var(--mono); font-size: 12px; line-height: 16px;
-  color: var(--body); text-align: center;
-}
+/* ---- world stats (WorldStatsModal.tsx): the home grid's World app ----
+   Four lifetime totals, summed across every visitor (api/_lib/counters.ts),
+   in the DS Modal's body: the turning globe centred on top, then the
+   figures. The modal title says what they are the scope of; without it
+   "Travellers" reads as something about you rather than about everyone
+   who has ever been here. */
+.hs-head { display: flex; justify-content: center; padding-top: 6px; }
 .hs-globe { display: block; flex: none; image-rendering: pixelated; }
 
 /* The figures, split by hairlines. The column gap is zero and the spacing
@@ -1541,7 +1520,7 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
    hug the right-hand cell and read as attached to it. */
 .hs-row {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 0; margin: 0; padding: 26px 16px 22px; list-style: none;
+  gap: 0; margin: 0; padding: 26px 0 6px; list-style: none;
 }
 .hs-cell {
   display: flex; flex-direction: column; gap: 6px;
