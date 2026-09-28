@@ -27,7 +27,7 @@ export default class ErrorBoundary extends Component<
   render() {
     if (!this.state.failed) return this.props.children
     return (
-      <div className="boot" role="alert">
+      <div className="boot boot-failed" role="alert">
         <h1 className="boot-name">Sacha Hurley</h1>
         <p className="boot-role">Product Design Engineer</p>
         <p className="boot-status">Something broke while loading the site.</p>

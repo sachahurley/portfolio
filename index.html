@@ -38,7 +38,11 @@
     <!-- Boot screen: what shows before the app mounts (and if it never does).
          Token aliases first; the fallbacks are the dark values, for dev (where
          the stylesheet arrives with the JS) and a failed CSS load. The root
-         error boundary reuses these classes. -->
+         error boundary reuses these classes.
+         On a normal load it is just the dark page: the text stays hidden until
+         .boot-failed goes on (the watchdog below, or the error boundary), so a
+         healthy boot doesn't flash it for a frame before the title screen,
+         which carries the name and role itself. -->
     <style>
       .boot {
         position: fixed; inset: 0; display: flex; flex-direction: column;
@@ -47,6 +51,8 @@
         font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
         font-weight: 400; text-align: center;
       }
+      .boot > * { visibility: hidden; }
+      .boot.boot-failed > * { visibility: visible; }
       .boot-name {
         margin: 0; font-size: 20px; font-weight: 400; letter-spacing: .12em;
         text-transform: uppercase; color: var(--fg, #fdfcfb);
@@ -85,6 +91,7 @@
           var status = document.getElementById('boot-status')
           if (!status) return
           shown = true
+          status.parentNode.classList.add('boot-failed')
           status.textContent = "The site didn't load."
           var retry = document.createElement('button')
           retry.type = 'button'

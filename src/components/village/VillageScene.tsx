@@ -25,6 +25,7 @@ import {
   renderScene,
   type LayoutMode,
   type SceneRender,
+  type TapSpec,
   type VillageItem,
 } from './villageKit'
 
@@ -35,6 +36,13 @@ export interface SceneLayout {
   cols?: number[]
   /** spread/grid: minimum cell width in CSS px, so a cell holds its label at every zoom. */
   cellPx?: number
+  /** Space between rows in CSS px (default the kit's ROWGAP art px). */
+  rowGapPx?: number
+  /** Wide frames (WIDE_PX and up, where the art steps up to zoom 3):
+   *  overrides for cellPx and rowGapPx, to give a desktop grid more air. */
+  wide?: { cellPx?: number; rowGapPx?: number }
+  /** grid: where a short last row sits (default 'left', like iOS). */
+  lastRow?: 'left' | 'center'
   /** Dotted ground line under each row (default true). */
   ground?: boolean
   /** Frame each tap item as an app tile this many art px square. */
@@ -62,13 +70,19 @@ const hexRgb = (h: string): [number, number, number] => [
   parseInt(h.slice(5, 7), 16),
 ]
 
+/** Frame width (CSS px) where the art steps up to zoom 3 and layout.wide applies. */
+const WIDE_PX = 540
+
 export default function VillageScene({
   items,
   onNavigate,
+  onAction,
   layout,
 }: {
   items: VillageItem[]
   onNavigate: (href: string) => void
+  /** Taps with an `action` instead of an `href` land here. */
+  onAction?: (action: string) => void
   layout?: SceneLayout
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -80,8 +94,13 @@ export default function VillageScene({
   const apiRef = useRef<{
     setActive(i: number): void
     idAt(offX: number, offY: number): number
-    tapOf(i: number): string | null
+    tapOf(i: number): TapSpec | null
   } | null>(null)
+
+  const go = (tap: TapSpec | null | undefined) => {
+    if (tap?.href) onNavigate(tap.href)
+    else if (tap?.action) onAction?.(tap.action)
+  }
 
   useEffect(() => {
     const wrap = wrapRef.current
@@ -116,13 +135,18 @@ export default function VillageScene({
         scene = null
         return
       }
+      const wide = zoom >= 3 ? layout?.wide : undefined
+      const cellPx = wide?.cellPx ?? layout?.cellPx
+      const rowGapPx = wide?.rowGapPx ?? layout?.rowGapPx
       scene = renderScene(items, {
         W,
         align: 'center',
         ground: layout?.ground ?? true,
         mode: layout?.mode,
         cols: layout?.cols,
-        cell: layout?.cellPx ? Math.ceil(layout.cellPx / zoom) : undefined,
+        cell: cellPx ? Math.ceil(cellPx / zoom) : undefined,
+        rowGap: rowGapPx ? Math.round(rowGapPx / zoom) : undefined,
+        lastRow: layout?.lastRow,
         tile: layout?.tile,
         foot: hasLabels ? Math.ceil(LABEL_H / zoom) : 0,
         frame,
@@ -162,7 +186,7 @@ export default function VillageScene({
 
     function build() {
       const wrapW = wrap!.clientWidth
-      zoom = wrapW >= 1080 ? 4 : wrapW >= 540 ? 3 : 2
+      zoom = wrapW >= 1080 ? 4 : wrapW >= WIDE_PX ? 3 : 2
       W = Math.floor(wrapW / zoom)
       canvasLeft = Math.floor((wrapW - W * zoom) / 2)
       canvas!.style.left = `${canvasLeft}px`
@@ -177,7 +201,7 @@ export default function VillageScene({
         const sb = bs[i]
         nextSpots.push({
           idx: i,
-          aria: it.tap.label ? `Enter ${it.tap.label}` : 'Enter',
+          aria: `${it.tap.href ? 'Enter' : 'Open'} ${it.tap.label}`.trim(),
           left: canvasLeft + (p.x - 1) * zoom,
           top: (p.y - 1) * zoom,
           width: (sb.w + 2) * zoom,
@@ -211,7 +235,8 @@ export default function VillageScene({
         return hitItem(items, scene.lay, scene.bs, offX / zoom, offY / zoom)
       },
       tapOf(i) {
-        return (i >= 0 && items[i]?.tap?.href) || null
+        const tap = i >= 0 ? items[i]?.tap : undefined
+        return tap && (tap.href || tap.action) ? tap : null
       },
     }
 
@@ -249,16 +274,15 @@ export default function VillageScene({
           const api = apiRef.current
           if (!api) return
           const i = api.idAt(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
-          const href = api.tapOf(i)
-          e.currentTarget.style.cursor = href ? 'pointer' : ''
-          api.setActive(href ? i : -1)
+          const tap = api.tapOf(i)
+          e.currentTarget.style.cursor = tap ? 'pointer' : ''
+          api.setActive(tap ? i : -1)
         }}
         onPointerLeave={() => apiRef.current?.setActive(-1)}
         onClick={(e) => {
           const api = apiRef.current
           if (!api) return
-          const href = api.tapOf(api.idAt(e.nativeEvent.offsetX, e.nativeEvent.offsetY))
-          if (href) onNavigate(href)
+          go(api.tapOf(api.idAt(e.nativeEvent.offsetX, e.nativeEvent.offsetY)))
         }}
       />
       {labels.map((l) => (
@@ -277,10 +301,7 @@ export default function VillageScene({
           style={{ left: s.left, top: s.top, width: s.width, height: s.height }}
           onFocus={() => apiRef.current?.setActive(s.idx)}
           onBlur={() => apiRef.current?.setActive(-1)}
-          onClick={() => {
-            const href = apiRef.current?.tapOf(s.idx)
-            if (href) onNavigate(href)
-          }}
+          onClick={() => go(apiRef.current?.tapOf(s.idx))}
         />
       ))}
     </div>

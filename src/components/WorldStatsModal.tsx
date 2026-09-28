@@ -1,5 +1,5 @@
 /**
- * HomeStats: the stat card under the village, the home page's only footer.
+ * WorldStatsModal: "Thank you for visiting", opened by the home grid's World app.
  *
  * Four lifetime totals, summed across every visitor the site has ever had
  * (api/_lib/counters.ts). They are the one place the site stops being a
@@ -8,27 +8,25 @@
  * the character sheet still learns there is XP, that quests get read, and
  * that gems are a thing to claim.
  *
- * Built as a plate: the site's stepped 1-bit corner silhouette, drawn with
- * the ring recipe the rest of the chrome uses (a stroke layer and a fill
- * layer, both clipped to the same polygon) rather than a border, because a
- * border cannot step. Its header centres a turning globe over the caption,
- * the literal version of what the card counts: not this visitor, everyone.
+ * Chrome (scrim, plate panel, Esc, focus trap) is the DS Modal. Its body
+ * centres the turning globe over the figures, the literal version of what
+ * they count: not this visitor, everyone.
  *
- * Nothing renders until the totals arrive. A lifetime counter that is wrong
- * is worse than one that is absent, so an unreachable endpoint, or a deploy
- * with no counter store wired up, simply has no footer.
+ * The page only offers the World app once the totals have arrived (see
+ * VillageHome). A lifetime counter that is wrong is worse than one that is
+ * absent, so an unreachable endpoint, or a deploy with no counter store
+ * wired up, simply has no World app, and this dialog never opens.
  *
- * The figures tick up from zero, staggered left to right. That motion is
- * the whole point of a counter, so it waits for two things rather than
- * firing on mount: the row has to be scrolled into view (it is a footer,
- * usually below the fold) and the title screen has to be down (the page
- * mounts behind that overlay, so an on-mount tick plays to nobody). Skipped
+ * The figures tick up from zero, staggered left to right, each time the
+ * dialog opens (the Modal unmounts its body on close). The tick waits for
+ * the row to be on screen and the title screen to be down, and is skipped
  * entirely under prefers-reduced-motion.
  */
 
 import { useEffect, useRef, useState, type RefObject } from 'react'
+import { Modal } from '@scorp-ds/components'
 import PixelGlobe from './PixelGlobe'
-import { useSiteStats, type SiteStats } from '../lib/siteStats'
+import type { SiteStats } from '../lib/siteStats'
 import { onTitleScreenGone, titleScreenGone } from '../lib/titleScreen'
 
 /** How long one cell takes to tick from 0 to its figure. */
@@ -104,12 +102,8 @@ function useReveal(target: RefObject<HTMLElement | null>, cells: number): number
   return elapsed
 }
 
-/**
- * Says what the numbers are the scope of, which the labels alone cannot:
- * without it "Travellers" reads as something about you rather than about
- * everyone who has ever been here.
- */
-const FRAME_TITLE = 'The world so far'
+/** A thank-you from the site to the visitor, over what everyone has added up to. */
+const TITLE = 'Thank you for visiting'
 
 /** The figure this cell is showing right now, mid-tick. */
 function ticked(figure: number, index: number, elapsed: number): number {
@@ -118,14 +112,20 @@ function ticked(figure: number, index: number, elapsed: number): number {
   return Math.ceil(frac * figure)
 }
 
-export default function HomeStats() {
-  const stats = useSiteStats()
-  // The row is a separate component rather than an early return inside this
-  // one, so that its ref is attached on ITS first render. Rendering null
-  // while the totals load would leave useReveal's effect to run once against
-  // a ref that is still null, and it would never observe the row that
-  // appeared afterwards: every figure would sit frozen at zero.
-  return stats ? <StatRow stats={stats} /> : null
+export default function WorldStatsModal({
+  stats,
+  isOpen,
+  onClose,
+}: {
+  stats: SiteStats
+  isOpen: boolean
+  onClose: () => void
+}) {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={TITLE} width="min(560px, 92vw)">
+      <StatRow stats={stats} />
+    </Modal>
+  )
 }
 
 function StatRow({ stats }: { stats: SiteStats }) {
@@ -133,31 +133,28 @@ function StatRow({ stats }: { stats: SiteStats }) {
   const elapsed = useReveal(rowRef, CELLS.length)
 
   return (
-    <div className="hs-plate">
-      <div className="hs-plate-in">
-        <div className="hs-head">
-          <PixelGlobe />
-          <span>{FRAME_TITLE}</span>
-        </div>
-
-        <ul className="hs-row" ref={rowRef}>
-          {CELLS.map((cell, i) => {
-            const total = stats[cell.key]
-            return (
-              <li key={cell.key} className="hs-cell">
-                <span className="hs-val" aria-hidden="true">
-                  {ticked(total, i, elapsed).toLocaleString('en-US')}
-                </span>
-                <span className="hs-label" aria-hidden="true">
-                  {cell.label}
-                </span>
-                {/* The spoken version skips the tick and reads as a sentence. */}
-                <span className="sr-only">{`${total.toLocaleString('en-US')} ${cell.spoken}`}</span>
-              </li>
-            )
-          })}
-        </ul>
+    <>
+      <div className="hs-head">
+        <PixelGlobe />
       </div>
-    </div>
+
+      <ul className="hs-row" ref={rowRef}>
+        {CELLS.map((cell, i) => {
+          const total = stats[cell.key]
+          return (
+            <li key={cell.key} className="hs-cell">
+              <span className="hs-val" aria-hidden="true">
+                {ticked(total, i, elapsed).toLocaleString('en-US')}
+              </span>
+              <span className="hs-label" aria-hidden="true">
+                {cell.label}
+              </span>
+              {/* The spoken version skips the tick and reads as a sentence. */}
+              <span className="sr-only">{`${total.toLocaleString('en-US')} ${cell.spoken}`}</span>
+            </li>
+          )
+        })}
+      </ul>
+    </>
   )
 }
