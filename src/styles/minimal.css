@@ -1317,10 +1317,12 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 /* desktop: more air between the intro/bio and the village */
 @media (min-width: 720px) { .vg-frame { margin-top: 72px; } }
 .vg-frame canvas { position: relative; display: block; image-rendering: pixelated; }
+/* only tappable items carry a label, so accent here means "you can go
+   here": the same colour as the sprites' glints and the compass's active row */
 .vg-label {
   position: absolute; transform: translateX(-50%);
   font-family: var(--mono); font-size: 12px; line-height: 1;
-  color: var(--body); white-space: nowrap; pointer-events: none;
+  color: var(--accent); white-space: nowrap; pointer-events: none;
 }
 /* .vg-badge / .vg-marker retired: village reward affordances were cut;
    the waiting signal lives on the strip / sheet row / dock dot. */

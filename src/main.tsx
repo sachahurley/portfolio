@@ -28,9 +28,16 @@ for (const [rarity, hex] of Object.entries(RARITY_COLORS)) {
 }
 
 import App from './App.tsx'
+import ErrorBoundary from './components/ErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </StrictMode>,
 )
+
+// Stands down index.html's boot watchdog: the bundle parsed and React has the
+// page. Anything that goes wrong from here is the error boundary's.
+;(window as Window & { __booted?: boolean }).__booted = true

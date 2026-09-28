@@ -43,9 +43,11 @@ function stripTrailingPeriod(s: string): string {
   return s.replace(/\s*\.+\s*$/, '')
 }
 
-// Row subtitles (descriptions) are capped at two sentences.
+// Row subtitles (descriptions) are capped at two sentences. Marks the
+// sentence breaks instead of splitting on a lookbehind: Safari before 16.4
+// rejects lookbehind at parse time, which would take the whole bundle down.
 function clampSentences(s: string, max = 2): string {
-  const sentences = s.split(/(?<=[.!?])\s+/)
+  const sentences = s.replace(/([.!?])\s+/g, '$1\u0000').split('\u0000')
   if (sentences.length <= max) return s
   return sentences.slice(0, max).join(' ').trim()
 }

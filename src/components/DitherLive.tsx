@@ -138,10 +138,13 @@ export default function DitherLive({
   className,
   tuning,
   fit = 'integer',
+  ariaLabel = 'Sacha Hurley',
 }: {
   variant?: DitherLiveVariant
   className?: string
   tuning?: DitherTuning
+  /** Accessible name for the art (the canvas itself is aria-hidden). */
+  ariaLabel?: string
   /** 'integer' (default): largest exact integer pixel scale that fits both
    *  axes, letterboxed. 'fill-height': integer scale on the width, then the
    *  canvas stretches to the wrap's full height (nearest-neighbour, so rows
@@ -362,7 +365,7 @@ export default function DitherLive({
     <div
       ref={wrapRef}
       role="img"
-      aria-label="Sacha Hurley, press any key or click to enter"
+      aria-label={ariaLabel}
       className={className}
       style={{
         position: 'relative',
