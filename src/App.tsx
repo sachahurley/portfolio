@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from '@scorp-ds/components'
+import { Analytics } from '@vercel/analytics/react'
 
 // Layout wraps every page with the persistent Minimal-mode chrome
 import Layout from './components/Layout'
@@ -114,6 +115,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
+          <Analytics />
         </BrowserRouter>
       </XpProvider>
     </ThemeProvider>
