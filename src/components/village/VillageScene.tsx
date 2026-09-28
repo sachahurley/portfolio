@@ -23,9 +23,23 @@ import {
   LABEL_H,
   hitItem,
   renderScene,
+  type LayoutMode,
   type SceneRender,
   type VillageItem,
 } from './villageKit'
+
+/** Arrangement overrides; the defaults are the village home's own flow. */
+export interface SceneLayout {
+  mode?: LayoutMode
+  /** grid (and spread's fallback): column counts to try, most preferred first. */
+  cols?: number[]
+  /** spread/grid: minimum cell width in CSS px, so a cell holds its label at every zoom. */
+  cellPx?: number
+  /** Dotted ground line under each row (default true). */
+  ground?: boolean
+  /** Frame each tap item as an app tile this many art px square. */
+  tile?: number
+}
 
 interface Spot {
   idx: number
@@ -51,9 +65,11 @@ const hexRgb = (h: string): [number, number, number] => [
 export default function VillageScene({
   items,
   onNavigate,
+  layout,
 }: {
   items: VillageItem[]
   onNavigate: (href: string) => void
+  layout?: SceneLayout
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -103,7 +119,11 @@ export default function VillageScene({
       scene = renderScene(items, {
         W,
         align: 'center',
-        ground: true,
+        ground: layout?.ground ?? true,
+        mode: layout?.mode,
+        cols: layout?.cols,
+        cell: layout?.cellPx ? Math.ceil(layout.cellPx / zoom) : undefined,
+        tile: layout?.tile,
         foot: hasLabels ? Math.ceil(LABEL_H / zoom) : 0,
         frame,
         live: true,
@@ -218,7 +238,7 @@ export default function VillageScene({
       ro.disconnect()
       apiRef.current = null
     }
-  }, [items, activeGem])
+  }, [items, activeGem, layout])
 
   return (
     <div ref={wrapRef} className="vg-frame">

@@ -1333,6 +1333,11 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a {
 }
 .vg-hotspot:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
+/* home alternates lab (/lab/home-alts): three scenes stacked, each under
+   a label and a one-line note, so the frame's hero margin is tightened */
+.home-alt-desc { margin: 0; max-width: 62ch; color: var(--mut); }
+.home-alt .vg-frame { margin-top: 32px; }
+
 /* ---- village kit lab (/lab/village): the embedded onebit-kit builder.
    The tool is a self-contained page with its own palette and scrolling;
    the frame gives it a whole screen: full container width and one full
