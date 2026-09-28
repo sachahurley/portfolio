@@ -7,7 +7,8 @@
  * WELCOME_TUNING rising-fill recipe with a quiet rim boil; WELCOME_ART
  * below picks which lettering variant); below it, in flow so it never
  * overlaps the
- * art, the save-file readout: just the press-any-key prompt for
+ * art, the role line and the save-file readout: just the press-any-key
+ * (or tap, on touch screens) prompt for
  * first-time visitors, CONTINUE plus the character (portrait, name,
  * banners) for returning ones (currently hidden behind SHOW_SAVE_READOUT) —
  * saving itself is automatic, this is
@@ -46,6 +47,16 @@ const WELCOME_TUNING: DitherTuning = {
  *  name, banner count). Off for now; flip to true to bring it back. Saving
  *  still happens either way, this only hides the readout. */
 const SHOW_SAVE_READOUT: boolean = false
+
+/** The role line under the wordmark: the art only says the name, and without
+ *  this testers read the title screen as a game or a brand, not a person. */
+const ROLE = 'Product Design Engineer'
+
+/** Phones and tablets have no key to press: the prompt says tap instead. The
+ *  overlay dismisses on click either way, so only the copy changes. Module
+ *  constant: this is a client-only SPA and the primary pointer doesn't change
+ *  mid-visit. */
+const TOUCH = window.matchMedia('(pointer: coarse)').matches
 
 /** The press-any-key prompt inside a border drawn from asterisks. Rendered
  *  as three pre-wrapped monospace lines so the edge rows always match the
@@ -89,9 +100,15 @@ export default function Loader() {
     <div id="loader" className={hidden ? 'hide' : undefined} onClick={() => setHidden(true)}>
       {/* the art takes the leftover height; its integer scaling shrinks to fit */}
       <div className="title-art">
-        <DitherLive variant={WELCOME_ART} tuning={WELCOME_TUNING} fit="fill-height" />
+        <DitherLive
+          variant={WELCOME_ART}
+          tuning={WELCOME_TUNING}
+          fit="fill-height"
+          ariaLabel={`Sacha Hurley, ${ROLE}. ${TOUCH ? 'Tap' : 'Press any key'} to begin.`}
+        />
       </div>
       <div className="title-save">
+        <span className="ts-line">{ROLE}</span>
         {isReturning ? (
           <>
             {SHOW_SAVE_READOUT && (
@@ -103,10 +120,10 @@ export default function Loader() {
                 </span>
               </div>
             )}
-            <StarBox text="press any key" />
+            <StarBox text={TOUCH ? 'tap to continue' : 'press any key'} />
           </>
         ) : (
-          <StarBox text="press any key to begin" />
+          <StarBox text={TOUCH ? 'tap to begin' : 'press any key to begin'} />
         )}
       </div>
       <JeweledFrame />

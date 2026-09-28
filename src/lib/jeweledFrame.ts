@@ -218,13 +218,19 @@ export function buildFramePixels(width = FRAME_SRC, height = FRAME_SRC): Buf {
 // collapse to ink-density dither before the tile is baked. A canvas rather
 // than a data-URL border-image: some embedded webviews refuse data: image
 // URLs in CSS, while drawImage from a canvas renders everywhere.
-export function buildFrameSourceCanvas(ink?: string): HTMLCanvasElement {
+// Null when the browser won't hand out a 2D context (iOS WebKit refuses once
+// its canvas memory budget is spent, which in-app browsers reach sooner):
+// callers skip the stonework rather than throw, because the frame mounts on
+// the title screen and a throw there takes the whole app down.
+export function buildFrameSourceCanvas(ink?: string): HTMLCanvasElement | null {
   const { w, h, data } = buildFramePixels()
   const img = new ImageData(data, w, h)
   oneBitImageData(img, ink)
   const canvas = document.createElement('canvas')
   canvas.width = w
   canvas.height = h
-  canvas.getContext('2d')!.putImageData(img, 0, 0)
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  ctx.putImageData(img, 0, 0)
   return canvas
 }

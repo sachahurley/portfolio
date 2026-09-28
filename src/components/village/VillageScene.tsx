@@ -92,6 +92,14 @@ export default function VillageScene({
     const hasLabels = items.some((it) => it.tap?.label)
 
     function paint() {
+      // No width yet (an in-app browser can lay the page out at zero size
+      // before showing it): nothing to draw, and a zero-wide ImageData would
+      // throw and take the app down. The ResizeObserver builds again once
+      // the wrap has a width.
+      if (W < 1) {
+        scene = null
+        return
+      }
       scene = renderScene(items, {
         W,
         align: 'center',
@@ -104,7 +112,9 @@ export default function VillageScene({
       const { bmp } = scene
       off.width = bmp.w
       off.height = bmp.h
-      const octx = off.getContext('2d')!
+      // null when the browser's canvas memory is spent: skip the frame
+      const octx = off.getContext('2d')
+      if (!octx) return
       const img = octx.createImageData(bmp.w, bmp.h)
       for (let i = 0; i < bmp.px.length; i++) {
         const v = bmp.px[i]

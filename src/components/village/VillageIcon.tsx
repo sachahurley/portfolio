@@ -31,6 +31,7 @@ const NAV_ICONS = {
   lab: { part: 'potion' },
   notes: { part: 'quill' },
   about: { part: 'skull' },
+  character: { part: 'sword' },
 } satisfies Record<string, VillageItem>
 
 export type VillageIconName = keyof typeof NAV_ICONS

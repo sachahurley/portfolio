@@ -1,5 +1,8 @@
 <!doctype html>
-<html lang="en">
+<!-- class="dark": the site is locked to dark (App's forcedTheme), and next-themes
+     only adds the class once React runs. Set up front so the page is dark from
+     the first paint instead of flashing the light surface. -->
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -15,7 +18,7 @@
     <title>Sacha Hurley</title>
     <meta
       name="description"
-      content="Product designer. Projects, lab experiments, and notes."
+      content="Product design engineer. Projects, lab experiments, and notes."
     />
     <meta name="application-name" content="Sacha Hurley" />
     <meta name="apple-mobile-web-app-title" content="Sacha Hurley" />
@@ -24,17 +27,77 @@
     <meta property="og:title" content="Sacha Hurley" />
     <meta
       property="og:description"
-      content="Product designer. Projects, lab experiments, and notes."
+      content="Product design engineer. Projects, lab experiments, and notes."
     />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Sacha Hurley" />
     <meta
       name="twitter:description"
-      content="Product designer. Projects, lab experiments, and notes."
+      content="Product design engineer. Projects, lab experiments, and notes."
     />
+    <!-- Boot screen: what shows before the app mounts (and if it never does).
+         Token aliases first; the fallbacks are the dark values, for dev (where
+         the stylesheet arrives with the JS) and a failed CSS load. The root
+         error boundary reuses these classes. -->
+    <style>
+      .boot {
+        position: fixed; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 10px; padding: 48px;
+        background: var(--color-sepia-950, #1a150f);
+        font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+        font-weight: 400; text-align: center;
+      }
+      .boot-name {
+        margin: 0; font-size: 20px; font-weight: 400; letter-spacing: .12em;
+        text-transform: uppercase; color: var(--fg, #fdfcfb);
+      }
+      .boot-role {
+        margin: 0; font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
+        color: var(--body, #bfb4a3);
+      }
+      .boot-status { margin: 14px 0 0; font-size: 12px; color: var(--body, #bfb4a3); }
+      .boot-retry {
+        margin-top: 4px; padding: 10px 16px; font: inherit; font-size: 12px;
+        color: var(--fg, #fdfcfb); background: none; cursor: pointer;
+        border: 1px solid var(--body, #bfb4a3);
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- React replaces this on mount -->
+    <div id="root">
+      <div class="boot">
+        <h1 class="boot-name">Sacha Hurley</h1>
+        <p class="boot-role">Product Design Engineer</p>
+        <p class="boot-status" id="boot-status">loading...</p>
+      </div>
+    </div>
+    <!-- Boot watchdog. A classic script, so it runs even where the module
+         bundle can't (an old in-app webview failing to parse it). If the app
+         hasn't mounted in time, or throws before it does, offer a reload:
+         in-app browsers often have no refresh control of their own.
+         main.tsx sets window.__booted once it has handed off to React. -->
+    <script>
+      (function () {
+        var shown = false
+        function fail() {
+          if (window.__booted || shown) return
+          var status = document.getElementById('boot-status')
+          if (!status) return
+          shown = true
+          status.textContent = "The site didn't load."
+          var retry = document.createElement('button')
+          retry.type = 'button'
+          retry.className = 'boot-retry'
+          retry.textContent = 'tap to retry'
+          retry.onclick = function () { location.reload() }
+          status.parentNode.appendChild(retry)
+        }
+        window.addEventListener('error', fail)
+        window.addEventListener('unhandledrejection', fail)
+        setTimeout(fail, 10000)
+      })()
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

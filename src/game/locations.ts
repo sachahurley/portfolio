@@ -56,6 +56,17 @@ export const LOCATIONS: GameLocation[] = [
   },
 ]
 
+/**
+ * Menu destinations that are not world locations: listed in the desktop
+ * compass so the sitemap is complete, but kept out of LOCATIONS because
+ * membership there means an arrival line and discovery XP on every visit
+ * (RouteEffects in App.tsx). Character is a management screen, not a place
+ * (see pages/Character.tsx). The mobile sheet carries it as its portrait row.
+ */
+export const NAV_EXTRAS: Pick<GameLocation, 'path' | 'real' | 'icon'>[] = [
+  { path: '/character', real: 'Character', icon: 'character' },
+]
+
 /** Match a pathname to its location (index pages and their detail pages). */
 export function locationFor(pathname: string): GameLocation | undefined {
   if (pathname === '/') return LOCATIONS[0]
