@@ -30,7 +30,7 @@ export default function VillageHome() {
   const stats = useSiteStats()
 
   return (
-    <MinimalPage flushTop>
+    <MinimalPage flushTop centerY>
       <section className="intro">
         <h1>Sacha Hurley</h1>
       </section>

@@ -202,6 +202,17 @@ strong, b { font-weight: 400; }
    no plate of its own, matching the plate's start keeps the top gap equal
    across every page instead of reading as a lower start. */
 .mn-main.flush-top { padding-top: 48px; }
+/* desktop Home: the column is centred in the fixed viewport, so the
+   intro and village sit balanced between the stonework instead of
+   hanging from the top. Bottom padding matches flush-top's 48px so the
+   centre is true; taller content just grows and scrolls as before. Phones
+   keep the top-anchored flow (the page scrolls there, not the viewport). */
+@media (min-width: 960px) {
+  .mn-main.center-y {
+    min-height: 100%; padding-bottom: 48px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+}
 
 .intro { display: block; }
 .intro h1 { font-size: 16px; font-weight: 400; letter-spacing: -.01em; margin: 0; color: var(--accent); }
