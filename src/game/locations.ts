@@ -9,6 +9,7 @@
  */
 
 import type { VillageIconName } from '../components/village/VillageIcon'
+import { TAROT_ENABLED } from '../lib/flags'
 
 export interface GameLocation {
   path: string
@@ -62,10 +63,24 @@ export const LOCATIONS: GameLocation[] = [
  * membership there means an arrival line and discovery XP on every visit
  * (RouteEffects in App.tsx). Character is a management screen, not a place
  * (see pages/Character.tsx). The mobile sheet carries it as its portrait row.
+ * Tarot is a Lab experiment promoted to the menu (behind its flag, like its
+ * route); its visits already count towards the Lab.
  */
 export const NAV_EXTRAS: Pick<GameLocation, 'path' | 'real' | 'icon'>[] = [
   { path: '/character', real: 'Character', icon: 'character' },
+  ...(TAROT_ENABLED ? [{ path: '/lab/tarot', real: 'Tarot', icon: 'tarot' as const }] : []),
 ]
+
+/**
+ * The World row: the one menu entry with no page. It opens the "Thank you
+ * for visiting" dialog (lib/worldDialog.ts), and like the home grid's World
+ * app it is only listed once the lifetime totals have loaded.
+ */
+export const NAV_WORLD = { real: 'World', icon: 'world' } as const
+
+/** The menu extra this pathname is on, if any (it outranks its section). */
+export const extraFor = (pathname: string) =>
+  NAV_EXTRAS.find((d) => pathname === d.path || pathname.startsWith(d.path + '/'))
 
 /** Match a pathname to its location (index pages and their detail pages). */
 export function locationFor(pathname: string): GameLocation | undefined {

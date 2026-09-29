@@ -16,14 +16,19 @@
  * at (the parts range from 16x16 to 19x22).
  */
 
+import { globeMask } from '../../lib/globe'
 import { itemBmp, trim, type Bitmap, type VillageItem } from './villageKit'
+
+/** The World globe's diameter as a menu icon, art px (scaled to the box). */
+const GLOBE_ICON = 16
 
 /**
  * The nav assets, keyed by role rather than by part name so the art can be
  * swapped without touching the location registry. These mirror the village
  * home's tap targets (src/data/villageHome.ts), except Home: the scene's
  * single-storey house is 25x15, too wide to fill a square icon box, so the
- * icon uses a two-storey house in the same building language.
+ * icon uses a two-storey house in the same building language. World is
+ * the home grid's globe, drawn as one still frame: menu icons don't move.
  */
 const NAV_ICONS = {
   home: { house: { storeys: ['wall_5', 'upper_5'], roof: 'roof_2' } },
@@ -32,6 +37,8 @@ const NAV_ICONS = {
   notes: { part: 'quill' },
   about: { part: 'skull' },
   character: { part: 'sword' },
+  tarot: { part: 'crystal_ball' },
+  world: { draw: () => ({ w: GLOBE_ICON, h: GLOBE_ICON, px: globeMask(0, GLOBE_ICON) }) },
 } satisfies Record<string, VillageItem>
 
 export type VillageIconName = keyof typeof NAV_ICONS
@@ -65,13 +72,14 @@ interface IconArt {
   h: number
 }
 
-// Five icons, composed once on first use and kept for the session.
+// A handful of icons, composed once on first use and kept for the session.
 const cache = new Map<VillageIconName, IconArt>()
 
 function iconArt(name: VillageIconName): IconArt {
   let art = cache.get(name)
   if (!art) {
-    const b = trim(itemBmp(NAV_ICONS[name]))
+    const it: VillageItem = NAV_ICONS[name]
+    const b = trim(it.draw ? it.draw(0) : itemBmp(it))
     art = { d: bitmapToPath(b), w: b.w, h: b.h }
     cache.set(name, art)
   }

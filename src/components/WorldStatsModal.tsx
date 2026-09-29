@@ -12,10 +12,12 @@
  * centres the turning globe over the figures, the literal version of what
  * they count: not this visitor, everyone.
  *
- * The page only offers the World app once the totals have arrived (see
- * VillageHome). A lifetime counter that is wrong is worse than one that is
- * absent, so an unreachable endpoint, or a deploy with no counter store
- * wired up, simply has no World app, and this dialog never opens.
+ * Mounted once in MinimalChrome and opened through lib/worldDialog.ts by
+ * the home grid's World app, the desktop compass and the mobile sheet.
+ * Every one of those only offers World once the totals have arrived: a
+ * lifetime counter that is wrong is worse than one that is absent, so an
+ * unreachable endpoint, or a deploy with no counter store wired up, simply
+ * has no World anywhere, and this renders nothing.
  *
  * The figures tick up from zero, staggered left to right, each time the
  * dialog opens (the Modal unmounts its body on close). The tick waits for
@@ -26,7 +28,8 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { Modal } from '@scorp-ds/components'
 import PixelGlobe from './PixelGlobe'
-import type { SiteStats } from '../lib/siteStats'
+import { useSiteStats, type SiteStats } from '../lib/siteStats'
+import { closeWorld, useWorldOpen } from '../lib/worldDialog'
 import { onTitleScreenGone, titleScreenGone } from '../lib/titleScreen'
 
 /** How long one cell takes to tick from 0 to its figure. */
@@ -112,17 +115,12 @@ function ticked(figure: number, index: number, elapsed: number): number {
   return Math.ceil(frac * figure)
 }
 
-export default function WorldStatsModal({
-  stats,
-  isOpen,
-  onClose,
-}: {
-  stats: SiteStats
-  isOpen: boolean
-  onClose: () => void
-}) {
+export default function WorldStatsModal() {
+  const stats = useSiteStats()
+  const isOpen = useWorldOpen()
+  if (!stats) return null
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={TITLE} width="min(560px, 92vw)">
+    <Modal isOpen={isOpen} onClose={closeWorld} title={TITLE} width="min(560px, 92vw)">
       <StatRow stats={stats} />
     </Modal>
   )
