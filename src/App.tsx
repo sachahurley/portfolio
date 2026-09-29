@@ -23,6 +23,7 @@ import TownLab from './pages/TownLab'
 import BuilderLab from './pages/BuilderLab'
 import VillageLab from './pages/VillageLab'
 import HomeAltsLab from './pages/HomeAltsLab'
+import CauldronAltsLab from './pages/CauldronAltsLab'
 import About from './pages/About'
 import Character from './pages/Character'
 import NotFound from './pages/NotFound'
@@ -94,6 +95,7 @@ function App() {
               <Route path="/lab/builder" element={<BuilderLab />} />
               <Route path="/lab/village" element={<VillageLab />} />
               <Route path="/lab/home-alts" element={<HomeAltsLab />} />
+              <Route path="/lab/cauldron-alts" element={<CauldronAltsLab />} />
               {TarotLab && (
                 <Route path="/lab/tarot" element={<Suspense fallback={null}><TarotLab /></Suspense>} />
               )}
