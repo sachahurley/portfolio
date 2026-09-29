@@ -12,7 +12,9 @@
 import { Link, useLocation } from 'react-router-dom'
 import { BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
-import { LOCATIONS } from '../game/locations'
+import { LOCATIONS, NAV_EXTRAS, NAV_WORLD, extraFor } from '../game/locations'
+import { useSiteStats } from '../lib/siteStats'
+import { openWorld } from '../lib/worldDialog'
 import PortraitPlate from './game/PortraitPlate'
 import { inkColor } from '../game/avatarInks'
 import ChestSignal from './game/ChestSignal'
@@ -31,8 +33,17 @@ export default function BottomSheet({
   const { level, award, name, avatarSeed, avatarInk, pendingLevels, chests } = useXp()
   const displayLevel = level.level + 1
 
+  const stats = useSiteStats()
+  // a menu extra outranks its section: on /lab/tarot, Tarot lights, not Lab
+  const extra = extraFor(location.pathname)
   const isActive = (path: string) =>
-    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
+    extra
+      ? extra.path === path
+      : path === '/'
+        ? location.pathname === '/'
+        : location.pathname.startsWith(path)
+  // Character is the sheet's portrait row below, so only the other extras list here
+  const navExtras = NAV_EXTRAS.filter((d) => d.path !== '/character')
 
   return (
     <DSBottomSheet isOpen={open} onClose={onClose} ariaLabel="Menu">
@@ -59,6 +70,31 @@ export default function BottomSheet({
               </Link>
             )
           })}
+          {navExtras.map((dest) => {
+            const active = isActive(dest.path)
+            return (
+              <Link
+                key={dest.path}
+                to={dest.path}
+                className={active ? 'active' : undefined}
+                aria-current={active ? 'page' : undefined}
+                onClick={onClose}
+              >
+                <VillageIcon name={dest.icon} size={20} className="gf-ic" /> {dest.real}
+              </Link>
+            )
+          })}
+          {stats && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose()
+                openWorld()
+              }}
+            >
+              <VillageIcon name={NAV_WORLD.icon} size={20} className="gf-ic" /> {NAV_WORLD.real}
+            </button>
+          )}
         </nav>
 
 

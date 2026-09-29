@@ -1,7 +1,8 @@
 /**
  * MinimalChrome — the persistent UI mounted once in Layout.
  * Loader (title screen), the frame's menu notch, the bottom sheet, toasts
- * (mobile; the message log narrates on desktop), and the level-up modal.
+ * (mobile; the message log narrates on desktop), the level-up modal, and
+ * the World dialog (opened from the home grid, compass or sheet).
  * Sheet state is owned by Layout so the game frame's character strip can
  * open the sheet too.
  */
@@ -11,6 +12,7 @@ import Dock from './Dock'
 import BottomSheet from './BottomSheet'
 import Toaster from './Toaster'
 import LevelUpModal from './LevelUpModal'
+import WorldStatsModal from './WorldStatsModal'
 
 export default function MinimalChrome({
   sheetOpen,
@@ -26,6 +28,7 @@ export default function MinimalChrome({
       <BottomSheet open={sheetOpen} onClose={() => onSheetOpenChange(false)} />
       <Toaster />
       <LevelUpModal />
+      <WorldStatsModal />
     </>
   )
 }

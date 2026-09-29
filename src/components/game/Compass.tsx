@@ -2,12 +2,16 @@
  * Compass — the game frame's navigation and de facto sitemap. Lists every
  * location, always visible (the ???/sealed treatment only appears if a
  * location sets minLevel; none currently do), then the menu-only extras
- * (Character), which share the row markup but aren't world locations.
+ * (Character, Tarot), which share the row markup but aren't world
+ * locations, then World, a row that opens the stats dialog instead of
+ * navigating (listed once the lifetime totals have loaded).
  */
 
 import { Link, useLocation } from 'react-router-dom'
-import { LOCATIONS, NAV_EXTRAS, locationFor } from '../../game/locations'
+import { LOCATIONS, NAV_EXTRAS, NAV_WORLD, extraFor, locationFor } from '../../game/locations'
 import { useXp } from '../../context/XpProvider'
+import { useSiteStats } from '../../lib/siteStats'
+import { openWorld } from '../../lib/worldDialog'
 import DitherIcon from '../DitherIcon'
 import VillageIcon, { type VillageIconName } from '../village/VillageIcon'
 
@@ -29,7 +33,10 @@ export default function Compass() {
   const { level } = useXp()
   const { pathname } = useLocation()
   const displayLevel = level.level + 1
-  const here = locationFor(pathname)
+  // a menu extra outranks its section: on /lab/tarot, Tarot lights, not Lab
+  const extra = extraFor(pathname)
+  const here = extra ? undefined : locationFor(pathname)
+  const stats = useSiteStats()
 
   return (
     <nav className="gf-panel gf-compass" aria-label="Menu">
@@ -46,11 +53,16 @@ export default function Compass() {
             <Dest key={loc.path} {...loc} active={here?.path === loc.path} />
           ),
         )}
-        {/* no active state needed: /character is a full-page route, and the
-            side column (this compass included) isn't rendered there */}
         {NAV_EXTRAS.map((dest) => (
-          <Dest key={dest.path} {...dest} active={false} />
+          <Dest key={dest.path} {...dest} active={extra?.path === dest.path} />
         ))}
+        {stats && (
+          <li>
+            <button type="button" className="gf-dest" onClick={openWorld}>
+              <VillageIcon name={NAV_WORLD.icon} size={16} className="gf-ic" /> {NAV_WORLD.real}
+            </button>
+          </li>
+        )}
       </ul>
     </nav>
   )
