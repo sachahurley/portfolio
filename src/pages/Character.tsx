@@ -1,9 +1,13 @@
 /**
  * Character, the character management screen (/character).
  *
- * Diablo-2-inspired, three columns on wide screens: identity + stats, the
- * paperdoll, and the pack (with any unopened chests); two columns on
- * tablets, one on phones, with the camp (progress + gem fire) below.
+ * Diablo-2-inspired. Identity (avatar, name, level, XP) is the page's own
+ * header, unframed above the grid. Below it, three equal-height columns on
+ * wide screens: stats + theme, the paperdoll, and the pack (with any
+ * unopened chests); two columns on tablets, one on phones. Stats and theme
+ * are two cards sharing the left column, so it still fills to one height
+ * beside the others. The theme card carries the earned gems and the hearth
+ * they get dropped into, rather than a full-width band under everything.
  * Tapping a worn paperdoll item opens its card (the way to unequip);
  * empty slots are inert labels. Tapping a pack item opens a card that
  * compares it against what's worn, and the stats preview the swap. Chests open in place with an impact burst and a reveal modal. Not a
@@ -20,13 +24,14 @@ import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@scorp-ds/components'
 import DitherIcon from '../components/DitherIcon'
-import PixelFire, { type PixelFireHandle } from '../components/PixelFire'
 import GemShelf from '../components/progress/GemShelf'
+import type { GemSinkHandle } from '../components/progress/useGemDrag'
 import { useXp } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 import { THEMES } from '../lib/themes'
 import { runImpact } from '../lib/impactFx'
-import CharacterPanel from '../components/game/CharacterPanel'
+import CharacterHeader from '../components/game/CharacterHeader'
+import PixelHearth from '../components/game/PixelHearth'
 import ChestRevealModal from '../components/ChestRevealModal'
 import DestroyConfirmModal from '../components/game/DestroyConfirmModal'
 import ItemCard from '../components/game/ItemCard'
@@ -76,9 +81,8 @@ export default function Character() {
   // Destroy is gated by a confirm modal stacked over the item card.
   const [confirmingDestroy, setConfirmingDestroy] = useState(false)
   const navigate = useNavigate()
-  // The camp fire below the sheet doubles as the gem drop target (same
-  // pairing as the classic home page).
-  const fireApiRef = useRef<PixelFireHandle>(null)
+  // The hearth at the foot of the theme card is the gem drop target.
+  const hearthRef = useRef<GemSinkHandle>(null)
   // Paperdoll slot elements, the anchor for the equip impact.
   const slotRefs = useRef<Partial<Record<Slot, HTMLElement | null>>>({})
 
@@ -210,16 +214,34 @@ export default function Character() {
         <DitherIcon name="close" size={16} />
       </Button>
 
+      <CharacterHeader />
+
       <div className="ch-grid ch-grid3">
-        <section className="ch-panel ch-col-id" aria-label="Character">
-          <CharacterPanel />
-          <StatsBlock
-            items={items}
-            equipment={equipment}
-            displayLevel={displayLevel}
-            previewItem={selectedEquipped ? null : selectedItem}
-          />
-        </section>
+        {/* stats and theme are two cards in one column, so the column still
+            fills alongside the paperdoll and the pack */}
+        <div className="ch-col-left">
+          <section className="ch-panel ch-col-id" aria-label="Stats">
+            <StatsBlock
+              items={items}
+              equipment={equipment}
+              displayLevel={displayLevel}
+              previewItem={selectedEquipped ? null : selectedItem}
+            />
+          </section>
+
+          {/* Theme: the gems earned by levelling, and the fire that applies
+              them. Level and XP live in the page header, so nothing here
+              repeats them. */}
+          <section className="ch-panel ch-theme" aria-label="Site theme">
+            <div className="gf-label">theme</div>
+            <div className="gf-dim ch-helper">
+              Wearing <span className="ch-wearing">{THEMES[activeGem].name}</span>. Each gem you
+              earn recolors the site; drop one in the fire to change.
+            </div>
+            <GemShelf sinkRef={hearthRef} />
+            <PixelHearth ref={hearthRef} />
+          </section>
+        </div>
 
         <section className="ch-panel ch-col-doll" aria-label="Equipment">
           <div className="gf-label">equipment</div>
@@ -298,19 +320,6 @@ export default function Character() {
           onClose={() => setConfirmingDestroy(false)}
         />
       </div>
-
-      {/* Theme: the gems earned by levelling, and the fire that applies
-          them. Full width under the three cards; level and XP stay in the
-          character panel, so nothing here repeats them. */}
-      <section className="ch-panel ch-camp" aria-label="Site theme">
-        <div className="gf-label">theme</div>
-        <div className="gf-dim ch-helper">
-          Wearing <span className="ch-wearing">{THEMES[activeGem].name}</span>. Each gem you earn
-          recolors the site; drag one into the fire to change.
-        </div>
-        <GemShelf fireApiRef={fireApiRef} />
-        <PixelFire ref={fireApiRef} inline />
-      </section>
 
       <ChestRevealModal
         item={revealed}

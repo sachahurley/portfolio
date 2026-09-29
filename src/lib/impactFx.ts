@@ -73,13 +73,23 @@ function pagePulse(color: string) {
   setTimeout(() => d.remove(), 640)
 }
 
-/** The whole impact moment, anchored to the fire band. Accepts anything
- *  carrying a theme's accent + fire triple (e.g. loot rarityFx palettes). */
-export function runImpact(fireWrap: HTMLElement, theme: Pick<Theme, 'accent' | 'fire'>) {
+/** The whole impact moment. Accepts anything carrying a theme's accent + fire
+ *  triple (e.g. loot rarityFx palettes).
+ *
+ *  Without an anchor it fires near the bottom of the element, which is where
+ *  the flames were on the old fire band. Anything whose hot spot is NOT its
+ *  bottom edge passes one: the cauldron's is its mouth, and the bottom of a
+ *  cauldron is its feet. */
+export function runImpact(
+  el: HTMLElement,
+  theme: Pick<Theme, 'accent' | 'fire'>,
+  anchor?: { x: number; y: number }
+) {
   if (reduced()) return
-  const r = fireWrap.getBoundingClientRect()
-  const cx = r.left + r.width / 2
-  emberBurst(cx, r.bottom - 40, theme.fire)
-  impactFlash(cx, r.bottom - 46, theme.fire[1])
+  const r = el.getBoundingClientRect()
+  const cx = anchor?.x ?? r.left + r.width / 2
+  const cy = anchor?.y ?? r.bottom - 40
+  emberBurst(cx, cy, theme.fire)
+  impactFlash(cx, cy - 6, theme.fire[1])
   pagePulse(theme.accent)
 }

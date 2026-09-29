@@ -847,31 +847,37 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 }
 .nav-sealed .nav-flavor { margin-left: auto; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
 
-.cs { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-.cs-head { display: flex; align-items: flex-start; gap: 14px; }
+/* .cs retired: the identity block is the page header (.ch-header) now. */
+.ch-header-row { display: flex; align-items: center; gap: 16px; }
 /* the avatar button is just a hit area; PortraitPlate carries the chrome */
 .cs-avatarbtn { padding: 0; background: none; border: 0; cursor: pointer; line-height: 0; }
 @media (hover: hover) { .cs-avatarbtn:hover .pp-plate { background: var(--accent); } }
 /* avatar on a plate (PortraitPlate): the equipment slot's ring recipe
    (see .ch-slotwrap) around the portrait, so the character wears the same
-   frame as their gear. Default well = the paperdoll's 62px cell; .sm is
-   the compact strip tier (side panel footer, menu sheet row). */
+   frame as their gear. Default well = the paperdoll's 62px cell; .lg is the
+   character screen's header tier, .sm the compact strip tier (side panel
+   footer, menu sheet row). */
 .pp-plate { display: inline-block; flex: none; padding: 1px; background: var(--border); clip-path: var(--notch4); }
 .pp-plate-in {
   display: flex; align-items: center; justify-content: center;
   width: 62px; height: 62px; background: var(--hover); clip-path: var(--notch4);
 }
+/* header tier: 96px well holds cell 6's 72px figure at the same 7:9
+   ink-to-well ratio the 62px paperdoll plate uses */
+.pp-plate.lg .pp-plate-in { width: 96px; height: 96px; }
 .pp-plate.sm .pp-plate-in { width: 46px; height: 46px; }
 /* .xs is the menu-sheet row tier (cell 2 figure, 24px of ink) */
 .pp-plate.xs .pp-plate-in { width: 36px; height: 36px; }
-.cs-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+/* capped: a name field and XP bar stretched across 1120px is the same
+   banner problem the old full-width theme card had */
+.ch-header-id { flex: 1; min-width: 0; max-width: 480px; display: flex; flex-direction: column; gap: 5px; }
 /* .cs-name retired: the rename field is the DS Input (quiet). */
 .cs-lvl { font-size: 12px; color: var(--body); }
 /* section label + the level chest (an unclaimed level-up; the same chest
    waits in the pack). The row owns the label's bottom margin; the fixed
    height keeps the row from jumping when the chest comes and goes. */
-.cs-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 24px; margin-bottom: 12px; }
-.cs-top .gf-label { margin: 0; }
+.ch-header-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 24px; margin-bottom: 12px; }
+.ch-header-top .gf-label { margin: 0; }
 .cs-levelchest { padding: 2px; background: none; border: 0; cursor: pointer; line-height: 0; }
 .cs-levelchest:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
 @media (hover: hover) { .cs-levelchest:hover { background: var(--hover); } }
@@ -960,21 +966,51 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 .stat-up { color: var(--stat-up); }
 .stat-down { color: var(--stat-down); }
 
+/* page header: the identity block, lifted out of the stats card so the
+   avatar, name, level and XP read as the screen's title rather than a fourth
+   panel. Deliberately unframed - a 2px rule across 1120px sitting 24px above
+   three card tops just doubles the grid's own borders. */
+.ch-header { margin-bottom: 32px; }
+/* the fixed close plate owns the viewport's top-right 84px, and the header row
+   reaches the sheet's right edge; keep the level chest out of its lane */
+@media (min-width: 960px) { .ch-header { padding-right: 64px; } }
+
 .ch-main { max-width: 880px; margin: 0 auto; padding: 96px 24px 160px; font-family: var(--mono); }
 .ch-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
 @media (min-width: 720px) { .ch-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 4fr); align-items: start; } }
 .ch-panel { border: 2px solid var(--border); padding: 20px; }
-/* CharacterPanel ships sheet spacing (top border for the stack); flush here */
-.ch-panel .cs { margin-top: 0; padding-top: 0; border-top: 0; }
 .ch-sectlabel { margin: 24px 0 12px; }
-/* theme card: the earned gems, and the fire that applies them, in a card
-   spanning the full width under the three panels. The card drops its bottom
-   padding and the fire bleeds back through the side padding so the flames
-   span the frame's full inner width; the gap above keeps room to drag a gem
-   down before it reaches the flames. */
-.ch-camp { margin-top: 24px; padding-bottom: 0; overflow: hidden; }
+/* stats and theme are two cards sharing the left column, so the column still
+   fills to one height alongside the paperdoll and the pack. The wrapper is the
+   grid child; below 720px it dissolves (display: contents) and the theme card
+   orders itself last, after the pack, where an ornament belongs.
+   The theme card used to span the full sheet, which left four 36px sockets and
+   a fire stranded in 1120px of nothing. */
+.ch-col-left { display: contents; }
+.ch-col-left > .ch-theme { order: 1; }
+@media (min-width: 720px) {
+  .ch-col-left {
+    display: grid; grid-template-rows: 1fr auto; gap: 24px;
+    align-self: stretch; min-height: 0;
+  }
+  .ch-col-left > .ch-theme { order: 0; }
+}
+/* the hearth is the card's FLOOR: it bleeds back through the side and bottom
+   padding so the flame reaches the frame's inner edges, which is what makes
+   it read as a floor rather than a strip parked in the middle of the card.
+   The 40px gap above it is what useGemDrag's GRAVITY_MIN_PULL and
+   HIT_PAD_ABOVE are tuned against - closing it makes a twitch read as a drop.
+   position: relative because the canvas absolutely positions inside this box,
+   and useGemDrag hit-tests the box rather than the canvas. */
+.ch-theme { display: flex; flex-direction: column; padding-bottom: 0; overflow: hidden; }
+.ch-theme .gem-track { justify-content: center; margin-bottom: 40px; }
+.ch-hearth {
+  position: relative; margin: auto -20px 0;
+  /* Decoration only - the drop is hit-tested by coordinate, not by the DOM -
+     so it must never eat a pointerdown meant for the sockets above it. */
+  pointer-events: none;
+}
 .ch-wearing { color: var(--accent); }
-.ch-camp .pixelfire-inline { margin: 40px -20px 0; }
 
 /* paperdoll: 3x3 grid of slots; slots are the li.sel ring trick
    (clipped wrapper filled with the rarity color, 1px padding, child clipped
@@ -1080,8 +1116,10 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 .ch-gearline { font-size: 12px; color: var(--body); margin: -4px 0 12px; }
 .ch-stats .ch-statrow { min-width: 0; }
 .ch-stat > span:last-child { white-space: nowrap; }
-/* single column where two would squeeze the swap preview */
-@media (max-width: 480px), (min-width: 1000px) {
+/* single column where two would squeeze the swap preview. Two columns now
+   survive only between 481 and 719px, where .ch-grid is still one column and
+   the card has the sheet's full width. */
+@media (max-width: 480px), (min-width: 720px) {
   .ch-col-id .ch-stats { grid-template-columns: 1fr; gap: 8px; }
 }
 /* first label in a panel sits flush with the top padding */
@@ -1093,11 +1131,18 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 /* helper line directly under a card title, above the card's content */
 .ch-helper { font-size: 12px; margin: -4px 0 16px; }
 .ch-col-doll .ch-doll { margin-top: 4px; }
+/* tablets: stats+theme takes the taller left column beside the paperdoll
+   over the pack. The identity block is the page header now, so nothing here
+   spans rows to keep a column filled. */
 @media (min-width: 720px) and (max-width: 999px) {
-  .ch-grid3 .ch-col-id { grid-row: span 2; }
+  .ch-grid.ch-grid3 { grid-template-columns: minmax(0, 4fr) minmax(0, 5fr); }
+  .ch-grid3 .ch-col-left { grid-column: 1; grid-row: 1 / span 2; }
+  .ch-grid3 .ch-col-doll { grid-column: 2; grid-row: 1; }
+  .ch-grid3 .ch-col-loot { grid-column: 2; grid-row: 2; }
 }
 /* panels fill their grid area so neighbouring cards share one height
-   (the grid itself aligns panels to the top) */
+   (the grid itself aligns panels to the top). The left column is a wrapper,
+   not a panel, and stretches via its own rule above. */
 @media (min-width: 720px) {
   .ch-grid3 > .ch-panel { align-self: stretch; }
 }
@@ -1560,3 +1605,4 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
   .hs-cell + .hs-cell { border-left: none; }
   .hs-cell:nth-child(even) { border-left: 1px solid var(--border); }
 }
+
