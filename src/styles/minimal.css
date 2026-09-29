@@ -1607,10 +1607,12 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
   .hs-cell:nth-child(even) { border-left: 1px solid var(--border); }
 }
 
-/* ---- cauldron alternates lab (/lab/cauldron-alts) ---- */
-/* Unlisted comparison page: five gem sinks side by side. The stage gets a
-   floor line so the silhouettes can be judged against a common baseline
-   rather than floating at whatever height each shape happens to be. */
+/* ---- cauldron lab (/lab/cauldron) ---- */
+/* Unlisted inspection page: the gem sink at card size and blown up. The stage
+   gets a floor line so the pot can be judged against a baseline rather than
+   floating. The zoom is a whole-number scale from the bottom centre, or the
+   pixel art blurs and the pot drifts off its floor. Doubled, not tripled:
+   at 3x the pot is wider than the card and gets clipped. */
 .cauldron-alt-track { margin: 24px 0 8px; }
 .cauldron-alt-track .gem-track { justify-content: flex-start; }
 .cauldron-alts { display: grid; gap: 28px; margin-top: 32px; }
@@ -1622,3 +1624,5 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
   min-height: 190px; margin-top: 20px;
   border-bottom: 1px solid var(--border);
 }
+.cauldron-zoom { min-height: 250px; }
+.cauldron-zoom .ch-cauldron { transform: scale(2); transform-origin: bottom center; }

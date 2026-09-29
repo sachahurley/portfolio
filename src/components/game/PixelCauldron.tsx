@@ -3,38 +3,33 @@
  *
  * A pot of brew that the earned theme gems get dropped into. It replaced the
  * camp fire as the drop target: same imperative handle (setFlare / surge /
- * getElement), plus getAnchor so a drop lands in the mouth rather than at the
+ * getElement), plus getAnchor so a drop lands on the lip rather than at the
  * pot's feet.
  *
  * Drawn on a canvas rather than from the Urizen sheet — the sheet only carries
  * a lidded pot and a hanging sign, and neither boils or re-tints. Geometry is
  * in CELLS scaled by an integer PX, so the art stays pixel-perfect.
  *
- * Two perspectives, because they are different objects:
+ * Traced from a reference, level-on: a wide oval belly, a flat lip slab with
+ * dropped end tabs, four curled feet, and two soft highlights on the iron.
+ * There is NO visible opening — you never see the surface. The boil is told
+ * entirely by what escapes: brew running down the outside in drips, and round
+ * bubbles drifting up past the lip.
  *
- * - `top` looks down INTO the pot. The opening is an ellipse, anything around
- *   it is an elliptical ring, and the wall starts at the opening's widest row
- *   with the opening punched through it.
- * - `side` looks at the pot level-on. There is no visible opening: a flat rim
- *   slab caps the body and the brew MOUNDS UP above it, boiling over the lip.
- *
- * A flat rim slab is only legible in the `side` read, and only because it is
- * narrower than the belly and carries the mound on top. An earlier `top` pass
- * drew a constant-width lip that was the widest thing on the pot with nothing
- * above it, and it read as a table the pot stood behind.
+ * The lip is a flat slab and that is fine HERE, because the belly is wider
+ * than it is. A slab that is the widest thing on the pot stops reading as a
+ * rim and starts reading as a table the pot stands behind; an earlier
+ * top-down pass learned that the hard way.
  *
  * The brew takes the worn gem's ACCENT, not the theme's fire triple: the
  * triple is dull bone on the default theme, which made the pot look like
- * dishwater. There is no fire under the pot; it just boils.
+ * dishwater.
  *
- * Like PixelFire before it, the wrapper is sized to the POT and the taller
- * canvas is bottom-aligned inside it, so the rising bubbles spill upward as
- * transparent pixels. That overhang can reach the gem sockets, which is why
- * .ch-cauldron is pointer-events: none - otherwise the canvas swallows the
- * pointerdown and the sockets above it stop being draggable. That is load-bearing, not cosmetic: useGemDrag treats
- * the wrapper's rect (padded 24px above) as the live drop band, and a wrapper
- * that included the headroom would reach up into the gem sockets and turn a
- * 2px twitch into a drop.
+ * The wrapper is sized to the POT and the taller canvas is bottom-aligned
+ * inside it, so the rising bubbles spill upward as transparent pixels — the
+ * recipe PixelFire used. That overhang can reach the gem sockets, which is why
+ * .ch-cauldron is pointer-events: none; otherwise the canvas swallows the
+ * pointerdown and the sockets above it stop being draggable.
  */
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
@@ -47,150 +42,48 @@ const COLS = 35
 const ROWS = 36
 const CX = 17
 
+/* ---- traced proportions ----
+   Reference measures, as fractions of the belly half-width: lip 0.82, body top
+   0.79, base 0.76, and a body 1.86x wider than tall with its widest point at
+   mid-height. The belly is the widest thing on the pot; the lip is not. */
+const BELLY_HW = 15
+const TOP_HW = 12 // the wall just under the lip
+const BASE_HW = 12
+const LIP_HW = 13 // overhangs the wall by one cell, never reaching the belly
+const BODY_H = 16
+const FOOT_H = 3
+
+const Y_BASE = ROWS - 1 - FOOT_H // 32
+const Y_TOP = Y_BASE - BODY_H // 16, the wall's first row
+const Y_BELLY = Y_TOP + 8 // widest at mid-height
+const Y_LIP = Y_TOP - 2 // the slab: two rows, with tabs dropped at its ends
+const ART_TOP = Y_LIP
+const VISUAL_H = (ROWS - ART_TOP) * PX
+
+/** Four curled feet, at the offsets the reference puts them. */
+const FEET = [-9, -4, 4, 9]
+
+/** Where brew runs down the outside, and how far each one reaches. */
+const DRIPS = [
+  { dx: -8, max: 2 },
+  { dx: -3, max: 7 }, // the long one; the reference runs it about 40% down
+  { dx: 1, max: 2 },
+  { dx: 5, max: 4 },
+  { dx: 8, max: 2 },
+]
+
 const FRAME_MS = 110
 const SURGE_MS = 850
 
-/** Flat cast iron: a body tone, one light edge, an outline. No long ramp - the
- *  near-solid silhouette is what makes the brew read. */
+/** Warm dark iron. The reference is nearly solid, lifted by two soft
+ *  highlights rather than by round modelling. */
 const IRON = {
-  out: '#070502', // outline, and the shadowed right edge
-  body: '#14110b', // the flat body, barely off the page colour
-  edge: '#332d21', // the single light edge, up the left and over the lip
-  mid: '#1f1a11', // a faint inner panel; the reference is flat, not modelled
-  rim: '#282219', // lip and trim
-}
-
-export type CauldronVariant = 'wide' | 'tall' | 'squat' | 'necked' | 'footed'
-
-type Foot = 'legs' | 'ring' | 'pedestal'
-
-interface Shape {
-  /** Which read this pot is drawn for. */
-  perspective: 'top' | 'side'
-  /** `top`: opening ellipse half-width, half-height, and the thickness of the
-   *  ring around it. `side`: mrx is the rim slab's half-width, mry is unused. */
-  mrx: number
-  mry: number
-  rimT: number
-  /** `side` only: how far the boiling brew heaps above the rim, and how wide
-   *  the heap is. */
-  moundW: number
-  moundH: number
-  /** Body: rows from the top of the wall to the base, where the belly sits
-   *  within that span, and the half-widths it interpolates between. */
-  bodyH: number
-  bellyAt: number
-  bellyHw: number
-  baseHw: number
-  /** Shoulder easing. <1 bulges out fast (round), >1 holds a straighter
-   *  shoulder before flaring (urn-like). */
-  shoulder: number
-  /** How the rim ring is inked: as trim, or as more wall (a pot whose wall
-   *  simply ends still needs a pixel of iron there, or the brew floats). */
-  rimTone: 'trim' | 'wall'
-  foot: Foot
-  /** A girth band around the belly. */
-  band: boolean
-  handles: 'ring' | 'nub' | 'none'
-}
-
-/**
- * Five silhouettes on the level-on read: a flat rim slab capping the body,
- * with the brew boiling up over the lip. What varies is the body curve and how
- * much rim overhangs it.
- *
- * The rim MUST stay narrower than the belly. The moment it is the widest thing
- * on the pot it stops reading as a rim and starts reading as a table.
- */
-const SHAPES: Record<CauldronVariant, Shape> = {
-  // Broad and round, a generous rim, the brew heaped low and wide.
-  wide: { perspective: 'side', mrx: 11, mry: 0, rimT: 2, moundW: 9, moundH: 4, bodyH: 13, bellyAt: 0.45, bellyHw: 15, baseHw: 8, shoulder: 0.6, rimTone: 'trim', foot: 'legs', band: false, handles: 'ring' },
-  // Narrower and taller, with the brew heaped higher above a smaller lip.
-  tall: { perspective: 'side', mrx: 9, mry: 0, rimT: 2, moundW: 7, moundH: 5, bodyH: 17, bellyAt: 0.42, bellyHw: 13, baseHw: 6, shoulder: 0.7, rimTone: 'trim', foot: 'legs', band: false, handles: 'ring' },
-  // Very wide, very short, sitting low. A stewpot.
-  squat: { perspective: 'side', mrx: 10, mry: 0, rimT: 2, moundW: 8, moundH: 4, bodyH: 10, bellyAt: 0.5, bellyHw: 16, baseHw: 9, shoulder: 0.5, rimTone: 'trim', foot: 'legs', band: false, handles: 'ring' },
-  // A real neck: the wall holds narrow under the rim before flaring out.
-  necked: { perspective: 'side', mrx: 8, mry: 0, rimT: 2, moundW: 6, moundH: 5, bodyH: 15, bellyAt: 0.5, bellyHw: 15, baseHw: 7, shoulder: 1.3, rimTone: 'trim', foot: 'legs', band: false, handles: 'ring' },
-  // Standing on a foot ring rather than legs, with a girth band.
-  footed: { perspective: 'side', mrx: 10, mry: 0, rimT: 2, moundW: 8, moundH: 4, bodyH: 14, bellyAt: 0.46, bellyHw: 14, baseHw: 9, shoulder: 0.6, rimTone: 'trim', foot: 'ring', band: true, handles: 'nub' },
-}
-
-const FOOT_H: Record<Foot, number> = { legs: 3, ring: 2, pedestal: 5 }
-
-interface Geo extends Shape {
-  yMouth: number
-  yTop: number
-  yBelly: number
-  yBase: number
-  footH: number
-  topHw: number
-  artTop: number
-}
-
-/** Resolve a shape into absolute rows, bottom-aligned in the canvas. */
-function geoFor(v: CauldronVariant): Geo {
-  const s = SHAPES[v]
-  const footH = FOOT_H[s.foot]
-  const yBase = ROWS - 1 - footH
-  if (s.perspective === 'side') {
-    // the rim slab caps the body; the mound heaps above it
-    const yTop = yBase - s.bodyH
-    const yRim = yTop - s.rimT
-    return {
-      ...s,
-      footH,
-      yBase,
-      yTop,
-      yMouth: yRim, // a dropped gem lands on the lip
-      yBelly: yTop + Math.round(s.bodyH * s.bellyAt),
-      // the wall sits just inside the rim, so the lip overhangs it
-      topHw: s.mrx - 1,
-      artTop: yRim - s.moundH,
-    }
-  }
-  // the wall begins at the opening's widest row, so rim and body never step
-  const yMouth = yBase - s.bodyH
-  return {
-    ...s,
-    footH,
-    yBase,
-    yTop: yMouth,
-    yMouth,
-    yBelly: yMouth + Math.round(s.bodyH * s.bellyAt),
-    topHw: s.mrx + s.rimT,
-    artTop: Math.floor(yMouth - s.mry - s.rimT),
-  }
-}
-
-/** The envelope the boiling mound is allowed to reach, per column offset. */
-function moundCap(g: Geo, dx: number): number {
-  const t = Math.abs(dx) / Math.max(1, g.moundW)
-  if (t > 1) return 0
-  return Math.max(1, Math.round(g.moundH * Math.sqrt(1 - t * t)))
-}
-
-/** Front-wall half-width at row y.
- *
- *  Both halves are circular arcs rather than eased ramps: the eased version
- *  drew long straight diagonals and the pot came out faceted. `shoulder`
- *  biases the upper arc - below 1 it bulges out fast under the lip, above 1
- *  it holds narrow and flares late (a neck). */
-function halfW(g: Geo, y: number): number {
-  if (y < g.yTop || y > g.yBase) return 0
-  if (y <= g.yBelly) {
-    const t = (g.yBelly - y) / Math.max(1, g.yBelly - g.yTop) // 1 at the lip, 0 at the belly
-    return Math.round(g.topHw + (g.bellyHw - g.topHw) * Math.sqrt(1 - Math.pow(t, 2 * g.shoulder)))
-  }
-  const u = (y - g.yBelly) / Math.max(1, g.yBase - g.yBelly)
-  return Math.round(g.baseHw + (g.bellyHw - g.baseHw) * Math.sqrt(Math.max(0, 1 - u * u)))
-}
-
-/** Half-width of the opening ellipse at row y, or -1 when the row misses it. */
-function mouthHw(g: Geo, y: number, grow = 0): number {
-  const ry = g.mry + grow
-  const b = (y - g.yMouth) / ry
-  if (Math.abs(b) > 1) return -1
-  return Math.round((g.mrx + grow) * Math.sqrt(1 - b * b))
+  out: '#0a0805',
+  body: '#1a1610',
+  mid: '#2b2418', // the two highlight patches
+  edge: '#3a3222',
+  rim: '#262017',
+  rimHi: '#463d2b',
 }
 
 function rgb(hex: string): [number, number, number] {
@@ -206,13 +99,28 @@ function shade(hex: string, k: number): string {
   return `rgb(${c[0]},${c[1]},${c[2]})`
 }
 
-interface Bubble {
-  x: number
-  y: number
-  age: number
-  life: number
+/**
+ * Wall half-width at row y. Both halves are circular arcs: the upper one
+ * bulges out fast under the lip and then holds (the reference is at full width
+ * by a quarter of the way down), the lower one holds and drops away late.
+ */
+function halfW(y: number): number {
+  if (y < Y_TOP || y > Y_BASE) return 0
+  if (y <= Y_BELLY) {
+    const t = (Y_BELLY - y) / (Y_BELLY - Y_TOP) // 1 at the lip, 0 at the belly
+    return Math.round(TOP_HW + (BELLY_HW - TOP_HW) * Math.sqrt(1 - t))
+  }
+  const u = (y - Y_BELLY) / (Y_BASE - Y_BELLY)
+  return Math.round(BASE_HW + (BELLY_HW - BASE_HW) * Math.sqrt(Math.max(0, 1 - u * u)))
 }
-/** A bubble that has left the surface and is floating up past the rim. */
+
+/** The two soft highlights the reference puts on the iron. */
+function inHighlight(x: number, y: number): boolean {
+  const a = ((x - (CX - 7)) / 3.6) ** 2 + ((y - (Y_BELLY - 1)) / 4.2) ** 2
+  const b = ((x - (CX + 5)) / 3) ** 2 + ((y - (Y_BELLY - 1)) / 3.6) ** 2
+  return a <= 1 || b <= 1
+}
+
 interface Riser {
   x: number
   y: number
@@ -222,24 +130,17 @@ interface Riser {
   life: number
 }
 
-const PixelCauldron = forwardRef<GemSinkHandle, { variant?: CauldronVariant }>(function PixelCauldron(
-  { variant = 'wide' },
-  ref
-) {
+const PixelCauldron = forwardRef<GemSinkHandle>(function PixelCauldron(_props, ref) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const flareRef = useRef(false)
   const surgeUntilRef = useRef(0)
   const rafRef = useRef<number | null>(null)
   const lastRef = useRef(0)
-  const bubblesRef = useRef<Bubble[]>([])
-  /** Per-column heights of the boiling mound (side perspective only). */
-  const moundRef = useRef<number[]>([])
   const risersRef = useRef<Riser[]>([])
+  /** Current length of each drip, in cells. */
+  const dripsRef = useRef<number[]>(DRIPS.map((d) => Math.round(d.max * 0.6)))
   const [visible, setVisible] = useState(false)
-
-  const g = useMemo(() => geoFor(variant), [variant])
-  const visualH = (ROWS - g.artTop) * PX
 
   const { activeGem } = useXp()
   // The brew wears whatever gem you wore. THEMES.default.accent is a getter
@@ -247,17 +148,16 @@ const PixelCauldron = forwardRef<GemSinkHandle, { variant?: CauldronVariant }>(f
   const accent = THEMES[activeGem].accent
   const palette = useMemo(
     () => ({
-      shadow: shade(accent, -0.8),
-      deep: shade(accent, -0.5),
+      deep: shade(accent, -0.45),
       body: shade(accent, -0.12),
       lit: accent,
-      hot: shade(accent, 0.5),
-      flash: shade(accent, 0.85),
+      hot: shade(accent, 0.45),
+      flash: shade(accent, 0.8),
     }),
     [accent]
   )
 
-  /** 0 resting, 1 flaring, 2 surging — drives how hard it boils. */
+  /** 0 resting, 1 flaring, 2 surging. */
   const heatLevel = useCallback((): 0 | 1 | 2 => {
     if (performance.now() < surgeUntilRef.current) return 2
     return flareRef.current ? 1 : 0
@@ -281,282 +181,155 @@ const PixelCauldron = forwardRef<GemSinkHandle, { variant?: CauldronVariant }>(f
       if (alpha != null) ctx.globalAlpha = 1
     }
 
-    // 1. foot
-    if (g.foot === 'legs') {
-      for (const ox of [-(g.baseHw - 2), g.baseHw - 2]) {
-        for (let y = g.yBase + 1; y <= g.yBase + g.footH; y++) {
-          const last = y === g.yBase + g.footH
-          P(CX + ox - 2, y, IRON.edge)
-          P(CX + ox - 1, y, last ? IRON.out : IRON.mid)
-          P(CX + ox, y, last ? IRON.out : IRON.body)
-          P(CX + ox + 1, y, IRON.out)
-        }
-      }
-    } else if (g.foot === 'ring') {
-      for (let y = g.yBase + 1; y <= g.yBase + g.footH; y++) {
-        const hw = g.baseHw + (y === g.yBase + g.footH ? 1 : 0)
-        for (let x = CX - hw; x <= CX + hw; x++) {
-          P(x, y, x === CX - hw ? IRON.edge : x === CX + hw ? IRON.out : IRON.body)
-        }
-      }
-    } else {
-      for (let y = g.yBase + 1; y <= g.yBase + g.footH; y++) {
-        const flare = y > g.yBase + g.footH - 2
-        const hw = flare ? g.baseHw + 3 : 3
-        for (let x = CX - hw; x <= CX + hw; x++) {
-          P(x, y, x === CX - hw ? IRON.edge : x === CX + hw ? IRON.out : IRON.body)
-        }
+    // 1. feet: four stubs, each curling outward at the sole
+    for (const ox of FEET) {
+      const out = Math.sign(ox)
+      for (let y = Y_BASE + 1; y <= Y_BASE + FOOT_H; y++) {
+        const sole = y === Y_BASE + FOOT_H
+        P(CX + ox - 1, y, IRON.edge)
+        P(CX + ox, y, sole ? IRON.out : IRON.body)
+        if (sole) P(CX + ox + out, y, IRON.out) // the curl
       }
     }
 
-    // 2. handles, drawn before the wall so the ring reads as passing behind it
-    if (g.handles === 'ring') {
-      for (const sx of [-1, 1]) {
-        const hw = halfW(g, g.yBelly - 1)
-        const lit = sx < 0 ? IRON.edge : IRON.rim // light comes from the upper left
-        P(CX + sx * (hw + 1), g.yBelly - 2, lit)
-        P(CX + sx * (hw + 2), g.yBelly - 1, lit)
-        P(CX + sx * (hw + 2), g.yBelly, lit)
-        P(CX + sx * (hw + 1), g.yBelly + 1, sx < 0 ? IRON.body : IRON.out)
-      }
-    } else if (g.handles === 'nub') {
-      for (const sx of [-1, 1]) {
-        const hw = halfW(g, g.yTop + 1)
-        const lit = sx < 0 ? IRON.edge : IRON.rim
-        P(CX + sx * (hw + 1), g.yTop + 1, lit)
-        P(CX + sx * (hw + 1), g.yTop + 2, sx < 0 ? IRON.body : IRON.out)
-      }
-    }
-
-    // 3. the wall.
-    if (g.perspective === 'side') {
-      // Level-on: flat blocky shading, dark at the silhouette edge and lighter
-      // through the mass, the way the reference reads. No round modelling.
-      for (let y = g.yTop; y <= g.yBase; y++) {
-        const hw = halfW(g, y)
-        for (let x = CX - hw; x <= CX + hw; x++) {
-          const fromLeft = x - (CX - hw)
-          const fromRight = CX + hw - x
-          const d = Math.min(fromLeft, fromRight)
-          P(x, y, d === 0 ? IRON.out : fromLeft <= 1 ? IRON.edge : d === 1 ? IRON.body : IRON.mid)
-        }
-      }
-    } else {
-      // Top-down: the opening is punched out of the wall's upper rows.
-      for (let y = g.yTop; y <= g.yBase; y++) {
-        const hw = halfW(g, y)
-        const hole = y <= g.yMouth + g.mry ? mouthHw(g, y) : -1
-        for (let x = CX - hw; x <= CX + hw; x++) {
-          if (hole >= 0 && x >= CX - hole && x <= CX + hole) continue
-          const fromLeft = x - (CX - hw)
-          const fromRight = CX + hw - x
-          P(
-            x,
-            y,
-            fromLeft === 0 || (fromLeft === 1 && y < g.yBelly) ? IRON.edge : fromRight === 0 ? IRON.out : IRON.body
-          )
-        }
-      }
-    }
-    if (g.band) {
-      for (let y = g.yBelly; y <= g.yBelly + 1; y++) {
-        const hw = halfW(g, y)
-        for (let x = CX - hw; x <= CX + hw; x++) {
-          P(x, y, x === CX - hw ? IRON.edge : x === CX + hw ? IRON.out : y === g.yBelly ? IRON.rim : IRON.out)
-        }
+    // 2. the wall: nearly solid, with the reference's two soft highlights
+    for (let y = Y_TOP; y <= Y_BASE; y++) {
+      const hw = halfW(y)
+      for (let x = CX - hw; x <= CX + hw; x++) {
+        const fromLeft = x - (CX - hw)
+        const fromRight = CX + hw - x
+        const tone =
+          fromLeft === 0 || fromRight === 0
+            ? IRON.out
+            : fromLeft === 1
+              ? IRON.edge
+              : inHighlight(x, y)
+                ? IRON.mid
+                : IRON.body
+        P(x, y, tone)
       }
     }
 
-    if (g.perspective === 'side') {
-      // 4. the rim slab: flat, and deliberately narrower than the belly. It is
-      //    only a rim because the body is wider and the mound sits on it.
-      for (let y = g.yMouth; y < g.yTop; y++) {
-        const first = y === g.yMouth
-        for (let x = CX - g.mrx; x <= CX + g.mrx; x++) {
-          const end = x === CX - g.mrx || x === CX + g.mrx
-          P(x, y, end ? IRON.out : first ? IRON.edge : IRON.rim)
-        }
-      }
-
-      // 5. the brew, heaped over the lip. Each column has its own height and
-      //    wobbles, so the surface boils rather than sitting as a dome.
-      const cols = moundRef.current
-      for (let i = 0; i < cols.length; i++) {
-        const x = CX - g.moundW + i
-        const h = cols[i]
-        for (let k = 0; k < h; k++) {
-          const y = g.yMouth - 1 - k
-          P(x, y, k === h - 1 ? p.hot : k >= h - 2 ? p.lit : k === 0 ? p.deep : p.body)
-        }
-      }
-      // a wet band along the lip line, on the lit side
-      for (let x = CX - g.moundW + 1; x <= CX - Math.max(1, g.moundW - 4); x++) P(x, g.yMouth - 1, p.flash, 0.85)
-    } else {
-      // 4. the rim: an elliptical RING around the opening.
-      if (g.rimT > 0) {
-        for (let y = g.artTop; y <= g.yMouth + g.mry + g.rimT; y++) {
-          const outer = mouthHw(g, y, g.rimT)
-          if (outer < 2) continue // a 1px cap on the far arc reads as a spike
-          const inner = mouthHw(g, y)
-          for (let x = CX - outer; x <= CX + outer; x++) {
-            if (inner >= 0 && x >= CX - inner && x <= CX + inner) continue
-            const far = y < g.yMouth
-            const mid = g.rimTone === 'wall' ? IRON.body : IRON.rim
-            P(x, y, far && x < CX ? IRON.edge : far ? mid : x > CX + outer - 2 ? IRON.out : mid)
-          }
-        }
-      }
-
-      // 5. the brew, filling the opening ellipse. The far arc is the pot's
-      //    inner wall above the liquid line, which is what gives it depth.
-      for (let y = g.yMouth - g.mry; y <= g.yMouth + g.mry; y++) {
-        const hw = mouthHw(g, y)
-        if (hw < 0) continue
-        const b = (y - g.yMouth) / g.mry
-        for (let x = CX - hw; x <= CX + hw; x++) {
-          if (b < -0.55) {
-            P(x, y, p.shadow)
-            continue
-          }
-          const edgeX = x <= CX - hw + 1 || x >= CX + hw - 1
-          P(x, y, edgeX ? p.deep : b < -0.1 ? p.body : p.lit)
-        }
-      }
-      const sy = Math.round(g.yMouth + g.mry * 0.35)
-      const shw = mouthHw(g, sy)
-      if (shw > 4) for (let x = CX - shw + 2; x <= CX - Math.max(1, shw - 6); x++) P(x, sy, p.hot, 0.9)
+    // 3. the lip: a flat slab, overhanging the wall by a cell, with its ends
+    //    dropped into tabs. Narrower than the belly, which is what keeps it a
+    //    rim rather than a table.
+    for (let x = CX - LIP_HW; x <= CX + LIP_HW; x++) {
+      P(x, Y_LIP, x === CX + LIP_HW ? IRON.out : IRON.rimHi)
+      P(x, Y_LIP + 1, IRON.out)
+    }
+    for (const sx of [-1, 1]) {
+      P(CX + sx * LIP_HW, Y_TOP, IRON.rim)
+      P(CX + sx * (LIP_HW - 1), Y_TOP, IRON.rim)
     }
 
-    // 6. the boil: bubbles swelling and popping on the surface. The level-on
-    //    read has no visible surface - its boil IS the mound.
-    if (g.perspective === 'top') for (const b of bubblesRef.current) {
-      const t = b.age / b.life
-      if (t < 0.45) P(b.x, b.y, p.hot)
-      else if (t < 0.8) {
-        P(b.x, b.y, p.flash)
-        P(b.x + 1, b.y, p.hot)
-      } else {
-        P(b.x - 1, b.y, p.lit)
-        P(b.x + 1, b.y, p.lit)
+    // 4. brew running down the outside. This and the risers are the only
+    //    evidence it is boiling: the surface is never in view.
+    const lens = dripsRef.current
+    for (let i = 0; i < DRIPS.length; i++) {
+      const x = CX + DRIPS[i].dx
+      const len = lens[i]
+      for (let k = 0; k < len; k++) {
+        const y = Y_TOP + k
+        // a run is ONE cell wide. Lighting its neighbour too made every drip
+        // read as a bar rather than a trickle.
+        P(x, y, k === len - 1 ? p.flash : k === 0 ? p.body : p.lit)
       }
+      // only a run with some length beads at its end
+      if (len > 2) P(x + 1, Y_TOP + len - 1, p.lit, 0.85)
     }
-    // wet specular, so the surface reads as liquid rather than a flat disc
-    const sy = Math.round(g.yMouth + g.mry * 0.35)
-    const shw = mouthHw(g, sy)
-    if (shw > 4) for (let x = CX - shw + 2; x <= CX - Math.max(1, shw - 6); x++) P(x, sy, p.hot, 0.9)
 
-    // 7. risers: bubbles that have left the pot and are floating up
+    // 5. risers: round bubbles drifting up past the lip
     for (const r of risersRef.current) {
-      const fade = Math.max(0.5, 1 - r.age / r.life)
+      const fade = Math.max(0.45, 1 - r.age / r.life)
       const x = Math.round(r.x)
       const y = Math.round(r.y)
-      if (r.size <= 1) {
+      const s = r.size
+      if (s <= 1) {
         P(x, y, p.lit, fade)
-      } else if (r.size === 2) {
-        P(x, y, p.flash, fade)
+      } else if (s === 2) {
+        P(x, y, p.hot, fade)
         P(x + 1, y, p.lit, fade)
         P(x, y + 1, p.lit, fade)
         P(x + 1, y + 1, p.body, fade)
       } else {
-        P(x, y - 1, p.lit, fade)
-        P(x - 1, y, p.flash, fade)
-        P(x, y, p.hot, fade)
-        P(x + 1, y, p.lit, fade)
-        P(x - 1, y + 1, p.lit, fade)
-        P(x, y + 1, p.body, fade)
+        // a circle: square minus its corners, with the highlight at top-left
+        const r0 = s - 1
+        for (let dy = 0; dy <= r0; dy++) {
+          for (let dx = 0; dx <= r0; dx++) {
+            const corner = (dx === 0 || dx === r0) && (dy === 0 || dy === r0)
+            if (corner) continue
+            const hi = dx <= 1 && dy <= 1
+            const lo = dx >= r0 - 1 && dy >= r0 - 1
+            P(x + dx, y + dy, hi ? p.flash : lo ? p.body : p.lit, fade)
+          }
+        }
       }
     }
-  }, [palette, g])
+  }, [palette])
 
-  /** One simulation tick. Every pool is rebuilt rather than mutated in place:
-   *  these live behind refs, and mutating through a ref is what
-   *  react-hooks/immutability exists to stop. */
+  /** One tick. Pools are rebuilt rather than mutated: they live behind refs,
+   *  and mutating through a ref is what react-hooks/immutability exists to
+   *  stop. */
   const step = useCallback(() => {
     const heat = heatLevel()
 
-    // the mound: each column random-walks under its envelope, so the heap
-    // churns instead of sitting still. Hotter pushes the floor up.
-    if (g.perspective === 'side') {
-      const n = g.moundW * 2 + 1
-      const floor = heat === 2 ? 0.8 : heat === 1 ? 0.55 : 0.35
-      const prev = moundRef.current.length === n ? moundRef.current : new Array<number>(n).fill(1)
-      const next = prev.map((h, i) => {
-        const cap = moundCap(g, i - g.moundW)
-        if (cap === 0) return 0
-        const lo = Math.max(1, Math.round(cap * floor))
-        return Math.max(lo, Math.min(cap, h + (Math.random() < 0.5 ? -1 : 1)))
-      })
-      // pair the columns up: at one cell each the heap's top edge reads as a
-      // comb, where the reference is chunky two-cell blocks
-      for (let i = 0; i + 1 < n; i += 2) next[i + 1] = next[i]
-      moundRef.current = next
-    }
-
-    // surface bubbles, scattered across the visible brew
-    const bubbles = bubblesRef.current
-      .map((b) => ({ ...b, age: b.age + 1 }))
-      .filter((b) => b.age <= b.life)
-    const wantB = heat === 2 ? 10 : heat === 1 ? 7 : 5
-    for (let i = bubbles.length; i < wantB; i++) {
-      const y = Math.round(g.yMouth + (Math.random() * 0.9 - 0.25) * g.mry)
-      const hw = Math.max(1, mouthHw(g, y) - 2)
-      bubbles.push({
-        x: CX + Math.round((Math.random() * 2 - 1) * hw),
-        y,
-        age: 0,
-        life: heat === 2 ? 4 : 6 + Math.floor(Math.random() * 4),
-      })
-    }
-    bubblesRef.current = bubbles
+    // drips creep down and get pulled back up, faster and further when hot
+    const floor = heat === 2 ? 0.85 : heat === 1 ? 0.6 : 0.4
+    dripsRef.current = dripsRef.current.map((len, i) => {
+      const max = DRIPS[i].max + (heat === 2 ? 2 : 0)
+      // never one cell: a lone run is just its own pale tip, which reads as
+      // a stray white pixel rather than as brew
+      const lo = Math.max(2, Math.round(max * floor))
+      const move = Math.random() < (heat === 2 ? 0.55 : 0.3) ? (Math.random() < 0.5 ? -1 : 1) : 0
+      return Math.max(lo, Math.min(max, len + move))
+    })
 
     // At most one new riser per tick: refilling the pool in one go would
     // launch them in lockstep and they would climb as a rank rather than
     // detaching one at a time.
     const risers = risersRef.current
-      .map((r) => ({ ...r, age: r.age + 1, y: r.y - 0.85, x: r.x + r.drift * 0.28 }))
-      .filter((r) => r.age <= r.life && r.y > -3)
-    const wantR = heat === 2 ? 8 : heat === 1 ? 6 : 4
-    if (risers.length < wantR && Math.random() < 0.5) {
+      .map((r) => ({ ...r, age: r.age + 1, y: r.y - 0.8, x: r.x + r.drift * 0.25 }))
+      .filter((r) => r.age <= r.life && r.y > -5)
+    const want = heat === 2 ? 9 : heat === 1 ? 7 : 5
+    if (risers.length < want && Math.random() < 0.55) {
       const roll = Math.random()
       risers.push({
-        x: CX + (Math.random() * 2 - 1) * Math.max(1, (g.perspective === 'side' ? g.moundW : g.mrx) - 2),
-        y: g.artTop - 1,
-        size: roll < 0.34 ? 1 : roll < 0.74 ? 2 : 3,
+        x: CX + (Math.random() * 2 - 1) * (LIP_HW - 4),
+        // two clear of the lip: spawning on it made bubbles look stuck to the
+        // slab rather than already free of the pot
+        y: ART_TOP - 3,
+        size: roll < 0.3 ? 1 : roll < 0.65 ? 2 : 3,
         drift: Math.random() < 0.5 ? -1 : 1,
         age: 0,
-        life: heat === 2 ? 11 : 9 + Math.floor(Math.random() * 5),
+        life: heat === 2 ? 13 : 11 + Math.floor(Math.random() * 5),
       })
     }
     risersRef.current = risers
-  }, [heatLevel, g])
+  }, [heatLevel])
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      setFlare(on: boolean) {
-        flareRef.current = on
-      },
-      surge() {
-        surgeUntilRef.current = performance.now() + SURGE_MS
-      },
-      getElement() {
-        return wrapRef.current
-      },
-      getAnchor() {
-        const el = wrapRef.current
-        if (!el) return null
-        const r = el.getBoundingClientRect()
-        // the canvas is bottom-aligned in the wrapper, so measure the mouth up
-        // from the bottom edge rather than down from a top that isn't the art's
-        return {
-          x: r.left + r.width / 2,
-          y: r.bottom - (ROWS - g.yMouth - 0.5) * PX,
-          rx: (g.perspective === 'side' ? g.mrx : g.mrx) * PX,
-        }
-      },
-    }),
-    [g]
-  )
+  useImperativeHandle(ref, () => ({
+    setFlare(on: boolean) {
+      flareRef.current = on
+    },
+    surge() {
+      surgeUntilRef.current = performance.now() + SURGE_MS
+    },
+    getElement() {
+      return wrapRef.current
+    },
+    getAnchor() {
+      const el = wrapRef.current
+      if (!el) return null
+      const r = el.getBoundingClientRect()
+      // the canvas is bottom-aligned in the wrapper, so measure the lip up
+      // from the bottom edge rather than down from a top that isn't the art's
+      return {
+        x: r.left + r.width / 2,
+        y: r.bottom - (ROWS - Y_LIP - 0.5) * PX,
+        rx: LIP_HW * PX,
+      }
+    },
+  }))
 
   // Boil only while on screen (the character sheet scrolls on handhelds).
   useEffect(() => {
@@ -579,7 +352,7 @@ const PixelCauldron = forwardRef<GemSinkHandle, { variant?: CauldronVariant }>(f
     // Reduced motion gets one settled frame and no loop: the pot is still a
     // pot, it just isn't boiling at anyone.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      for (let i = 0; i < 12; i++) step()
+      for (let i = 0; i < 14; i++) step()
       paint()
       return
     }
@@ -608,7 +381,7 @@ const PixelCauldron = forwardRef<GemSinkHandle, { variant?: CauldronVariant }>(f
     <div
       ref={wrapRef}
       className="ch-cauldron"
-      style={{ width: COLS * PX, height: visualH }}
+      style={{ width: COLS * PX, height: VISUAL_H }}
       aria-hidden="true"
     >
       <canvas
