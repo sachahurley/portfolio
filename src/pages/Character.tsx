@@ -4,9 +4,10 @@
  * Diablo-2-inspired. Identity (avatar, name, level, XP) is the page's own
  * header, unframed above the grid. Below it, three equal-height columns on
  * wide screens: stats + theme, the paperdoll, and the pack (with any
- * unopened chests); two columns on tablets, one on phones. The theme block
- * - the earned gems and the cauldron they get dropped into - rides in the
- * stats card rather than a full-width band under everything.
+ * unopened chests); two columns on tablets, one on phones. Stats and theme
+ * are two cards sharing the left column, so it still fills to one height
+ * beside the others. The theme card carries the earned gems and the hearth
+ * they get dropped into, rather than a full-width band under everything.
  * Tapping a worn paperdoll item opens its card (the way to unequip);
  * empty slots are inert labels. Tapping a pack item opens a card that
  * compares it against what's worn, and the stats preview the swap. Chests open in place with an impact burst and a reveal modal. Not a
@@ -228,7 +229,7 @@ export default function Character() {
             />
           </section>
 
-          {/* Theme: the gems earned by levelling, and the pot that applies
+          {/* Theme: the gems earned by levelling, and the fire that applies
               them. Level and XP live in the page header, so nothing here
               repeats them. */}
           <section className="ch-panel ch-theme" aria-label="Site theme">
