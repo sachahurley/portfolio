@@ -62,24 +62,26 @@ const Y_BELLY = Y_TOP + 8 // widest at mid-height
 /* ---- the open mouth ----
    Well inside the wall. At TOP_HW - 1 it left a single cell of iron either
    side and the brew read as a bowl balanced on the pot rather than as
-   something inside it. RIM_T is the ring's thickness, not a slab. */
+   something inside it.
+   Only the NEAR half of the ellipse is drawn: its widest row is the wall's
+   top row, so the brew runs right to the pot's edge and there is no arc of
+   iron standing behind it. */
 const MRX = 8
-const MRY = 2.4
-const RIM_T = 2
+const MRY = 2.6
 const Y_MOUTH = Y_TOP
-const ART_TOP = Math.floor(Y_MOUTH - MRY - RIM_T)
+const ART_TOP = Y_TOP // steam rises above this and spills outside the box
 const VISUAL_H = (ROWS - ART_TOP) * PX
 
 /** Four curled feet, at the offsets the reference puts them. */
 const FEET = [-9, -4, 4, 9]
 
 /** Where brew runs down the outside, and how far each one reaches. */
-const DRIPS = [
-  { dx: -8, max: 3 },
-  { dx: -3, max: 7 }, // the long one
-  { dx: 4, max: 4 },
-  { dx: 8, max: 3 },
-]
+/** One run of brew down the outside. Four of them read as a leaking pot. */
+const DRIPS = [{ dx: -2, max: 8 }]
+
+/** Steam off the surface: fixed wisps whose phase scrolls upward. */
+const STEAM_X = [-4, 0, 4]
+const STEAM_MAX = 8
 
 const FRAME_MS = 110
 const SURGE_MS = 850
@@ -130,11 +132,11 @@ function mouthHw(y: number, grow = 0): number {
   return Math.round((MRX + grow) * Math.sqrt(1 - b * b))
 }
 
-/** The two soft highlights the reference puts on the iron. */
+/** One soft highlight, on the lit side. The reference carries a second on the
+ *  right, but with a single light source up the left edge it read as a smudge
+ *  rather than as a reflection. */
 function inHighlight(x: number, y: number): boolean {
-  const a = ((x - (CX - 7)) / 3.6) ** 2 + ((y - (Y_BELLY + 1)) / 4) ** 2
-  const b = ((x - (CX + 5)) / 3) ** 2 + ((y - (Y_BELLY + 1)) / 3.4) ** 2
-  return a <= 1 || b <= 1
+  return ((x - (CX - 6)) / 4) ** 2 + ((y - (Y_BELLY + 1)) / 4.4) ** 2 <= 1
 }
 
 interface Bubble {
@@ -154,6 +156,8 @@ const PixelCauldron = forwardRef<GemSinkHandle>(function PixelCauldron(_props, r
   const bubblesRef = useRef<Bubble[]>([])
   const dripsRef = useRef<number[]>(DRIPS.map((d) => Math.round(d.max * 0.6)))
   const emberRef = useRef<number[][]>([])
+  const steamRef = useRef(0)
+  const steamHRef = useRef<number[]>(STEAM_X.map(() => 5))
   const [visible, setVisible] = useState(false)
 
   const { activeGem } = useXp()
@@ -168,6 +172,7 @@ const PixelCauldron = forwardRef<GemSinkHandle>(function PixelCauldron(_props, r
       lit: accent,
       hot: shade(accent, 0.45),
       flash: shade(accent, 0.8),
+      steam: shade(accent, 0.86),
       ember: [
         null,
         shade(accent, -0.75),
@@ -259,37 +264,20 @@ const PixelCauldron = forwardRef<GemSinkHandle>(function PixelCauldron(_props, r
       }
     }
 
-    // 4. the rim: the FAR arc only, an elliptical ring rising behind the brew.
-    //    The near arc is not drawn - the wall is already the front edge of the
-    //    pot, and ringing it too laid a black band across the shoulder.
-    //    Not a slab across the top either: that read as a lid.
-    for (let y = ART_TOP; y < Y_MOUTH; y++) {
-      const outer = mouthHw(y, RIM_T)
-      if (outer < 2) continue
-      const inner = mouthHw(y)
-      for (let x = CX - outer; x <= CX + outer; x++) {
-        if (inner >= 0 && x >= CX - inner && x <= CX + inner) continue
-        P(x, y, x < CX ? IRON.edge : IRON.rim)
-      }
-    }
-
-    // 5. the brew, in plain view. The far arc is the pot's inner wall above
-    //    the liquid line, which is what gives the mouth depth.
-    for (let y = Y_MOUTH - MRY; y <= Y_MOUTH + MRY; y++) {
+    // 4. the brew, in plain view. Only the near half of the ellipse: its
+    //    widest row is the wall's top row, so the surface runs right to the
+    //    pot's edge with no arc of iron standing behind it.
+    for (let y = Y_MOUTH; y <= Y_MOUTH + MRY; y++) {
       const hw = mouthHw(y)
       if (hw < 0) continue
-      const b = (y - Y_MOUTH) / MRY
+      const b = (y - Y_MOUTH) / MRY // 0 at the far edge, 1 at the near one
       for (let x = CX - hw; x <= CX + hw; x++) {
-        if (b < -0.55) {
-          P(x, y, p.shadow)
-          continue
-        }
         const edgeX = x <= CX - hw + 1 || x >= CX + hw - 1
-        P(x, y, edgeX ? p.deep : b < -0.1 ? p.body : p.lit)
+        P(x, y, edgeX ? p.deep : b < 0.25 ? p.body : p.lit)
       }
     }
 
-    // 6. the boil, on the surface you can now see
+    // 5. the boil, on the surface you can now see
     for (const b of bubblesRef.current) {
       const t = b.age / b.life
       if (t < 0.45) P(b.x, b.y, p.hot)
@@ -306,7 +294,7 @@ const PixelCauldron = forwardRef<GemSinkHandle>(function PixelCauldron(_props, r
     const shw = mouthHw(sy)
     if (shw > 4) for (let x = CX - shw + 2; x <= CX - Math.max(1, shw - 6); x++) P(x, sy, p.hot, 0.9)
 
-    // 7. brew running down the outside. With a fire under it, boiling over is
+    // 6. brew running down the outside. With a fire under it, boiling over is
     //    the point.
     const lens = dripsRef.current
     for (let i = 0; i < DRIPS.length; i++) {
@@ -319,6 +307,23 @@ const PixelCauldron = forwardRef<GemSinkHandle>(function PixelCauldron(_props, r
         P(x, from + k, k === len - 1 ? p.flash : k === 0 ? p.body : p.lit)
       }
       if (len > 2) P(x + 1, from + len - 1, p.lit, 0.85)
+    }
+
+    // 7. steam: wisps off the surface, drifting as they rise. Drawn above
+    //    ART_TOP, so they spill outside the wrapper as transparent pixels
+    //    exactly the way PixelFire's headroom rows did.
+    const phase = steamRef.current
+    const heights = steamHRef.current
+    for (let i = 0; i < STEAM_X.length; i++) {
+      const base = CX + STEAM_X[i]
+      const h = heights[i]
+      for (let k = 0; k < h; k++) {
+        const y = Y_MOUTH - 1 - k
+        // a full wave over the wisp's height: at a lower frequency each one
+        // only shows part of a period and reads as a diagonal streak
+        const x = base + Math.round(Math.sin((k + phase * 0.5 + i * 2.1) * 0.95) * 1.3)
+        P(x, y, p.steam, Math.max(0.12, 0.5 * (1 - k / h)))
+      }
     }
   }, [palette])
 
@@ -364,6 +369,14 @@ const PixelCauldron = forwardRef<GemSinkHandle>(function PixelCauldron(_props, r
       })
     }
     bubblesRef.current = bubbles
+
+    // steam scrolls up; each wisp's height wanders under a ceiling that
+    // rises with the heat
+    steamRef.current += 1
+    const smax = heat === 2 ? STEAM_MAX + 3 : heat === 1 ? STEAM_MAX + 1 : STEAM_MAX
+    steamHRef.current = steamHRef.current.map((h) =>
+      Math.max(3, Math.min(smax, h + (Math.random() < 0.35 ? (Math.random() < 0.5 ? -1 : 1) : 0)))
+    )
 
     // drips creep down and get pulled back up, further when hot
     const floor = heat === 2 ? 0.85 : heat === 1 ? 0.6 : 0.4
