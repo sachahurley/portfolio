@@ -23,6 +23,7 @@
  */
 
 import { CATALOG, type VillagePart } from './catalog.gen'
+import { SITE_PARTS } from './siteParts'
 
 export const GAP = 4
 export const ROWGAP = 10
@@ -74,9 +75,10 @@ export interface Bitmap {
   px: Uint8Array
 }
 
-// ---- part registry: catalog + synthesized *_inv twins for 'upper' parts
+// ---- part registry: catalog + the site's own parts + synthesized *_inv
+// twins for 'upper' parts
 const parts = new Map<string, VillagePart>()
-for (const p of CATALOG) parts.set(p.name, p)
+for (const p of [...CATALOG, ...SITE_PARTS]) parts.set(p.name, p)
 for (const p of CATALOG) {
   if (p.cat === 'upper') {
     parts.set(p.name + '_inv', {

@@ -46,7 +46,9 @@ export const VILLAGE_HOME: VillageItem[] = [
   { tree: { canopy: 'canopy_pine', trunk: 'trunk_stump', height: 2 } },
   { part: 'mushroom', gap: 2 },
   {
-    part: 'potion',
+    // one size up from the catalog's potion (siteParts.ts): the 11x12
+    // original read small beside the home grid's other icons
+    part: 'potion_lg',
     lift: 3,
     tap: { label: 'Lab', href: '/lab', style: 'invert' },
   },
