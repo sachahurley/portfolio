@@ -1,10 +1,14 @@
 /**
- * CharacterPanel, the identity block of the character screen. Avatar
- * (click to open the appearance modal: figure + ink), editable
- * name (random RPG default; commits on blur or Enter), level + title + XP
- * bar, and the level chest (an unclaimed level-up) that opens the
- * celebration modal; the same chest also waits in the pack. Progress
- * saves automatically, so nothing here is a save button.
+ * CharacterHeader, the character screen's title block. Avatar (click to open
+ * the appearance modal: figure + ink), editable name (random RPG default;
+ * commits on blur or Enter), level + title + XP bar, and the level chest (an
+ * unclaimed level-up) that opens the celebration modal; the same chest also
+ * waits in the pack. Progress saves automatically, so nothing here is a save
+ * button.
+ *
+ * Unframed and above the grid, not a fourth card: identity is the page's
+ * title, not a stat. A 2px rule across the sheet sitting 24px above three
+ * card tops would only double the grid's own borders.
  */
 
 import { useState } from 'react'
@@ -15,7 +19,7 @@ import ChestSignal from './ChestSignal'
 import PortraitPlate from './PortraitPlate'
 import { Input } from '@scorp-ds/components'
 
-export default function CharacterPanel() {
+export default function CharacterHeader() {
   const {
     xp,
     level,
@@ -33,8 +37,8 @@ export default function CharacterPanel() {
   }
 
   return (
-    <section className="cs" aria-label="Character sheet">
-      <div className="cs-top">
+    <header className="ch-header" aria-label="Character">
+      <div className="ch-header-top">
         <div className="gf-label">character</div>
         {pendingLevels.length > 0 && (
           <button
@@ -49,7 +53,7 @@ export default function CharacterPanel() {
         )}
       </div>
 
-      <div className="cs-head">
+      <div className="ch-header-row">
         <button
           className="cs-avatarbtn"
           onClick={() => setPicking(true)}
@@ -57,10 +61,12 @@ export default function CharacterPanel() {
           aria-label="Change appearance"
           title="Change appearance"
         >
-          <PortraitPlate seed={avatarSeed} cell={4} ink={inkColor(avatarInk)} />
+          {/* one tier up from the paperdoll cell: cell 6 is a 72px figure in
+              the 96px well, and integer scales only or the 1-bit mask blurs */}
+          <PortraitPlate seed={avatarSeed} cell={6} ink={inkColor(avatarInk)} large />
         </button>
 
-        <div className="cs-id">
+        <div className="ch-header-id">
           {/* Uncontrolled on purpose: keyed by the saved name, committed on
               blur/Enter, so half-typed names never hit the save. */}
           <Input
@@ -94,6 +100,6 @@ export default function CharacterPanel() {
       </div>
 
       <AvatarModal isOpen={picking} onClose={() => setPicking(false)} />
-    </section>
+    </header>
   )
 }
