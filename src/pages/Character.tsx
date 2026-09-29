@@ -30,7 +30,7 @@ import { usePageTitle } from '../lib/usePageTitle'
 import { THEMES } from '../lib/themes'
 import { runImpact } from '../lib/impactFx'
 import CharacterHeader from '../components/game/CharacterHeader'
-import PixelCauldron from '../components/game/PixelCauldron'
+import PixelGemSink from '../components/game/PixelGemSink'
 import ChestRevealModal from '../components/ChestRevealModal'
 import DestroyConfirmModal from '../components/game/DestroyConfirmModal'
 import ItemCard from '../components/game/ItemCard'
@@ -80,7 +80,7 @@ export default function Character() {
   // Destroy is gated by a confirm modal stacked over the item card.
   const [confirmingDestroy, setConfirmingDestroy] = useState(false)
   const navigate = useNavigate()
-  // The cauldron in the stats card is the gem drop target.
+  // The sink in the theme card is the gem drop target.
   const cauldronRef = useRef<GemSinkHandle>(null)
   // Paperdoll slot elements, the anchor for the equip impact.
   const slotRefs = useRef<Partial<Record<Slot, HTMLElement | null>>>({})
@@ -235,10 +235,10 @@ export default function Character() {
             <div className="gf-label">theme</div>
             <div className="gf-dim ch-helper">
               Wearing <span className="ch-wearing">{THEMES[activeGem].name}</span>. Each gem you
-              earn recolors the site; drop one in the pot to change.
+              earn recolors the site; drop one in to change.
             </div>
             <GemShelf sinkRef={cauldronRef} />
-            <PixelCauldron ref={cauldronRef} />
+            <PixelGemSink ref={cauldronRef} />
           </section>
         </div>
 

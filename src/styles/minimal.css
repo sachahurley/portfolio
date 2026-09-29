@@ -995,15 +995,14 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
   }
   .ch-col-left > .ch-theme { order: 0; }
 }
-/* the pot is the card's subject: centre it, and give the gems a runway above.
-   The 40px gap is what useGemDrag's GRAVITY_MIN_PULL and HIT_PAD_ABOVE are
-   tuned against - closing it makes a twitch read as a drop. The cauldron is
-   position: relative because its canvas is taller than its layout box and
-   bottom-aligns inside it (the rising bubbles hang outside, deliberately:
-   useGemDrag hit-tests this box, not the canvas). */
+/* the sink is the card's subject: centre it, and give the gems a runway
+   above. The 40px gap is what useGemDrag's GRAVITY_MIN_PULL and
+   HIT_PAD_ABOVE are tuned against - closing it makes a twitch read as a
+   drop. position: relative because the canvas absolutely positions inside
+   this box, and useGemDrag hit-tests the box rather than the canvas. */
 .ch-theme { display: flex; flex-direction: column; }
 .ch-theme .gem-track { justify-content: center; }
-.ch-cauldron {
+.ch-gemsink {
   position: relative; margin: 40px auto 0;
   /* The canvas is taller than this box and overhangs it upward, so at some
      sizes it lies over the gem sockets. It is decoration - the drop is
@@ -1621,8 +1620,10 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 .cauldron-alt-desc { font-size: 12px; color: var(--mut); line-height: 1.6; margin: 6px 0 0; }
 .cauldron-alt-stage {
   display: flex; align-items: flex-end; justify-content: center;
-  min-height: 190px; margin-top: 20px;
+  min-height: 170px; margin-top: 20px;
   border-bottom: 1px solid var(--border);
 }
+/* the hearth is fluid: it must be handed the stage's width, not hug */
+.cauldron-alt-stage > .ch-gemsink { flex: 0 1 auto; }
 .cauldron-zoom { min-height: 250px; }
-.cauldron-zoom .ch-cauldron { transform: scale(2); transform-origin: bottom center; }
+.cauldron-zoom .ch-gemsink { transform: scale(2); transform-origin: bottom center; }
