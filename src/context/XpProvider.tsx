@@ -683,6 +683,8 @@ export function XpProvider({ children }: { children: ReactNode }) {
   return <XpContext.Provider value={value}>{children}</XpContext.Provider>
 }
 
+// The hook reads the provider's private context, so they live together.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useXp(): XpValue {
   const ctx = useContext(XpContext)
   if (!ctx) throw new Error('useXp must be used within XpProvider')

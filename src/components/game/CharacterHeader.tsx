@@ -38,6 +38,7 @@ export default function CharacterHeader() {
 
   return (
     <header className="ch-header" aria-label="Character">
+      <h1 className="sr-only">Character</h1>
       <div className="ch-header-top">
         <div className="gf-label">character</div>
         {pendingLevels.length > 0 && (

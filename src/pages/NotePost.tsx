@@ -18,7 +18,7 @@ import { usePageTitle } from '../lib/usePageTitle'
 export default function NotePost() {
   const { slug } = useParams<{ slug: string }>()
   const post = slug ? getPostBySlug(slug) : undefined
-  usePageTitle(post?.title)
+  usePageTitle(post?.title, post?.excerpt)
   const { award } = useXp()
 
   useEffect(() => {

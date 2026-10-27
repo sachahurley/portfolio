@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- Source for public/og.png, the 1200x630 share card. Rendered by
+     scripts/bake-og.mjs; paths are relative to this file. Colors are the
+     default theme's: page #1A150F, frame/body sepia #BFB4A3, accent #E0A26A. -->
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face {
+    font-family: 'Fragment Mono';
+    src: url('../../node_modules/@fontsource/fragment-mono/files/fragment-mono-latin-400-normal.woff2') format('woff2');
+  }
+  html, body { margin: 0; width: 1200px; height: 630px; background: #1a150f; overflow: hidden; }
+  .frame {
+    position: absolute; inset: 0;
+    /* the site's dithered frame: a 4px checker band */
+    background: repeating-conic-gradient(#bfb4a3 0 25%, #1a150f 0 50%) 0 0 / 8px 8px;
+  }
+  .inner {
+    position: absolute; inset: 24px; background: #1a150f;
+    display: flex; flex-direction: column; justify-content: center; padding: 0 96px;
+    font-family: 'Fragment Mono', monospace; font-weight: 400;
+  }
+  .mark { width: 492px; height: 249px; image-rendering: pixelated; display: block; }
+  .role { margin: 40px 0 0; color: #e0a26a; font-size: 36px; letter-spacing: .02em; }
+  .url { margin: 16px 0 0; color: #968a75; font-size: 24px; }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+  <div class="inner">
+    <img class="mark" src="../../public/dither/sacha-hurley-block.png" alt="" />
+    <p class="role">Product design engineer</p>
+    <p class="url">sacha.cool</p>
+  </div>
+</body>
+</html>

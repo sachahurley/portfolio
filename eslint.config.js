@@ -6,7 +6,8 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // vendor/ is committed scorp-ds build output (see CLAUDE.md), not source
+  globalIgnores(['dist', 'vendor']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

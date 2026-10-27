@@ -19,6 +19,7 @@ export interface LabItem {
   demo?: 'reactive-grid' | 'dot-loader' | 'dither-toy' | 'tile-atlas' // Which live demo to render, if any
   body?: string    // Longer write-up for the detail page (can accompany a demo)
   externalUrl?: string // Link out (repo or live tool), rendered as a CTA on the detail page
+  workshop?: boolean // A bench this site's own art is built on; listed under "workshop"
   image?: string   // Artwork shown on the detail page (path under public/)
   imageAlt?: string // Alt text for that artwork
   lock?: {
@@ -50,24 +51,28 @@ export const lab: LabItem[] = [
   {
     // Rendered by the dedicated WordmarkLab page, not the LabItem template
     slug: 'wordmark',
+    workshop: true,
     title: 'Wordmark lab',
     desc: 'Six tunings of the welcome title dither, straight from the Dither Studio values.',
   },
   {
     // Rendered by the dedicated TownLab page, not the LabItem template
     slug: 'town',
+    workshop: true,
     title: 'Town lab',
     desc: 'A gothic isometric town where every building is a section of the site.',
   },
   {
     // Rendered by the dedicated BuilderLab page, not the LabItem template
     slug: 'builder',
+    workshop: true,
     title: 'Builder lab',
     desc: 'A workshop for the town’s isometric buildings: shapes, roofs, and three 1-bit styles.',
   },
   {
     // Rendered by the dedicated VillageLab page, not the LabItem template
     slug: 'village',
+    workshop: true,
     title: 'Village kit',
     desc: 'A modular 1-bit pixel village builder with 124 parts, stackers, and recipe export.',
   },
