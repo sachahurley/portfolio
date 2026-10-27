@@ -1,5 +1,5 @@
 /**
- * usePageTitle — per-route document titles and descriptions for the SPA.
+ * usePageTitle: per-route document titles and descriptions for the SPA.
  *
  * "Page · Sacha Hurley" on sub-pages, bare "Sacha Hurley" on home. Detail
  * pages pass the entity title (project/note/lab names) and its one-line
