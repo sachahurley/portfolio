@@ -2,12 +2,14 @@
 
 Plaintext sources for password-locked projects. Each `<slug>.json` here holds
 the case-study body for the project with that slug in `src/data/projects.ts`
-(the project entry itself has `locked: true` and no `blocks`).
+(the project entry itself has `locked: true` and no `caseStudy`; its title and
+`longDescription` stay public as the teaser and become the page's title and
+summary once unlocked).
 
-Shape:
+Shape (`SealedCaseStudy`: a scorp-ds `CaseStudy` without title and summary):
 
 ```json
-{ "blocks": [ /* ProjectBlock[], same vocabulary as projects.ts */ ] }
+{ "caseStudy": { "meta": [], "outcomes": [], "sections": [ { "kicker": "overview", "title": "...", "blocks": [] } ] } }
 ```
 
 ## The lock loop

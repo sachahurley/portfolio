@@ -2,11 +2,12 @@
  * detailNav — the global detail-page chain: every project, lab experiment,
  * and note in site order (projects -> lab -> notes; notes newest-first,
  * matching the lists). Powers the prev/next pager at the bottom of the
- * detail pages. All projects are in the chain, external ones included —
- * their detail page houses the link out.
+ * detail pages. All listed projects are in the chain, external ones included
+ * (their detail page houses the link out); unlisted ones are not, so an
+ * unlisted page shows no pager.
  */
 
-import { projects } from '../data/projects'
+import { getListedProjects } from '../data/projects'
 import { lab } from '../data/lab'
 import { getSortedPosts } from '../data/posts'
 
@@ -23,7 +24,7 @@ export type DetailEntry = {
 
 export function getDetailChain(): DetailEntry[] {
   return [
-    ...projects.map((p) => ({
+    ...getListedProjects().map((p) => ({
       section: 'projects' as const,
       slug: p.slug,
       title: p.title,

@@ -1,9 +1,10 @@
 /**
  * Project detail (/projects/:slug)
  *
- * Back button + title + role meta + body. Projects with a `blocks` array
- * render the extended case-study layout (ProjectBlocks); the rest get the
- * simple prose template. External projects keep a "View project ↗" CTA.
+ * Back button, then either a full case study (ProjectCaseStudy, which draws
+ * its own title) for projects with a `caseStudy` or an unlocked sealed one,
+ * or the plain title + role meta + simple prose template. External projects
+ * keep a "View project ↗" CTA.
  */
 
 import { useEffect } from 'react'
@@ -11,7 +12,7 @@ import { useParams } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
 import BackButton from '../components/BackButton'
 import PagerNav from '../components/PagerNav'
-import ProjectBlocks from '../components/ProjectBlocks'
+import ProjectCaseStudy from '../components/ProjectCaseStudy'
 import { getProjectBySlug } from '../data/projects'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
 import NotFound from './NotFound'
@@ -55,44 +56,57 @@ export default function ProjectDetail() {
 
   if (!project) return <NotFound />
 
+  // The case study to draw, if any: a sealed one once unlocked (its public
+  // teaser supplies the title and summary), or the project's own.
+  const study =
+    project.locked && vault.status === 'unlocked'
+      ? {
+          title: project.title,
+          summary: project.longDescription || project.description,
+          ...vault.study,
+        }
+      : !project.locked && project.caseStudy
+        ? { title: project.title, ...project.caseStudy }
+        : undefined
+
   return (
     <MinimalPage>
       <BackButton fallback="/projects" />
-      <h1 className="page">{project.title}</h1>
-      {project.role && <div className="meta" style={{ marginTop: 4 }}>{project.role}</div>}
+      {study ? (
+        <ProjectCaseStudy study={study} />
+      ) : (
+        <>
+          <h1 className="page">{project.title}</h1>
+          {project.role && <div className="meta" style={{ marginTop: 4 }}>{project.role}</div>}
+        </>
+      )}
 
-      {project.locked ? (
-        // Explicit locked branch: a locked project has no `blocks`, so
+      {study ? null : project.locked ? (
+        // Explicit locked branch: a locked project has no `caseStudy`, so
         // without this it would fall into the placeholder prose template.
-        vault.status === 'unlocked' ? (
-          <ProjectBlocks blocks={vault.blocks} />
-        ) : (
-          <>
-            {(project.longDescription || project.description) && (
-              <p className="lead" style={{ marginTop: 16 }}>
-                {project.longDescription || project.description}
-              </p>
-            )}
-            <LockGate
-              kicker="sealed"
-              hint="enter the password to unlock"
-              inputType="password"
-              busy={vault.status === 'checking'}
-              error={vault.status === 'locked' && vault.error ? 'that\'s not it' : undefined}
-              fails={vault.fails}
-              onSubmit={vault.submit}
-            >
-              {/* the redacted body: hatched placeholder bars until unlocked */}
-              <div className="vault-redacted" aria-hidden="true">
-                <div className="vault-hatch" />
-                <div className="vault-hatch" />
-                <div className="vault-hatch" />
-              </div>
-            </LockGate>
-          </>
-        )
-      ) : project.blocks ? (
-        <ProjectBlocks blocks={project.blocks} />
+        <>
+          {(project.longDescription || project.description) && (
+            <p className="lead" style={{ marginTop: 16 }}>
+              {project.longDescription || project.description}
+            </p>
+          )}
+          <LockGate
+            kicker="sealed"
+            hint="enter the password to unlock"
+            inputType="password"
+            busy={vault.status === 'checking'}
+            error={vault.status === 'locked' && vault.error ? 'that\'s not it' : undefined}
+            fails={vault.fails}
+            onSubmit={vault.submit}
+          >
+            {/* the redacted body: hatched placeholder bars until unlocked */}
+            <div className="vault-redacted" aria-hidden="true">
+              <div className="vault-hatch" />
+              <div className="vault-hatch" />
+              <div className="vault-hatch" />
+            </div>
+          </LockGate>
+        </>
       ) : (
         <div className="prose">
           <div className="thumb" />
