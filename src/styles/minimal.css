@@ -1,5 +1,4 @@
-/* ============================================================
-   Minimal mode — ported from sacha-minimal-prototype.html
+/* =====================================================   Minimal mode — ported from sacha-minimal-prototype.html
    Layout/spacing kept verbatim; every color routed through the
    Minimal-mode token aliases defined in index.css (which trace
    back to scorp-ds). Excluded from the prototype: the cube hero
@@ -353,6 +352,54 @@ strong, b { font-weight: 400; }
   .quest-card--side.quest-card--portrait { grid-template-columns: 88px minmax(0, 1fr); }
   .quest-card--side-right.quest-card--portrait { grid-template-columns: minmax(0, 1fr) 88px; }
 }
+=======
+/* Home shortcuts lab (pages/HomeShortcutsLab.tsx): apps, shortcuts and
+   widgets on the home grid. Lab-only until a layout is chosen. */
+.hs-em { font-style: normal; color: var(--fg); }
+.hs-screen { border: 1px dashed var(--border); padding: 24px 16px; }
+.hs-grid { display: grid; gap: 20px 8px; justify-items: center; }
+.hs-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hs-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.hs-tile {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  background: none; border: 0; padding: 4px; cursor: pointer; font: inherit;
+}
+.hs-icon { position: relative; display: block; color: var(--body); line-height: 0; }
+.hs-badge {
+  position: absolute; right: -10px; top: -6px; line-height: 1;
+  font-size: 12px; color: var(--accent);
+}
+.hs-label { font-size: 12px; color: var(--accent); white-space: nowrap; }
+@media (hover: hover) { .hs-tile:hover .hs-icon { color: var(--fg); } }
+.hs-rule { border: 0; border-top: 1px solid var(--border); margin: 28px 0; }
+.hs-rule-label {
+  border-top: 1px solid var(--border); margin: 28px 0 20px; padding-top: 10px;
+  color: var(--mut); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.hs-rowlabel {
+  margin: 28px 0 16px; color: var(--mut); font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.hs-widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.hs-widget {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px;
+  background: var(--surface-muted); border: 0; text-align: left; cursor: pointer; font: inherit;
+}
+.hs-widget--wide { grid-column: span 2; justify-self: stretch; }
+.hs-widget-art { flex: none; color: var(--body); line-height: 0; }
+.hs-widget-thumb { flex: none; width: 96px; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.hs-widget-text { display: block; min-width: 0; flex: 1; }
+.hs-widget-kicker { display: block; color: var(--mut); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+.hs-widget-title { display: block; color: var(--fg); font-size: 14px; }
+.hs-widget-sub { display: block; color: var(--body); font-size: 12px; margin-top: 2px; }
+.hs-widget .gf-xpbar { display: block; margin-top: 8px; }
+.hs-widget .gf-xpfill { display: block; }
+@media (hover: hover) { .hs-widget:hover .hs-widget-title { color: var(--accent); } }
+.hs-menu { max-width: 280px; }
+.hs-menu-row { display: flex; align-items: center; gap: 12px; padding: 8px 4px; color: var(--fg); font-size: 14px; }
+.hs-menu-row svg { color: var(--body); }
+.hs-menu-badge { color: var(--accent); font-size: 12px; margin-left: auto; }
+.hs-menu-strip { margin-top: 24px; }
 /* optional 16:9 thumbnail on the far right of a row */
 .thumbimg {
   flex: none; width: 132px; aspect-ratio: 16/9; border: 1px solid var(--border); border-radius: 6px;

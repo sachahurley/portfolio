@@ -86,6 +86,14 @@ export const lab: LabItem[] = [
     desc: 'The quest card with media at different sizes, positions and proportions.',
   },
   {
+    // Rendered by the dedicated HomeShortcutsLab page, not the LabItem
+    // template. Retires once a home layout is chosen.
+    slug: 'home-shortcuts',
+    workshop: true,
+    title: 'Home shortcuts',
+    desc: 'The home grid as apps, shortcuts and widgets, with a featured case study as a shortcut.',
+  },
+  {
     // Rendered by the dedicated VillageLab page, not the LabItem template
     slug: 'village',
     workshop: true,
