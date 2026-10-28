@@ -110,14 +110,6 @@ export const lab: LabItem[] = [
     desc: 'Fifteen picture options for the Scorpion Design System’s featured card.',
   },
   {
-    // Rendered by the dedicated CaseStudyMetaLab page, not the LabItem
-    // template. Retires once a layout is chosen.
-    slug: 'case-study-meta',
-    workshop: true,
-    title: 'Case study meta',
-    desc: 'Six layouts for the role, timeline and stack facts at the top of a case study.',
-  },
-  {
     // Rendered by the dedicated VillageLab page, not the LabItem template
     slug: 'village',
     workshop: true,

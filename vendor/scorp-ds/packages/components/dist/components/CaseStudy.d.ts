@@ -173,7 +173,7 @@ export declare function CaseStudyContent({ blocks, slots, figureStart, className
 }): import("react/jsx-runtime").JSX.Element;
 /**
  * CaseStudyHeader: the page's `<h1>`, one-line summary, outcomes strip,
- * label/value meta rows and optional wide cover. The largest type on the
+ * meta facts (label and value on a dotted leader) and optional wide cover. The largest type on the
  * page, so it always outranks the section titles below it.
  */
 export declare function CaseStudyHeader({ study, className, }: {
