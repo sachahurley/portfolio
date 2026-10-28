@@ -1567,8 +1567,9 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
   padding: 10px 16px; text-align: left; line-height: normal;
 }
 .featured-art--kit { gap: 8px; }
-.featured-art--log { gap: 6px; padding: 8px 12px; }
-.featured-log { height: 84px; overflow: hidden; font-size: 11px; }
+/* the log is always three lines, so it sizes itself and centres in the well */
+.featured-art--log { padding: 8px 12px; }
+.featured-log { height: auto; overflow: hidden; font-size: 11px; }
 .featured-art--buttons { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 0 12px; line-height: normal; }
 .featured-art-hint { display: flex; align-items: center; gap: 8px; color: var(--mut); font-size: 11px; }
 .featured-art--tabs [role="tablist"] { flex-wrap: nowrap; }

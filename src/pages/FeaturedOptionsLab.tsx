@@ -27,7 +27,7 @@ const PICTURES: { name: string; note: string; media: Featured['media'] }[] = [
   },
   {
     name: '12. Build log (live)',
-    note: 'A LogView streaming the build (tokens resolved, components built, stories rendered, axe clean) above a status line. It moves: a line every beat.',
+    note: 'A LogView streaming the build (tokens resolved, components built, stories rendered, axe clean). It moves: a line every beat.',
     media: { kind: 'art', art: 'log' },
   },
   {

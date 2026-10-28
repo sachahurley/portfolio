@@ -20,7 +20,7 @@
  * And compositions of live components (the picture is inert decoration:
  * FeaturedCard marks it inert, so none of these controls take focus):
  * - kit:     a specimen sheet: buttons, a switch, a checkbox, a slider
- * - log:     a LogView streaming build lines, with a status line
+ * - log:     a LogView streaming build lines, centred in the well
  * - meters:  three meters: components, tokens, stories
  * - buttons: the button variants in a row, with a keyboard hint
  * - tabs:    a tab bar over a short component list
@@ -35,8 +35,6 @@ import {
   LogView,
   Meter,
   Slider,
-  StatusLine,
-  StatusLineSegment,
   Switch,
   Tabs,
   TabsContent,
@@ -201,10 +199,6 @@ function LogArt() {
   return (
     <div className="featured-art featured-art--log">
       <LogView lines={lines} framed={false} className="featured-log" />
-      <StatusLine
-        left={<StatusLineSegment icon="Check" tone="success">build ok</StatusLineSegment>}
-        right={<StatusLineSegment>scorp-ds</StatusLineSegment>}
-      />
     </div>
   )
 }
