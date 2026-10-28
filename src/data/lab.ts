@@ -83,7 +83,7 @@ export const lab: LabItem[] = [
     slug: 'featured-work',
     workshop: true,
     title: 'Featured work',
-    desc: 'Three ways to put a case study on the home page, one tap from the bio.',
+    desc: 'The quest card with media at different sizes, positions and proportions.',
   },
   {
     // Rendered by the dedicated VillageLab page, not the LabItem template
