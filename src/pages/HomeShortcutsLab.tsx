@@ -71,10 +71,26 @@ function TileIcon({ icon, size }: { icon: Icon; size: number }) {
 }
 
 /** An app or shortcut tile: icon over label. Shortcuts carry the ↗ badge. */
-function Tile({ icon, label, to, shortcut }: { icon: Icon; label: string; to: string; shortcut?: boolean }) {
+function Tile({
+  icon,
+  label,
+  to,
+  onTap,
+  shortcut,
+}: {
+  icon: Icon
+  label: string
+  to?: string
+  onTap?: () => void
+  shortcut?: boolean
+}) {
   const navigate = useNavigate()
   return (
-    <button type="button" className={`hs-tile${shortcut ? ' hs-tile--shortcut' : ''}`} onClick={() => navigate(to)}>
+    <button
+      type="button"
+      className={`hs-tile${shortcut ? ' hs-tile--shortcut' : ''}`}
+      onClick={() => (onTap ? onTap() : to && navigate(to))}
+    >
       <span className="hs-icon">
         <TileIcon icon={icon} size={40} />
         {shortcut && <span className="hs-badge" aria-hidden="true">↗</span>}
@@ -206,6 +222,38 @@ export default function HomeShortcutsLab() {
         <em className="hs-em">shortcuts</em> (↗) jump to one thing inside an app, and{' '}
         <em className="hs-em">widgets</em> show live state. Everything here works: tap around.
       </p>
+
+      <Option
+        name="D. Shortcuts below a rule"
+        idea="Today's home items stay as they are, and the shortcut projects sit below a rule. The rule says these are a different kind of thing without adding a word."
+      >
+        <div className="hs-grid hs-grid--3">
+          {APPS}
+          <Tile icon="character" label="Character" to="/character" />
+          <Tile icon="world" label="World" onTap={openWorld} />
+        </div>
+        <hr className="hs-rule" />
+        <div className="hs-grid hs-grid--3">
+          <Tile icon="scorpion" label={SHORT} to={`/projects/${featured.slug}`} shortcut />
+          <Tile icon="tarot" label="Tarot" to="/lab/tarot" shortcut />
+        </div>
+      </Option>
+
+      <Option
+        name="D2. Rule with a label"
+        idea="The same split, with a small label under the rule, the way case study sections open. Clearer for first-time visitors; one more word on the screen."
+      >
+        <div className="hs-grid hs-grid--3">
+          {APPS}
+          <Tile icon="character" label="Character" to="/character" />
+          <Tile icon="world" label="World" onTap={openWorld} />
+        </div>
+        <div className="hs-rule-label">shortcuts</div>
+        <div className="hs-grid hs-grid--3">
+          <Tile icon="scorpion" label={SHORT} to={`/projects/${featured.slug}`} shortcut />
+          <Tile icon="tarot" label="Tarot" to="/lab/tarot" shortcut />
+        </div>
+      </Option>
 
       <Option
         name="A. Shortcut tile"
