@@ -12,10 +12,10 @@
  * STATES:
  * - default: Standard input appearance
  * - hover: Subtle border change on mouse over
- * - focused: the system's 2px inset ring (`--focus-ring-width`) drawn inside
- *   the plate, on top of the ring wrapper's accent colour. The error state
- *   keeps its red ring wrapper and draws the inset ring in
- *   `--focus-ring-error`, so focus is visible in every state.
+ * - focused: a colour change only. The 1px ring turns `--field-border-focus`
+ *   (the quiet underline does the same); nothing thickens, so the field does
+ *   not look bigger. Focus wins over error, so an errored field still shows
+ *   the change. See docs/decisions/0022.
  * - disabled: the whole field (ring wrapper included) drops to 50% opacity;
  *   dimming only the inner fill used to leave a full-strength border.
  * - error: Red ring to indicate validation issues
