@@ -30,6 +30,17 @@ for (const [rarity, hex] of Object.entries(RARITY_COLORS)) {
 import App from './App.tsx'
 import ErrorBoundary from './components/ErrorBoundary'
 
+// A refresh starts over. The title screen shows on every load, so after a
+// reload, pressing past it lands on home rather than the page that was open.
+// Only reloads: arriving by a link to a specific page (a shared case study,
+// a search result, the back button) still opens that page. Done before the
+// first render so the router never mounts the old page, and with replaceState
+// so Back doesn't return to it either.
+const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+if (nav?.type === 'reload' && window.location.pathname !== '/') {
+  window.history.replaceState(null, '', '/')
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
