@@ -315,6 +315,33 @@ strong, b { font-weight: 400; }
 .kind-words figcaption { margin-top: 12px; color: var(--fg); font-size: 14px; }
 .kind-words-role { color: var(--mut); }
 .worked-with { margin: 0; color: var(--body); font-size: 14px; }
+/* Featured with images lab (pages/FeaturedImagesLab.tsx): pixel icons
+   paired with pictures. Lab-only until an idea is chosen. */
+.fi-stage { border: 1px dashed var(--border); padding: 24px 16px 32px; }
+.fi-row { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 16px; }
+.fi-item {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  color: inherit; text-decoration: none;
+}
+.fi-label { font-size: 12px; color: var(--accent); white-space: nowrap; }
+.fi-icon { display: block; color: var(--body); line-height: 0; }
+@media (hover: hover) { .fi-item:hover .fi-icon, .fi-item:hover .fi-badge { color: var(--fg); } }
+.fi-pic { position: relative; display: block; line-height: 0; }
+.fi-img { display: block; object-fit: cover; }
+.fi-card { display: inline-flex; align-items: center; justify-content: center; line-height: 0; }
+.fi-badge {
+  position: absolute; left: -10px; bottom: -10px; padding: 6px; line-height: 0;
+  background: var(--surface-page); color: var(--body); border: 1px solid var(--border);
+}
+/* C: the preview floats above its icon on hover or keyboard focus */
+.fi-item--hover .fi-preview {
+  position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translate(-50%, 4px);
+  display: flex; flex-direction: column; align-items: center; gap: 8px; width: max-content; max-width: 220px;
+  padding: 12px; background: var(--surface-raised); border: 1px solid var(--border);
+  opacity: 0; pointer-events: none; transition: opacity .15s ease, transform .15s ease;
+}
+.fi-item--hover:hover .fi-preview, .fi-item--hover:focus-visible .fi-preview { opacity: 1; transform: translate(-50%, 0); }
+.fi-preview-line { color: var(--body); font-size: 12px; line-height: 1.5; text-align: center; white-space: normal; }
 /* QuestCard (components/QuestCard.tsx): a case study as a linked card.
    The wrap is the size container, so a card stacks by its own width, not
    the viewport's. */
@@ -1491,19 +1518,35 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 /* only tappable items carry a label, so accent here means "you can go
    here": the same colour as the sprites' glints and the compass's active row */
 /* Home sections (VillageHome): Navigation, Featured, Adventure. Each is a
-   rule with a small centred title, then its grid. The scene's own 40px top
-   margin is for sitting under the bio; under a title it would leave a hole. */
+   small centred title, then its grid; no rules, the titles and space do the
+   grouping. The scene's own 40px top margin is for sitting under the bio;
+   under a title it would leave a hole. */
 .home-section { margin-top: 40px; }
 .home-section-title {
-  margin: 0 0 8px; padding-top: 10px; border-top: 1px solid var(--border);
+  margin: 0 0 8px;
   text-align: center; font-size: 12px; font-weight: 400; color: var(--mut);
   text-transform: uppercase; letter-spacing: 0.08em;
 }
 .home-section .vg-frame { margin-top: 0; }
-/* Featured labels carry a shortcut arrow: a jump into an app, not an app */
-.home-featured .vg-label::after {
-  content: " ↗";
-  content: " ↗" / ""; /* decorative: no alt text where supported */
+/* Featured cards (components/FeaturedCard.tsx): picture on top, then the
+   1-bit icon centred on the label and line beside it. Two up on desktop,
+   stacked on phones. */
+.featured-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
+.featured-card { display: flex; flex-direction: column; background: var(--surface-muted); color: inherit; text-decoration: none; }
+.featured-pic {
+  display: flex; align-items: center; justify-content: center; height: 132px;
+  background: var(--surface-card); overflow: hidden; line-height: 0;
+}
+.featured-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.featured-foot { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
+.featured-icon { flex: none; display: block; width: 44px; line-height: 0; }
+/* the live sprite sits in its own 44px column, not the page column */
+.featured-icon .vg-frame { margin: 0; width: 100%; }
+.featured-text { display: block; min-width: 0; }
+.featured-label { display: block; color: var(--accent); font-size: 14px; }
+.featured-line { display: block; color: var(--body); font-size: 12px; line-height: 1.5; margin-top: 4px; }
+@media (hover: hover) {
+  .featured-card:hover .featured-label { color: var(--fg); }
 }
 .vg-label {
   position: absolute; transform: translateX(-50%);

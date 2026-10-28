@@ -94,6 +94,14 @@ export const lab: LabItem[] = [
     desc: 'The home grid as apps, shortcuts and widgets, with a featured case study as a shortcut.',
   },
   {
+    // Rendered by the dedicated FeaturedImagesLab page, not the LabItem
+    // template. Retires once an idea is chosen.
+    slug: 'featured-images',
+    workshop: true,
+    title: 'Featured with images',
+    desc: 'Four ways to pair the home page’s featured icons with a picture of the work.',
+  },
+  {
     // Rendered by the dedicated VillageLab page, not the LabItem template
     slug: 'village',
     workshop: true,

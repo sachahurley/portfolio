@@ -15,7 +15,6 @@ import type { SceneLayout } from '../components/village/VillageScene'
 import { BEAT_MS, type VillageItem } from '../components/village/villageKit'
 import { TAROT_ENABLED } from '../lib/flags'
 import { GLOBE_PERIOD_MS, globeMask } from '../lib/globe'
-import { FEATURED } from './featured'
 
 export const VILLAGE_HOME: VillageItem[] = [
   { tree: { canopy: 'canopy_oak', trunk: 'trunk_oak' } },
@@ -159,10 +158,10 @@ export const HOME_SCREEN_LAYOUT: SceneLayout = {
 }
 
 /*
- * The home page's three sections (VillageHome), each a titled, ruled
- * VillageScene sharing HOME_SECTION_LAYOUT so their columns line up:
+ * The home page's three sections (VillageHome). Navigation and Adventure are
+ * titled VillageScenes sharing HOME_SECTION_LAYOUT so their columns line up:
  *   Navigation: the four core pages
- *   Featured:   shortcuts into the work (data/featured.ts)
+ *   Featured:   shortcuts into the work, as cards (FeaturedCard), not a scene
  *   Adventure:  the game layer, Character and (once the totals load) World
  */
 
@@ -170,12 +169,6 @@ export const HOME_SCREEN_LAYOUT: SceneLayout = {
 export const HOME_NAV_APPS: VillageItem[] = HOME_APPS.filter((it) =>
   ['/projects', '/lab', '/notes', '/about'].includes(it.tap?.href ?? ''),
 )
-
-/** Featured: the shared shortcut list, drawn as home-grid sprites. */
-export const FEATURED_APPS: VillageItem[] = FEATURED.map((f) => ({
-  part: f.part,
-  tap: { label: f.label, href: f.path, style: 'invert' as const },
-}))
 
 /** Adventure: Character, then World when the lifetime totals have loaded. */
 const CHARACTER_APP: VillageItem = { part: 'sword', tap: { label: 'Character', href: '/character', style: 'invert' } }

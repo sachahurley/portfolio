@@ -78,12 +78,17 @@ export default function VillageScene({
   onNavigate,
   onAction,
   layout,
+  decorative = false,
 }: {
   items: VillageItem[]
   onNavigate: (href: string) => void
   /** Taps with an `action` instead of an `href` land here. */
   onAction?: (action: string) => void
   layout?: SceneLayout
+  /** Art only: tap items keep the live cue (accent highlights, glints,
+   *  bob) but get no labels, hotspots or pointer handling, so the scene can
+   *  sit inside something that is already the link (a Featured card). */
+  decorative?: boolean
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -124,7 +129,7 @@ export default function VillageScene({
     let timer: number | null = null
     const off = document.createElement('canvas')
 
-    const hasLabels = items.some((it) => it.tap?.label)
+    const hasLabels = !decorative && items.some((it) => it.tap?.label)
 
     function paint() {
       // No width yet (an in-app browser can lay the page out at zero size
@@ -263,14 +268,14 @@ export default function VillageScene({
       ro.disconnect()
       apiRef.current = null
     }
-  }, [items, activeGem, layout])
+  }, [items, activeGem, layout, decorative])
 
   return (
-    <div ref={wrapRef} className="vg-frame">
+    <div ref={wrapRef} className={`vg-frame${decorative ? ' vg-frame--deco' : ''}`}>
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        onPointerMove={(e) => {
+        onPointerMove={decorative ? undefined : (e) => {
           const api = apiRef.current
           if (!api) return
           const i = api.idAt(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
@@ -278,21 +283,21 @@ export default function VillageScene({
           e.currentTarget.style.cursor = tap ? 'pointer' : ''
           api.setActive(tap ? i : -1)
         }}
-        onPointerLeave={() => apiRef.current?.setActive(-1)}
-        onClick={(e) => {
+        onPointerLeave={decorative ? undefined : () => apiRef.current?.setActive(-1)}
+        onClick={decorative ? undefined : (e) => {
           const api = apiRef.current
           if (!api) return
           go(api.tapOf(api.idAt(e.nativeEvent.offsetX, e.nativeEvent.offsetY)))
         }}
       />
-      {labels.map((l) => (
+      {!decorative && labels.map((l) => (
         <div key={l.idx} className="vg-label" style={{ left: l.left, top: l.top }}>
           {l.text}
         </div>
       ))}
       {/* reward badges/markers retired: the waiting signal lives on the
           character strip / sheet row / dock dot, one surface per chrome */}
-      {spots.map((s) => (
+      {!decorative && spots.map((s) => (
         <button
           key={s.idx}
           type="button"

@@ -36,7 +36,7 @@ export const SITE_PARTS: VillagePart[] = [
       '..XXXXXXXXX..',
     ],
   },
-  // The Scorp DS case study's icon on the home page's Featured row: a
+  // The Scorpion Design System's icon on the home page's Featured cards: a
   // scorpion seen from above, claws up, tail curling back to a stinger
   // (the 'H' seed, which glints accent on the live cue like the others).
   {
