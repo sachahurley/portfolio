@@ -15,6 +15,7 @@ import type { SceneLayout } from '../components/village/VillageScene'
 import { BEAT_MS, type VillageItem } from '../components/village/villageKit'
 import { TAROT_ENABLED } from '../lib/flags'
 import { GLOBE_PERIOD_MS, globeMask } from '../lib/globe'
+import { FEATURED } from './featured'
 
 export const VILLAGE_HOME: VillageItem[] = [
   { tree: { canopy: 'canopy_oak', trunk: 'trunk_oak' } },
@@ -140,8 +141,6 @@ export const WORLD_APP: VillageItem = {
   tap: { label: 'World', action: 'world', style: 'invert' },
 }
 
-/** The home grid with the World app on its own row, under Character. */
-export const HOME_APPS_WITH_WORLD: VillageItem[] = [...HOME_APPS, WORLD_APP]
 
 /**
  * The home page's arrangement: a 3 by 2 home-screen grid of equal cells,
@@ -157,4 +156,43 @@ export const HOME_SCREEN_LAYOUT: SceneLayout = {
   ground: false,
   lastRow: 'center',
   wide: { cellPx: 150, rowGapPx: 54 },
+}
+
+/*
+ * The home page's three sections (VillageHome), each a titled, ruled
+ * VillageScene sharing HOME_SECTION_LAYOUT so their columns line up:
+ *   Navigation: the four core pages
+ *   Featured:   shortcuts into the work (data/featured.ts)
+ *   Adventure:  the game layer, Character and (once the totals load) World
+ */
+
+/** Navigation: the core pages, in the village's order. */
+export const HOME_NAV_APPS: VillageItem[] = HOME_APPS.filter((it) =>
+  ['/projects', '/lab', '/notes', '/about'].includes(it.tap?.href ?? ''),
+)
+
+/** Featured: the shared shortcut list, drawn as home-grid sprites. */
+export const FEATURED_APPS: VillageItem[] = FEATURED.map((f) => ({
+  part: f.part,
+  tap: { label: f.label, href: f.path, style: 'invert' as const },
+}))
+
+/** Adventure: Character, then World when the lifetime totals have loaded. */
+const CHARACTER_APP: VillageItem = { part: 'sword', tap: { label: 'Character', href: '/character', style: 'invert' } }
+export const ADVENTURE_APPS: VillageItem[] = [CHARACTER_APP]
+export const ADVENTURE_APPS_WITH_WORLD: VillageItem[] = [CHARACTER_APP, WORLD_APP]
+
+/**
+ * One grid for all three sections: four across where they fit (desktop),
+ * two on phones, short rows centred under their centred titles. The wide
+ * cell is 140 so four fit the content column. A module constant because
+ * VillageScene rebuilds whenever its layout changes identity.
+ */
+export const HOME_SECTION_LAYOUT: SceneLayout = {
+  mode: 'grid',
+  cols: [4, 2],
+  cellPx: 96,
+  ground: false,
+  lastRow: 'center',
+  wide: { cellPx: 140, rowGapPx: 54 },
 }

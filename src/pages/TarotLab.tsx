@@ -1,5 +1,5 @@
 /**
- * Tarot reader (/lab/tarot)
+ * Tarot GPT (/lab/tarot)
  *
  * A chat with the Seer. Ask anything about your life or the cards; she
  * draws when a draw would help (server-side, from the real 78-card deck)
@@ -78,7 +78,7 @@ const ReaderAvatar = ({ size }: { size: 'small' | 'medium' }) => (
 )
 
 export default function TarotLab() {
-  usePageTitle('Tarot reader')
+  usePageTitle('Tarot GPT')
   const navigate = useNavigate()
   const { award } = useXp()
   const [messages, setMessages] = useState<ChatMessage[]>(() => loadConversation())

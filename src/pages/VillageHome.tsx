@@ -1,23 +1,32 @@
 /**
- * Village home (/) — the home page.
+ * Village home (/): the home page.
  *
- * Name and bio up top, then the site's apps as a 3 by 2 home-screen grid
- * of 1-bit village-kit icons (VillageScene + data/villageHome.ts
- * HOME_APPS / HOME_SCREEN_LAYOUT): the labeled, glinting icons are the
- * nav. Once the lifetime totals load, a seventh app joins on its own row:
- * World, the turning globe, which opens "Thank you for visiting"
- * (WorldStatsModal, mounted site-wide in MinimalChrome) rather than
- * navigating. The full scenic village
- * (VILLAGE_HOME) stays in the data file and the other scenery-free takes
- * live at /lab/home-alts. (The old classic
- * list home was retired; it lives on in git history under the
- * v4-village-and-vault tag.)
+ * Name and bio up top, then three titled sections of 1-bit village-kit
+ * icons (VillageScene, all sharing HOME_SECTION_LAYOUT from
+ * data/villageHome.ts so their columns line up):
+ * - Navigation: the four core pages.
+ * - Featured: shortcuts into the work (data/featured.ts), each label
+ *   marked with a shortcut arrow.
+ * - Adventure: the game layer. Character, and World (the turning globe,
+ *   which opens "Thank you for visiting", WorldStatsModal) once the
+ *   lifetime totals load: a counter that is wrong is worse than absent.
+ * The full scenic village (VILLAGE_HOME) stays in the data file and other
+ * scenery-free takes live at /lab/home-alts. (The old classic list home
+ * was retired; it lives on in git history under the v4-village-and-vault
+ * tag.)
  */
 
 import { useNavigate } from 'react-router-dom'
 import MinimalPage from '../components/MinimalPage'
 import VillageScene from '../components/village/VillageScene'
-import { HOME_APPS, HOME_APPS_WITH_WORLD, HOME_SCREEN_LAYOUT } from '../data/villageHome'
+import type { ReactNode } from 'react'
+import {
+  ADVENTURE_APPS,
+  ADVENTURE_APPS_WITH_WORLD,
+  FEATURED_APPS,
+  HOME_NAV_APPS,
+  HOME_SECTION_LAYOUT,
+} from '../data/villageHome'
 import { useSiteStats } from '../lib/siteStats'
 import { openWorld } from '../lib/worldDialog'
 import { usePageTitle } from '../lib/usePageTitle'
@@ -44,12 +53,44 @@ export default function VillageHome() {
 
       {/* reward badges retired from the village: the waiting signal
           lives on the character strip / sheet row / dock dot */}
-      <VillageScene
-        items={stats ? HOME_APPS_WITH_WORLD : HOME_APPS}
-        layout={HOME_SCREEN_LAYOUT}
-        onNavigate={(href) => navigate(href)}
-        onAction={(action) => action === 'world' && openWorld()}
-      />
+      <HomeSection id="home-nav" title="navigation">
+        <VillageScene items={HOME_NAV_APPS} layout={HOME_SECTION_LAYOUT} onNavigate={(href) => navigate(href)} />
+      </HomeSection>
+
+      <HomeSection id="home-featured" title="featured" className="home-featured">
+        <VillageScene items={FEATURED_APPS} layout={HOME_SECTION_LAYOUT} onNavigate={(href) => navigate(href)} />
+      </HomeSection>
+
+      <HomeSection id="home-adventure" title="adventure">
+        <VillageScene
+          items={stats ? ADVENTURE_APPS_WITH_WORLD : ADVENTURE_APPS}
+          layout={HOME_SECTION_LAYOUT}
+          onNavigate={(href) => navigate(href)}
+          onAction={(action) => action === 'world' && openWorld()}
+        />
+      </HomeSection>
     </MinimalPage>
+  )
+}
+
+/** A ruled section with a centred title, labelling the grid beneath it. */
+function HomeSection({
+  id,
+  title,
+  className,
+  children,
+}: {
+  id: string
+  title: string
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <section className={`home-section${className ? ` ${className}` : ''}`} aria-labelledby={id}>
+      <h2 id={id} className="home-section-title">
+        {title}
+      </h2>
+      {children}
+    </section>
   )
 }

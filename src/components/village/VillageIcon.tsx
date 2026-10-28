@@ -38,6 +38,7 @@ const NAV_ICONS = {
   about: { part: 'skull' },
   character: { part: 'sword' },
   tarot: { part: 'crystal_ball' },
+  scorpion: { part: 'scorpion_icon' },
   world: { draw: () => ({ w: GLOBE_ICON, h: GLOBE_ICON, px: globeMask(0, GLOBE_ICON) }) },
 } satisfies Record<string, VillageItem>
 

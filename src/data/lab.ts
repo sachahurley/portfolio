@@ -98,7 +98,7 @@ export const lab: LabItem[] = [
     ? [
         {
           slug: 'tarot',
-          title: 'Tarot reader',
+          title: 'Tarot GPT',
           desc: 'A pixel mystic deals a real 78-card draw and reads your journey through the site.',
         },
       ]

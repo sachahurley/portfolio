@@ -9,7 +9,7 @@
  */
 
 import type { VillageIconName } from '../components/village/VillageIcon'
-import { TAROT_ENABLED } from '../lib/flags'
+import { FEATURED } from '../data/featured'
 
 export interface GameLocation {
   path: string
@@ -58,29 +58,24 @@ export const LOCATIONS: GameLocation[] = [
 ]
 
 /**
- * Menu destinations that are not world locations: listed in the desktop
- * compass so the sitemap is complete, but kept out of LOCATIONS because
- * membership there means an arrival line and discovery XP on every visit
- * (RouteEffects in App.tsx). Character is a management screen, not a place
- * (see pages/Character.tsx). The mobile sheet carries it as its portrait row.
- * Tarot is a Lab experiment promoted to the menu (behind its flag, like its
- * route); its visits already count towards the Lab.
+ * The menu's Featured group: the same shortcuts as the home page's Featured
+ * section (data/featured.ts), so both surfaces stay in step. Kept out of
+ * LOCATIONS because membership there means an arrival line and discovery
+ * XP on every visit (RouteEffects in App.tsx); a featured case study's or
+ * Lab project's visits already count towards its section.
+ *
+ * Character and World are not in the menu: they live in the home page's
+ * Adventure section, and Character also in the player strip.
  */
-export const NAV_EXTRAS: Pick<GameLocation, 'path' | 'real' | 'icon'>[] = [
-  { path: '/character', real: 'Character', icon: 'character' },
-  ...(TAROT_ENABLED ? [{ path: '/lab/tarot', real: 'Tarot', icon: 'tarot' as const }] : []),
-]
-
-/**
- * The World row: the one menu entry with no page. It opens the "Thank you
- * for visiting" dialog (lib/worldDialog.ts), and like the home grid's World
- * app it is only listed once the lifetime totals have loaded.
- */
-export const NAV_WORLD = { real: 'World', icon: 'world' } as const
+export const NAV_FEATURED: Pick<GameLocation, 'path' | 'real' | 'icon'>[] = FEATURED.map((f) => ({
+  path: f.path,
+  real: f.label,
+  icon: f.icon,
+}))
 
 /** The menu extra this pathname is on, if any (it outranks its section). */
 export const extraFor = (pathname: string) =>
-  NAV_EXTRAS.find((d) => pathname === d.path || pathname.startsWith(d.path + '/'))
+  NAV_FEATURED.find((d) => pathname === d.path || pathname.startsWith(d.path + '/'))
 
 /** Match a pathname to its location (index pages and their detail pages). */
 export function locationFor(pathname: string): GameLocation | undefined {
