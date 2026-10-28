@@ -1,7 +1,6 @@
 /**
  * FeaturedCard: one featured item (data/featured.ts) as a card: the picture
- * on top, then the 1-bit icon, the label with its shortcut arrow, and one
- * line. The home page's Featured section is a grid of these.
+ * on top, then the 1-bit icon, the label and one line. The home page's Featured section is a grid of these.
  *
  * The picture fills a fixed-height well: an image is cropped to fill it, a
  * tarot card is drawn from the tile sheet at the largest whole-pixel scale
@@ -12,6 +11,7 @@
  */
 
 import { Link } from 'react-router-dom'
+import { FeaturedArtView } from './featuredArt'
 import VillageScene, { type SceneLayout } from './village/VillageScene'
 import type { VillageItem } from './village/villageKit'
 import { TileBox } from './TileSprite'
@@ -42,6 +42,7 @@ const WELL = 132
 
 function Picture({ media }: { media: Featured['media'] }) {
   if (media.kind === 'img') return <img src={media.src} alt="" className="featured-img" />
+  if (media.kind === 'art') return <FeaturedArtView art={media.art} />
   const cell = TAROT_TILES[media.id]
   // a card is 2x3 tiles on the sheet's pitch; the whole scale that fits the
   // well with a little air above and below
@@ -52,8 +53,13 @@ function Picture({ media }: { media: Featured['media'] }) {
 
 export default function FeaturedCard({ item }: { item: Featured }) {
   return (
-    <Link to={item.path} className="featured-card plate-round">
-      <span className="featured-pic">
+    // The label is the link; its ::after stretches over the whole card, so
+    // the card is one tap target without wrapping the picture in a link
+    // (a picture made of live components would put controls inside it).
+    <div className="featured-card plate-round">
+      {/* decorative and inert: the label names the card, and nothing in a
+          composed picture takes focus or clicks */}
+      <span className="featured-pic" aria-hidden="true" inert>
         <Picture media={item.media} />
       </span>
       <span className="featured-foot">
@@ -61,12 +67,14 @@ export default function FeaturedCard({ item }: { item: Featured }) {
           <VillageScene decorative items={iconFor(item)} layout={ICON_LAYOUT} onNavigate={noop} />
         </span>
         <span className="featured-text">
-          {/* the arrow is held to the last word, so a wrapped label never
-              leaves it alone on a line */}
-          <span className="featured-label">{item.label}{'\u00a0'}↗</span>
+          {/* no shortcut marker: the Featured title and the card itself say
+              it goes to a page of the site (an arrow read as leaving it) */}
+          <Link to={item.path} className="featured-label featured-link">
+            {item.label}
+          </Link>
           <span className="featured-line">{item.line}</span>
         </span>
       </span>
-    </Link>
+    </div>
   )
 }

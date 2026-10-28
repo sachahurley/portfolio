@@ -102,6 +102,14 @@ export const lab: LabItem[] = [
     desc: 'Four ways to pair the home page’s featured icons with a picture of the work.',
   },
   {
+    // Rendered by the dedicated FeaturedOptionsLab page, not the LabItem
+    // template. Retires once a picture is chosen.
+    slug: 'featured-options',
+    workshop: true,
+    title: 'Featured card options',
+    desc: 'Fifteen picture options for the Scorpion Design System’s featured card.',
+  },
+  {
     // Rendered by the dedicated VillageLab page, not the LabItem template
     slug: 'village',
     workshop: true,
