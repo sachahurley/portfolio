@@ -9,8 +9,9 @@
  * - Reorder a section by moving it in `sections`; hide one with
  *   `hidden: true`. Section numbers and figure numbers are counted over the
  *   visible sections only, so hiding one renumbers the rest.
- * - Each section opens on a rule with its number and name beneath it
- *   (`02 THE PROBLEM`), so authors never type numbers or headings as blocks.
+ * - Each section opens on its number and name (`02 THE PROBLEM`), so authors
+ *   never type numbers or headings as blocks. Sections are set apart by
+ *   space alone, no rule between them.
  * - Every content block has one shape per meaning: steps and principles
  *   (`list`) read as a tree, findings (`insights`) carry large numerals,
  *   pillars (`callouts`) are cards, a testimonial (`quote`) hangs off an
@@ -180,8 +181,8 @@ export declare function CaseStudyHeader({ study, className, }: {
     className?: string;
 }): import("react/jsx-runtime").JSX.Element;
 /**
- * CaseStudySections: the visible sections, numbered, each with its rule
- * header and content. `CaseStudyPage` is this plus `CaseStudyHeader`; use
+ * CaseStudySections: the visible sections, numbered, each with its
+ * header and content, set apart by generous space rather than rules. `CaseStudyPage` is this plus `CaseStudyHeader`; use
  * it alone when a page draws its own header.
  *
  * @param sections - Sections in reading order; `hidden` ones are skipped
@@ -197,7 +198,7 @@ export declare function CaseStudySections({ sections, slots, className, }: {
  * CaseStudyPage Component
  *
  * Renders a whole case study: the header, then each visible section with a
- * ruled, numbered header and its content blocks.
+ * numbered header and its content blocks.
  *
  * @param study - The page (see {@link CaseStudy})
  * @param slots - Live content for `slot` blocks; a name with no entry falls

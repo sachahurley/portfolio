@@ -1,5 +1,5 @@
 import { jsxs as w, jsx as o, Fragment as he } from "react/jsx-runtime";
-import Se, { useState as V, useEffect as G, forwardRef as re, useId as ce, useRef as Z, useMemo as Le, useCallback as ze, useLayoutEffect as Ge, isValidElement as He, cloneElement as bt, useImperativeHandle as Cr, Fragment as ht, Children as Mr, useSyncExternalStore as Ut, createContext as Ue, useContext as Ae } from "react";
+import Se, { useState as V, useEffect as G, forwardRef as re, useId as ce, useRef as Z, useMemo as Le, useCallback as ze, useLayoutEffect as Ge, isValidElement as He, cloneElement as bt, useImperativeHandle as Cr, Fragment as ht, Children as Mr, useSyncExternalStore as Ut, createContext as Ue, useContext as Ee } from "react";
 import { useTheme as Rr, ThemeProvider as Lr } from "next-themes";
 import { createPortal as Pr } from "react-dom";
 const Dr = { small: "sm", medium: "md", large: "lg" }, It = /* @__PURE__ */ new Set();
@@ -302,10 +302,10 @@ const jr = (e, t) => {
   // For example, `hsl(0 0% 0%)` would be classified as a length without this check.
   // I could also use lookbehind assertion in `lengthUnitRegex` but that isn't supported widely enough.
   dn.test(e) && !un.test(e)
-), xt = () => !1, bn = (e) => mn.test(e), hn = (e) => fn.test(e), gn = (e) => !M(e) && !R(e), xn = (e) => _e(e, rr, xt), M = (e) => Zt.test(e), Te = (e) => _e(e, nr, pn), Ct = (e) => _e(e, zn, F), vn = (e) => _e(e, ar, Jt), yn = (e) => _e(e, or, xt), Mt = (e) => _e(e, er, xt), wn = (e) => _e(e, tr, hn), Xe = (e) => _e(e, sr, bn), R = (e) => Qt.test(e), Oe = (e) => Ce(e, nr), kn = (e) => Ce(e, or), Rt = (e) => Ce(e, er), Nn = (e) => Ce(e, rr), $n = (e) => Ce(e, tr), Ye = (e) => Ce(e, sr, !0), Sn = (e) => Ce(e, ar, !0), _e = (e, t, r) => {
+), xt = () => !1, bn = (e) => mn.test(e), hn = (e) => fn.test(e), gn = (e) => !M(e) && !R(e), xn = (e) => _e(e, rr, xt), M = (e) => Zt.test(e), Te = (e) => _e(e, nr, pn), Ct = (e) => _e(e, zn, F), vn = (e) => _e(e, ar, Jt), yn = (e) => _e(e, or, xt), Mt = (e) => _e(e, er, xt), wn = (e) => _e(e, tr, hn), Xe = (e) => _e(e, sr, bn), R = (e) => Qt.test(e), Oe = (e) => Ae(e, nr), kn = (e) => Ae(e, or), Rt = (e) => Ae(e, er), Nn = (e) => Ae(e, rr), $n = (e) => Ae(e, tr), Ye = (e) => Ae(e, sr, !0), Sn = (e) => Ae(e, ar, !0), _e = (e, t, r) => {
   const n = Zt.exec(e);
   return n ? n[1] ? t(n[1]) : r(n[2]) : !1;
-}, Ce = (e, t, r = !1) => {
+}, Ae = (e, t, r = !1) => {
   const n = Qt.exec(e);
   return n ? n[1] ? t(n[1]) : r : !1;
 }, er = (e) => e === "position" || e === "percentage", tr = (e) => e === "image" || e === "url", rr = (e) => e === "length" || e === "size" || e === "bg-size", nr = (e) => e === "length", zn = (e) => e === "number", or = (e) => e === "family-name", ar = (e) => e === "number" || e === "weight", sr = (e) => e === "shadow", _n = () => {
@@ -4468,21 +4468,21 @@ function es({
     }
   );
 }
-const Hn = { top: "bottom", bottom: "top", left: "right", right: "left" }, Un = 8, Re = 8;
+const Hn = { top: "bottom", bottom: "top", left: "right", right: "left" }, Un = 8, Me = 8;
 function Wn(e, t, r, n, a) {
   const s = {
     top: t.top,
     bottom: a - t.bottom,
     left: t.left,
     right: n - t.right
-  }, i = (c) => (c === "top" || c === "bottom" ? r.height : r.width) + Un + Re;
+  }, i = (c) => (c === "top" || c === "bottom" ? r.height : r.width) + Un + Me;
   if (s[e] >= i(e)) return e;
   const l = Hn[e];
   return s[l] >= i(l) ? l : e;
 }
 function Kn(e, t, r) {
   const n = e.left + e.width / 2 - t / 2, a = n + t;
-  return n < Re ? Re - n : a > r - Re ? Math.max(Re - n, r - Re - a) : 0;
+  return n < Me ? Me - n : a > r - Me ? Math.max(Me - n, r - Me - a) : 0;
 }
 function qn({
   content: e,
@@ -4825,14 +4825,14 @@ const Xn = re(function({
             className: `plate-round bg-[var(--surface-card)] ${ue.menu} max-h-80 overflow-y-auto`,
             children: te.map((B, j) => {
               const le = `${x}-group-${j}`, ve = B.entries.map(({ option: pe, index: de }) => {
-                const me = pe.disabled, Me = pe.value === L, tt = W === de && !me;
+                const me = pe.disabled, Ce = pe.value === L, tt = W === de && !me;
                 return /* @__PURE__ */ w(
                   "button",
                   {
                     id: O(de),
                     type: "button",
                     role: "option",
-                    "aria-selected": Me,
+                    "aria-selected": Ce,
                     disabled: me,
                     onClick: () => !me && Y(pe.value),
                     className: `
@@ -4846,7 +4846,7 @@ const Xn = re(function({
                 `,
                     children: [
                       /* @__PURE__ */ o("span", { className: "truncate flex-1 min-w-0", children: pe.label }),
-                      Me && /* @__PURE__ */ o("span", { className: `${ue.icon} inline-flex items-center justify-center font-mono font-bold text-[var(--border-focus)] flex-shrink-0`, "aria-hidden": "true", children: /* @__PURE__ */ o(q, { name: "Check" }) })
+                      Ce && /* @__PURE__ */ o("span", { className: `${ue.icon} inline-flex items-center justify-center font-mono font-bold text-[var(--border-focus)] flex-shrink-0`, "aria-hidden": "true", children: /* @__PURE__ */ o(q, { name: "Check" }) })
                     ]
                   },
                   de
@@ -5545,7 +5545,7 @@ function ts({
     )
   ] });
 }
-const Ke = "text-secondary-700 dark:text-secondary-600", $e = "text-secondary-800 dark:text-secondary-500", Ne = "text-[var(--text-primary)]", Ve = "text-[var(--accent)]", Ee = "border-[var(--surface-container-stroke)]", ro = {
+const Ke = "text-secondary-700 dark:text-secondary-600", $e = "text-secondary-800 dark:text-secondary-500", Ne = "text-[var(--text-primary)]", Ve = "text-[var(--accent)]", Re = "border-[var(--surface-container-stroke)]", ro = {
   background: "repeating-linear-gradient(45deg, var(--surface-subtle), var(--surface-subtle) 8px, var(--surface-muted) 8px, var(--surface-muted) 16px)"
 }, Fe = (e) => e === "wide" ? " [--csp-bw:max(100%,min(calc(100%+240px),calc(100cqw-48px)))] w-[var(--csp-bw)] ml-[calc((100%-var(--csp-bw))/2)]" : e === "full" ? " [--csp-bw:max(100%,calc(100cqw-48px))] w-[var(--csp-bw)] ml-[calc((100%-var(--csp-bw))/2)]" : "", no = 0.62, oo = (e) => `min(var(--font-size-xs), calc((100cqw - var(--spacing-10)) / ${(Math.max(...e.split(`
 `).map((r) => r.length)) * no).toFixed(2)}))`, vt = (e) => String(e).padStart(2, "0"), ao = (e) => e.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""), ur = (e) => e.type === "imagePair" ? 2 : e.type === "image" || e.type === "ascii" || e.type === "slot" ? 1 : 0;
@@ -5595,8 +5595,8 @@ function mr({ items: e }) {
   return /* @__PURE__ */ o("dl", { className: `m-0 grid grid-cols-2 gap-x-8 gap-y-6 ${t}`, children: e.map((r) => (
     // dt stays first for screen readers; the figure is moved above it
     // visually, so every figure hangs from the top of its cell however
-    // its label wraps.
-    /* @__PURE__ */ w("div", { className: "flex flex-col", children: [
+    // its label wraps. Figure and label centre in their cell.
+    /* @__PURE__ */ w("div", { className: "flex flex-col items-center text-center", children: [
       /* @__PURE__ */ o("dt", { className: `mt-2 text-xs ${Ke}`, children: r.label }),
       /* @__PURE__ */ o("dd", { className: `order-first m-0 text-2xl leading-none ${Ve}`, children: r.value })
     ] }, r.label)
@@ -5641,17 +5641,17 @@ function io({
       return /* @__PURE__ */ o("ul", { className: "my-10 list-none p-0", children: e.items.map((n, a) => {
         const s = a === 0, i = a === e.items.length - 1;
         return /* @__PURE__ */ w("li", { className: `relative pl-8 ${i ? "" : "pb-6"}`, children: [
-          !(s && i) && /* @__PURE__ */ o("span", { "aria-hidden": "true", className: `absolute left-1 border-l-hairline ${Ee} ${`${s ? "top-3" : "top-0"} ${i ? "h-3" : "bottom-0"}`}` }),
-          /* @__PURE__ */ o("span", { "aria-hidden": "true", className: `absolute left-1 top-3 w-4 border-t-hairline ${Ee}` }),
+          !(s && i) && /* @__PURE__ */ o("span", { "aria-hidden": "true", className: `absolute left-1 border-l-hairline ${Re} ${`${s ? "top-3" : "top-0"} ${i ? "h-3" : "bottom-0"}`}` }),
+          /* @__PURE__ */ o("span", { "aria-hidden": "true", className: `absolute left-1 top-3 w-4 border-t-hairline ${Re}` }),
           /* @__PURE__ */ o("div", { className: `text-sm leading-6 ${Ne}`, children: n.title }),
           /* @__PURE__ */ o("p", { className: `m-0 mt-1 text-sm leading-6 ${$e}`, children: n.text })
         ] }, n.title);
       }) });
     case "insights":
-      return /* @__PURE__ */ o("ol", { className: `my-10 list-none border-b-hairline p-0 ${Ee}`, children: e.items.map((n, a) => /* @__PURE__ */ w(
+      return /* @__PURE__ */ o("ol", { className: `my-10 list-none border-b-hairline p-0 ${Re}`, children: e.items.map((n, a) => /* @__PURE__ */ w(
         "li",
         {
-          className: `grid grid-cols-[theme(spacing.16)_1fr] border-t-hairline py-6 ${Ee}`,
+          className: `grid grid-cols-[theme(spacing.16)_1fr] border-t-hairline py-6 ${Re}`,
           children: [
             /* @__PURE__ */ o("span", { className: `text-2xl leading-none ${Ve}`, children: vt(a + 1) }),
             /* @__PURE__ */ w("div", { children: [
@@ -5687,7 +5687,7 @@ function io({
         ] })
       ] });
     case "statement":
-      return /* @__PURE__ */ w("div", { className: `my-12 border-y-hairline py-10 ${Ee}${Fe("wide")}`, children: [
+      return /* @__PURE__ */ w("div", { className: `my-12 border-y-hairline py-10 ${Re}${Fe("wide")}`, children: [
         e.kicker && /* @__PURE__ */ o("div", { className: `mb-4 text-xs uppercase tracking-wider ${Ve}`, children: e.kicker }),
         /* @__PURE__ */ o("p", { className: `m-0 text-2xl leading-snug ${Ne}`, children: e.text })
       ] });
@@ -5716,7 +5716,7 @@ function co({
     s && s.length > 0 && /* @__PURE__ */ o(
       "dl",
       {
-        className: `m-0 mt-10 grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 border-t-hairline pt-6 sm:grid-cols-[auto_1fr_auto_1fr] ${Ee}`,
+        className: `m-0 mt-10 grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 border-t-hairline pt-6 sm:grid-cols-[auto_1fr_auto_1fr] ${Re}`,
         children: s.map((l) => /* @__PURE__ */ w("div", { className: "contents", children: [
           /* @__PURE__ */ o("dt", { className: `text-xs uppercase leading-5 tracking-wider ${Ke}`, children: l.label }),
           /* @__PURE__ */ o("dd", { className: `m-0 text-sm leading-5 ${$e}`, children: l.value })
@@ -5731,7 +5731,7 @@ function co({
 }
 function uo({ n: e, section: t }) {
   return /* @__PURE__ */ w("header", { children: [
-    /* @__PURE__ */ w("div", { className: `flex gap-3 border-t-hairline pt-3 text-xs uppercase tracking-wider ${Ee}`, children: [
+    /* @__PURE__ */ w("div", { className: "flex gap-3 text-xs uppercase tracking-wider", children: [
       /* @__PURE__ */ o("span", { className: Ve, children: vt(e) }),
       /* @__PURE__ */ o("span", { className: Ke, children: t.kicker })
     ] }),
@@ -5752,7 +5752,7 @@ function mo({
       "section",
       {
         id: s.id ?? ao(s.kicker),
-        className: "mt-16 first:mt-0 sm:mt-20 sm:first:mt-0",
+        className: "mt-24 first:mt-0 sm:mt-32 sm:first:mt-0",
         children: [
           /* @__PURE__ */ o(uo, { n: i + 1, section: s }),
           s.blocks && s.blocks.length > 0 && /* @__PURE__ */ o(lo, { blocks: s.blocks, slots: t, figureStart: l })
@@ -5769,7 +5769,7 @@ function rs({
 }) {
   return /* @__PURE__ */ w("article", { className: `font-mono ${r}`, children: [
     /* @__PURE__ */ o(co, { study: e }),
-    /* @__PURE__ */ o(mo, { sections: e.sections, slots: t, className: "mt-16 sm:mt-20" })
+    /* @__PURE__ */ o(mo, { sections: e.sections, slots: t, className: "mt-24 sm:mt-32" })
   ] });
 }
 const fo = re(function({ meta: t, title: r, description: n, titleSuffix: a, thumb: s, thumbPosition: i = "start", selected: l = !1, className: c = "", ...d }, u) {
@@ -6107,7 +6107,7 @@ function ss() {
 }
 const gr = Ue(null);
 function Nt(e) {
-  const t = Ae(gr);
+  const t = Ee(gr);
   if (!t)
     throw new Error(`[@scorp-ds/components] ${e} must be used inside <Tabs>.`);
   return t;
@@ -6358,7 +6358,7 @@ const Io = re(function({ className: t, ...r }, n) {
 });
 Io.displayName = "TableRow";
 const To = re(function({ className: t, scope: r = "col", ...n }, a) {
-  const s = Ae($t);
+  const s = Ee($t);
   return /* @__PURE__ */ o(
     "th",
     {
@@ -6375,7 +6375,7 @@ const To = re(function({ className: t, scope: r = "col", ...n }, a) {
 });
 To.displayName = "TableHead";
 const Eo = re(function({ className: t, ...r }, n) {
-  const a = Ae($t);
+  const a = Ee($t);
   return /* @__PURE__ */ o(
     "td",
     {
@@ -6685,7 +6685,7 @@ const Oo = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), jo 
     J(A === "selected" ? ne >= 0 ? ne : le : A === "first" ? le : A === "last" ? ve : -1);
   }, me = () => {
     D(!1), ue(!1), J(-1), Y((U == null ? void 0 : U.label) ?? "");
-  }, Me = (A) => {
+  }, Ce = (A) => {
     k((A == null ? void 0 : A.value) ?? null), ((A == null ? void 0 : A.value) ?? null) !== H && (a == null || a((A == null ? void 0 : A.value) ?? null, A)), Y((A == null ? void 0 : A.label) ?? ""), ue(!1), D(!1), J(-1);
   };
   G(() => {
@@ -6717,10 +6717,10 @@ const Oo = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), jo 
           T && j.length && (A.preventDefault(), J(ve));
           break;
         case "Enter":
-          T && ie >= 0 && B[ie] && !B[ie].disabled && (A.preventDefault(), Me(B[ie]));
+          T && ie >= 0 && B[ie] && !B[ie].disabled && (A.preventDefault(), Ce(B[ie]));
           break;
         case "Escape":
-          T ? (A.preventDefault(), me()) : (X !== "" || H != null) && (A.preventDefault(), Me(null));
+          T ? (A.preventDefault(), me()) : (X !== "" || H != null) && (A.preventDefault(), Ce(null));
           break;
         case "Tab":
           T && me();
@@ -6851,7 +6851,7 @@ const Oo = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), jo 
                     !A.disabled && ie !== ne && J(ne);
                   },
                   onClick: () => {
-                    A.disabled || Me(A);
+                    A.disabled || Ce(A);
                   },
                   className: z(
                     "flex min-h-touch items-center gap-2 px-4 py-2 font-mono text-sm",
@@ -7036,12 +7036,12 @@ function Xo({
 Xo.displayName = "EmptyState";
 const yr = Ue(null), wr = Ue(null);
 function kr(e) {
-  const t = Ae(yr);
+  const t = Ee(yr);
   if (!t) throw new Error(`${e} must be used inside <Accordion>.`);
   return t;
 }
 function Nr(e) {
-  const t = Ae(wr);
+  const t = Ee(wr);
   if (!t) throw new Error(`${e} must be used inside <AccordionItem>.`);
   return t;
 }
@@ -7376,7 +7376,7 @@ function ta({ "aria-label": e, collapsed: t = !1, children: r, className: n }) {
 }
 ta.displayName = "SideNav";
 function Sr({ heading: e, children: t, className: r }) {
-  const { collapsed: n } = Ae(zt), a = ce();
+  const { collapsed: n } = Ee(zt), a = ce();
   return /* @__PURE__ */ w(
     "div",
     {
@@ -7425,7 +7425,7 @@ function aa({
   onExpandedChange: m,
   className: p
 }) {
-  const { collapsed: b } = Ae(zt), f = ce(), g = Se.Children.toArray(c).some(Se.isValidElement), [v, _] = V(
+  const { collapsed: b } = Ee(zt), f = ce(), g = Se.Children.toArray(c).some(Se.isValidElement), [v, _] = V(
     () => u ?? (g && zr(c))
   ), h = d ?? v, $ = () => {
     const y = !h;
