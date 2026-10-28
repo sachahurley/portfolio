@@ -26,6 +26,7 @@ import HomeAltsLab from './pages/HomeAltsLab'
 import ContactLab from './pages/ContactLab'
 import FeaturedWorkLab from './pages/FeaturedWorkLab'
 import HomeShortcutsLab from './pages/HomeShortcutsLab'
+import FeaturedImagesLab from './pages/FeaturedImagesLab'
 import About from './pages/About'
 import Character from './pages/Character'
 import NotFound from './pages/NotFound'
@@ -100,6 +101,7 @@ function App() {
               <Route path="/lab/contact-sheet" element={<ContactLab />} />
               <Route path="/lab/featured-work" element={<FeaturedWorkLab />} />
               <Route path="/lab/home-shortcuts" element={<HomeShortcutsLab />} />
+              <Route path="/lab/featured-images" element={<FeaturedImagesLab />} />
               {TarotLab && (
                 <Route path="/lab/tarot" element={<Suspense fallback={null}><TarotLab /></Suspense>} />
               )}
