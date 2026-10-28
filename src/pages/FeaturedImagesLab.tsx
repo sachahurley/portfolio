@@ -19,6 +19,8 @@ import { TileBox } from '../components/TileSprite'
 import { TAROT_TILES, TAROT_TILE_H, TAROT_TILE_W } from '../game/tarotTiles'
 import { TILE_META } from '../data/tileSheet'
 import { usePageTitle } from '../lib/usePageTitle'
+import FeaturedCard from '../components/FeaturedCard'
+import { FEATURED } from '../data/featured'
 
 interface Item {
   label: string
@@ -131,23 +133,13 @@ function PreviewOnHover() {
   )
 }
 
-/** D: each item as a card, picture on top, icon and label beneath. */
+/** D, the chosen idea: the home page's own FeaturedCard, so this stays
+ *  exactly what ships (larger 1-bit icon, centred on its row). */
 function IconCard() {
   return (
-    <div className="fi-cards">
-      {ITEMS.map((it) => (
-        <Link key={it.label} to={it.to} className="fi-cardlink plate-round">
-          <span className="fi-cardpic">
-            <Picture item={it} height={108} />
-          </span>
-          <span className="fi-cardfoot">
-            <VillageIcon name={it.icon} size={20} />
-            <span>
-              <Label item={it} />
-              <span className="fi-cardline">{it.line}</span>
-            </span>
-          </span>
-        </Link>
+    <div className="featured-cards">
+      {FEATURED.map((f) => (
+        <FeaturedCard key={f.path} item={f} />
       ))}
     </div>
   )
@@ -199,8 +191,8 @@ export default function FeaturedImagesLab() {
       </Idea>
 
       <Idea
-        name="D. Icon card"
-        idea="Each item becomes a small card: the picture on top, the pixel icon, label and a one-line description beneath. Gives the work the most room and explains it."
+        name="D. Icon card (chosen, now on the home page)"
+        idea="Each item becomes a small card: the picture on top, then the 1-bit icon, larger and centred on the label and one-line description beside it. Gives the work the most room and explains it."
       >
         <IconCard />
       </Idea>

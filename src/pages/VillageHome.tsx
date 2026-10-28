@@ -2,11 +2,11 @@
  * Village home (/): the home page.
  *
  * Name and bio up top, then three titled sections of 1-bit village-kit
- * icons (VillageScene, all sharing HOME_SECTION_LAYOUT from
- * data/villageHome.ts so their columns line up):
+ * icons (VillageScene, sharing HOME_SECTION_LAYOUT from
+ * data/villageHome.ts so their columns line up) and cards:
  * - Navigation: the four core pages.
- * - Featured: shortcuts into the work (data/featured.ts), each label
- *   marked with a shortcut arrow.
+ * - Featured: shortcuts into the work (data/featured.ts) as cards
+ *   (FeaturedCard): a picture, the 1-bit icon, the label and one line.
  * - Adventure: the game layer. Character, and World (the turning globe,
  *   which opens "Thank you for visiting", WorldStatsModal) once the
  *   lifetime totals load: a counter that is wrong is worse than absent.
@@ -23,10 +23,11 @@ import type { ReactNode } from 'react'
 import {
   ADVENTURE_APPS,
   ADVENTURE_APPS_WITH_WORLD,
-  FEATURED_APPS,
   HOME_NAV_APPS,
   HOME_SECTION_LAYOUT,
 } from '../data/villageHome'
+import { FEATURED } from '../data/featured'
+import FeaturedCard from '../components/FeaturedCard'
 import { useSiteStats } from '../lib/siteStats'
 import { openWorld } from '../lib/worldDialog'
 import { usePageTitle } from '../lib/usePageTitle'
@@ -57,8 +58,12 @@ export default function VillageHome() {
         <VillageScene items={HOME_NAV_APPS} layout={HOME_SECTION_LAYOUT} onNavigate={(href) => navigate(href)} />
       </HomeSection>
 
-      <HomeSection id="home-featured" title="featured" className="home-featured">
-        <VillageScene items={FEATURED_APPS} layout={HOME_SECTION_LAYOUT} onNavigate={(href) => navigate(href)} />
+      <HomeSection id="home-featured" title="featured">
+        <div className="featured-cards">
+          {FEATURED.map((f) => (
+            <FeaturedCard key={f.path} item={f} />
+          ))}
+        </div>
       </HomeSection>
 
       <HomeSection id="home-adventure" title="adventure">
