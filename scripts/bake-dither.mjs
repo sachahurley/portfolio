@@ -64,7 +64,8 @@ const JOBS = [
     crop: { x: 650, y: 175, w: 1100, h: 500 },
     cols: 160,
     scale: 2,
-    // The home page's Featured card: the dense corner of the workbench (the
+    // The home page's former Featured card (now option 5 in the featured
+    // options lab; the card shows the live build log): the dense corner of the workbench (the
     // file list, the Pause and Export buttons, the first log lines), no
     // Storybook chrome and none of the empty log pane, at the card well's
     // ~2.2:1. 320 px wide for a ~300 CSS px card, so the windows and

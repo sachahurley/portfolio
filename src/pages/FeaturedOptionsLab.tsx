@@ -7,7 +7,7 @@
  * baked into the site's 1-bit ink (components/featuredArt), and the current
  * bake for comparison. Each option shows the whole Featured pair, so the
  * picture is judged next to Tarot GPT's card. Every card links to the real
- * page. (The shortcut marker was settled as none.)
+ * page. (Settled: the build log is live, and the shortcut marker is none.)
  */
 
 import type { ReactNode } from 'react'
@@ -26,7 +26,7 @@ const PICTURES: { name: string; note: string; media: Featured['media'] }[] = [
     media: { kind: 'art', art: 'kit' },
   },
   {
-    name: '12. Build log',
+    name: '12. Build log (live)',
     note: 'A LogView streaming the build (tokens resolved, components built, stories rendered, axe clean) above a status line. It moves: a line every beat.',
     media: { kind: 'art', art: 'log' },
   },
@@ -66,8 +66,8 @@ const PICTURES: { name: string; note: string; media: Featured['media'] }[] = [
     media: { kind: 'art', art: 'sprite' },
   },
   {
-    name: '5. Current: 1-bit screenshot',
-    note: 'What is live now, for comparison: the dithered Storybook workbench.',
+    name: '5. 1-bit screenshot',
+    note: 'What was live before, for comparison: the dithered Storybook workbench.',
     media: { kind: 'img', src: '/dither/scorp-card.png' },
   },
   {

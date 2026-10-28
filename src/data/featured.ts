@@ -30,7 +30,7 @@ export const FEATURED: Featured[] = [
     icon: 'scorpion',
     part: 'scorpion_icon',
     line: 'The design system this site is built from.',
-    media: { kind: 'img', src: '/dither/scorp-card.png' },
+    media: { kind: 'art', art: 'log' },
   },
   ...(TAROT_ENABLED
     ? [

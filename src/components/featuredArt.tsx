@@ -172,8 +172,9 @@ function KitArt() {
   )
 }
 
-// The log replays this build forever, a line every beat, showing the newest
-// three so no line is ever half cut off; reduced motion shows the end, still.
+// The log replays this build forever as a rolling window of three lines, a
+// new one every beat, so it is never half empty or cut off; reduced motion
+// shows the last three, still.
 const BUILD: Omit<LogLine, 'id'>[] = [
   { level: 'info', text: 'tokens: 378 resolved' },
   { level: 'info', text: 'components: 43 built' },
@@ -181,18 +182,22 @@ const BUILD: Omit<LogLine, 'id'>[] = [
   { level: 'info', text: 'axe: 0 violations' },
   { level: 'info', text: 'vendored to 3 sites' },
 ]
+const LOG_ROWS = 3
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function LogArt() {
-  // reduced motion starts (and stays) on the whole log
-  const [n, setN] = useState(() => (reducedMotion() ? BUILD.length : 2))
+  // t counts lines written so far; it only grows, so ids stay unique
+  const [t, setT] = useState(() => (reducedMotion() ? BUILD.length : LOG_ROWS))
   useEffect(() => {
     if (reducedMotion()) return
-    const t = window.setInterval(() => setN((i) => (i >= BUILD.length ? 1 : i + 1)), 1400)
-    return () => window.clearInterval(t)
+    const id = window.setInterval(() => setT((i) => i + 1), 1400)
+    return () => window.clearInterval(id)
   }, [])
-  const lines: LogLine[] = BUILD.slice(Math.max(0, n - 3), n).map((l, i) => ({ ...l, id: n - 3 + i }))
+  const lines: LogLine[] = Array.from({ length: LOG_ROWS }, (_, k) => {
+    const id = t - LOG_ROWS + k
+    return { ...BUILD[id % BUILD.length], id }
+  })
   return (
     <div className="featured-art featured-art--log">
       <LogView lines={lines} framed={false} className="featured-log" />

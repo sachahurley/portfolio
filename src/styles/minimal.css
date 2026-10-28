@@ -379,7 +379,6 @@ strong, b { font-weight: 400; }
   .quest-card--side.quest-card--portrait { grid-template-columns: 88px minmax(0, 1fr); }
   .quest-card--side-right.quest-card--portrait { grid-template-columns: minmax(0, 1fr) 88px; }
 }
-=======
 /* Home shortcuts lab (pages/HomeShortcutsLab.tsx): apps, shortcuts and
    widgets on the home grid. Lab-only until a layout is chosen. */
 .hs-em { font-style: normal; color: var(--fg); }
