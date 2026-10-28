@@ -310,6 +310,43 @@ strong, b { font-weight: 400; }
 .kind-words figcaption { margin-top: 12px; color: var(--fg); font-size: 14px; }
 .kind-words-role { color: var(--mut); }
 .worked-with { margin: 0; color: var(--body); font-size: 14px; }
+/* QuestCard (components/QuestCard.tsx): a case study as a linked card.
+   The wrap is the size container, so a card stacks by its own width, not
+   the viewport's. */
+.quest-wrap { container-type: inline-size; }
+.quest-card {
+  display: grid; gap: 16px; align-items: center; padding: 16px;
+  background: var(--surface-muted); color: inherit; text-decoration: none;
+}
+.quest-card--side { grid-template-columns: var(--quest-media) minmax(0, 1fr); }
+.quest-card--side-right { grid-template-columns: minmax(0, 1fr) var(--quest-media); }
+.quest-card--side-right .quest-media { order: 2; }
+.quest-card--top { grid-template-columns: minmax(0, 1fr); }
+.quest-media { display: block; overflow: hidden; width: 100%; }
+.quest-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.quest-hatch {
+  display: block; width: 100%; height: 100%;
+  background: repeating-linear-gradient(45deg, var(--surface-subtle), var(--surface-subtle) 8px, var(--surface-card) 8px, var(--surface-card) 16px);
+}
+.quest-text { display: block; min-width: 0; }
+.quest-title { display: block; color: var(--fg); font-size: 16px; }
+.quest-summary { display: block; color: var(--body); font-size: 13px; line-height: 1.6; margin-top: 4px; }
+@media (hover: hover) { .quest-card:hover .quest-title { color: var(--accent); } }
+/* overlay: the media fills the card; text rides a scrim at the bottom */
+.quest-card--overlay { position: relative; padding: 0; grid-template-columns: minmax(0, 1fr); }
+.quest-card--overlay .quest-text {
+  position: absolute; inset: auto 0 0 0; padding: 48px 16px 16px;
+  background: linear-gradient(to top, var(--surface-card) 30%, transparent);
+}
+/* narrow cards stack, media first; portrait media stays beside the text */
+@container (max-width: 440px) {
+  .quest-card--side:not(.quest-card--portrait),
+  .quest-card--side-right:not(.quest-card--portrait) { grid-template-columns: minmax(0, 1fr); }
+  .quest-card--side-right:not(.quest-card--portrait) .quest-media { order: 0; }
+  /* portrait media narrows so the text keeps a readable measure */
+  .quest-card--side.quest-card--portrait { grid-template-columns: 88px minmax(0, 1fr); }
+  .quest-card--side-right.quest-card--portrait { grid-template-columns: minmax(0, 1fr) 88px; }
+}
 /* optional 16:9 thumbnail on the far right of a row */
 .thumbimg {
   flex: none; width: 132px; aspect-ratio: 16/9; border: 1px solid var(--border); border-radius: 6px;
