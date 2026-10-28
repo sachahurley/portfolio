@@ -2,7 +2,8 @@
  * Lab experiment (/lab/:slug)
  *
  * Title + a live demo. "reactive-grid" ships a cursor-reactive dot grid on a
- * canvas and "tile-atlas" a sprite browser; other experiments are
+ * canvas, "tile-atlas" a sprite browser and "dot-loader" the site's loader
+ * plus a gallery of dot and 1-bit alternatives; other experiments are
  * placeholders. An experiment with a `lock` shows the code gate until it is
  * unlocked.
  */
@@ -25,6 +26,7 @@ import { Button } from '@scorp-ds/components'
 
 // The atlas pulls in its own data fetch and styles, so it loads only when opened.
 const TileAtlas = lazy(() => import('../components/lab/TileAtlas'))
+const LoaderGallery = lazy(() => import('../components/lab/LoaderGallery'))
 
 export default function LabItem() {
   const { slug } = useParams<{ slug: string }>()
@@ -187,8 +189,11 @@ export default function LabItem() {
           </div>
           <p className="meta" style={{ marginTop: 18 }}>
             demo: the site's loading indicator — six dots twinkling at random, and the time
-            you've spent watching them.
+            you've spent watching them. Below it, the other loaders it could have been.
           </p>
+          <Suspense fallback={null}>
+            <LoaderGallery />
+          </Suspense>
         </>
       ) : item.demo === 'dither-toy' ? (
         <>

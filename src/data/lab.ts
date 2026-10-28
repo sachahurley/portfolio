@@ -90,7 +90,7 @@ export const lab: LabItem[] = [
   {
     slug: 'dot-loader',
     title: 'Dot loader',
-    desc: 'A twinkling dot-matrix loading glyph with an elapsed-time readout.',
+    desc: 'A twinkling dot-matrix loading glyph, plus a gallery of dot and 1-bit loaders it could have been.',
     demo: 'dot-loader',
   },
   {
