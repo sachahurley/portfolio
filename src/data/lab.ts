@@ -70,6 +70,22 @@ export const lab: LabItem[] = [
     desc: 'A workshop for the town’s isometric buildings: shapes, roofs, and three 1-bit styles.',
   },
   {
+    // Rendered by the dedicated ContactLab page, not the LabItem template.
+    // Launch-checklist item 3; retires once a direction ships.
+    slug: 'contact-sheet',
+    workshop: true,
+    title: 'Contact sheet',
+    desc: 'Four ways to get in touch without an email address on the page. Each one opens and can be tried.',
+  },
+  {
+    // Rendered by the dedicated FeaturedWorkLab page, not the LabItem template.
+    // Launch-checklist item 8; retires once a direction ships.
+    slug: 'featured-work',
+    workshop: true,
+    title: 'Featured work',
+    desc: 'Three ways to put a case study on the home page, one tap from the bio.',
+  },
+  {
     // Rendered by the dedicated VillageLab page, not the LabItem template
     slug: 'village',
     workshop: true,
