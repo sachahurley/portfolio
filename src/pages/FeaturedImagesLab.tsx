@@ -2,12 +2,13 @@
  * Featured with images lab (/lab/featured-images)
  *
  * The home page's Featured items keep their pixel-icon buttons; this page
- * tries four ways to pair each one with a picture of the work. Scorp DS
- * has a 16:9 screenshot and Tarot GPT a 2:3 tarot card (drawn from the
- * tile sheet like the reader's own cards), so every idea is tested against
- * two different proportions. Laid out in HTML with the menu's pixel icons:
- * the home grid's canvas scene can't hold images, so the chosen idea gets
- * built as an HTML section. Every item links to the real page.
+ * tries four ways to pair each one with a picture of the work. The
+ * Scorpion Design System has a 16:9 screenshot and Tarot GPT a 2:3 tarot
+ * card (drawn from the tile sheet like the reader's own cards), so every
+ * idea is tested against two different proportions. Laid out in HTML with
+ * the menu's pixel icons: the home grid's canvas scene can't hold images,
+ * so the chosen idea gets built as an HTML section. Every item links to
+ * the real page.
  */
 
 import type { ReactNode } from 'react'
@@ -32,7 +33,7 @@ interface Item {
 
 const ITEMS: Item[] = [
   {
-    label: 'Scorp DS',
+    label: 'Scorpion Design System',
     to: '/projects/scorpion-ui',
     icon: 'scorpion',
     line: 'The design system this site is built from.',
@@ -165,7 +166,7 @@ export default function FeaturedImagesLab() {
       <BackButton fallback="/lab" />
       <h1 className="page">Featured with images</h1>
       <p className="lead">
-        The Featured items keep their pixel-icon buttons; these are four ways to add a picture of the work. Scorp DS
+        The Featured items keep their pixel-icon buttons; these are four ways to add a picture of the work. The Scorpion Design System
         has a wide screenshot and Tarot GPT a tall tarot card, so each idea is shown with both shapes. Everything links.
       </p>
 

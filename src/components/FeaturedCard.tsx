@@ -5,16 +5,37 @@
  *
  * The picture fills a fixed-height well: an image is cropped to fill it, a
  * tarot card is drawn from the tile sheet at the largest whole-pixel scale
- * that fits, centred on the card surface. The icon sits at 32px, centred
- * on the label and line beside it.
+ * that fits, centred on the card surface. The icon is the home grid's own
+ * live sprite (a decorative VillageScene): the same accent highlights,
+ * glints and idle bob as the Navigation icons, centred on the label and
+ * line beside it.
  */
 
 import { Link } from 'react-router-dom'
-import VillageIcon from './village/VillageIcon'
+import VillageScene, { type SceneLayout } from './village/VillageScene'
+import type { VillageItem } from './village/villageKit'
 import { TileBox } from './TileSprite'
 import { TAROT_TILES, TAROT_TILE_H, TAROT_TILE_W } from '../game/tarotTiles'
 import { TILE_META } from '../data/tileSheet'
 import type { Featured } from '../data/featured'
+
+/** One cell, no ground: the sprite and its live cue's headroom, nothing else. */
+const ICON_LAYOUT: SceneLayout = { mode: 'grid', cols: [1], cellPx: 44, ground: false }
+
+// One stable item per featured entry: the scene rebuilds whenever its items
+// change identity. The tap is what switches the live cue on; the scene is
+// decorative, so it never becomes a second link inside the card.
+const iconItems = new Map<string, VillageItem[]>()
+function iconFor(item: Featured): VillageItem[] {
+  let it = iconItems.get(item.path)
+  if (!it) {
+    it = [{ part: item.part, tap: { label: item.label, href: item.path, style: 'invert' } }]
+    iconItems.set(item.path, it)
+  }
+  return it
+}
+
+const noop = () => {}
 
 /** Height of the picture well, px; matches .featured-pic in minimal.css. */
 const WELL = 132
@@ -36,9 +57,13 @@ export default function FeaturedCard({ item }: { item: Featured }) {
         <Picture media={item.media} />
       </span>
       <span className="featured-foot">
-        <VillageIcon name={item.icon} size={32} className="featured-icon" />
+        <span className="featured-icon">
+          <VillageScene decorative items={iconFor(item)} layout={ICON_LAYOUT} onNavigate={noop} />
+        </span>
         <span className="featured-text">
-          <span className="featured-label">{item.label} ↗</span>
+          {/* the arrow is held to the last word, so a wrapped label never
+              leaves it alone on a line */}
+          <span className="featured-label">{item.label}{'\u00a0'}↗</span>
           <span className="featured-line">{item.line}</span>
         </span>
       </span>

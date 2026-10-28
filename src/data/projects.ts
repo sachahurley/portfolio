@@ -102,7 +102,7 @@ export const projects: Project[] = [
           kicker: 'overview',
           title: 'A terminal-flavoured design system I build everything else on.',
           intro:
-            'Scorp DS is a token-based React library with a TUI look: sharp corners, one monospace face, a warm amber and sepia palette, and interaction states that never run past 200ms. This site is built out of it.',
+            'Scorpion Design System is a token-based React library with a TUI look: sharp corners, one monospace face, a warm amber and sepia palette, and interaction states that never run past 200ms. This site is built out of it.',
           blocks: [
             {
               type: 'slot',

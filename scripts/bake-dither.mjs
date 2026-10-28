@@ -58,6 +58,18 @@ const JOBS = [
     // only survives as texture. Same source as the figure above; the
     // sidebar-plus-canvas shape is the one that still reads this small.
   },
+  {
+    src: 'scorp-storybook.png',
+    out: 'scorp-card.png',
+    crop: { x: 650, y: 175, w: 1100, h: 500 },
+    cols: 160,
+    scale: 2,
+    // The home page's Featured card: the dense corner of the workbench (the
+    // file list, the Pause and Export buttons, the first log lines), no
+    // Storybook chrome and none of the empty log pane, at the card well's
+    // ~2.2:1. 320 px wide for a ~300 CSS px card, so the windows and
+    // buttons read as interface rather than texture.
+  },
 ]
 
 /** Box-average the crop down to a cols x rows grid of normalised luma. */

@@ -29,9 +29,9 @@ import { getListedProjects } from '../data/projects'
 import { usePageTitle } from '../lib/usePageTitle'
 
 const featured = getListedProjects().find((p) => p.caseStudy)!
-const SHORT = 'Scorp DS'
+const SHORT = 'Scorpion Design System'
 
-/** A pixel scorpion for the Scorp DS shortcut: claws up, tail curling back.
+/** A pixel scorpion for the Scorpion Design System shortcut: claws up, tail curling back.
  *  'X' is ink. Drawn as SVG rects like VillageIcon, so it themes the same. */
 const SCORPION = [
   '.XX...........XX.',
