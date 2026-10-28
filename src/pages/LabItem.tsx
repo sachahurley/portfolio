@@ -29,7 +29,7 @@ const TileAtlas = lazy(() => import('../components/lab/TileAtlas'))
 export default function LabItem() {
   const { slug } = useParams<{ slug: string }>()
   const item = slug ? getLabBySlug(slug) : undefined
-  usePageTitle(item?.title)
+  usePageTitle(item?.title, item?.desc)
   const { award, toast } = useXp()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const unlocked = useUnlocked()

@@ -18,6 +18,7 @@ export interface Post {
   tags: string[]     // Topic labels, e.g. ["AI", "Design"]
   content: string    // Full post content (supports basic HTML)
   img?: boolean      // Show a 16:9 thumbnail on the row
+  draft?: boolean    // Unpublished: left out of every list and its URL 404s
 }
 
 // ============================================
@@ -143,6 +144,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'playgrounds',
+    draft: true, // placeholder body: publish once the real note is written
     title: 'Playgrounds Beat Decks',
     date: '2026-01-28',
     excerpt:
@@ -159,7 +161,7 @@ export const posts: Post[] = [
 
 // Helper: get all posts sorted by date (newest first)
 export function getSortedPosts(): Post[] {
-  return [...posts].sort(
+  return posts.filter((p) => !p.draft).sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   )
 }
@@ -171,5 +173,5 @@ export function getLatestPosts(count: number): Post[] {
 
 // Helper: find a single post by its slug (for the post detail page)
 export function getPostBySlug(slug: string): Post | undefined {
-  return posts.find((p) => p.slug === slug)
+  return posts.find((p) => p.slug === slug && !p.draft)
 }

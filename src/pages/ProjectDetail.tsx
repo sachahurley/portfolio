@@ -26,7 +26,7 @@ import { Button } from '@scorp-ds/components'
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>()
   const project = slug ? getProjectBySlug(slug) : undefined
-  usePageTitle(project?.title)
+  usePageTitle(project?.title, project?.description)
   const { award } = useXp()
 
   // Locked projects: decrypt state for the sealed case-study body

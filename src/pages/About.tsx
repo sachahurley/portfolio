@@ -14,7 +14,7 @@ import { useXp, XP_AWARDS } from '../context/XpProvider'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function About() {
-  usePageTitle('About')
+  usePageTitle('About', 'Sacha Hurley, product design engineer working where design meets AI: tools, links and how to reach me.')
   const { award } = useXp()
 
   return (
@@ -22,8 +22,8 @@ export default function About() {
       <BackButton fallback="/" />
       <h1 className="page">about</h1>
       <p className="lead">
-        Product designer &amp; builder working where design meets AI. I like
-        shipping real things and keeping the craft bar high.
+        Product design engineer working where design meets AI. I like shipping
+        real things and keeping the craft bar high.
       </p>
 
       <div className="mn-block">

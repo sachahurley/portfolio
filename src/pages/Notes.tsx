@@ -12,7 +12,7 @@ import { formatDate } from '../lib/date'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function Notes() {
-  usePageTitle('Notes')
+  usePageTitle('Notes', 'Short notes on design, design systems and building with AI.')
   const posts = getSortedPosts()
 
   return (

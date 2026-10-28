@@ -3,13 +3,15 @@ import react from '@vitejs/plugin-react'
 import { tilesDevApi } from './scripts/tilesDevApi'
 import { tarotDevApi } from './scripts/tarotDevApi'
 import { statsDevApi } from './scripts/statsDevApi'
+import { sitemap } from './scripts/sitemap'
 
 // https://vite.dev/config/
 export default defineConfig({
   // tilesDevApi: dev-only save endpoint for /dev/tiles
   // tarotDevApi: dev-only /api/tarot-chat, same handler the Vercel function serves
   // statsDevApi: dev-only /api/stats, ditto (in-memory counters without Upstash creds)
-  plugins: [react(), tilesDevApi(), tarotDevApi(), statsDevApi()],
+  // sitemap: build-only, writes dist/sitemap.xml from the page data
+  plugins: [react(), tilesDevApi(), tarotDevApi(), statsDevApi(), sitemap()],
   // Bind on all interfaces so both 127.0.0.1 (IPv4) and ::1 (IPv6) work
   server: {
     host: true,

@@ -12,7 +12,7 @@ import { getListedProjects } from '../data/projects'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function Projects() {
-  usePageTitle('Projects')
+  usePageTitle('Projects', 'Case studies by Sacha Hurley, product design engineer.')
 
   return (
     <MinimalPage>
