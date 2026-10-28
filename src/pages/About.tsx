@@ -28,6 +28,11 @@ export default function About() {
         product delivery for startups and established businesses, without
         compromising on quality or impact.
       </p>
+      <p className="lead">
+        Interested in AI-first, zero-to-one product work, where the foundations
+        are still being decided. Healthcare, creative tools and enterprise
+        especially.
+      </p>
 
       <div className="mn-block">
         <div className="label">how I work</div>

@@ -239,6 +239,118 @@ export const projects: Project[] = [
     },
   },
   {
+    // DRAFT, unlisted. Written by Claude as a starting point from three facts
+    // (Meta, Ads Manager, Sacha as design lead on a conversion uplift); every
+    // specific below is invented and must be corrected before `unlisted` is
+    // removed. No numbers by choice: results are described in words.
+    slug: 'meta-ads-manager',
+    title: 'Meta Ads Manager',
+    description: 'Leading the redesign of campaign creation in Meta Ads Manager.',
+    role: 'Design lead',
+    tags: ['Product Design', 'Leadership', 'Ads'],
+    featured: false,
+    unlisted: true,
+    caseStudy: {
+      summary:
+        'I led the redesign of campaign creation in Meta Ads Manager, turning a long, expert-first setup into a guided flow that far more advertisers finished.',
+      meta: [
+        { label: 'Role', value: 'Design lead' },
+        { label: 'Company', value: 'Meta' },
+        { label: 'Product', value: 'Ads Manager' },
+        { label: 'Team', value: 'Design, engineering, product and research' },
+      ],
+      sections: [
+        {
+          kicker: 'overview',
+          title: 'Campaign creation was where advertisers gave up.',
+          intro:
+            'Ads Manager is where businesses of every size buy ads across Facebook, Instagram and Messenger. Creating a campaign was its front door, and for many advertisers it was also the exit: the flow asked for dozens of decisions before anything could launch, and a large share of people who started never finished.',
+          blocks: [{ type: 'image', caption: 'Campaign creation before and after (art to come)' }],
+        },
+        {
+          kicker: 'the problem',
+          title: 'One flow, built for experts, serving everyone.',
+          intro:
+            'The flow had grown by addition. Every new objective, placement and targeting option arrived as another field, so a small business setting up its first ad faced the same wall of choices as an agency running hundreds.',
+          blocks: [
+            {
+              type: 'callouts',
+              items: [
+                { title: 'Too many decisions up front', text: 'Advertisers had to choose budgets, audiences and placements before they understood what any of them would do.' },
+                { title: 'Errors found late', text: 'Problems surfaced at review or after launch, far from the field that caused them.' },
+                { title: 'Many teams, one surface', text: 'Several product teams shipped into the same flow, each adding their own patterns.' },
+              ],
+            },
+          ],
+        },
+        {
+          kicker: 'approach',
+          title: 'Prototype first, then prove it.',
+          intro:
+            'I led a small design team alongside engineering, product and research. We put working prototypes in front of advertisers early and let what they did, not what they said, decide the direction.',
+          blocks: [
+            {
+              type: 'list',
+              items: [
+                { title: 'Watch real setups', text: 'Research sessions with advertisers of every size, from first-time small businesses to agency media buyers.' },
+                { title: 'Map every decision', text: 'An inventory of each field in the flow, who needed it and when, which showed how much could wait.' },
+                { title: 'Prototype the risky parts', text: 'High-fidelity prototypes of the new structure, tested before anything was specified.' },
+                { title: 'Align the teams', text: 'Shared patterns and a single structure the contributing teams agreed to build into.' },
+              ],
+            },
+          ],
+        },
+        {
+          kicker: 'key insights',
+          title: 'What advertisers kept showing us.',
+          blocks: [
+            {
+              type: 'insights',
+              items: [
+                { title: 'People start from a goal, not a setting', text: 'Advertisers knew what they wanted (more sales, more visits) long before they knew which options got them there.' },
+                { title: 'Defaults are a decision', text: 'Most advertisers kept whatever was preselected, so good defaults did more than any explanation.' },
+                { title: 'Confidence beats completeness', text: 'Seeing a preview of the ad and its likely reach made people willing to launch without perfecting every field.' },
+              ],
+            },
+          ],
+        },
+        {
+          kicker: 'the solution',
+          title: 'A guided flow that starts from the goal.',
+          intro:
+            'Campaign creation now opens with what the advertiser wants to achieve, applies sensible defaults for everything else, and keeps advanced controls one step away for the experts who need them.',
+          blocks: [
+            {
+              type: 'statement',
+              kicker: 'the principle',
+              text: 'Ask for the goal first; let every other decision wait until it matters.',
+            },
+            { type: 'imagePair', captions: ['Goal-first setup (art to come)', 'Inline guidance and preview (art to come)'] },
+          ],
+        },
+        {
+          kicker: 'outcome',
+          title: 'More advertisers launched, and fewer got stuck.',
+          intro:
+            'Completion of campaign creation rose substantially, errors caught at review dropped, and the goal-first structure became the pattern new objectives were built into.',
+        },
+        {
+          kicker: 'reflection',
+          title: 'What I would carry forward.',
+          blocks: [
+            {
+              type: 'list',
+              items: [
+                { title: 'Remove before you add', text: 'The biggest gains came from deciding what not to ask yet, not from new features.' },
+                { title: 'Lead with prototypes', text: 'A working prototype settled debates between teams faster than any document.' },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // Unlisted template: every case-study block in use, in a typical order.
     // Reachable at /projects/case-study-template to preview layouts; copy
     // it to start a new case study. Mirrors scorp-ds presets/caseStudy.ts.
