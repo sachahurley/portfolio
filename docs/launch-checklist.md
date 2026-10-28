@@ -25,8 +25,10 @@ everything under "Before you share" should be done before the first post.
 ## First week after sharing
 
 - [ ] **7. Betterfly case study.** Same format and process as Meta.
-- [ ] **8. Featured work on the home page.** Pick a direction (ideas below) so
-  a first-time visitor reaches a case study in one tap.
+- [x] **8. Featured work on the home page.** Pick a direction (ideas below) so
+  a first-time visitor reaches a case study in one tap. Done: a Featured
+  section of picture cards (Scorpion Design System with a live build log,
+  Tarot GPT), mirrored in the menus (#112, #113, #115).
 - [ ] **9. Case-study share cards.** Write each case study's title and summary
   into its page at build time, so a shared case study previews as itself
   instead of the site-wide card.
