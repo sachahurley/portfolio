@@ -103,11 +103,11 @@ export const lab: LabItem[] = [
   },
   {
     // Rendered by the dedicated FeaturedOptionsLab page, not the LabItem
-    // template. Retires once a picture and a marker are chosen.
+    // template. Retires once a picture is chosen.
     slug: 'featured-options',
     workshop: true,
     title: 'Featured card options',
-    desc: 'Picture and shortcut-marker options for the home page’s featured cards.',
+    desc: 'Ten picture options for the Scorpion Design System’s featured card.',
   },
   {
     // Rendered by the dedicated VillageLab page, not the LabItem template

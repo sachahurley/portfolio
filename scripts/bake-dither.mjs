@@ -70,7 +70,77 @@ const JOBS = [
     // ~2.2:1. 320 px wide for a ~300 CSS px card, so the windows and
     // buttons read as interface rather than texture.
   },
+  // The showcase site's scorpion art (github.com/sachahurley/
+  // scorpion-design-system, public/), for the Featured card options.
+  {
+    src: 'showcase-scorpion.png',
+    out: 'showcase-logo.png',
+    mode: 'alpha',
+    crop: { x: 91, y: 126, w: 843, h: 787 },
+    cols: 30,
+    scale: 4,
+    // The showcase's pixel scorpion logo (scorpion-hero-v2), cropped to its
+    // ink and sampled on its own 30 x 28 cell grid, so every cell lands
+    // whole: 120 x 112 px.
+  },
+  {
+    src: 'showcase-wordmark.png',
+    out: 'showcase-wordmark.png',
+    mode: 'alpha',
+    crop: { x: 10, y: 10, w: 938, h: 173 },
+    cols: 128,
+    scale: 2,
+    // The boxed SCORPION UI wordmark (scorpion-ui-graphic-2), on its
+    // ~7 px cell grid: 256 x 48 px.
+  },
+  {
+    src: 'showcase-illustration.png',
+    out: 'showcase-illustration.png',
+    crop: { x: 0, y: 0, w: 1232, h: 924 },
+    cols: 176,
+    scale: 1,
+    // The showcase's detailed scorpion (scorpion-hero), whole frame,
+    // re-dithered into the site's ink one cell per CSS pixel so the
+    // segments and claws survive: 176 x 132 px, the card well's height.
+  },
+  {
+    src: 'showcase-stinger.png',
+    out: 'showcase-stinger.png',
+    crop: { x: 0, y: 280, w: 1024, h: 465 },
+    cols: 160,
+    scale: 2,
+    black: 0.06,
+    white: 0.4,
+    // The album-cover tail close-up (album-cover-stinger-001), banded to
+    // the card well's ~2.2:1. Its source is dark, so the white point drops.
+  },
 ]
+
+/** Box-average the crop's alpha: pixel art on transparency (mode 'alpha').
+ *  Thresholded at half rather than dithered, so the cells stay crisp. */
+function sampleAlpha({ width, data }, crop, cols, rows) {
+  const cellW = crop.w / cols
+  const cellH = crop.h / rows
+  const out = new Float64Array(cols * rows)
+  for (let gy = 0; gy < rows; gy++) {
+    const y0 = Math.floor(crop.y + gy * cellH)
+    const y1 = Math.max(y0 + 1, Math.floor(crop.y + (gy + 1) * cellH))
+    for (let gx = 0; gx < cols; gx++) {
+      const x0 = Math.floor(crop.x + gx * cellW)
+      const x1 = Math.max(x0 + 1, Math.floor(crop.x + (gx + 1) * cellW))
+      let sum = 0
+      let n = 0
+      for (let y = y0; y < y1; y++) {
+        for (let x = x0; x < x1; x++) {
+          sum += data[(y * width + x) * 4 + 3]
+          n++
+        }
+      }
+      out[gy * cols + gx] = sum / n / 255 >= 0.5 ? 1 : 0
+    }
+  }
+  return out
+}
 
 /** Box-average the crop down to a cols x rows grid of normalised luma. */
 function sampleLuma({ width, data }, crop, cols, rows) {
@@ -117,7 +187,11 @@ function bake(job) {
     throw new Error(`${job.src}: crop ${crop.w}x${crop.h}+${crop.x}+${crop.y} exceeds ${img.width}x${img.height}`)
   }
   const rows = Math.round((cols * crop.h) / crop.w)
-  const lit = levels(sampleLuma(img, crop, cols, rows), job.black ?? 0.12, job.white ?? 0.75)
+  // 'alpha' jobs are pixel art on transparency: ink wherever it is opaque
+  const lit =
+    job.mode === 'alpha'
+      ? sampleAlpha(img, crop, cols, rows)
+      : levels(sampleLuma(img, crop, cols, rows), job.black ?? 0.12, job.white ?? 0.75)
 
   const width = cols * scale
   const height = rows * scale

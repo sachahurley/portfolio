@@ -1,7 +1,6 @@
 /**
  * FeaturedCard: one featured item (data/featured.ts) as a card: the picture
- * on top, then the 1-bit icon, the label with its shortcut marker, and one
- * line. The home page's Featured section is a grid of these.
+ * on top, then the 1-bit icon, the label and one line. The home page's Featured section is a grid of these.
  *
  * The picture fills a fixed-height well: an image is cropped to fill it, a
  * tarot card is drawn from the tile sheet at the largest whole-pixel scale
@@ -12,7 +11,6 @@
  */
 
 import { Link } from 'react-router-dom'
-import DitherIcon from './DitherIcon'
 import { FeaturedArtView } from './featuredArt'
 import VillageScene, { type SceneLayout } from './village/VillageScene'
 import type { VillageItem } from './village/villageKit'
@@ -53,49 +51,7 @@ function Picture({ media }: { media: Featured['media'] }) {
   return cell ? <TileBox x={cell[0]} y={cell[1]} w={TAROT_TILE_W} h={TAROT_TILE_H} scale={scale} tint="var(--fg)" /> : null
 }
 
-/**
- * How a card says "this jumps into a page of the site":
- * - out:      ↗ (reads as leaving the site; the original)
- * - none:     nothing; the Featured title and the card itself carry it
- * - arrow:    a 1-bit right arrow, "go to", in-site
- * - alias:    a curved-arrow badge on the icon's corner, the desktop
- *             shortcut / alias convention
- * - pin, bookmark, star: a 1-bit glyph after the label
- */
-export type FeaturedMarker = 'out' | 'none' | 'arrow' | 'alias' | 'pin' | 'bookmark' | 'star'
-
-/** The home page's marker until one is chosen. */
-export const HOME_MARKER: FeaturedMarker = 'out'
-
-/** The alias badge: a curved arrow, 7x7 art px, drawn as rects like the icons. */
-const ALIAS = ['...X...', '...XX..', 'XXXXXX.', 'X..XX..', 'X..X...', 'X......', 'X......']
-function AliasBadge() {
-  let d = ''
-  ALIAS.forEach((row, y) => {
-    for (let x = 0; x < row.length; x++) if (row[x] === 'X') d += `M${x} ${y}h1v1h-1z`
-  })
-  return (
-    <span className="featured-alias" aria-hidden="true">
-      <svg width={14} height={14} viewBox="0 0 7 7" shapeRendering="crispEdges" fill="currentColor">
-        <path d={d} />
-      </svg>
-    </span>
-  )
-}
-
-const GLYPH: Partial<Record<FeaturedMarker, 'arrow-right' | 'pin' | 'bookmark' | 'star'>> = {
-  arrow: 'arrow-right',
-  pin: 'pin',
-  bookmark: 'bookmark',
-  star: 'star',
-}
-
-export default function FeaturedCard({ item, marker = HOME_MARKER }: { item: Featured; marker?: FeaturedMarker }) {
-  const glyph = GLYPH[marker]
-  // the last word and its marker wrap as one unit
-  const words = item.label.split(' ')
-  const last = words.pop()
-  const lead = words.length ? `${words.join(' ')} ` : ''
+export default function FeaturedCard({ item }: { item: Featured }) {
   return (
     <Link to={item.path} className="featured-card plate-round">
       {/* the picture is decorative: the label names the card */}
@@ -105,24 +61,11 @@ export default function FeaturedCard({ item, marker = HOME_MARKER }: { item: Fea
       <span className="featured-foot">
         <span className="featured-icon">
           <VillageScene decorative items={iconFor(item)} layout={ICON_LAYOUT} onNavigate={noop} />
-          {marker === 'alias' && <AliasBadge />}
         </span>
         <span className="featured-text">
-          {/* a marker is held to the last word, so a wrapped label never
-              leaves it alone on a line */}
-          <span className="featured-label">
-            {lead}
-            <span className="featured-lastword">
-              {last}
-              {marker === 'out' && '\u00a0↗'}
-              {glyph && (
-                <>
-                  {'\u00a0'}
-                  <DitherIcon name={glyph} size={12} className="featured-glyph" />
-                </>
-              )}
-            </span>
-          </span>
+          {/* no shortcut marker: the Featured title and the card itself say
+              it goes to a page of the site (an arrow read as leaving it) */}
+          <span className="featured-label">{item.label}</span>
           <span className="featured-line">{item.line}</span>
         </span>
       </span>

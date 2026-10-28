@@ -1,20 +1,19 @@
 /**
  * Featured card options lab (/lab/featured-options)
  *
- * Two open choices on the home page's Featured cards, each shown on the
- * real FeaturedCard so what you pick is what ships:
- * - the Scorpion Design System's picture: the current 1-bit bake, or one
- *   composed from the design system itself (components/featuredArt);
- * - the marker that says "this jumps to a page of the site", since ↗ reads
- *   as leaving it.
- * Each option shows the whole Featured pair, so the picture is judged next
- * to Tarot GPT's card. Every card links to the real page.
+ * The Scorpion Design System's picture on the home page's Featured card,
+ * shown on the real FeaturedCard so what you pick is what ships: pictures
+ * composed from the design system itself, the showcase site's scorpion art
+ * baked into the site's 1-bit ink (components/featuredArt), and the current
+ * bake for comparison. Each option shows the whole Featured pair, so the
+ * picture is judged next to Tarot GPT's card. Every card links to the real
+ * page. (The shortcut marker was settled as none.)
  */
 
 import type { ReactNode } from 'react'
 import BackButton from '../components/BackButton'
 import MinimalPage from '../components/MinimalPage'
-import FeaturedCard, { type FeaturedMarker } from '../components/FeaturedCard'
+import FeaturedCard from '../components/FeaturedCard'
 import { FEATURED, type Featured } from '../data/featured'
 import { usePageTitle } from '../lib/usePageTitle'
 
@@ -46,16 +45,31 @@ const PICTURES: { name: string; note: string; media: Featured['media'] }[] = [
     note: 'What is live now, for comparison: the dithered Storybook workbench.',
     media: { kind: 'img', src: '/dither/scorp-card.png' },
   },
-]
-
-const MARKERS: { name: string; note: string; marker: FeaturedMarker }[] = [
-  { name: 'A. None', note: 'No marker. The Featured title and the card itself already say it is a link into the site.', marker: 'none' },
-  { name: 'B. Right arrow', note: 'A 1-bit arrow: "go to". Stays inside the site, where ↗ points out of it.', marker: 'arrow' },
-  { name: 'C. Shortcut badge', note: 'A curved arrow on the icon’s corner: the desktop convention for a shortcut or alias.', marker: 'alias' },
-  { name: 'D. Pin', note: 'Pinned to the home page, the way phones pin shortcuts.', marker: 'pin' },
-  { name: 'E. Bookmark', note: 'Saved for you: a bookmark beside the name.', marker: 'bookmark' },
-  { name: 'F. Star', note: 'Featured as a star: a highlight rather than a navigation cue.', marker: 'star' },
-  { name: 'G. Current: ↗', note: 'What is live now, for comparison. Reads as leaving the site.', marker: 'out' },
+  {
+    name: '6. Showcase wordmark',
+    note: 'The showcase site’s top bar: its pixel scorpion logo beside the name, as the system brands itself. The card’s label then repeats the name.',
+    media: { kind: 'art', art: 'wordmark' },
+  },
+  {
+    name: '7. Showcase logo',
+    note: 'That pixel scorpion logo on its own, large: a proper scorpion, drawn on its own grid, paired with Tarot GPT’s single card.',
+    media: { kind: 'art', art: 'logo' },
+  },
+  {
+    name: '8. Showcase illustration',
+    note: 'The showcase’s detailed scorpion, re-dithered into the site’s ink. The most crafted picture, and it matches the tarot card’s line work.',
+    media: { kind: 'art', art: 'illustration' },
+  },
+  {
+    name: '9. Boxed pixel wordmark',
+    note: 'The showcase’s boxed wordmark with the scorpion in the O. Strong, but it reads SCORPION UI, the system’s earlier name.',
+    media: { kind: 'art', art: 'boxed' },
+  },
+  {
+    name: '10. Tail close-up',
+    note: 'The showcase album art’s stinger, cropped to the card. Atmospheric, but the subject is hard to read at this size.',
+    media: { kind: 'art', art: 'stinger' },
+  },
 ]
 
 function Option({ name, note, children }: { name: string; note: string; children: ReactNode }) {
@@ -69,14 +83,14 @@ function Option({ name, note, children }: { name: string; note: string; children
 }
 
 export default function FeaturedOptionsLab() {
-  usePageTitle('Featured card options', 'Picture and shortcut-marker options for the home page’s featured cards.')
+  usePageTitle('Featured card options', 'Ten picture options for the Scorpion Design System’s featured card.')
   return (
     <MinimalPage>
       <BackButton fallback="/lab" />
       <h1 className="page">Featured card options</h1>
       <p className="lead">
-        Two choices for the home page&rsquo;s Featured cards: the Scorpion Design System&rsquo;s picture, and the
-        marker that says a card goes to a page of this site. Each shows the whole pair, on the real card.
+        Ten pictures for the Scorpion Design System&rsquo;s Featured card: some composed from the design system
+        itself, some from the showcase site&rsquo;s scorpion art. Each shows the whole pair, on the real card.
       </p>
 
       <div className="mn-block">
@@ -91,16 +105,6 @@ export default function FeaturedOptionsLab() {
         ))}
       </div>
 
-      <div className="mn-block">
-        <div className="label">shortcut marker</div>
-        {MARKERS.map((m) => (
-          <Option key={m.name} name={m.name} note={m.note}>
-            {FEATURED.map((f) => (
-              <FeaturedCard key={f.path} item={f} marker={m.marker} />
-            ))}
-          </Option>
-        ))}
-      </div>
     </MinimalPage>
   )
 }

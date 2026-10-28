@@ -8,12 +8,29 @@
  * - palette: the two token ramps (primary amber, secondary sepia)
  * - diagram: the package-layering box diagram, as live text
  * - sprite:  the scorpion sprite at a large whole-pixel size
+ *
+ * And the showcase site's scorpion art, baked into the site's 1-bit ink by
+ * scripts/bake-dither.mjs (sources in art/):
+ * - wordmark:     the showcase top bar's logo beside the system's name
+ * - logo:         that pixel scorpion logo, large
+ * - illustration: the showcase's detailed scorpion, re-dithered
+ * - boxed:        the boxed SCORPION UI pixel wordmark
+ * - stinger:      the album-cover tail close-up
  */
 
 import { Badge, Meter, Window } from '@scorp-ds/components'
 import VillageIcon from './village/VillageIcon'
 
-export type FeaturedArt = 'window' | 'palette' | 'diagram' | 'sprite'
+export type FeaturedArt =
+  | 'window'
+  | 'palette'
+  | 'diagram'
+  | 'sprite'
+  | 'wordmark'
+  | 'logo'
+  | 'illustration'
+  | 'boxed'
+  | 'stinger'
 
 function WindowArt() {
   return (
@@ -83,7 +100,36 @@ function SpriteArt() {
   )
 }
 
+/** A baked 1-bit picture, centred whole in the well at its own pixel size. */
+function Baked({ src, cover = false }: { src: string; cover?: boolean }) {
+  return (
+    <span className="featured-art featured-art--baked">
+      <img src={src} alt="" className={cover ? 'featured-art-img featured-art-img--cover' : 'featured-art-img'} />
+    </span>
+  )
+}
+
+/** The showcase top bar's branding: the pixel logo beside the name. */
+function WordmarkArt() {
+  return (
+    <span className="featured-art featured-art--wordmark">
+      <img src="/dither/showcase-logo.png" alt="" className="featured-art-img" style={{ width: 60, height: 56 }} />
+      {/* stacked as a lockup: one line would outgrow the card */}
+      <span className="featured-art-name">
+        Scorpion
+        <br />
+        Design System
+      </span>
+    </span>
+  )
+}
+
 export function FeaturedArtView({ art }: { art: FeaturedArt }) {
+  if (art === 'wordmark') return <WordmarkArt />
+  if (art === 'logo') return <Baked src="/dither/showcase-logo.png" />
+  if (art === 'illustration') return <Baked src="/dither/showcase-illustration.png" />
+  if (art === 'boxed') return <Baked src="/dither/showcase-wordmark.png" />
+  if (art === 'stinger') return <Baked src="/dither/showcase-stinger.png" cover />
   if (art === 'window') return <WindowArt />
   if (art === 'palette') return <PaletteArt />
   if (art === 'diagram') return <DiagramArt />
