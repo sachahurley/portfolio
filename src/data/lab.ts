@@ -102,6 +102,14 @@ export const lab: LabItem[] = [
     desc: 'Four ways to pair the home page’s featured icons with a picture of the work.',
   },
   {
+    // Rendered by the dedicated FeaturedOptionsLab page, not the LabItem
+    // template. Retires once a picture and a marker are chosen.
+    slug: 'featured-options',
+    workshop: true,
+    title: 'Featured card options',
+    desc: 'Picture and shortcut-marker options for the home page’s featured cards.',
+  },
+  {
     // Rendered by the dedicated VillageLab page, not the LabItem template
     slug: 'village',
     workshop: true,

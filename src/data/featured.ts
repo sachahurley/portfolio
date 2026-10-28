@@ -8,6 +8,7 @@
  */
 
 import type { VillageIconName } from '../components/village/VillageIcon'
+import type { FeaturedArt } from '../components/featuredArt'
 import { TAROT_ENABLED } from '../lib/flags'
 
 export interface Featured {
@@ -17,8 +18,9 @@ export interface Featured {
   part: string            // The card's live 1-bit sprite (a village kit part)
   line: string            // One sentence under the label on the home card
   /** The card's picture: an image under public/ (shown cropped to fill),
-   *  or a tarot card drawn from the tile sheet by its deck id. */
-  media: { kind: 'img'; src: string } | { kind: 'card'; id: string }
+   *  a tarot card drawn from the tile sheet by its deck id, or a picture
+   *  composed from the design system (components/featuredArt). */
+  media: { kind: 'img'; src: string } | { kind: 'card'; id: string } | { kind: 'art'; art: FeaturedArt }
 }
 
 export const FEATURED: Featured[] = [
