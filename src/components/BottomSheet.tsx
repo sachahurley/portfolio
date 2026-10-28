@@ -2,7 +2,8 @@
  * BottomSheet — the site menu, opened by the dock's Menu button or the game
  * frame's character strip. The shell (scrim, top-plate panel, grabber,
  * slide + exit animation, Esc, scroll lock) is the DS BottomSheet; this
- * file keeps the contents: nav from the world-map registry, the compact
+ * file keeps the contents: nav from the world-map registry (Navigation,
+ * then Featured, as on the home page), the compact
  * character row, and the contact links.
  *
  * The stone tile-ring seam and drag-to-dismiss were retired with the DS
@@ -12,9 +13,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { BottomSheet as DSBottomSheet, Divider, ListRow } from '@scorp-ds/components'
 import { useXp, XP_AWARDS } from '../context/XpProvider'
-import { LOCATIONS, NAV_EXTRAS, NAV_WORLD, extraFor } from '../game/locations'
-import { useSiteStats } from '../lib/siteStats'
-import { openWorld } from '../lib/worldDialog'
+import { LOCATIONS, NAV_FEATURED, extraFor } from '../game/locations'
 import PortraitPlate from './game/PortraitPlate'
 import { inkColor } from '../game/avatarInks'
 import ChestSignal from './game/ChestSignal'
@@ -33,8 +32,7 @@ export default function BottomSheet({
   const { level, award, name, avatarSeed, avatarInk, pendingLevels, chests } = useXp()
   const displayLevel = level.level + 1
 
-  const stats = useSiteStats()
-  // a menu extra outranks its section: on /lab/tarot, Tarot lights, not Lab
+  // a featured shortcut outranks its section: on /lab/tarot, Tarot lights, not Lab
   const extra = extraFor(location.pathname)
   const isActive = (path: string) =>
     extra
@@ -42,12 +40,13 @@ export default function BottomSheet({
       : path === '/'
         ? location.pathname === '/'
         : location.pathname.startsWith(path)
-  // Character is the sheet's portrait row below, so only the other extras list here
-  const navExtras = NAV_EXTRAS.filter((d) => d.path !== '/character')
 
   return (
     <DSBottomSheet isOpen={open} onClose={onClose} ariaLabel="Menu">
-        <nav className="menu-nav">
+        {/* Organised like the home page: Navigation, then Featured. Character
+            is the portrait row below; World lives on the home page. */}
+        <nav className="menu-nav" aria-label="Site">
+          <div className="menu-group-label">navigation</div>
           {LOCATIONS.map((loc) => {
             const locked = loc.minLevel != null && displayLevel < loc.minLevel
             const active = isActive(loc.path)
@@ -70,7 +69,8 @@ export default function BottomSheet({
               </Link>
             )
           })}
-          {navExtras.map((dest) => {
+          <div className="menu-group-label">featured</div>
+          {NAV_FEATURED.map((dest) => {
             const active = isActive(dest.path)
             return (
               <Link
@@ -84,17 +84,6 @@ export default function BottomSheet({
               </Link>
             )
           })}
-          {stats && (
-            <button
-              type="button"
-              onClick={() => {
-                onClose()
-                openWorld()
-              }}
-            >
-              <VillageIcon name={NAV_WORLD.icon} size={20} className="gf-ic" /> {NAV_WORLD.real}
-            </button>
-          )}
         </nav>
 
 

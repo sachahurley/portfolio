@@ -168,6 +168,12 @@ strong, b { font-weight: 400; }
    @scorp-ds/components BottomSheet; only the sheet CONTENT styles below
    (.menu-nav, .sheet-char, .sheet-contact) remain. */
 .menu-nav { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+/* the sheet's groups, organised like the home page's sections */
+.menu-group-label {
+  padding: 12px 13px 6px; color: var(--mut); font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.menu-group-label:first-child { padding-top: 0; }
 .menu-nav a, .menu-nav button {
   display: flex; align-items: center; font-size: 20px; font-weight: 400;
   padding: 9px 13px; color: var(--mut); border: 1px solid transparent;
@@ -675,6 +681,9 @@ body, h1, .label, .bio p, .lead, .prose p, .menu-nav a, .menu-nav button {
 
 /* compass */
 .gf-compass ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+/* the compass groups, organised like the home page's sections */
+.gf-compass .gf-navlabel { margin: 0 0 8px; padding-left: 12px; color: var(--mut); }
+.gf-compass ul + .gf-navlabel { margin-top: 20px; }
 /* pixel-rounded plate silhouette (RPG dialog-box style): --plate-round and
    --plate-round-lg come from the scorp-ds tokens (tokens.css) — they are NOT
    re-declared here. A local :root copy used to shadow the DS values for the
@@ -1397,17 +1406,17 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 .vg-frame canvas { position: relative; display: block; image-rendering: pixelated; }
 /* only tappable items carry a label, so accent here means "you can go
    here": the same colour as the sprites' glints and the compass's active row */
-/* Home: the Featured row under the app grid (VillageHome). A rule with a
-   small label, the way case study sections open; the shortcut arrow marks
-   each label as a jump into an app rather than an app of its own. */
-.home-featured { margin-top: 32px; }
-.home-featured-label {
-  border-top: 1px solid var(--border); padding-top: 10px; margin-bottom: 8px;
-  color: var(--mut); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+/* Home sections (VillageHome): Navigation, Featured, Adventure. Each is a
+   rule with a small centred title, then its grid. The scene's own 40px top
+   margin is for sitting under the bio; under a title it would leave a hole. */
+.home-section { margin-top: 40px; }
+.home-section-title {
+  margin: 0 0 8px; padding-top: 10px; border-top: 1px solid var(--border);
+  text-align: center; font-size: 12px; font-weight: 400; color: var(--mut);
+  text-transform: uppercase; letter-spacing: 0.08em;
 }
-/* the scene's 40px top margin separates it from the bio; under the label
-   it would leave a hole */
-.home-featured .vg-frame { margin-top: 0; }
+.home-section .vg-frame { margin-top: 0; }
+/* Featured labels carry a shortcut arrow: a jump into an app, not an app */
 .home-featured .vg-label::after {
   content: " ↗";
   content: " ↗" / ""; /* decorative: no alt text where supported */
