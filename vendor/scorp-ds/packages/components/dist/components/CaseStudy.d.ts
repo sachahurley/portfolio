@@ -152,6 +152,9 @@ export interface CaseStudy {
     cover?: CaseStudyFigure;
     sections: CaseStudySection[];
 }
+/** The shrink-to-fit font size for an `ascii` diagram: text-xs, or smaller
+ *  when the longest line would not fit the figure. Exported for tests. */
+export declare const asciiFontSize: (text: string) => string;
 /**
  * CaseStudyContent: content blocks with no section chrome. Use it for a
  * short page that does not need numbered sections; `CaseStudyPage` uses it
