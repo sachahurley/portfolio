@@ -29,9 +29,9 @@ export default function About() {
         compromising on quality or impact.
       </p>
       <p className="lead">
-        Open to AI-first, 0&rarr;1 product design roles: building from scratch
-        and shaping the foundations, in healthcare, creative tools, enterprise
-        and beyond.
+        Interested in AI-first, zero-to-one product work, where the foundations
+        are still being decided. Healthcare, creative tools and enterprise
+        especially.
       </p>
 
       <div className="mn-block">
