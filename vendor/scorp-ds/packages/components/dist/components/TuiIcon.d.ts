@@ -60,6 +60,7 @@ export declare const TUI_ICON_GLYPHS: {
     readonly SkipBack: "⏮";
     readonly SkipForward: "⏭";
     readonly Star: "★";
+    readonly Stop: "⏹";
     readonly Sun: "☀";
     readonly Tag: "⌂";
     readonly Trash2: "✗";
