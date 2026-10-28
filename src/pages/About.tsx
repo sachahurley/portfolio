@@ -28,6 +28,11 @@ export default function About() {
         product delivery for startups and established businesses, without
         compromising on quality or impact.
       </p>
+      <p className="lead">
+        Open to AI-first, 0&rarr;1 product design roles: building from scratch
+        and shaping the foundations, in healthcare, creative tools, enterprise
+        and beyond.
+      </p>
 
       <div className="mn-block">
         <div className="label">how I work</div>
