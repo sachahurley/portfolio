@@ -36,4 +36,32 @@ export const SITE_PARTS: VillagePart[] = [
       '..XXXXXXXXX..',
     ],
   },
+  // The Scorp DS case study's icon on the home page's Featured row: a
+  // scorpion seen from above, claws up, tail curling back to a stinger
+  // (the 'H' seed, which glints accent on the live cue like the others).
+  {
+    name: 'scorpion_icon',
+    w: 17,
+    h: 16,
+    cat: 'prop',
+    kind: 'sprite',
+    rows: [
+      '.XX...........XX.',
+      'X..X.........X..X',
+      'X.XX.........XX.X',
+      '.X.X.........X.X.',
+      '...X..XXXXX..X...',
+      '....XXXXXXXXX....',
+      '.XX.XXXXXXXXX.XX.',
+      'X..XXXXXXXXXXX..X',
+      '.XX.XXXXXXXXX.XX.',
+      'X..X.XXXXXXX.X..X',
+      '.....XXXXXXX.....',
+      '.......XXX.......',
+      '........XX.......',
+      '........XX..XX...',
+      '.........XXX.X...',
+      '.............H...',
+    ],
+  },
 ]

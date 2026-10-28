@@ -1397,6 +1397,21 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 .vg-frame canvas { position: relative; display: block; image-rendering: pixelated; }
 /* only tappable items carry a label, so accent here means "you can go
    here": the same colour as the sprites' glints and the compass's active row */
+/* Home: the Featured row under the app grid (VillageHome). A rule with a
+   small label, the way case study sections open; the shortcut arrow marks
+   each label as a jump into an app rather than an app of its own. */
+.home-featured { margin-top: 32px; }
+.home-featured-label {
+  border-top: 1px solid var(--border); padding-top: 10px; margin-bottom: 8px;
+  color: var(--mut); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+}
+/* the scene's 40px top margin separates it from the bio; under the label
+   it would leave a hole */
+.home-featured .vg-frame { margin-top: 0; }
+.home-featured .vg-label::after {
+  content: " ↗";
+  content: " ↗" / ""; /* decorative: no alt text where supported */
+}
 .vg-label {
   position: absolute; transform: translateX(-50%);
   font-family: var(--mono); font-size: 12px; line-height: 1;

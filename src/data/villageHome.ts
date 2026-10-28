@@ -140,8 +140,27 @@ export const WORLD_APP: VillageItem = {
   tap: { label: 'World', action: 'world', style: 'invert' },
 }
 
-/** The home grid with the World app on its own row, under Character. */
-export const HOME_APPS_WITH_WORLD: VillageItem[] = [...HOME_APPS, WORLD_APP]
+/**
+ * The home page's Featured row, under the app grid behind a "featured"
+ * rule: shortcuts to one thing inside an app (a case study, a Lab
+ * project), promoted to the home page. Display order; swap an entry to
+ * feature something else. Tarot keeps its flag.
+ */
+export const FEATURED_APPS: VillageItem[] = [
+  { part: 'scorpion_icon', tap: { label: 'Scorp DS', href: '/projects/scorpion-ui', style: 'invert' } },
+  ...(TAROT_ENABLED
+    ? [{ part: 'crystal_ball', tap: { label: 'Tarot', href: '/lab/tarot', style: 'invert' } } satisfies VillageItem]
+    : []),
+]
+
+const FEATURED_HREFS = new Set(FEATURED_APPS.map((it) => it.tap?.href))
+
+/** The home grid's apps: every app with a page, minus what the Featured
+ *  row already shows (so Tarot isn't in both). */
+export const HOME_GRID_APPS: VillageItem[] = HOME_APPS.filter((it) => !FEATURED_HREFS.has(it.tap?.href))
+
+/** The home grid with the World app last. */
+export const HOME_APPS_WITH_WORLD: VillageItem[] = [...HOME_GRID_APPS, WORLD_APP]
 
 /**
  * The home page's arrangement: a 3 by 2 home-screen grid of equal cells,
@@ -158,3 +177,7 @@ export const HOME_SCREEN_LAYOUT: SceneLayout = {
   lastRow: 'center',
   wide: { cellPx: 150, rowGapPx: 54 },
 }
+
+/** The Featured row: the home grid's cells and spacing, so its icons sit
+ *  under the grid's columns, with a short row starting at the left. */
+export const FEATURED_LAYOUT: SceneLayout = { ...HOME_SCREEN_LAYOUT, lastRow: 'left' }
