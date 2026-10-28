@@ -20,6 +20,6 @@ export interface Featured {
 export const FEATURED: Featured[] = [
   { path: '/projects/scorpion-ui', label: 'Scorp DS', icon: 'scorpion', part: 'scorpion_icon' },
   ...(TAROT_ENABLED
-    ? [{ path: '/lab/tarot', label: 'Tarot', icon: 'tarot', part: 'crystal_ball' } satisfies Featured]
+    ? [{ path: '/lab/tarot', label: 'Tarot GPT', icon: 'tarot', part: 'crystal_ball' } satisfies Featured]
     : []),
 ]
