@@ -1532,7 +1532,12 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
    1-bit icon centred on the label and line beside it. Two up on desktop,
    stacked on phones. */
 .featured-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
-.featured-card { display: flex; flex-direction: column; background: var(--surface-muted); color: inherit; text-decoration: none; }
+.featured-card { position: relative; display: flex; flex-direction: column; background: var(--surface-muted); color: inherit; }
+/* the label link stretches over the card: one tap target, no nested controls */
+.featured-link { text-decoration: none; }
+.featured-link::after { content: ""; position: absolute; inset: 0; }
+.featured-link:focus-visible { outline: none; }
+.featured-card:has(.featured-link:focus-visible) { box-shadow: inset 0 0 0 2px var(--accent); }
 .featured-pic {
   display: flex; align-items: center; justify-content: center; height: 132px;
   background: var(--surface-card); overflow: hidden; line-height: 0;
@@ -1557,6 +1562,19 @@ button.gf-dest { width: 100%; text-align: left; line-height: inherit; letter-spa
 .featured-art-img--cover { width: 100%; height: 100%; object-fit: cover; }
 .featured-art--wordmark { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 0 16px; line-height: normal; }
 .featured-art-name { color: var(--accent); font-size: 16px; line-height: 1.35; white-space: nowrap; }
+/* live-component pictures: compact, left-aligned like an app surface */
+.featured-art--kit, .featured-art--meters, .featured-art--tabs, .featured-art--log {
+  display: flex; flex-direction: column; justify-content: center; gap: 10px;
+  padding: 10px 16px; text-align: left; line-height: normal;
+}
+.featured-art--kit { gap: 8px; }
+.featured-art--log { gap: 6px; padding: 8px 12px; }
+.featured-log { height: 84px; overflow: hidden; font-size: 11px; }
+.featured-art--buttons { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 0 12px; line-height: normal; }
+.featured-art-hint { display: flex; align-items: center; gap: 8px; color: var(--mut); font-size: 11px; }
+.featured-art--tabs [role="tablist"] { flex-wrap: nowrap; }
+.featured-art--tabs [role="tab"] { padding: 4px 10px; font-size: 12px; white-space: nowrap; }
+.featured-art-rows { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; margin-top: 10px; color: var(--body); font-size: 12px; }
 .featured-text { display: block; min-width: 0; }
 .featured-label { display: block; color: var(--accent); font-size: 14px; }
 .featured-line { display: block; color: var(--body); font-size: 12px; line-height: 1.5; margin-top: 4px; }

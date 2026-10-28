@@ -107,7 +107,7 @@ export const lab: LabItem[] = [
     slug: 'featured-options',
     workshop: true,
     title: 'Featured card options',
-    desc: 'Ten picture options for the Scorpion Design System’s featured card.',
+    desc: 'Fifteen picture options for the Scorpion Design System’s featured card.',
   },
   {
     // Rendered by the dedicated VillageLab page, not the LabItem template

@@ -21,6 +21,31 @@ const [SCORP, ...REST] = FEATURED
 
 const PICTURES: { name: string; note: string; media: Featured['media'] }[] = [
   {
+    name: '11. Component kit',
+    note: 'A specimen sheet of real controls: primary and secondary buttons, a status badge, a switch, a checkbox and a slider. The system, shown as what it makes.',
+    media: { kind: 'art', art: 'kit' },
+  },
+  {
+    name: '12. Build log',
+    note: 'A LogView streaming the build (tokens resolved, components built, stories rendered, axe clean) above a status line. It moves: a line every beat.',
+    media: { kind: 'art', art: 'log' },
+  },
+  {
+    name: '13. Meters',
+    note: 'Three meters, full: 43 components, 378 tokens, 65 stories. The scale of the system at a glance.',
+    media: { kind: 'art', art: 'meters' },
+  },
+  {
+    name: '14. Button row',
+    note: 'The button variants side by side with a keyboard hint: the most recognisable component, in every style.',
+    media: { kind: 'art', art: 'buttons' },
+  },
+  {
+    name: '15. Tabs and list',
+    note: 'A tab bar over a short component list with status badges: a slice of a real app screen.',
+    media: { kind: 'art', art: 'tabs' },
+  },
+  {
     name: '1. Live window',
     note: 'A real design-system Window: component badges and the token meter, rendered live, so the text stays sharp and it retints with the themes.',
     media: { kind: 'art', art: 'window' },
@@ -83,14 +108,14 @@ function Option({ name, note, children }: { name: string; note: string; children
 }
 
 export default function FeaturedOptionsLab() {
-  usePageTitle('Featured card options', 'Ten picture options for the Scorpion Design System’s featured card.')
+  usePageTitle('Featured card options', 'Fifteen picture options for the Scorpion Design System’s featured card.')
   return (
     <MinimalPage>
       <BackButton fallback="/lab" />
       <h1 className="page">Featured card options</h1>
       <p className="lead">
-        Ten pictures for the Scorpion Design System&rsquo;s Featured card: some composed from the design system
-        itself, some from the showcase site&rsquo;s scorpion art. Each shows the whole pair, on the real card.
+        Fifteen pictures for the Scorpion Design System&rsquo;s Featured card: live components first, then other
+        compositions and the showcase site&rsquo;s scorpion art. Each shows the whole pair, on the real card.
       </p>
 
       <div className="mn-block">

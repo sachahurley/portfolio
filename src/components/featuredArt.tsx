@@ -16,9 +16,35 @@
  * - illustration: the showcase's detailed scorpion, re-dithered
  * - boxed:        the boxed SCORPION UI pixel wordmark
  * - stinger:      the album-cover tail close-up
+ *
+ * And compositions of live components (the picture is inert decoration:
+ * FeaturedCard marks it inert, so none of these controls take focus):
+ * - kit:     a specimen sheet: buttons, a switch, a checkbox, a slider
+ * - log:     a LogView streaming build lines, with a status line
+ * - meters:  three meters: components, tokens, stories
+ * - buttons: the button variants in a row, with a keyboard hint
+ * - tabs:    a tab bar over a short component list
  */
 
-import { Badge, Meter, Window } from '@scorp-ds/components'
+import { useEffect, useState } from 'react'
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Kbd,
+  LogView,
+  Meter,
+  Slider,
+  StatusLine,
+  StatusLineSegment,
+  Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Window,
+  type LogLine,
+} from '@scorp-ds/components'
 import VillageIcon from './village/VillageIcon'
 
 export type FeaturedArt =
@@ -31,6 +57,11 @@ export type FeaturedArt =
   | 'illustration'
   | 'boxed'
   | 'stinger'
+  | 'kit'
+  | 'log'
+  | 'meters'
+  | 'buttons'
+  | 'tabs'
 
 function WindowArt() {
   return (
@@ -124,7 +155,109 @@ function WordmarkArt() {
   )
 }
 
+function KitArt() {
+  return (
+    <div className="featured-art featured-art--kit">
+      <div className="flex items-center gap-2">
+        <Button size="sm">ship</Button>
+        <Button size="sm" variant="secondary">docs</Button>
+        <Badge size="sm" variant="success" caps>stable</Badge>
+      </div>
+      <div className="flex items-center gap-4">
+        <Switch size="sm" checked label="dark" onCheckedChange={() => {}} />
+        <Checkbox size="sm" defaultChecked label="tokens" />
+      </div>
+      <Slider defaultValue={62} aria-label="Density" />
+    </div>
+  )
+}
+
+// The log replays this build forever, a line every beat, showing the newest
+// three so no line is ever half cut off; reduced motion shows the end, still.
+const BUILD: Omit<LogLine, 'id'>[] = [
+  { level: 'info', text: 'tokens: 378 resolved' },
+  { level: 'info', text: 'components: 43 built' },
+  { level: 'debug', text: 'stories: 65 rendered' },
+  { level: 'info', text: 'axe: 0 violations' },
+  { level: 'info', text: 'vendored to 3 sites' },
+]
+
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+function LogArt() {
+  // reduced motion starts (and stays) on the whole log
+  const [n, setN] = useState(() => (reducedMotion() ? BUILD.length : 2))
+  useEffect(() => {
+    if (reducedMotion()) return
+    const t = window.setInterval(() => setN((i) => (i >= BUILD.length ? 1 : i + 1)), 1400)
+    return () => window.clearInterval(t)
+  }, [])
+  const lines: LogLine[] = BUILD.slice(Math.max(0, n - 3), n).map((l, i) => ({ ...l, id: n - 3 + i }))
+  return (
+    <div className="featured-art featured-art--log">
+      <LogView lines={lines} framed={false} className="featured-log" />
+      <StatusLine
+        left={<StatusLineSegment icon="Check" tone="success">build ok</StatusLineSegment>}
+        right={<StatusLineSegment>scorp-ds</StatusLineSegment>}
+      />
+    </div>
+  )
+}
+
+function MetersArt() {
+  return (
+    <div className="featured-art featured-art--meters">
+      <Meter value={43} max={43} label="components" valueText="43" size="sm" />
+      <Meter value={378} max={378} label="tokens" valueText="378" size="sm" />
+      <Meter value={65} max={65} label="stories" valueText="65" size="sm" />
+    </div>
+  )
+}
+
+function ButtonsArt() {
+  return (
+    <div className="featured-art featured-art--buttons">
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <Button size="sm">primary</Button>
+        <Button size="sm" variant="secondary">secondary</Button>
+        <Button size="sm" variant="outline">outline</Button>
+        <Button size="sm" variant="ghost">ghost</Button>
+      </div>
+      <div className="featured-art-hint">
+        <Kbd keys={['⌘', 'K']} size="sm" /> <span>to search 43 components</span>
+      </div>
+    </div>
+  )
+}
+
+function TabsArt() {
+  return (
+    <div className="featured-art featured-art--tabs">
+      <Tabs defaultValue="components">
+        <TabsList>
+          <TabsTrigger value="tokens">tokens</TabsTrigger>
+          <TabsTrigger value="components">components</TabsTrigger>
+          <TabsTrigger value="docs">docs</TabsTrigger>
+        </TabsList>
+        <TabsContent value="components">
+          <div className="featured-art-rows">
+            <span>Button</span>
+            <Badge size="sm" variant="success" caps>stable</Badge>
+            <span>Window</span>
+            <Badge size="sm" variant="info" caps>new</Badge>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
+
 export function FeaturedArtView({ art }: { art: FeaturedArt }) {
+  if (art === 'kit') return <KitArt />
+  if (art === 'log') return <LogArt />
+  if (art === 'meters') return <MetersArt />
+  if (art === 'buttons') return <ButtonsArt />
+  if (art === 'tabs') return <TabsArt />
   if (art === 'wordmark') return <WordmarkArt />
   if (art === 'logo') return <Baked src="/dither/showcase-logo.png" />
   if (art === 'illustration') return <Baked src="/dither/showcase-illustration.png" />

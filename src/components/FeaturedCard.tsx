@@ -53,9 +53,13 @@ function Picture({ media }: { media: Featured['media'] }) {
 
 export default function FeaturedCard({ item }: { item: Featured }) {
   return (
-    <Link to={item.path} className="featured-card plate-round">
-      {/* the picture is decorative: the label names the card */}
-      <span className="featured-pic" aria-hidden="true">
+    // The label is the link; its ::after stretches over the whole card, so
+    // the card is one tap target without wrapping the picture in a link
+    // (a picture made of live components would put controls inside it).
+    <div className="featured-card plate-round">
+      {/* decorative and inert: the label names the card, and nothing in a
+          composed picture takes focus or clicks */}
+      <span className="featured-pic" aria-hidden="true" inert>
         <Picture media={item.media} />
       </span>
       <span className="featured-foot">
@@ -65,10 +69,12 @@ export default function FeaturedCard({ item }: { item: Featured }) {
         <span className="featured-text">
           {/* no shortcut marker: the Featured title and the card itself say
               it goes to a page of the site (an arrow read as leaving it) */}
-          <span className="featured-label">{item.label}</span>
+          <Link to={item.path} className="featured-label featured-link">
+            {item.label}
+          </Link>
           <span className="featured-line">{item.line}</span>
         </span>
       </span>
-    </Link>
+    </div>
   )
 }
