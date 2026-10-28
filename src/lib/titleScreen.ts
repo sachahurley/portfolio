@@ -13,7 +13,26 @@
  */
 
 let dismissed = false
+let skipped = false
 const listeners = new Set<() => void>()
+
+/**
+ * Called by the loader on a deep link (any first load that isn't home): no
+ * overlay is shown, so a shared case study opens straight to its content.
+ * The gate still means "someone is looking", so it opens on the visitor's
+ * first scroll, tap or key press rather than at once: a crawler that loads a
+ * deep link and leaves never counts as a traveller.
+ */
+export function skipTitleScreen() {
+  if (skipped || dismissed) return
+  skipped = true
+  const events = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'] as const
+  const open = () => {
+    for (const e of events) window.removeEventListener(e, open, true)
+    dismissTitleScreen()
+  }
+  for (const e of events) window.addEventListener(e, open, { capture: true, passive: true })
+}
 
 /** Called by the loader the moment it starts fading out. */
 export function dismissTitleScreen() {
@@ -41,7 +60,7 @@ export function titleScreenGone(): boolean {
  */
 export function onTitleScreenGone(fn: () => void): () => void {
   listeners.add(fn)
-  if (!dismissed && !document.getElementById('loader')) dismissTitleScreen()
+  if (!dismissed && !skipped && !document.getElementById('loader')) dismissTitleScreen()
   return () => {
     listeners.delete(fn)
   }

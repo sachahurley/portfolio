@@ -498,7 +498,8 @@ export const projects: Project[] = [
     },
   },
   {
-    // Placeholder locked project: its case-study body is encrypted in
+    // Placeholder locked project, unlisted until real NDA work replaces it
+    // (reachable at /projects/sealed-demo). Its case-study body is encrypted in
     // src/data/lockedBlocks.gen.ts (plaintext source: content/locked/,
     // demo password documented in its README). Real NDA work follows the
     // same pattern with an uncommitted password.
@@ -510,6 +511,7 @@ export const projects: Project[] = [
     featured: false,
     year: '2026',
     locked: true,
+    unlisted: true,
     longDescription:
       'This project is under NDA, so the full write-up is sealed. The short version: it exists, it shipped, and the case study unlocks with a password. Ask me for the key.',
   },

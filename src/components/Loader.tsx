@@ -1,7 +1,10 @@
 /**
- * Loader — the title screen shown on initial load.
+ * Loader: the title screen shown when a visit starts on the home page.
  * Stays up until the visitor taps, clicks, or presses a key, then fades
- * out and unmounts.
+ * out and unmounts. A visit that starts anywhere else (a shared case study,
+ * a search result) skips it and opens straight to the page; see
+ * skipTitleScreen. A reload always starts on home (main.tsx), so it shows
+ * the title screen again.
  *
  * The title is DitherLive (SACHA HURLEY on sepia-950, entering via the
  * WELCOME_TUNING rising-fill recipe with a quiet rim boil; WELCOME_ART
@@ -22,7 +25,7 @@ import JeweledFrame from './JeweledFrame'
 import PixelPortrait from './game/PixelPortrait'
 import { inkColor } from '../game/avatarInks'
 import { useXp } from '../context/XpProvider'
-import { dismissTitleScreen } from '../lib/titleScreen'
+import { dismissTitleScreen, skipTitleScreen } from '../lib/titleScreen'
 
 /** Which welcome lettering to show: 'block' is the 1-bit Helvetica stack,
  *  'wild' the metal drip lettering (kept fully wired; flip to bring it back). */
@@ -68,8 +71,18 @@ function StarBox({ text }: { text: string }) {
 }
 
 export default function Loader() {
+  // Read once, on the first render: a deep link skips the title screen.
+  // Later navigation never brings it back (the loader only ever unmounts).
+  // The skip is registered here rather than in an effect so it lands before
+  // any reader subscribes (readers subscribe from effects, and a reader that
+  // finds no overlay and no skip would open the gate at once).
+  const [deepLink] = useState(() => {
+    const deep = window.location.pathname !== '/'
+    if (deep) skipTitleScreen()
+    return deep
+  })
   const [hidden, setHidden] = useState(false)
-  const [gone, setGone] = useState(false)
+  const [gone, setGone] = useState(deepLink)
   const { isReturning, name, avatarSeed, avatarInk, gems } = useXp()
 
   // Once dismissed, let the 0.4s opacity fade play, then unmount. The gate
@@ -85,11 +98,11 @@ export default function Loader() {
 
   // The overlay blocks the whole site, so a key press dismisses it too.
   useEffect(() => {
-    if (hidden) return
+    if (hidden || deepLink) return
     const onKey = () => setHidden(true)
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [hidden])
+  }, [hidden, deepLink])
 
   if (gone) return null
 
