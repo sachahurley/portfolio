@@ -23,7 +23,7 @@
  *   light, 400 on dark), secondary scale (debug)
  * - plate.round-lg (frame), focus inset ring
  */
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 /** Severity of a log line. Drives the icon, the text tag, and the tag color. */
 export type LogLevel = "info" | "warn" | "error" | "debug";
 /** One line in the log. */
