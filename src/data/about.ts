@@ -2,7 +2,8 @@
  * ABOUT DATA
  *
  * The About page's prose sections: how I work, what people say, and who
- * I've worked with. Consumed by the About page (tools live in tools.ts).
+ * I've worked with. Consumed by the About page (tools live in tools.ts),
+ * where it is currently hidden behind SHOW_EXTENDED_ABOUT.
  *
  * Endorsement quotes are verbatim. Wrap a phrase in **double asterisks** to
  * emphasise it: the site has one font weight, so emphasis renders as the
