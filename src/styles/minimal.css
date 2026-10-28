@@ -333,7 +333,7 @@ img.thumbimg { background: none; }
 
 /* lab demo */
 /* tile atlas (/lab/tile-atlas): the sprite grid is the only part of that
-   page that leaves the content column, using the full-bleed breakout idiom (now inside CaseStudyBlocks)
+   page that leaves the content column, using the full-bleed breakout idiom (now inside the scorp-ds CaseStudy)
    (sized against the adventure viewport, since 100vw lies inside the
    desktop game frame; browsers without container units keep column
    width). Its header stays in the column, so the title and back plate
@@ -391,7 +391,7 @@ h1.page { font-size: 16px; font-weight: 400; margin: 0; color: var(--fg); text-t
    sides and the largest neighbour wins; directly after a headline the
    object's top margin is zeroed so the 28px header gap applies. */
 /* Case-study section styles (the pb-* block) moved into the design system:
-   ProjectBlocks now renders @scorp-ds/components CaseStudyBlocks. */
+   ProjectCaseStudy renders @scorp-ds/components CaseStudyPage. */
 
 /* toasts — one full-width summary plate above the menu notch.
    16px insets clear the 8px stone band plus an 8px gap; the bottom

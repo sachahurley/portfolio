@@ -8,7 +8,7 @@
 import MinimalPage from '../components/MinimalPage'
 import BackButton from '../components/BackButton'
 import { Item, List } from '../components/Item'
-import { projects } from '../data/projects'
+import { getListedProjects } from '../data/projects'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function Projects() {
@@ -24,7 +24,7 @@ export default function Projects() {
 
       <div className="mn-block">
         <List>
-          {projects.map((p) => (
+          {getListedProjects().map((p) => (
             <Item
               key={p.slug}
               to={`/projects/${p.slug}`}

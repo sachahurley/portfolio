@@ -7,7 +7,7 @@
  * never go stale against a version bump, and prove the claim the surrounding
  * copy makes.
  *
- * ProjectBlocks maps these onto the slot names the data files use.
+ * ProjectCaseStudy maps these onto the slot names the data files use.
  */
 
 import {

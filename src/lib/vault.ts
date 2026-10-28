@@ -2,7 +2,7 @@
  * vault — browser-side decrypt for password-locked case studies.
  *
  * Counterpart to scripts/lock-projects.mjs: that script encrypts each locked
- * project's ProjectBlock[] (PBKDF2 -> AES-GCM) into src/data/lockedBlocks.gen.ts;
+ * project's case-study body (PBKDF2 -> AES-GCM) into src/data/lockedBlocks.gen.ts;
  * this module derives the key from the visitor's password and decrypts in the
  * browser. A wrong password simply fails GCM authentication — no password
  * hash exists anywhere.
@@ -12,7 +12,7 @@
  * standalone entry beside — not inside — the `sh_min` save blob.
  */
 
-import type { ProjectBlock } from '../data/projects'
+import type { SealedCaseStudy } from '../data/projects'
 import { VAULT_KDF, lockedBlocks } from '../data/lockedBlocks.gen'
 
 const VAULT_STORE_KEY = 'sh_vault'
@@ -53,8 +53,8 @@ export async function deriveKey(password: string): Promise<CryptoKey> {
   )
 }
 
-/** Decrypt a locked project's blocks; throws when the key is wrong. */
-export async function decryptBlocks(key: CryptoKey, slug: string): Promise<ProjectBlock[]> {
+/** Decrypt a locked project's case-study body; throws when the key is wrong. */
+export async function decryptStudy(key: CryptoKey, slug: string): Promise<SealedCaseStudy> {
   const payload = lockedBlocks[slug]
   if (!payload) throw new Error(`no locked payload for "${slug}"`)
   const plain = await crypto.subtle.decrypt(
@@ -62,7 +62,7 @@ export async function decryptBlocks(key: CryptoKey, slug: string): Promise<Proje
     key,
     fromB64(payload.ct),
   )
-  return JSON.parse(new TextDecoder().decode(plain)) as ProjectBlock[]
+  return JSON.parse(new TextDecoder().decode(plain)) as SealedCaseStudy
 }
 
 export async function persistKey(key: CryptoKey): Promise<void> {

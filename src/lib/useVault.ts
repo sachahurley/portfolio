@@ -10,8 +10,8 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import type { ProjectBlock } from '../data/projects'
-import { clearStoredKey, decryptBlocks, deriveKey, loadStoredKey, persistKey } from './vault'
+import type { SealedCaseStudy } from '../data/projects'
+import { clearStoredKey, decryptStudy, deriveKey, loadStoredKey, persistKey } from './vault'
 
 // One shared password -> one key: navigating between locked pages should not
 // re-derive (PBKDF2 is deliberately slow) or re-read storage.
@@ -20,7 +20,7 @@ let cachedKey: CryptoKey | null = null
 export type VaultState =
   | { status: 'locked'; error: boolean }
   | { status: 'checking'; error: false }
-  | { status: 'unlocked'; error: false; blocks: ProjectBlock[] }
+  | { status: 'unlocked'; error: false; study: SealedCaseStudy }
 
 export type Vault = VaultState & {
   submit: (password: string) => void
@@ -66,10 +66,10 @@ export function useVault(slug: string | null): Vault {
       if (urlKey) {
         try {
           const key = await deriveKey(urlKey)
-          const blocks = await decryptBlocks(key, slug)
+          const study = await decryptStudy(key, slug)
           cachedKey = key
           void persistKey(key)
-          settle({ status: 'unlocked', error: false, blocks })
+          settle({ status: 'unlocked', error: false, study })
           return
         } catch {
           /* bad link key: fall through to the stored key, then the gate */
@@ -77,8 +77,8 @@ export function useVault(slug: string | null): Vault {
       }
       if (cachedKey) {
         try {
-          const blocks = await decryptBlocks(cachedKey, slug)
-          settle({ status: 'unlocked', error: false, blocks })
+          const study = await decryptStudy(cachedKey, slug)
+          settle({ status: 'unlocked', error: false, study })
           return
         } catch {
           cachedKey = null
@@ -87,9 +87,9 @@ export function useVault(slug: string | null): Vault {
       const stored = await loadStoredKey()
       if (stored) {
         try {
-          const blocks = await decryptBlocks(stored, slug)
+          const study = await decryptStudy(stored, slug)
           cachedKey = stored
-          settle({ status: 'unlocked', error: false, blocks })
+          settle({ status: 'unlocked', error: false, study })
           return
         } catch {
           clearStoredKey()
@@ -111,10 +111,10 @@ export function useVault(slug: string | null): Vault {
       void (async () => {
         try {
           const key = await deriveKey(password)
-          const blocks = await decryptBlocks(key, slug)
+          const study = await decryptStudy(key, slug)
           cachedKey = key
           void persistKey(key)
-          setState({ status: 'unlocked', error: false, blocks })
+          setState({ status: 'unlocked', error: false, study })
         } catch {
           setFails((f) => f + 1)
           setState({ status: 'locked', error: true })
