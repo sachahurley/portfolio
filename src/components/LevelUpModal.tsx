@@ -47,7 +47,7 @@ export default function LevelUpModal() {
       open={shown != null && gem != null}
       onOpenChange={(next) => !next && dismissModal()}
       title="Level up"
-      width={320}
+      size="xs"
       footerContent={
         <Button variant="secondary" size="sm" type="button" onClick={dismissModal}>
           Continue

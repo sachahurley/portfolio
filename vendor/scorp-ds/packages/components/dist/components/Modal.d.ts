@@ -67,12 +67,13 @@ export interface ModalProps {
      */
     footerContent?: ReactNode;
     /**
-     * Panel width: `sm` (360px) for a short confirmation or notice, `md`
-     * (640px) for a compare card or a short form, `lg` (740px, the default
-     * when neither `size` nor `width` is passed) for a full task, `full` for
-     * the whole viewport width. The panel never grows past the viewport.
+     * Panel width: `xs` (320px) for a one-line notice or reward, `sm` (360px)
+     * for a confirmation, `md` (440px) for a picker or short form, `lg` (640px)
+     * for a compare card or a form with sections, `xl` (740px, the default when
+     * neither `size` nor `width` is passed) for a full task, `full` for the whole
+     * viewport width. The panel never grows past the viewport.
      */
-    size?: "sm" | "md" | "lg" | "full";
+    size?: "xs" | "sm" | "md" | "lg" | "xl" | "full";
     /**
      * @deprecated Use `size`. Still honoured when `size` is not passed:
      * numbers are px, strings pass through.

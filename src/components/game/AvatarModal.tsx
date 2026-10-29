@@ -36,7 +36,7 @@ export default function AvatarModal({ isOpen, onClose }: { isOpen: boolean; onCl
       open={isOpen}
       onOpenChange={(next) => !next && onClose()}
       title="Appearance"
-      width="min(420px, 92vw)"
+      size="md"
       footerContent={
         <Button variant="secondary" size="sm" type="button" onClick={onClose}>
           Done

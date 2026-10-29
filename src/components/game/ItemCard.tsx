@@ -140,7 +140,7 @@ export default function ItemCard({
       onOpenChange={(next) => !next && onClose()}
       title={equipped ? 'Compare' : cap(SLOT_LABELS[item.slot])}
       docked
-      width={equipped ? 640 : 440}
+      size={equipped ? 'lg' : 'md'}
       footerContent={
         <>
           {!equipped && destroyButton}

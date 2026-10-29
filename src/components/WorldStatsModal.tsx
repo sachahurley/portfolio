@@ -120,7 +120,7 @@ export default function WorldStatsModal() {
   const isOpen = useWorldOpen()
   if (!stats) return null
   return (
-    <Modal open={isOpen} onOpenChange={(next) => !next && closeWorld()} title={TITLE} width="min(560px, 92vw)">
+    <Modal open={isOpen} onOpenChange={(next) => !next && closeWorld()} title={TITLE} size="lg">
       <StatRow stats={stats} />
     </Modal>
   )
