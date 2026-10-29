@@ -49,7 +49,7 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
     onCheckedChange?: (checked: boolean) => void;
 }
 /**
- * Radio Component
+ * One option in a group where exactly one can be chosen; radios with the same `name` form the group.
  *
  * @param size - Radio size (default: "md")
  * @param label - Optional label text displayed next to radio

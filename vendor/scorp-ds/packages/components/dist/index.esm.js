@@ -3983,45 +3983,48 @@ function Za({ isOpen: e, onClose: t, title: r, children: n, footerContent: a, wi
   }, [e, t]), G(() => (e && !p ? document.body.style.overflow = "hidden" : document.body.style.overflow = "unset", () => {
     document.body.style.overflow = "unset";
   }), [e, p]), !d) return null;
-  const z = /* @__PURE__ */ o(
-    "div",
-    {
-      ref: l,
-      tabIndex: -1,
-      className: "max-w-full max-h-[80vh] plate-round-lg p-px bg-[var(--surface-container-stroke)] flex focus:outline-none",
-      style: { width: typeof s == "number" ? `${s}px` : s },
-      role: "dialog",
-      "aria-modal": p ? void 0 : "true",
-      "aria-label": r,
-      onClick: (h) => h.stopPropagation(),
-      children: /* @__PURE__ */ y("div", { className: "w-full plate-round-lg bg-[var(--surface-card)] flex flex-col overflow-hidden", children: [
-        /* @__PURE__ */ y("div", { className: "flex items-center justify-between px-6 py-5 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: [
-          /* @__PURE__ */ o("h2", { className: "text-base font-mono text-[var(--text-primary)] font-medium flex-1 min-w-0 truncate", children: r }),
-          /* @__PURE__ */ o(
-            "span",
-            {
-              className: "relative ml-4 inline-flex shrink-0 before:content-[''] before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-touch before:h-touch",
-              onClick: (h) => {
-                h.target === h.currentTarget && t();
-              },
-              children: /* @__PURE__ */ o(
-                We,
-                {
-                  variant: "secondary",
-                  size: "sm",
-                  type: "button",
-                  onClick: t,
-                  "aria-label": "Close modal",
-                  children: /* @__PURE__ */ o(q, { name: "X" })
-                }
-              )
-            }
-          )
-        ] }),
-        /* @__PURE__ */ o("div", { className: "overflow-y-auto px-6 py-5", tabIndex: 0, children: n }),
-        a && /* @__PURE__ */ o("div", { className: "flex items-center justify-end gap-3 px-6 py-5 border-t-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: a })
-      ] })
-    }
+  const z = (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- stops backdrop clicks inside the panel; Escape and the close button are the keyboard path
+    /* @__PURE__ */ o(
+      "div",
+      {
+        ref: l,
+        tabIndex: -1,
+        className: "max-w-full max-h-[80vh] plate-round-lg p-px bg-[var(--surface-container-stroke)] flex focus:outline-none",
+        style: { width: typeof s == "number" ? `${s}px` : s },
+        role: "dialog",
+        "aria-modal": p ? void 0 : "true",
+        "aria-label": r,
+        onClick: (h) => h.stopPropagation(),
+        children: /* @__PURE__ */ y("div", { className: "w-full plate-round-lg bg-[var(--surface-card)] flex flex-col overflow-hidden", children: [
+          /* @__PURE__ */ y("div", { className: "flex items-center justify-between px-6 py-5 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: [
+            /* @__PURE__ */ o("h2", { className: "text-base font-mono text-[var(--text-primary)] font-medium flex-1 min-w-0 truncate", children: r }),
+            /* @__PURE__ */ o(
+              "span",
+              {
+                className: "relative ml-4 inline-flex shrink-0 before:content-[''] before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-touch before:h-touch",
+                onClick: (h) => {
+                  h.target === h.currentTarget && t();
+                },
+                children: /* @__PURE__ */ o(
+                  We,
+                  {
+                    variant: "secondary",
+                    size: "sm",
+                    type: "button",
+                    onClick: t,
+                    "aria-label": "Close modal",
+                    children: /* @__PURE__ */ o(q, { name: "X" })
+                  }
+                )
+              }
+            )
+          ] }),
+          /* @__PURE__ */ o("div", { className: "overflow-y-auto px-6 py-5", tabIndex: 0, children: n }),
+          a && /* @__PURE__ */ o("div", { className: "flex items-center justify-end gap-3 px-6 py-5 border-t-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: a })
+        ] })
+      }
+    )
   );
   return p ? /* @__PURE__ */ o(
     "div",
@@ -5353,7 +5356,8 @@ const to = {
           )
         }
       ),
-      n && !a && /* @__PURE__ */ o(
+      n && !a && // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- the visible label forwards pointer clicks to the switch button, which is the keyboard path
+      /* @__PURE__ */ o(
         "span",
         {
           onClick: f,
@@ -5926,55 +5930,58 @@ function ho({ children: e, onClick: t, variant: r = "default", action: n, durati
   const p = (h) => {
     h.currentTarget.contains(h.relatedTarget) || m(!1);
   }, x = bo[r], z = a === 1 / 0 && s != null;
-  return /* @__PURE__ */ o(
-    "div",
-    {
-      role: r === "error" ? "alert" : "status",
-      onClick: t,
-      onMouseEnter: () => d(!0),
-      onMouseLeave: () => d(!1),
-      onFocus: () => m(!0),
-      onBlur: p,
-      className: `
+  return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- pointer shortcut to dismiss; the dismiss and action buttons are the keyboard path
+    /* @__PURE__ */ o(
+      "div",
+      {
+        role: r === "error" ? "alert" : "status",
+        onClick: t,
+        onMouseEnter: () => d(!0),
+        onMouseLeave: () => d(!1),
+        onFocus: () => m(!0),
+        onBlur: p,
+        className: `
         plate-round p-px ${x.ring}
         transition-transform [transition-duration:var(--duration-normal)] [transition-timing-function:steps(5)]
         ${i ? "translate-y-0" : "translate-y-16"}
         ${t ? "cursor-pointer" : ""}
       `,
-      children: /* @__PURE__ */ y(
-        "div",
-        {
-          className: `plate-round flex max-w-[min(28rem,calc(100vw-2rem))] items-center gap-2 px-3 py-2.5 font-mono text-sm ${x.fill} ${x.text}`,
-          children: [
-            /* @__PURE__ */ o("span", { className: `inline-flex shrink-0 ${x.icon}`, children: /* @__PURE__ */ o(q, { name: po[r], size: "4" }) }),
-            /* @__PURE__ */ o("span", { className: "min-w-0 whitespace-nowrap overflow-hidden text-ellipsis", children: e }),
-            n && /* @__PURE__ */ o(
-              "button",
-              {
-                type: "button",
-                className: `${jt} underline underline-offset-2`,
-                onClick: (h) => {
-                  h.stopPropagation(), n.onClick(), s == null || s();
-                },
-                children: n.label
-              }
-            ),
-            z && /* @__PURE__ */ o(
-              "button",
-              {
-                type: "button",
-                "aria-label": "Dismiss notification",
-                className: jt,
-                onClick: (h) => {
-                  h.stopPropagation(), s == null || s();
-                },
-                children: /* @__PURE__ */ o(q, { name: "X", size: "3" })
-              }
-            )
-          ]
-        }
-      )
-    }
+        children: /* @__PURE__ */ y(
+          "div",
+          {
+            className: `plate-round flex max-w-[min(28rem,calc(100vw-2rem))] items-center gap-2 px-3 py-2.5 font-mono text-sm ${x.fill} ${x.text}`,
+            children: [
+              /* @__PURE__ */ o("span", { className: `inline-flex shrink-0 ${x.icon}`, children: /* @__PURE__ */ o(q, { name: po[r], size: "4" }) }),
+              /* @__PURE__ */ o("span", { className: "min-w-0 whitespace-nowrap overflow-hidden text-ellipsis", children: e }),
+              n && /* @__PURE__ */ o(
+                "button",
+                {
+                  type: "button",
+                  className: `${jt} underline underline-offset-2`,
+                  onClick: (h) => {
+                    h.stopPropagation(), n.onClick(), s == null || s();
+                  },
+                  children: n.label
+                }
+              ),
+              z && /* @__PURE__ */ o(
+                "button",
+                {
+                  type: "button",
+                  "aria-label": "Dismiss notification",
+                  className: jt,
+                  onClick: (h) => {
+                    h.stopPropagation(), s == null || s();
+                  },
+                  children: /* @__PURE__ */ o(q, { name: "X", size: "3" })
+                }
+              )
+            ]
+          }
+        )
+      }
+    )
   );
 }
 const go = 5e3, wt = [];
@@ -6853,31 +6860,34 @@ const Oo = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), jo 
             className: "max-h-[min(var(--control-menu-max-height),var(--popover-available-height,var(--control-menu-max-height)))] overflow-y-auto py-1",
             children: B.map((A, ne) => {
               const be = A.value === H, Ie = ne === ie;
-              return /* @__PURE__ */ y(
-                "li",
-                {
-                  id: P(ne),
-                  role: "option",
-                  "aria-selected": be,
-                  "aria-disabled": A.disabled || void 0,
-                  onMouseDown: (Ar) => Ar.preventDefault(),
-                  onMouseMove: () => {
-                    !A.disabled && ie !== ne && J(ne);
+              return (
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- pointer path only; the keyboard selects through the input with aria-activedescendant
+                /* @__PURE__ */ y(
+                  "li",
+                  {
+                    id: P(ne),
+                    role: "option",
+                    "aria-selected": be,
+                    "aria-disabled": A.disabled || void 0,
+                    onMouseDown: (Ar) => Ar.preventDefault(),
+                    onMouseMove: () => {
+                      !A.disabled && ie !== ne && J(ne);
+                    },
+                    onClick: () => {
+                      A.disabled || Ce(A);
+                    },
+                    className: $(
+                      "flex min-h-touch items-center gap-2 px-4 py-2 font-mono text-sm",
+                      A.disabled ? "cursor-not-allowed text-[var(--text-disabled)]" : "cursor-pointer text-[var(--text-primary)]",
+                      Ie && !A.disabled && "bg-[var(--surface-subtle)]"
+                    ),
+                    children: [
+                      /* @__PURE__ */ o("span", { className: "min-w-0 flex-1 truncate", children: A.label }),
+                      be && /* @__PURE__ */ o(q, { name: "Check", className: "shrink-0 text-[var(--border-focus)]" })
+                    ]
                   },
-                  onClick: () => {
-                    A.disabled || Ce(A);
-                  },
-                  className: $(
-                    "flex min-h-touch items-center gap-2 px-4 py-2 font-mono text-sm",
-                    A.disabled ? "cursor-not-allowed text-[var(--text-disabled)]" : "cursor-pointer text-[var(--text-primary)]",
-                    Ie && !A.disabled && "bg-[var(--surface-subtle)]"
-                  ),
-                  children: [
-                    /* @__PURE__ */ o("span", { className: "min-w-0 flex-1 truncate", children: A.label }),
-                    be && /* @__PURE__ */ o(q, { name: "Check", className: "shrink-0 text-[var(--border-focus)]" })
-                  ]
-                },
-                A.value
+                  A.value
+                )
               );
             })
           }

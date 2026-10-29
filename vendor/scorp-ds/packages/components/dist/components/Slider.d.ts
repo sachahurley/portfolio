@@ -41,7 +41,7 @@ export interface SliderProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
     label?: ReactNode;
 }
 /**
- * Slider Component
+ * A range input for choosing a number between `min` and `max` by dragging or with the arrow keys.
  *
  * @param label - Optional visible label wired to the input with matching id
  * All other props (min, max, step, value, onChange, disabled, ...) pass

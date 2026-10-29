@@ -45,7 +45,7 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
     label?: ReactNode;
 }
 /**
- * Select Component
+ * A form control for choosing one value from a short, fixed list of options.
  *
  * @param size - Select size matching input heights (default: "md")
  * @param error - Whether select has a validation error

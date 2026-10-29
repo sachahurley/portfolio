@@ -40,7 +40,7 @@ export interface CardProps {
     className?: string;
 }
 /**
- * Card Component
+ * Groups related content on a raised surface, with an optional header (title and subtitle) and a footer for actions.
  *
  * @param title - Card title (shown in header)
  * @param subtitle - Card subtitle/description (shown below title)
