@@ -233,7 +233,7 @@ function TabsArt() {
   return (
     <div className="featured-art featured-art--tabs">
       <Tabs defaultValue="components">
-        <TabsList>
+        <TabsList aria-label="Design system sections">
           <TabsTrigger value="tokens">tokens</TabsTrigger>
           <TabsTrigger value="components">components</TabsTrigger>
           <TabsTrigger value="docs">docs</TabsTrigger>
