@@ -90,5 +90,5 @@ export interface ModalProps {
 /**
  * A dialog that interrupts the page for a focused task or a confirmation; it traps focus (except when `docked`) and closes on Escape, the scrim or the close button.
  */
-export declare function Modal({ open: openProp, defaultOpen, onOpenChange, title, children, footerContent, size, width, docked, }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Modal({ open: openProp, defaultOpen, onOpenChange, title, children, footerContent, size, width, docked, }: ModalProps): import("react").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map

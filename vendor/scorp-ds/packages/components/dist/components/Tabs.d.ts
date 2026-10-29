@@ -18,7 +18,7 @@ export interface TabsProps {
 /**
  * Root tabs container. Provide either controlled `value` + `onValueChange`, or `defaultValue`.
  */
-export declare function Tabs({ value: valueProp, defaultValue, onValueChange, children, className, }: TabsProps): import("react/jsx-runtime").JSX.Element;
+export declare function Tabs({ value: valueProp, defaultValue, onValueChange, children, className, }: TabsProps): React.JSX.Element;
 /** Every TabsList prop except the requirement that one accessible name is set. */
 interface TabsListOwnProps {
     /** The `TabsTrigger` buttons, in the order the arrow keys move through them. */
@@ -44,7 +44,7 @@ export type TabsListProps = TabsListOwnProps & TabsListName;
 /**
  * Tab buttons row. Direct children should be `TabsTrigger` elements only (order defines keyboard flow).
  */
-export declare function TabsList({ children, className, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, }: TabsListProps): import("react/jsx-runtime").JSX.Element;
+export declare function TabsList({ children, className, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, }: TabsListProps): React.JSX.Element;
 export declare namespace TabsList {
     var displayName: string;
 }
@@ -76,7 +76,7 @@ export interface TabsContentProps {
 /**
  * Panel for the matching `value`. Renders nothing when inactive unless `forceMount`.
  */
-export declare function TabsContent({ value, children, className, forceMount }: TabsContentProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function TabsContent({ value, children, className, forceMount }: TabsContentProps): React.JSX.Element | null;
 export declare namespace TabsContent {
     var displayName: string;
 }

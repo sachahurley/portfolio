@@ -24,5 +24,5 @@
  * so what the toggle says is always what is on screen, and pressing it pins the
  * opposite concrete theme.
  */
-export declare function ThemeToggle(): import("react/jsx-runtime").JSX.Element;
+export declare function ThemeToggle(): import("react").JSX.Element;
 //# sourceMappingURL=ThemeToggle.d.ts.map

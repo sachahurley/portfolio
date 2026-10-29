@@ -67,7 +67,7 @@ export interface PaginationProps {
  * <Pagination page={page} pageCount={20} onPageChange={setPage} />
  * ```
  */
-export declare function Pagination({ page: pageProp, defaultPage, pageCount, onPageChange, siblingCount, boundaryCount, size, showPrevNext, getPageLabel, previousLabel, nextLabel, "aria-label": ariaLabel, className, }: PaginationProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Pagination({ page: pageProp, defaultPage, pageCount, onPageChange, siblingCount, boundaryCount, size, showPrevNext, getPageLabel, previousLabel, nextLabel, "aria-label": ariaLabel, className, }: PaginationProps): import("react").JSX.Element | null;
 export declare namespace Pagination {
     var displayName: string;
 }

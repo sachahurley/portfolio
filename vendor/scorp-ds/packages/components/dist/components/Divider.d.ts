@@ -33,5 +33,5 @@ export interface DividerProps {
  * <Divider orientation="vertical" spacing="none" className="self-stretch" />
  * ```
  */
-export declare function Divider({ orientation, label, spacing, className, }: DividerProps): import("react/jsx-runtime").JSX.Element;
+export declare function Divider({ orientation, label, spacing, className, }: DividerProps): import("react").JSX.Element;
 //# sourceMappingURL=Divider.d.ts.map

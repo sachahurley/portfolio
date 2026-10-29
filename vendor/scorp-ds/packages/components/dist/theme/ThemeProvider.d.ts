@@ -17,5 +17,5 @@ import { type ThemeProviderProps } from "next-themes";
  * they need to know what is actually on screen. Any `next-themes` prop can be
  * passed through to override these defaults.
  */
-export declare function ThemeProvider({ children, ...props }: ThemeProviderProps): import("react/jsx-runtime").JSX.Element;
+export declare function ThemeProvider({ children, ...props }: ThemeProviderProps): import("react").JSX.Element;
 //# sourceMappingURL=ThemeProvider.d.ts.map

@@ -44,5 +44,5 @@ export declare function FieldMessage({ id, tone, children, className, }: {
     tone: "helper" | "error";
     children?: ReactNode;
     className?: string;
-}): import("react/jsx-runtime").JSX.Element | null;
+}): import("react").JSX.Element | null;
 //# sourceMappingURL=field.d.ts.map

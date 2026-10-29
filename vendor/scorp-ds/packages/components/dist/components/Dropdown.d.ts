@@ -64,5 +64,5 @@ export interface DropdownProps {
  * @param label - Label text for default trigger button (default: "Actions")
  * @param size - Default trigger height and item icon size (default: "md")
  */
-export declare function Dropdown({ trigger, items, align, label, size }: DropdownProps): import("react/jsx-runtime").JSX.Element;
+export declare function Dropdown({ trigger, items, align, label, size }: DropdownProps): import("react").JSX.Element;
 //# sourceMappingURL=Dropdown.d.ts.map

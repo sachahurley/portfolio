@@ -52,5 +52,5 @@ export interface AvatarProps {
 /**
  * Shows a person or entity as an image, initials or an icon, with an optional presence dot; an image that fails to load falls back to `initials`, then `icon`.
  */
-export declare function Avatar({ src, alt, initials, icon, size, status, className, onError, }: AvatarProps): import("react/jsx-runtime").JSX.Element;
+export declare function Avatar({ src, alt, initials, icon, size, status, className, onError, }: AvatarProps): import("react").JSX.Element;
 //# sourceMappingURL=Avatar.d.ts.map

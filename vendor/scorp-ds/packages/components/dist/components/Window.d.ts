@@ -56,7 +56,7 @@ export interface WindowProps {
  * </Window>
  * ```
  */
-export declare function Window({ title, status, actions, variant, titleAs: TitleTag, scroll, children, className, bodyClassName, }: WindowProps): import("react/jsx-runtime").JSX.Element;
+export declare function Window({ title, status, actions, variant, titleAs: TitleTag, scroll, children, className, bodyClassName, }: WindowProps): import("react").JSX.Element;
 export declare namespace Window {
     var displayName: string;
 }

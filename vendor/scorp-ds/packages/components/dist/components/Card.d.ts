@@ -55,5 +55,5 @@ export interface CardProps {
  * @param layout - "block" (default) or "flex" (content section fills the height)
  * @param className - Additional CSS classes
  */
-export declare function Card({ title, subtitle, headerContent, children, footerContent, layout, className, }: CardProps): import("react/jsx-runtime").JSX.Element;
+export declare function Card({ title, subtitle, headerContent, children, footerContent, layout, className, }: CardProps): import("react").JSX.Element;
 //# sourceMappingURL=Card.d.ts.map

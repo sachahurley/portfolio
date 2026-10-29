@@ -61,7 +61,7 @@ export interface ProgressBarProps {
  * @param tone - primary (default), neutral, info, success, warning, error
  * @param size - sm, md, lg track thickness
  */
-export declare function ProgressBar({ value, max, label, showLabel, showValue, size, tone, segments, className, }: ProgressBarProps): import("react/jsx-runtime").JSX.Element;
+export declare function ProgressBar({ value, max, label, showLabel, showValue, size, tone, segments, className, }: ProgressBarProps): import("react").JSX.Element;
 export declare namespace ProgressBar {
     var displayName: string;
 }

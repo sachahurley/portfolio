@@ -67,7 +67,7 @@ export interface EmptyStateProps {
  * @param primaryAction / secondaryAction - Optional Buttons
  * @param size - sm inline, md page
  */
-export declare function EmptyState({ icon, title, description, primaryAction, secondaryAction, size, titleAs: Title, children, className, }: EmptyStateProps): import("react/jsx-runtime").JSX.Element;
+export declare function EmptyState({ icon, title, description, primaryAction, secondaryAction, size, titleAs: Title, children, className, }: EmptyStateProps): import("react").JSX.Element;
 export declare namespace EmptyState {
     var displayName: string;
 }

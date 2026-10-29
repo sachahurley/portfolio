@@ -48,7 +48,7 @@ export interface KbdProps {
  * <Kbd>Esc</Kbd>
  * ```
  */
-export declare function Kbd({ keys, children, size, separator, className }: KbdProps): import("react/jsx-runtime").JSX.Element;
+export declare function Kbd({ keys, children, size, separator, className }: KbdProps): import("react").JSX.Element;
 export declare namespace Kbd {
     var displayName: string;
 }

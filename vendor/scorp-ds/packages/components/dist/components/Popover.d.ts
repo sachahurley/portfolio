@@ -154,7 +154,7 @@ export type PopoverProps = PopoverOtherRoleProps | PopoverDialogLabelProps | Pop
  * @param side / align - Preferred placement; flips and shifts to stay on screen
  * @param role - Panel role, "dialog" by default
  */
-export declare function Popover({ open: openProp, defaultOpen, onOpenChange, trigger, anchorRef, children, side, align, offset, closeOnOutsideClick, closeOnEscape, autoFocus, returnFocus, matchAnchorWidth, role, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, id: idProp, className, contentClassName, triggerWrapperClassName, portal, }: PopoverProps): import("react/jsx-runtime").JSX.Element;
+export declare function Popover({ open: openProp, defaultOpen, onOpenChange, trigger, anchorRef, children, side, align, offset, closeOnOutsideClick, closeOnEscape, autoFocus, returnFocus, matchAnchorWidth, role, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, id: idProp, className, contentClassName, triggerWrapperClassName, portal, }: PopoverProps): import("react").JSX.Element;
 export declare namespace Popover {
     var displayName: string;
 }

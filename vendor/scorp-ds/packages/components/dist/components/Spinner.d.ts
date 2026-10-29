@@ -46,7 +46,7 @@ export interface SpinnerProps {
  * @param label - Visually hidden status text (default: "Loading")
  * @param className - Extra wrapper classes (color, margin)
  */
-export declare function Spinner({ size, label, className }: SpinnerProps): import("react/jsx-runtime").JSX.Element;
+export declare function Spinner({ size, label, className }: SpinnerProps): import("react").JSX.Element;
 export declare namespace Spinner {
     var displayName: string;
 }

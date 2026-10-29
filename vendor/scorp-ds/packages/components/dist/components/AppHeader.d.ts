@@ -60,7 +60,7 @@ export interface AppHeaderProps {
  * />
  * ```
  */
-export declare function AppHeader({ brand, navigation, actions, mobileMenu, sticky, menuOpen: menuOpenProp, defaultMenuOpen, onMenuOpenChange, menuLabel, navLabel, className, }: AppHeaderProps): import("react/jsx-runtime").JSX.Element;
+export declare function AppHeader({ brand, navigation, actions, mobileMenu, sticky, menuOpen: menuOpenProp, defaultMenuOpen, onMenuOpenChange, menuLabel, navLabel, className, }: AppHeaderProps): import("react").JSX.Element;
 export declare namespace AppHeader {
     var displayName: string;
 }

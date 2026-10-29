@@ -71,5 +71,5 @@ export interface TooltipProps {
  *   <Button variant="ghost" aria-label="Copy"><TuiIcon name="Copy" /></Button>
  * </Tooltip>
  */
-export declare function Tooltip({ content, children, side: position, align, delay, maxWidth, className, }: TooltipProps): import("react/jsx-runtime").JSX.Element;
+export declare function Tooltip({ content, children, side: position, align, delay, maxWidth, className, }: TooltipProps): import("react").JSX.Element;
 //# sourceMappingURL=Tooltip.d.ts.map

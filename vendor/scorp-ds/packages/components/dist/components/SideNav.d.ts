@@ -31,7 +31,7 @@
  * - text.secondary (idle rows, section headings)
  * - plate.round, focus inset ring, duration.fast, touch.target (row height)
  */
-import { type ElementType, type MouseEvent, type ReactNode } from "react";
+import React, { type ElementType, type MouseEvent, type ReactNode } from "react";
 import { type IconSlot } from "../lib/icon-slot";
 export interface SideNavProps {
     /**
@@ -50,7 +50,7 @@ export interface SideNavProps {
  * Navigation rail root. Renders a `<nav>` on the container surface. Children
  * are SideNavSection groups, or SideNavItem rows directly.
  */
-export declare function SideNav({ "aria-label": ariaLabel, collapsed, children, className }: SideNavProps): import("react/jsx-runtime").JSX.Element;
+export declare function SideNav({ "aria-label": ariaLabel, collapsed, children, className }: SideNavProps): React.JSX.Element;
 export declare namespace SideNav {
     var displayName: string;
 }
@@ -63,7 +63,7 @@ export interface SideNavSectionProps {
     className?: string;
 }
 /** A labelled group of rows inside SideNav. The heading names the group for assistive tech. */
-export declare function SideNavSection({ heading, children, className }: SideNavSectionProps): import("react/jsx-runtime").JSX.Element;
+export declare function SideNavSection({ heading, children, className }: SideNavSectionProps): React.JSX.Element;
 export declare namespace SideNavSection {
     var displayName: string;
 }
@@ -105,7 +105,7 @@ export interface SideNavItemProps {
  * `<button>` (`onClick` only). With nested SideNavItem children it becomes a
  * collapsible group.
  */
-export declare function SideNavItem({ label, icon, active, href, onClick, as: As, asProps, trailing, children, expanded: expandedProp, defaultExpanded, onExpandedChange, className, }: SideNavItemProps): import("react/jsx-runtime").JSX.Element;
+export declare function SideNavItem({ label, icon, active, href, onClick, as: As, asProps, trailing, children, expanded: expandedProp, defaultExpanded, onExpandedChange, className, }: SideNavItemProps): React.JSX.Element;
 export declare namespace SideNavItem {
     var displayName: string;
 }

@@ -72,7 +72,7 @@ export declare function getMeterTone({ value, min, max, low, high, optimum, }: P
  * <Meter label="Disk" value={58} max={64} high={48} optimum={0} valueText="58 GB of 64 GB" />
  * ```
  */
-export declare function Meter({ value, min, max, low, high, optimum, label, valueText, tone: toneProp, segments, size, className, }: MeterProps): import("react/jsx-runtime").JSX.Element;
+export declare function Meter({ value, min, max, low, high, optimum, label, valueText, tone: toneProp, segments, size, className, }: MeterProps): import("react").JSX.Element;
 export declare namespace Meter {
     var displayName: string;
 }

@@ -74,7 +74,7 @@ export interface LogViewProps {
  * />
  * ```
  */
-export declare function LogView({ lines, autoScroll, showLineNumbers, wrap, "aria-label": ariaLabel, emptyState, framed, onFollowChange, className, }: LogViewProps): import("react/jsx-runtime").JSX.Element;
+export declare function LogView({ lines, autoScroll, showLineNumbers, wrap, "aria-label": ariaLabel, emptyState, framed, onFollowChange, className, }: LogViewProps): import("react").JSX.Element;
 export declare namespace LogView {
     var displayName: string;
 }

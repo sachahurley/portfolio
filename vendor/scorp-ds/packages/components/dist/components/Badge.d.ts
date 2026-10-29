@@ -72,5 +72,5 @@ export interface BadgeProps {
 /**
  * A short status, category or count label set beside other content; with `onDismiss` it becomes a removable chip (a filter, a tag).
  */
-export declare function Badge({ tone, size, caps, dashed, children, iconLeft, onDismiss, dismissLabel, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
+export declare function Badge({ tone, size, caps, dashed, children, iconLeft, onDismiss, dismissLabel, className, }: BadgeProps): import("react").JSX.Element;
 //# sourceMappingURL=Badge.d.ts.map

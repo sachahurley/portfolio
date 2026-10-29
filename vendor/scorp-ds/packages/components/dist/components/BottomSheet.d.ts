@@ -63,5 +63,5 @@ export interface BottomSheetProps {
  *   <nav>...</nav>
  * </BottomSheet>
  */
-export declare function BottomSheet({ open: openProp, defaultOpen, onOpenChange, "aria-label": ariaLabel, closeLabel, children, }: BottomSheetProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function BottomSheet({ open: openProp, defaultOpen, onOpenChange, "aria-label": ariaLabel, closeLabel, children, }: BottomSheetProps): import("react").JSX.Element | null;
 //# sourceMappingURL=BottomSheet.d.ts.map

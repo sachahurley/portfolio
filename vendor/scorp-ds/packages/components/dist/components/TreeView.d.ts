@@ -95,7 +95,7 @@ export type TreeViewProps = TreeViewOwnProps & TreeViewName;
  * />
  * ```
  */
-export declare function TreeView({ nodes, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, expanded: expandedProp, defaultExpanded, onExpandedChange, selected: selectedProp, defaultSelected, onSelectedChange, onActivate, typeahead, className, }: TreeViewProps): import("react/jsx-runtime").JSX.Element;
+export declare function TreeView({ nodes, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, expanded: expandedProp, defaultExpanded, onExpandedChange, selected: selectedProp, defaultSelected, onSelectedChange, onActivate, typeahead, className, }: TreeViewProps): import("react").JSX.Element;
 export declare namespace TreeView {
     var displayName: string;
 }

@@ -94,7 +94,7 @@ export interface ToastProps {
  * A single toast plate. Usually rendered via `Toaster`, but exported for
  * custom placements. Announced via `role="status"` (`role="alert"` for errors).
  */
-export declare function Toast({ children, onClick, tone, action, duration, onDismiss }: ToastProps): import("react/jsx-runtime").JSX.Element;
+export declare function Toast({ children, onClick, tone, action, duration, onDismiss }: ToastProps): import("react").JSX.Element;
 /** Options for `toast()`; everything but the message is optional. */
 export interface ToastOptions {
     /** Severity (default: "neutral"). The `toast.success()` style helpers set it for you. */
@@ -155,6 +155,6 @@ export declare function useToast(): {
  * @param toasts - Controlled queue; omit for the imperative queue
  * @param onDismiss - Controlled dismissal callback
  */
-export declare function Toaster({ toasts, onDismiss }: ToasterProps): import("react/jsx-runtime").JSX.Element;
+export declare function Toaster({ toasts, onDismiss }: ToasterProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=Toast.d.ts.map

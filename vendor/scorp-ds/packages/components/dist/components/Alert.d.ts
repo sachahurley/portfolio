@@ -56,5 +56,5 @@ export interface AlertProps {
  * @param onDismiss - Optional callback when the dismiss button is clicked
  * @param className - Additional CSS classes
  */
-export declare function Alert({ tone, title, description, iconLeft, onDismiss, dismissLabel, className, }: AlertProps): import("react/jsx-runtime").JSX.Element;
+export declare function Alert({ tone, title, description, iconLeft, onDismiss, dismissLabel, className, }: AlertProps): import("react").JSX.Element;
 //# sourceMappingURL=Alert.d.ts.map

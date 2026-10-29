@@ -208,7 +208,7 @@ export declare function CaseStudyContent({ blocks, slots, figureStart, className
     slots?: CaseStudySlots;
     figureStart?: number;
     className?: string;
-}): import("react/jsx-runtime").JSX.Element;
+}): import("react").JSX.Element;
 /**
  * CaseStudyHeader: the page's `<h1>`, one-line summary, outcomes strip,
  * meta facts (label and value on a dotted leader) and optional wide cover. The largest type on the
@@ -217,7 +217,7 @@ export declare function CaseStudyContent({ blocks, slots, figureStart, className
 export declare function CaseStudyHeader({ study, className, }: {
     study: Pick<CaseStudy, "title" | "summary" | "outcomes" | "meta" | "cover">;
     className?: string;
-}): import("react/jsx-runtime").JSX.Element;
+}): import("react").JSX.Element;
 /**
  * CaseStudySections: the visible sections, numbered, each with its
  * header and content, set apart by generous space rather than rules. `CaseStudyPage` is this plus `CaseStudyHeader`; use
@@ -231,7 +231,7 @@ export declare function CaseStudySections({ sections, slots, className, }: {
     sections: CaseStudySection[];
     slots?: CaseStudySlots;
     className?: string;
-}): import("react/jsx-runtime").JSX.Element;
+}): import("react").JSX.Element;
 /**
  * The page template for a portfolio case study, rendered from one `CaseStudy` data object.
  *
@@ -247,5 +247,5 @@ export declare function CaseStudyPage({ study, slots, className, }: {
     study: CaseStudy;
     slots?: CaseStudySlots;
     className?: string;
-}): import("react/jsx-runtime").JSX.Element;
+}): import("react").JSX.Element;
 //# sourceMappingURL=CaseStudy.d.ts.map

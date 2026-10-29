@@ -64,7 +64,7 @@ export interface SkeletonProps {
  * @param size - Avatar size (sm, md, lg); ignored by text and rect
  * @param animated - Stepped pulse on (default true) or off
  */
-export declare function Skeleton({ variant, lines, size, animated, className }: SkeletonProps): import("react/jsx-runtime").JSX.Element;
+export declare function Skeleton({ variant, lines, size, animated, className }: SkeletonProps): import("react").JSX.Element;
 export declare namespace Skeleton {
     var displayName: string;
 }
