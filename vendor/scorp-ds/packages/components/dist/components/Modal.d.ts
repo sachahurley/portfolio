@@ -70,15 +70,10 @@ export interface ModalProps {
      * Panel width: `xs` (320px) for a one-line notice or reward, `sm` (360px)
      * for a confirmation, `md` (440px) for a picker or short form, `lg` (640px)
      * for a compare card or a form with sections, `xl` (740px, the default when
-     * neither `size` nor `width` is passed) for a full task, `full` for the whole
+     * no `size` is passed) for a full task, `full` for the whole
      * viewport width. The panel never grows past the viewport.
      */
     size?: "xs" | "sm" | "md" | "lg" | "xl" | "full";
-    /**
-     * @deprecated Use `size`. Still honoured when `size` is not passed:
-     * numbers are px, strings pass through.
-     */
-    width?: number | string;
     /**
      * Dock instead of covering: at or above the `--breakpoint-docked` token
      * (960px) the panel pins bottom-center with no scrim and no scroll lock (a
@@ -91,5 +86,5 @@ export interface ModalProps {
 /**
  * A dialog that interrupts the page for a focused task or a confirmation; it traps focus (except when `docked`) and closes on Escape, the scrim or the close button.
  */
-export declare function Modal({ open: openProp, defaultOpen, onOpenChange, title, children, footerContent, size, width, docked, }: ModalProps): import("react").JSX.Element | null;
+export declare function Modal({ open: openProp, defaultOpen, onOpenChange, title, children, footerContent, size, docked, }: ModalProps): import("react").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map
