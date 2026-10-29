@@ -350,7 +350,7 @@ export default function TarotLab() {
 
           {errorInfo && (
             <Alert
-              variant="default"
+              tone="neutral"
               title={errorInfo.title}
               iconLeft={<DitherIcon name="warning" size={16} />}
               description={
