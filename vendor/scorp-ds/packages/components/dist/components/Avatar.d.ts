@@ -23,7 +23,7 @@
  *   icons, the box (`role="img"`); `alt=""` marks a decorative avatar
  */
 import { type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 import { type IconSlot } from "../lib/icon-slot";
 export interface AvatarProps {
     /** Image URL. Shown when set and it loads; otherwise the avatar falls back to `initials`, then `icon`, then an `@` glyph. */
@@ -40,8 +40,8 @@ export interface AvatarProps {
     initials?: string;
     /** Icon shown when there is neither an image nor initials (for a team, a bot, a system account). Takes a TuiIcon name (`"Check"`) or an element. */
     icon?: IconSlot | ReactNode;
-    /** Diameter: sm 24px, md 40px (default), lg 64px, xl 96px. Legacy names are deprecated aliases. */
-    size?: ControlSizeProp | "xl";
+    /** Diameter: sm 24px, md 40px (default), lg 64px, xl 96px. */
+    size?: ControlSize | "xl";
     /** Presence dot in the corner, announced as "Status: online" and so on. Omit it to show no dot. */
     status?: "online" | "offline" | "away";
     /** Extra classes on the outer wrapper (margin, positioning). */
@@ -52,5 +52,5 @@ export interface AvatarProps {
 /**
  * Shows a person or entity as an image, initials or an icon, with an optional presence dot; an image that fails to load falls back to `initials`, then `icon`.
  */
-export declare function Avatar({ src, alt, initials, icon, size: sizeProp, status, className, onError, }: AvatarProps): import("react/jsx-runtime").JSX.Element;
+export declare function Avatar({ src, alt, initials, icon, size, status, className, onError, }: AvatarProps): import("react").JSX.Element;
 //# sourceMappingURL=Avatar.d.ts.map

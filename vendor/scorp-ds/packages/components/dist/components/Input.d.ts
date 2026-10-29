@@ -26,10 +26,10 @@
  * `helperText` and the name in `label`.
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-    /** Field height: sm 32px, md 40px (default), lg 48px. Legacy small/medium/large are deprecated aliases. */
-    size?: ControlSizeProp;
+    /** Field height: sm 32px, md 40px (default), lg 48px. */
+    size?: ControlSize;
     /**
      * Visual variant. "box" (default) is the plate field; "quiet" is the
      * underline recipe — transparent, bottom hairline only, the site's voice

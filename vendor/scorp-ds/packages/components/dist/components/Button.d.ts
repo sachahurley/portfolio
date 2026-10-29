@@ -20,8 +20,7 @@
  * - sm: 32px height
  * - md: 40px height (default)
  * - lg: 48px height
- * - icon: DEPRECATED alias for a 40px square. Icon-only buttons are detected
- *   automatically and squared at every size, so use `size="md"` instead.
+ * Icon-only buttons are detected automatically and squared at every size.
  *
  * ICON-ONLY BUTTONS: `variant` picks the look, `size` picks the dimension.
  * `variant="icon"` is the dedicated icon plate (`--button-icon-*`); any other
@@ -32,9 +31,7 @@
  * another page, use the `Link` component so it has anchor semantics.
  */
 import { type ButtonHTMLAttributes } from "react";
-import { type ControlSizeProp } from "../lib/size";
-/** @deprecated Icon-only buttons are squared automatically at every size: use `md`. */
-type DeprecatedButtonSize = "icon";
+import type { ControlSize } from "../lib/size";
 import { type IconSlot } from "../lib/icon-slot";
 /** Props every Button takes, whether it renders a `<button>` or an `<a>`. */
 interface ButtonBaseProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "rel"> {
@@ -46,10 +43,9 @@ interface ButtonBaseProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 
     variant?: "primary" | "secondary" | "ghost" | "link" | "outline" | "destructive" | "icon";
     /**
      * Height: sm 32px, md 40px (default), lg 48px, from the control-height
-     * tokens. Legacy small/medium/large still work (deprecated). Icon-only buttons
-     * are squared automatically. `"icon"` is deprecated: use "md".
+     * tokens. Icon-only buttons are squared automatically.
      */
-    size?: ControlSizeProp | DeprecatedButtonSize;
+    size?: ControlSize;
     /** Disables the button (anchors drop `href` and set `aria-disabled`). */
     disabled?: boolean;
     /**

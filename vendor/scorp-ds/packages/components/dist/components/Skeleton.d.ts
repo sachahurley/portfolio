@@ -30,7 +30,7 @@
  * TOKENS USED: surface.muted (block fill), plate.round (rect / avatar
  * silhouette), control-height.sm|md|lg (avatar), duration tokens via the pulse
  */
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 export interface SkeletonProps {
     /** Placeholder shape: text lines (default), a rect block, or an avatar square. */
     variant?: "text" | "rect" | "avatar";
@@ -39,9 +39,9 @@ export interface SkeletonProps {
     /**
      * Avatar square size: sm 32px, md 40px (default), lg 48px (control heights).
      * Only the `avatar` variant reads it: `text` and `rect` ignore it, so size those
-     * with `lines` and `className`. Legacy small/medium/large are deprecated aliases.
+     * with `lines` and `className`.
      */
-    size?: ControlSizeProp;
+    size?: ControlSize;
     /**
      * Whether the stepped pulse runs. Defaults to `true`; pass `false` to hold the
      * placeholder still (e.g. many skeletons on one screen). Reduced motion always
@@ -64,7 +64,7 @@ export interface SkeletonProps {
  * @param size - Avatar size (sm, md, lg); ignored by text and rect
  * @param animated - Stepped pulse on (default true) or off
  */
-export declare function Skeleton({ variant, lines, size: sizeProp, animated, className }: SkeletonProps): import("react/jsx-runtime").JSX.Element;
+export declare function Skeleton({ variant, lines, size, animated, className }: SkeletonProps): import("react").JSX.Element;
 export declare namespace Skeleton {
     var displayName: string;
 }

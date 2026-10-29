@@ -87,7 +87,7 @@ export type AccordionProps = AccordionSingleProps | AccordionMultipleProps;
  * @param value / defaultValue / onValueChange - Controlled or uncontrolled
  * @param headingLevel - Heading element wrapping each trigger (default 3)
  */
-export declare function Accordion(props: AccordionProps): import("react/jsx-runtime").JSX.Element;
+export declare function Accordion(props: AccordionProps): import("react").JSX.Element;
 export interface AccordionItemProps {
     /** Unique value identifying this item within the Accordion. */
     value: string;
@@ -99,7 +99,7 @@ export interface AccordionItemProps {
     className?: string;
 }
 /** One section: a trigger plus its content. */
-export declare function AccordionItem({ value, disabled, children, className }: AccordionItemProps): import("react/jsx-runtime").JSX.Element;
+export declare function AccordionItem({ value, disabled, children, className }: AccordionItemProps): import("react").JSX.Element;
 export interface AccordionTriggerProps {
     /** Section title. Keep it short; it is the heading text. */
     children: ReactNode;
@@ -107,7 +107,7 @@ export interface AccordionTriggerProps {
     className?: string;
 }
 /** The heading button that toggles its item. */
-export declare function AccordionTrigger({ children, className }: AccordionTriggerProps): import("react/jsx-runtime").JSX.Element;
+export declare function AccordionTrigger({ children, className }: AccordionTriggerProps): import("react").JSX.Element;
 export interface AccordionContentProps {
     /** Section body. */
     children: ReactNode;
@@ -115,6 +115,6 @@ export interface AccordionContentProps {
     className?: string;
 }
 /** The collapsible body, a region labelled by its trigger. */
-export declare function AccordionContent({ children, className }: AccordionContentProps): import("react/jsx-runtime").JSX.Element;
+export declare function AccordionContent({ children, className }: AccordionContentProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=Accordion.d.ts.map

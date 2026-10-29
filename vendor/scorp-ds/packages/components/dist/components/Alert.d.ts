@@ -10,7 +10,6 @@
  * - warning: Purple for warnings
  * - error: Red for error messages
  * - info: Blue for informational messages
- * The deprecated `variant` prop still works; its `default` maps to `neutral`.
  *
  * FEATURES:
  * - Severity icon per tone from the 1-bit set: neutral Bell, info Info,
@@ -31,11 +30,6 @@ export type AlertTone = "neutral" | "info" | "success" | "warning" | "error";
 export interface AlertProps {
     /** Severity: picks the colour set and the 1-bit severity icon. Default: "neutral". */
     tone?: AlertTone;
-    /**
-     * Severity under its old name; `default` maps to `neutral`. When both are set, `tone` wins.
-     * @deprecated Use `tone`.
-     */
-    variant?: "default" | "success" | "warning" | "error" | "info";
     /** Short bold headline, one line. Say what happened, not "Error". */
     title?: string;
     /** Body copy under the title: what it means and what to do next. */
@@ -44,11 +38,6 @@ export interface AlertProps {
     iconLeft?: IconSlot | ReactNode;
     /** Adds a dismiss control (44px hit area) and is called when it is pressed. */
     onDismiss?: () => void;
-    /**
-     * Dismiss callback under its old name. When both are set, `onDismiss` wins.
-     * @deprecated Use `onDismiss`.
-     */
-    onClose?: () => void;
     /**
      * Accessible name of the dismiss button (default "Close alert"). Name what it
      * dismisses when a page has several alerts ("Dismiss sync warning").
@@ -67,5 +56,5 @@ export interface AlertProps {
  * @param onDismiss - Optional callback when the dismiss button is clicked
  * @param className - Additional CSS classes
  */
-export declare function Alert({ tone: toneProp, variant, title, description, iconLeft, onDismiss: onDismissProp, onClose, dismissLabel, className, }: AlertProps): import("react/jsx-runtime").JSX.Element;
+export declare function Alert({ tone, title, description, iconLeft, onDismiss, dismissLabel, className, }: AlertProps): import("react").JSX.Element;
 //# sourceMappingURL=Alert.d.ts.map

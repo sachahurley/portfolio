@@ -21,7 +21,7 @@
  * - control.height.sm/md/lg (plate), touch.target (hit area)
  * - plate.round, focus inset ring, duration.fast
  */
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 /** A page number, or a skipped gap rendered as an ellipsis. */
 export type PaginationRangeItem = number | "ellipsis-start" | "ellipsis-end";
 /**
@@ -45,7 +45,7 @@ export interface PaginationProps {
     /** Pages always shown at the start and end (default 1). */
     boundaryCount?: number;
     /** Plate height from the Button scale: sm 32px, md 40px (default), lg 48px. Hit areas stay 44px or more. */
-    size?: ControlSizeProp;
+    size?: ControlSize;
     /** Show the previous/next arrow buttons (default true). */
     showPrevNext?: boolean;
     /** Accessible name of each page button (default "Page 3"). */
@@ -67,7 +67,7 @@ export interface PaginationProps {
  * <Pagination page={page} pageCount={20} onPageChange={setPage} />
  * ```
  */
-export declare function Pagination({ page: pageProp, defaultPage, pageCount, onPageChange, siblingCount, boundaryCount, size: sizeProp, showPrevNext, getPageLabel, previousLabel, nextLabel, "aria-label": ariaLabel, className, }: PaginationProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Pagination({ page: pageProp, defaultPage, pageCount, onPageChange, siblingCount, boundaryCount, size, showPrevNext, getPageLabel, previousLabel, nextLabel, "aria-label": ariaLabel, className, }: PaginationProps): import("react").JSX.Element | null;
 export declare namespace Pagination {
     var displayName: string;
 }

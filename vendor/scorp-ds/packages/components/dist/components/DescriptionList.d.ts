@@ -49,7 +49,7 @@ export interface DescriptionListProps {
  * />
  * ```
  */
-export declare function DescriptionList({ items, layout, leader, className }: DescriptionListProps): import("react/jsx-runtime").JSX.Element;
+export declare function DescriptionList({ items, layout, leader, className }: DescriptionListProps): import("react").JSX.Element;
 export declare namespace DescriptionList {
     var displayName: string;
 }

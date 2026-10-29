@@ -29,10 +29,10 @@
  * - Works with radio groups (use same name prop)
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
     /** Box size: sm 16px, md 20px (default), lg 24px. The tap target is 44×44px at every size. */
-    size?: ControlSizeProp;
+    size?: ControlSize;
     /** Visible label next to the box; clicking it selects the radio. Without one, pass `aria-label`. */
     label?: string | ReactNode;
     /**

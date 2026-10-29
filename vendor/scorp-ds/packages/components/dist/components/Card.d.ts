@@ -37,9 +37,8 @@ export interface CardProps {
      * Section layout. `block` (default) lets the card grow with its content.
      * `flex` makes the card a flex column whose content section fills the
      * remaining height, so a fixed-height card can pin its footer to the
-     * bottom. Pass it explicitly: when it is omitted, a standalone `flex` class in
-     * `className` still switches the card to `flex` (legacy behaviour), and that
-     * inference logs a one-time development warning asking for `layout="flex"`.
+     * bottom. A `flex` class in `className` does not switch the layout: pass
+     * `layout="flex"`.
      */
     layout?: CardLayout;
     /** Additional CSS classes (width, height, margin). */
@@ -56,5 +55,5 @@ export interface CardProps {
  * @param layout - "block" (default) or "flex" (content section fills the height)
  * @param className - Additional CSS classes
  */
-export declare function Card({ title, subtitle, headerContent, children, footerContent, layout, className, }: CardProps): import("react/jsx-runtime").JSX.Element;
+export declare function Card({ title, subtitle, headerContent, children, footerContent, layout, className, }: CardProps): import("react").JSX.Element;
 //# sourceMappingURL=Card.d.ts.map

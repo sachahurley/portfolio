@@ -61,7 +61,7 @@ export type { TableDensity, TableProps, TableHeaderProps, TableBodyProps, TableF
 export { Spinner } from './components/Spinner';
 export type { SpinnerProps } from './components/Spinner';
 export { toast, useToast } from './components/Toast';
-export type { ToastProps, ToastTone, ToastVariant, ToastAction, ToastOptions, ToastApi } from './components/Toast';
+export type { ToastProps, ToastTone, ToastAction, ToastOptions, ToastApi } from './components/Toast';
 export { Popover } from './components/Popover';
 export type { PopoverProps, PopoverSide, PopoverAlign } from './components/Popover';
 export { Combobox } from './components/Combobox';
@@ -112,5 +112,5 @@ export { VisuallyHidden } from './primitives/VisuallyHidden';
 export type { VisuallyHiddenProps, VisuallyHiddenElement } from './primitives/VisuallyHidden';
 export { ThemeProvider } from './theme/ThemeProvider';
 export { cn } from './lib/utils';
-export type { ControlSize, ControlSizeProp } from './lib/size';
+export type { ControlSize } from './lib/size';
 //# sourceMappingURL=index.d.ts.map

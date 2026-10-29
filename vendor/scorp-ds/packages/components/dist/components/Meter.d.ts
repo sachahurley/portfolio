@@ -25,7 +25,7 @@
  * - text.primary (label), text.secondary (value text)
  */
 import { type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 /**
  * Semantic tone of the filled blocks: the five semantic roles plus `primary`,
  * the accent a meter shows when no thresholds are set.
@@ -56,7 +56,7 @@ export interface MeterProps {
     /** Number of blocks the range is divided into (default 20). */
     segments?: number;
     /** Block height: sm 8px, md 12px (default). */
-    size?: Extract<ControlSizeProp, "sm" | "md" | "small" | "medium">;
+    size?: Extract<ControlSize, "sm" | "md">;
     /** Extra classes for the wrapper. */
     className?: string;
 }
@@ -72,7 +72,7 @@ export declare function getMeterTone({ value, min, max, low, high, optimum, }: P
  * <Meter label="Disk" value={58} max={64} high={48} optimum={0} valueText="58 GB of 64 GB" />
  * ```
  */
-export declare function Meter({ value, min, max, low, high, optimum, label, valueText, tone: toneProp, segments, size: sizeProp, className, }: MeterProps): import("react/jsx-runtime").JSX.Element;
+export declare function Meter({ value, min, max, low, high, optimum, label, valueText, tone: toneProp, segments, size, className, }: MeterProps): import("react").JSX.Element;
 export declare namespace Meter {
     var displayName: string;
 }

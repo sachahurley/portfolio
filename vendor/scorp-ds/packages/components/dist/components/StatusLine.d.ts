@@ -49,7 +49,7 @@ export interface StatusLineProps {
  * />
  * ```
  */
-export declare function StatusLine({ left, center, right, live, "aria-label": ariaLabel, className, }: StatusLineProps): import("react/jsx-runtime").JSX.Element;
+export declare function StatusLine({ left, center, right, live, "aria-label": ariaLabel, className, }: StatusLineProps): import("react").JSX.Element;
 export declare namespace StatusLine {
     var displayName: string;
 }
@@ -64,7 +64,7 @@ export interface StatusLineSegmentProps {
     className?: string;
 }
 /** One segment of a StatusLine zone. */
-export declare function StatusLineSegment({ icon, tone, children, className }: StatusLineSegmentProps): import("react/jsx-runtime").JSX.Element;
+export declare function StatusLineSegment({ icon, tone, children, className }: StatusLineSegmentProps): import("react").JSX.Element;
 export declare namespace StatusLineSegment {
     var displayName: string;
 }

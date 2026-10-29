@@ -76,7 +76,7 @@ export interface BreadcrumbsProps {
  * />
  * ```
  */
-export declare function Breadcrumbs({ items, maxItems, itemsBeforeCollapse, itemsAfterCollapse, expandLabel, "aria-label": ariaLabel, className, }: BreadcrumbsProps): import("react/jsx-runtime").JSX.Element;
+export declare function Breadcrumbs({ items, maxItems, itemsBeforeCollapse, itemsAfterCollapse, expandLabel, "aria-label": ariaLabel, className, }: BreadcrumbsProps): import("react").JSX.Element;
 export declare namespace Breadcrumbs {
     var displayName: string;
 }
