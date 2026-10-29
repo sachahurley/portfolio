@@ -38,7 +38,7 @@ export default function ChestRevealModal({
       open={liveItem != null}
       onOpenChange={(next) => !next && onClose()}
       title="Chest opened"
-      width={320}
+      size="xs"
       footerContent={
         <>
           <Button variant="secondary" size="sm" type="button" onClick={onClose}>
