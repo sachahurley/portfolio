@@ -10,13 +10,13 @@
  * - Customizable trigger (any React element)
  * - Icon support for menu items
  * - Destructive action styling
- * - Start or end alignment (`align`; `left` / `right` are deprecated aliases)
+ * - Start or end alignment (`align`)
  *
  * Every button here is `type="button"`, so a Dropdown inside a `<form>`
  * opens the menu instead of submitting the form.
  */
 import { type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 import { type IconSlot } from "../lib/icon-slot";
 export interface DropdownItem {
     /** Item text and accessible name. Write it as a verb ("Duplicate"). */
@@ -32,8 +32,6 @@ export interface DropdownItem {
     /** Dims the item, blocks activation, and skips it during arrow-key navigation. */
     disabled?: boolean;
 }
-/** @deprecated Use `start` (for `left`) or `end` (for `right`). */
-type DeprecatedDropdownAlign = "left" | "right";
 export interface DropdownProps {
     /**
      * Custom trigger, replacing the default button. A valid React element is
@@ -49,13 +47,13 @@ export interface DropdownProps {
     /**
      * Which trigger edge the menu lines up with (default "start", the leading
      * edge). Use `end` for a trigger at the trailing edge of a row or header, so
-     * the menu opens inward. `left` and `right` are deprecated aliases.
+     * the menu opens inward.
      */
-    align?: "start" | "end" | DeprecatedDropdownAlign;
+    align?: "start" | "end";
     /** Text (and accessible name) of the default trigger button. Ignored with a custom `trigger`. */
     label?: string;
-    /** Trigger height, matching Button/Input: sm, md (default), lg. Legacy names are deprecated aliases. */
-    size?: ControlSizeProp;
+    /** Trigger height, matching Button/Input: sm, md (default), lg. */
+    size?: ControlSize;
 }
 /**
  * A button that opens a menu of commands; for choosing a form value use `Select` instead.
@@ -66,6 +64,5 @@ export interface DropdownProps {
  * @param label - Label text for default trigger button (default: "Actions")
  * @param size - Default trigger height and item icon size (default: "md")
  */
-export declare function Dropdown({ trigger, items, align: alignProp, label, size: sizeProp }: DropdownProps): import("react/jsx-runtime").JSX.Element;
-export {};
+export declare function Dropdown({ trigger, items, align, label, size }: DropdownProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Dropdown.d.ts.map

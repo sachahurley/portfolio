@@ -7,8 +7,7 @@
  * color is never the only signal), and the message.
  *
  * LEVELS: `level` is the logging domain's term, so it keeps its name
- * (decision 0024) but takes the shared role name `warning`. The old `warn`
- * still works, renders identically, and warns once in development.
+ * (decision 0024) but takes the shared role name `warning`.
  *
  * AUTO-SCROLL: with `autoScroll` (default on) the view follows new lines,
  * like `tail -f`. Scrolling up pauses following so the reader keeps their
@@ -28,10 +27,8 @@
  * - plate.round-lg (frame), focus inset ring
  */
 import type { ReactNode } from "react";
-/** @deprecated Use `"warning"`: it renders identically. */
-type DeprecatedLogLevel = "warn";
 /** Severity of a log line. Drives the icon, the text tag, and the tag color. */
-export type LogLevel = "info" | "warning" | "error" | "debug" | DeprecatedLogLevel;
+export type LogLevel = "info" | "warning" | "error" | "debug";
 /** One line in the log. */
 export interface LogLine {
     /** Stable id (used as the React key; keep it unique and stable across appends). */
@@ -81,5 +78,4 @@ export declare function LogView({ lines, autoScroll, showLineNumbers, wrap, "ari
 export declare namespace LogView {
     var displayName: string;
 }
-export {};
 //# sourceMappingURL=LogView.d.ts.map

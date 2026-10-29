@@ -37,7 +37,7 @@
  * - Optional icon inside knob (for special use cases like theme toggle)
  */
 import { type ButtonHTMLAttributes, type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 import { type IconSlot } from "../lib/icon-slot";
 /** Every Switch prop except the requirement that one accessible name is set. */
 interface SwitchOwnProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onChange" | "defaultChecked" | "aria-label" | "aria-labelledby"> {
@@ -48,7 +48,7 @@ interface SwitchOwnProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "
     /** Called with the next value when the user clicks the track or label, or presses Space or Enter. A controlled switch cannot change without it. */
     onCheckedChange?: (checked: boolean) => void;
     /** Track size. The tap target is at least 44px tall at every size. */
-    size?: ControlSizeProp;
+    size?: ControlSize;
     /** Visible label and accessible name; one of `label`, `aria-label` or `aria-labelledby` is required. Clicking it toggles the switch. Use `hideLabel` to keep it aria-only. */
     label?: string;
     /** Accessible name when there is no `label` (a theme toggle whose state is shown by an icon). Wins over `label` when both are set. */

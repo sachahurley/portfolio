@@ -57,10 +57,6 @@ export interface ModalProps {
      * a scrim click). Set `open` to false here when the dialog is controlled.
      */
     onOpenChange?: (open: boolean) => void;
-    /** @deprecated Use `open`. Still honoured when `open` is not passed. */
-    isOpen?: boolean;
-    /** @deprecated Use `onOpenChange`. Still called whenever `onOpenChange(false)` is. */
-    onClose?: () => void;
     /** Heading in the fixed header; also the dialog's accessible name, so make it say what the dialog is for. */
     title: string;
     /** Body content. It scrolls inside the panel when it is taller than the viewport allows; header and footer stay fixed. */
@@ -94,5 +90,5 @@ export interface ModalProps {
 /**
  * A dialog that interrupts the page for a focused task or a confirmation; it traps focus (except when `docked`) and closes on Escape, the scrim or the close button.
  */
-export declare function Modal({ open: openProp, defaultOpen, onOpenChange, isOpen: isOpenProp, onClose, title, children, footerContent, size, width, docked, }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Modal({ open: openProp, defaultOpen, onOpenChange, title, children, footerContent, size, width, docked, }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map

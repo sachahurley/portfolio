@@ -14,7 +14,6 @@
  * - bone: filled sepia-500 chip, identical in both themes — the
  *   tier-neutral state marker for surfaces that must not ride the accent
  *   or re-theme (the portfolio's equipped/loot chips)
- * The deprecated `variant` prop still works; its `default` maps to `neutral`.
  *
  * SIZES:
  * - sm: Compact badge (20px height)
@@ -33,7 +32,7 @@
  * - Full light/dark theme support
  */
 import { type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 import { type IconSlot } from "../lib/icon-slot";
 /**
  * Colour role of a Badge: the five semantic roles plus Badge's own `primary`
@@ -43,13 +42,8 @@ export type BadgeTone = "neutral" | "info" | "success" | "warning" | "error" | "
 export interface BadgeProps {
     /** Colour role. Pair a semantic role with text that says the same thing, since colour alone is not enough; `bone` is a fixed tint that never follows the theme. Default: "neutral". */
     tone?: BadgeTone;
-    /**
-     * Colour role under its old name; `default` maps to `neutral`. When both are set, `tone` wins.
-     * @deprecated Use `tone`.
-     */
-    variant?: "default" | "primary" | "success" | "warning" | "error" | "info" | "bone";
-    /** Badge height: sm 20px, md 24px (default), lg 28px. Legacy names are deprecated aliases. */
-    size?: ControlSizeProp;
+    /** Badge height: sm 20px, md 24px (default), lg 28px. */
+    size?: ControlSize;
     /** Uppercase eyebrow voice: uppercase text with .08em tracking. */
     caps?: boolean;
     /**
@@ -66,27 +60,17 @@ export interface BadgeProps {
     /** Adds a remove (x) button that calls this when pressed. Use it for filter chips and tags the user can clear. */
     onDismiss?: () => void;
     /**
-     * Remove callback under its old name. When both are set, `onDismiss` wins.
-     * @deprecated Use `onDismiss`.
-     */
-    onClose?: () => void;
-    /**
      * Accessible name for the remove button. Defaults to `Remove {children}`
      * when the badge label is a plain string (so a list of filter chips reads as
      * "Remove Draft", "Remove Archived"), and to "Remove badge" otherwise. Pass
      * it explicitly whenever the label alone does not identify what is removed.
      */
     dismissLabel?: string;
-    /**
-     * Remove button name under its old name. When both are set, `dismissLabel` wins.
-     * @deprecated Use `dismissLabel`.
-     */
-    onCloseLabel?: string;
     /** Extra classes on the badge (margin, alignment). */
     className?: string;
 }
 /**
  * A short status, category or count label set beside other content; with `onDismiss` it becomes a removable chip (a filter, a tag).
  */
-export declare function Badge({ tone: toneProp, variant, size: sizeProp, caps, dashed, children, iconLeft, onDismiss: onDismissProp, onClose, dismissLabel, onCloseLabel, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
+export declare function Badge({ tone, size, caps, dashed, children, iconLeft, onDismiss, dismissLabel, className, }: BadgeProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Badge.d.ts.map

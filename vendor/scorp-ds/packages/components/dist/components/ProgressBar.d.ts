@@ -24,9 +24,9 @@
  * - text.primary, text.secondary, duration.fast (indeterminate hop interval)
  *
  * TONES: `tone` takes decision 0024's five roles plus ProgressBar's own
- * `primary`, the default accent. The deprecated `variant` still works.
+ * `primary`, the default accent.
  */
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 /** Fill colour of a ProgressBar: the five semantic roles plus `primary`, the default accent. */
 export type ProgressBarTone = "primary" | "neutral" | "info" | "success" | "warning" | "error";
 export interface ProgressBarProps {
@@ -41,14 +41,9 @@ export interface ProgressBarProps {
     /** Show the percentage next to the label for determinate bars (default true). */
     showValue?: boolean;
     /** Track thickness: sm, md (default), lg. */
-    size?: ControlSizeProp;
+    size?: ControlSize;
     /** Fill colour by meaning: primary (the default accent), or a semantic role: neutral, info, success, warning, error. */
     tone?: ProgressBarTone;
-    /**
-     * Fill colour under its old name. When both are set, `tone` wins.
-     * @deprecated Use `tone`.
-     */
-    variant?: "primary" | "success" | "warning" | "error";
     /** Number of blocks across the track (default 20, so each block is 5%). */
     segments?: number;
     /** Extra classes for the root (width). */
@@ -66,7 +61,7 @@ export interface ProgressBarProps {
  * @param tone - primary (default), neutral, info, success, warning, error
  * @param size - sm, md, lg track thickness
  */
-export declare function ProgressBar({ value, max, label, showLabel, showValue, size: sizeProp, tone: toneProp, variant, segments, className, }: ProgressBarProps): import("react/jsx-runtime").JSX.Element;
+export declare function ProgressBar({ value, max, label, showLabel, showValue, size, tone, segments, className, }: ProgressBarProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace ProgressBar {
     var displayName: string;
 }

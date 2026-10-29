@@ -29,10 +29,10 @@
  * `helperText` and the name in `label`.
  */
 import { type ReactNode, type TextareaHTMLAttributes } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-    /** Minimum height and padding: sm, md (default), lg, matching Input. Legacy names are deprecated aliases. */
-    size?: ControlSizeProp;
+    /** Minimum height and padding: sm, md (default), lg, matching Input. */
+    size?: ControlSize;
     /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
     /** Hint shown under the field (length, format). Linked via `aria-describedby`. */

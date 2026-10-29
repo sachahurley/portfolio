@@ -29,7 +29,7 @@
  * - control-height.sm|md|lg, duration.fast
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 /** One entry in a Combobox list. */
 export interface ComboboxOption {
     /** Value reported through `onValueChange` and the hidden form input. */
@@ -58,7 +58,7 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
     /** Message shown when nothing matches (default "No matches"). */
     emptyText?: ReactNode;
     /** Field height: sm 32px, md 40px (default), lg 48px. */
-    size?: ControlSizeProp;
+    size?: ControlSize;
     /** Visible label, wired to the input. Without it, pass `aria-label`. */
     label?: ReactNode;
     /** Hint under the field. Linked via `aria-describedby`. */

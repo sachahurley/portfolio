@@ -1,136 +1,128 @@
-import { jsxs as y, jsx as o, Fragment as we } from "react/jsx-runtime";
-import Ie, { useState as V, useEffect as G, forwardRef as re, useId as ue, useRef as Q, useCallback as pe, useMemo as Pe, useLayoutEffect as Me, isValidElement as qe, cloneElement as yt, useImperativeHandle as Gr, Fragment as wt, Children as Zt, useSyncExternalStore as Qt, createContext as Be, useContext as Te } from "react";
-import { useTheme as Hr, ThemeProvider as Ur } from "next-themes";
-import { createPortal as Wr } from "react-dom";
-const Kr = { small: "sm", medium: "md", large: "lg" }, At = /* @__PURE__ */ new Set();
-function de(e, t, r = "md") {
-  if (e == null) return r;
-  const n = Kr[e];
-  return n ? (!(process.env.NODE_ENV === "production") && !At.has(t) && (At.add(t), console.warn(
-    `[@scorp-ds/components] ${t}: size="${e}" is deprecated. Use size="${n}" (the scale is sm | md | lg).`
-  )), n) : e;
-}
-function Jt(e) {
+import { jsxs as k, jsx as o, Fragment as ge } from "react/jsx-runtime";
+import $e, { useState as H, useEffect as U, forwardRef as re, useId as ce, useRef as X, useCallback as ue, useMemo as Le, useLayoutEffect as _e, isValidElement as Ue, cloneElement as gt, useImperativeHandle as Pr, Fragment as xt, Children as Wt, useSyncExternalStore as Kt, createContext as Oe, useContext as Se } from "react";
+import { useTheme as Dr, ThemeProvider as jr } from "next-themes";
+import { createPortal as Br } from "react-dom";
+function qt(e) {
   var t, r, n = "";
   if (typeof e == "string" || typeof e == "number") n += e;
   else if (typeof e == "object") if (Array.isArray(e)) {
     var a = e.length;
-    for (t = 0; t < a; t++) e[t] && (r = Jt(e[t])) && (n && (n += " "), n += r);
+    for (t = 0; t < a; t++) e[t] && (r = qt(e[t])) && (n && (n += " "), n += r);
   } else for (r in e) e[r] && (n && (n += " "), n += r);
   return n;
 }
-function qr() {
-  for (var e, t, r = 0, n = "", a = arguments.length; r < a; r++) (e = arguments[r]) && (t = Jt(e)) && (n && (n += " "), n += t);
+function Fr() {
+  for (var e, t, r = 0, n = "", a = arguments.length; r < a; r++) (e = arguments[r]) && (t = qt(e)) && (n && (n += " "), n += t);
   return n;
 }
-const Xr = (e, t) => {
+const Vr = (e, t) => {
   const r = new Array(e.length + t.length);
   for (let n = 0; n < e.length; n++)
     r[n] = e[n];
   for (let n = 0; n < t.length; n++)
     r[e.length + n] = t[n];
   return r;
-}, Yr = (e, t) => ({
+}, Hr = (e, t) => ({
   classGroupId: e,
   validator: t
-}), er = (e = /* @__PURE__ */ new Map(), t = null, r) => ({
+}), Xt = (e = /* @__PURE__ */ new Map(), t = null, r) => ({
   nextPart: e,
   validators: t,
   classGroupId: r
-}), rt = "-", Mt = [], Zr = "arbitrary..", Qr = (e) => {
-  const t = en(e), {
+}), Je = "-", Et = [], Gr = "arbitrary..", Ur = (e) => {
+  const t = Kr(e), {
     conflictingClassGroups: r,
     conflictingClassGroupModifiers: n
   } = e;
   return {
     getClassGroupId: (i) => {
       if (i.startsWith("[") && i.endsWith("]"))
-        return Jr(i);
-      const l = i.split(rt), c = l[0] === "" && l.length > 1 ? 1 : 0;
-      return tr(l, c, t);
+        return Wr(i);
+      const l = i.split(Je), c = l[0] === "" && l.length > 1 ? 1 : 0;
+      return Yt(l, c, t);
     },
     getConflictingClassGroupIds: (i, l) => {
       if (l) {
         const c = n[i], d = r[i];
-        return c ? d ? Xr(d, c) : c : d || Mt;
+        return c ? d ? Vr(d, c) : c : d || Et;
       }
-      return r[i] || Mt;
+      return r[i] || Et;
     }
   };
-}, tr = (e, t, r) => {
+}, Yt = (e, t, r) => {
   if (e.length - t === 0)
     return r.classGroupId;
   const a = e[t], s = r.nextPart.get(a);
   if (s) {
-    const d = tr(e, t + 1, s);
+    const d = Yt(e, t + 1, s);
     if (d) return d;
   }
   const i = r.validators;
   if (i === null)
     return;
-  const l = t === 0 ? e.join(rt) : e.slice(t).join(rt), c = i.length;
+  const l = t === 0 ? e.join(Je) : e.slice(t).join(Je), c = i.length;
   for (let d = 0; d < c; d++) {
     const u = i[d];
     if (u.validator(l))
       return u.classGroupId;
   }
-}, Jr = (e) => e.slice(1, -1).indexOf(":") === -1 ? void 0 : (() => {
+}, Wr = (e) => e.slice(1, -1).indexOf(":") === -1 ? void 0 : (() => {
   const t = e.slice(1, -1), r = t.indexOf(":"), n = t.slice(0, r);
-  return n ? Zr + n : void 0;
-})(), en = (e) => {
+  return n ? Gr + n : void 0;
+})(), Kr = (e) => {
   const {
     theme: t,
     classGroups: r
   } = e;
-  return tn(r, t);
-}, tn = (e, t) => {
-  const r = er();
+  return qr(r, t);
+}, qr = (e, t) => {
+  const r = Xt();
   for (const n in e) {
     const a = e[n];
-    kt(a, r, n, t);
+    vt(a, r, n, t);
   }
   return r;
-}, kt = (e, t, r, n) => {
+}, vt = (e, t, r, n) => {
   const a = e.length;
   for (let s = 0; s < a; s++) {
     const i = e[s];
-    rn(i, t, r, n);
+    Xr(i, t, r, n);
   }
-}, rn = (e, t, r, n) => {
+}, Xr = (e, t, r, n) => {
   if (typeof e == "string") {
-    nn(e, t, r);
+    Yr(e, t, r);
     return;
   }
   if (typeof e == "function") {
-    on(e, t, r, n);
+    Zr(e, t, r, n);
     return;
   }
-  an(e, t, r, n);
-}, nn = (e, t, r) => {
-  const n = e === "" ? t : rr(t, e);
+  Qr(e, t, r, n);
+}, Yr = (e, t, r) => {
+  const n = e === "" ? t : Zt(t, e);
   n.classGroupId = r;
-}, on = (e, t, r, n) => {
-  if (sn(e)) {
-    kt(e(n), t, r, n);
+}, Zr = (e, t, r, n) => {
+  if (Jr(e)) {
+    vt(e(n), t, r, n);
     return;
   }
-  t.validators === null && (t.validators = []), t.validators.push(Yr(r, e));
-}, an = (e, t, r, n) => {
+  t.validators === null && (t.validators = []), t.validators.push(Hr(r, e));
+}, Qr = (e, t, r, n) => {
   const a = Object.entries(e), s = a.length;
   for (let i = 0; i < s; i++) {
     const [l, c] = a[i];
-    kt(c, rr(t, l), r, n);
+    vt(c, Zt(t, l), r, n);
   }
-}, rr = (e, t) => {
+}, Zt = (e, t) => {
   let r = e;
-  const n = t.split(rt), a = n.length;
+  const n = t.split(Je), a = n.length;
   for (let s = 0; s < a; s++) {
     const i = n[s];
     let l = r.nextPart.get(i);
-    l || (l = er(), r.nextPart.set(i, l)), r = l;
+    l || (l = Xt(), r.nextPart.set(i, l)), r = l;
   }
   return r;
-}, sn = (e) => "isThemeGetter" in e && e.isThemeGetter === !0, ln = (e) => {
+}, Jr = (e) => "isThemeGetter" in e && e.isThemeGetter === !0, en = (e) => {
   if (e < 1)
     return {
       get: () => {
@@ -154,13 +146,13 @@ const Xr = (e, t) => {
       s in r ? r[s] = i : a(s, i);
     }
   };
-}, ft = "!", Lt = ":", cn = [], Rt = (e, t, r, n, a) => ({
+}, dt = "!", _t = ":", tn = [], At = (e, t, r, n, a) => ({
   modifiers: e,
   hasImportantModifier: t,
   baseClassName: r,
   maybePostfixModifierPosition: n,
   isExternal: a
-}), dn = (e) => {
+}), rn = (e) => {
   const {
     prefix: t,
     experimentalParseClassName: r
@@ -170,34 +162,34 @@ const Xr = (e, t) => {
     let i = 0, l = 0, c = 0, d;
     const u = a.length;
     for (let f = 0; f < u; f++) {
-      const x = a[f];
+      const g = a[f];
       if (i === 0 && l === 0) {
-        if (x === Lt) {
+        if (g === _t) {
           s.push(a.slice(c, f)), c = f + 1;
           continue;
         }
-        if (x === "/") {
+        if (g === "/") {
           d = f;
           continue;
         }
       }
-      x === "[" ? i++ : x === "]" ? i-- : x === "(" ? l++ : x === ")" && l--;
+      g === "[" ? i++ : g === "]" ? i-- : g === "(" ? l++ : g === ")" && l--;
     }
-    const b = s.length === 0 ? a : a.slice(c);
-    let h = b, p = !1;
-    b.endsWith(ft) ? (h = b.slice(0, -1), p = !0) : (
+    const m = s.length === 0 ? a : a.slice(c);
+    let p = m, h = !1;
+    m.endsWith(dt) ? (p = m.slice(0, -1), h = !0) : (
       /**
        * In Tailwind CSS v3 the important modifier was at the start of the base class name. This is still supported for legacy reasons.
        * @see https://github.com/dcastil/tailwind-merge/issues/513#issuecomment-2614029864
        */
-      b.startsWith(ft) && (h = b.slice(1), p = !0)
+      m.startsWith(dt) && (p = m.slice(1), h = !0)
     );
-    const m = d && d > c ? d - c : void 0;
-    return Rt(s, p, h, m);
+    const b = d && d > c ? d - c : void 0;
+    return At(s, h, p, b);
   };
   if (t) {
-    const a = t + Lt, s = n;
-    n = (i) => i.startsWith(a) ? s(i.slice(a.length)) : Rt(cn, !1, i, void 0, !0);
+    const a = t + _t, s = n;
+    n = (i) => i.startsWith(a) ? s(i.slice(a.length)) : At(tn, !1, i, void 0, !0);
   }
   if (r) {
     const a = n;
@@ -207,7 +199,7 @@ const Xr = (e, t) => {
     });
   }
   return n;
-}, un = (e) => {
+}, nn = (e) => {
   const t = /* @__PURE__ */ new Map();
   return e.orderSensitiveModifiers.forEach((r, n) => {
     t.set(r, 1e6 + n);
@@ -220,96 +212,96 @@ const Xr = (e, t) => {
     }
     return a.length > 0 && (a.sort(), n.push(...a)), n;
   };
-}, mn = (e) => ({
-  cache: ln(e.cacheSize),
-  parseClassName: dn(e),
-  sortModifiers: un(e),
-  ...Qr(e)
-}), fn = /\s+/, pn = (e, t) => {
+}, on = (e) => ({
+  cache: en(e.cacheSize),
+  parseClassName: rn(e),
+  sortModifiers: nn(e),
+  ...Ur(e)
+}), an = /\s+/, sn = (e, t) => {
   const {
     parseClassName: r,
     getClassGroupId: n,
     getConflictingClassGroupIds: a,
     sortModifiers: s
-  } = t, i = [], l = e.trim().split(fn);
+  } = t, i = [], l = e.trim().split(an);
   let c = "";
   for (let d = l.length - 1; d >= 0; d -= 1) {
     const u = l[d], {
-      isExternal: b,
-      modifiers: h,
-      hasImportantModifier: p,
-      baseClassName: m,
+      isExternal: m,
+      modifiers: p,
+      hasImportantModifier: h,
+      baseClassName: b,
       maybePostfixModifierPosition: f
     } = r(u);
-    if (b) {
+    if (m) {
       c = u + (c.length > 0 ? " " + c : c);
       continue;
     }
-    let x = !!f, k = n(x ? m.substring(0, f) : m);
-    if (!k) {
-      if (!x) {
+    let g = !!f, N = n(g ? b.substring(0, f) : b);
+    if (!N) {
+      if (!g) {
         c = u + (c.length > 0 ? " " + c : c);
         continue;
       }
-      if (k = n(m), !k) {
+      if (N = n(b), !N) {
         c = u + (c.length > 0 ? " " + c : c);
         continue;
       }
-      x = !1;
+      g = !1;
     }
-    const g = h.length === 0 ? "" : h.length === 1 ? h[0] : s(h).join(":"), z = p ? g + ft : g, $ = z + k;
+    const v = p.length === 0 ? "" : p.length === 1 ? p[0] : s(p).join(":"), w = h ? v + dt : v, $ = w + N;
     if (i.indexOf($) > -1)
       continue;
     i.push($);
-    const w = a(k, x);
-    for (let N = 0; N < w.length; ++N) {
-      const T = w[N];
-      i.push(z + T);
+    const T = a(N, g);
+    for (let I = 0; I < T.length; ++I) {
+      const M = T[I];
+      i.push(w + M);
     }
     c = u + (c.length > 0 ? " " + c : c);
   }
   return c;
-}, bn = (...e) => {
+}, ln = (...e) => {
   let t = 0, r, n, a = "";
   for (; t < e.length; )
-    (r = e[t++]) && (n = nr(r)) && (a && (a += " "), a += n);
+    (r = e[t++]) && (n = Qt(r)) && (a && (a += " "), a += n);
   return a;
-}, nr = (e) => {
+}, Qt = (e) => {
   if (typeof e == "string")
     return e;
   let t, r = "";
   for (let n = 0; n < e.length; n++)
-    e[n] && (t = nr(e[n])) && (r && (r += " "), r += t);
+    e[n] && (t = Qt(e[n])) && (r && (r += " "), r += t);
   return r;
-}, hn = (e, ...t) => {
+}, cn = (e, ...t) => {
   let r, n, a, s;
   const i = (c) => {
-    const d = t.reduce((u, b) => b(u), e());
-    return r = mn(d), n = r.cache.get, a = r.cache.set, s = l, l(c);
+    const d = t.reduce((u, m) => m(u), e());
+    return r = on(d), n = r.cache.get, a = r.cache.set, s = l, l(c);
   }, l = (c) => {
     const d = n(c);
     if (d)
       return d;
-    const u = pn(c, r);
+    const u = sn(c, r);
     return a(c, u), u;
   };
-  return s = i, (...c) => s(bn(...c));
-}, gn = [], le = (e) => {
-  const t = (r) => r[e] || gn;
+  return s = i, (...c) => s(ln(...c));
+}, dn = [], le = (e) => {
+  const t = (r) => r[e] || dn;
   return t.isThemeGetter = !0, t;
-}, or = /^\[(?:(\w[\w-]*):)?(.+)\]$/i, ar = /^\((?:(\w[\w-]*):)?(.+)\)$/i, xn = /^\d+(?:\.\d+)?\/\d+(?:\.\d+)?$/, vn = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/, yn = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/, wn = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/, kn = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/, Nn = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/, $e = (e) => xn.test(e), H = (e) => !!e && !Number.isNaN(Number(e)), ze = (e) => !!e && Number.isInteger(Number(e)), st = (e) => e.endsWith("%") && H(e.slice(0, -1)), Ne = (e) => vn.test(e), sr = () => !0, Sn = (e) => (
+}, Jt = /^\[(?:(\w[\w-]*):)?(.+)\]$/i, er = /^\((?:(\w[\w-]*):)?(.+)\)$/i, un = /^\d+(?:\.\d+)?\/\d+(?:\.\d+)?$/, mn = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/, fn = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/, pn = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/, bn = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/, hn = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/, ke = (e) => un.test(e), K = (e) => !!e && !Number.isNaN(Number(e)), Ne = (e) => !!e && Number.isInteger(Number(e)), nt = (e) => e.endsWith("%") && K(e.slice(0, -1)), ye = (e) => mn.test(e), tr = () => !0, gn = (e) => (
   // `colorFunctionRegex` check is necessary because color functions can have percentages in them which which would be incorrectly classified as lengths.
   // For example, `hsl(0 0% 0%)` would be classified as a length without this check.
   // I could also use lookbehind assertion in `lengthUnitRegex` but that isn't supported widely enough.
-  yn.test(e) && !wn.test(e)
-), Nt = () => !1, $n = (e) => kn.test(e), zn = (e) => Nn.test(e), In = (e) => !M(e) && !L(e), Tn = (e) => Ee(e, cr, Nt), M = (e) => or.test(e), _e = (e) => Ee(e, dr, Sn), Ot = (e) => Ee(e, On, H), En = (e) => Ee(e, mr, sr), Cn = (e) => Ee(e, ur, Nt), Dt = (e) => Ee(e, ir, Nt), _n = (e) => Ee(e, lr, zn), Qe = (e) => Ee(e, fr, $n), L = (e) => ar.test(e), Ge = (e) => Le(e, dr), An = (e) => Le(e, ur), Pt = (e) => Le(e, ir), Mn = (e) => Le(e, cr), Ln = (e) => Le(e, lr), Je = (e) => Le(e, fr, !0), Rn = (e) => Le(e, mr, !0), Ee = (e, t, r) => {
-  const n = or.exec(e);
+  fn.test(e) && !pn.test(e)
+), yt = () => !1, xn = (e) => bn.test(e), vn = (e) => hn.test(e), yn = (e) => !A(e) && !z(e), wn = (e) => Ie(e, or, yt), A = (e) => Jt.test(e), Ce = (e) => Ie(e, ar, gn), zt = (e) => Ie(e, En, K), kn = (e) => Ie(e, ir, tr), Nn = (e) => Ie(e, sr, yt), Mt = (e) => Ie(e, rr, yt), $n = (e) => Ie(e, nr, vn), Xe = (e) => Ie(e, lr, xn), z = (e) => er.test(e), Be = (e) => Ae(e, ar), Sn = (e) => Ae(e, sr), Rt = (e) => Ae(e, rr), In = (e) => Ae(e, or), Tn = (e) => Ae(e, nr), Ye = (e) => Ae(e, lr, !0), Cn = (e) => Ae(e, ir, !0), Ie = (e, t, r) => {
+  const n = Jt.exec(e);
   return n ? n[1] ? t(n[1]) : r(n[2]) : !1;
-}, Le = (e, t, r = !1) => {
-  const n = ar.exec(e);
+}, Ae = (e, t, r = !1) => {
+  const n = er.exec(e);
   return n ? n[1] ? t(n[1]) : r : !1;
-}, ir = (e) => e === "position" || e === "percentage", lr = (e) => e === "image" || e === "url", cr = (e) => e === "length" || e === "size" || e === "bg-size", dr = (e) => e === "length", On = (e) => e === "number", ur = (e) => e === "family-name", mr = (e) => e === "number" || e === "weight", fr = (e) => e === "shadow", Dn = () => {
-  const e = le("color"), t = le("font"), r = le("text"), n = le("font-weight"), a = le("tracking"), s = le("leading"), i = le("breakpoint"), l = le("container"), c = le("spacing"), d = le("radius"), u = le("shadow"), b = le("inset-shadow"), h = le("text-shadow"), p = le("drop-shadow"), m = le("blur"), f = le("perspective"), x = le("aspect"), k = le("ease"), g = le("animate"), z = () => ["auto", "avoid", "all", "avoid-page", "page", "left", "right", "column"], $ = () => [
+}, rr = (e) => e === "position" || e === "percentage", nr = (e) => e === "image" || e === "url", or = (e) => e === "length" || e === "size" || e === "bg-size", ar = (e) => e === "length", En = (e) => e === "number", sr = (e) => e === "family-name", ir = (e) => e === "number" || e === "weight", lr = (e) => e === "shadow", _n = () => {
+  const e = le("color"), t = le("font"), r = le("text"), n = le("font-weight"), a = le("tracking"), s = le("leading"), i = le("breakpoint"), l = le("container"), c = le("spacing"), d = le("radius"), u = le("shadow"), m = le("inset-shadow"), p = le("text-shadow"), h = le("drop-shadow"), b = le("blur"), f = le("perspective"), g = le("aspect"), N = le("ease"), v = le("animate"), w = () => ["auto", "avoid", "all", "avoid-page", "page", "left", "right", "column"], $ = () => [
     "center",
     "top",
     "bottom",
@@ -327,51 +319,51 @@ const Xr = (e, t) => {
     "bottom-left",
     // Deprecated since Tailwind CSS v4.1.0, see https://github.com/tailwindlabs/tailwindcss/pull/17378
     "left-bottom"
-  ], w = () => [...$(), L, M], N = () => ["auto", "hidden", "clip", "visible", "scroll"], T = () => ["auto", "contain", "none"], v = () => [L, M, c], R = () => [$e, "full", "auto", ...v()], E = () => [ze, "none", "subgrid", L, M], W = () => ["auto", {
-    span: ["full", ze, L, M]
-  }, ze, L, M], J = () => [ze, "auto", L, M], oe = () => ["auto", "min", "max", "fr", L, M], K = () => ["start", "end", "center", "between", "around", "evenly", "stretch", "baseline", "center-safe", "end-safe"], te = () => ["start", "end", "center", "stretch", "center-safe", "end-safe"], F = () => ["auto", ...v()], _ = () => [$e, "auto", "full", "dvw", "dvh", "lvw", "lvh", "svw", "svh", "min", "max", "fit", ...v()], D = () => [$e, "screen", "full", "dvw", "lvw", "svw", "min", "max", "fit", ...v()], q = () => [$e, "screen", "full", "lh", "dvh", "lvh", "svh", "min", "max", "fit", ...v()], S = () => [e, L, M], O = () => [...$(), Pt, Dt, {
-    position: [L, M]
-  }], C = () => ["no-repeat", {
+  ], T = () => [...$(), z, A], I = () => ["auto", "hidden", "clip", "visible", "scroll"], M = () => ["auto", "contain", "none"], x = () => [z, A, c], C = () => [ke, "full", "auto", ...x()], F = () => [Ne, "none", "subgrid", z, A], W = () => ["auto", {
+    span: ["full", Ne, z, A]
+  }, Ne, z, A], te = () => [Ne, "auto", z, A], ne = () => ["auto", "min", "max", "fr", z, A], B = () => ["start", "end", "center", "between", "around", "evenly", "stretch", "baseline", "center-safe", "end-safe"], Z = () => ["start", "end", "center", "stretch", "center-safe", "end-safe"], ee = () => ["auto", ...x()], E = () => [ke, "auto", "full", "dvw", "dvh", "lvw", "lvh", "svw", "svh", "min", "max", "fit", ...x()], O = () => [ke, "screen", "full", "dvw", "lvw", "svw", "min", "max", "fit", ...x()], P = () => [ke, "screen", "full", "lh", "dvh", "lvh", "svh", "min", "max", "fit", ...x()], y = () => [e, z, A], G = () => [...$(), Rt, Mt, {
+    position: [z, A]
+  }], R = () => ["no-repeat", {
     repeat: ["", "x", "y", "space", "round"]
-  }], B = () => ["auto", "cover", "contain", Mn, Tn, {
-    size: [L, M]
-  }], X = () => [st, Ge, _e], U = () => [
+  }], L = () => ["auto", "cover", "contain", In, wn, {
+    size: [z, A]
+  }], q = () => [nt, Be, Ce], Y = () => [
     // Deprecated since Tailwind CSS v4.0.0
     "",
     "none",
     "full",
     d,
-    L,
-    M
-  ], Y = () => ["", H, Ge, _e], ce = () => ["solid", "dashed", "dotted", "double"], ae = () => ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"], Z = () => [H, st, Pt, Dt], fe = () => [
+    z,
+    A
+  ], V = () => ["", K, Be, Ce], ae = () => ["solid", "dashed", "dotted", "double"], ie = () => ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"], J = () => [K, nt, Rt, Mt], xe = () => [
     // Deprecated since Tailwind CSS v4.0.0
     "",
     "none",
-    m,
-    L,
-    M
-  ], ge = () => ["none", H, L, M], xe = () => ["none", H, L, M], j = () => [H, L, M], P = () => [$e, "full", ...v()];
+    b,
+    z,
+    A
+  ], me = () => ["none", K, z, A], D = () => ["none", K, z, A], j = () => [K, z, A], se = () => [ke, "full", ...x()];
   return {
     cacheSize: 500,
     theme: {
       animate: ["spin", "ping", "pulse", "bounce"],
       aspect: ["video"],
-      blur: [Ne],
-      breakpoint: [Ne],
-      color: [sr],
-      container: [Ne],
-      "drop-shadow": [Ne],
+      blur: [ye],
+      breakpoint: [ye],
+      color: [tr],
+      container: [ye],
+      "drop-shadow": [ye],
       ease: ["in", "out", "in-out"],
-      font: [In],
+      font: [yn],
       "font-weight": ["thin", "extralight", "light", "normal", "medium", "semibold", "bold", "extrabold", "black"],
-      "inset-shadow": [Ne],
+      "inset-shadow": [ye],
       leading: ["none", "tight", "snug", "normal", "relaxed", "loose"],
       perspective: ["dramatic", "near", "normal", "midrange", "distant", "none"],
-      radius: [Ne],
-      shadow: [Ne],
-      spacing: ["px", H],
-      text: [Ne],
-      "text-shadow": [Ne],
+      radius: [ye],
+      shadow: [ye],
+      spacing: ["px", K],
+      text: [ye],
+      "text-shadow": [ye],
       tracking: ["tighter", "tight", "normal", "wide", "wider", "widest"]
     },
     classGroups: {
@@ -383,7 +375,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/aspect-ratio
        */
       aspect: [{
-        aspect: ["auto", "square", $e, M, L, x]
+        aspect: ["auto", "square", ke, A, z, g]
       }],
       /**
        * Container
@@ -396,21 +388,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/columns
        */
       columns: [{
-        columns: [H, M, L, l]
+        columns: [K, A, z, l]
       }],
       /**
        * Break After
        * @see https://tailwindcss.com/docs/break-after
        */
       "break-after": [{
-        "break-after": z()
+        "break-after": w()
       }],
       /**
        * Break Before
        * @see https://tailwindcss.com/docs/break-before
        */
       "break-before": [{
-        "break-before": z()
+        "break-before": w()
       }],
       /**
        * Break Inside
@@ -474,49 +466,49 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/object-position
        */
       "object-position": [{
-        object: w()
+        object: T()
       }],
       /**
        * Overflow
        * @see https://tailwindcss.com/docs/overflow
        */
       overflow: [{
-        overflow: N()
+        overflow: I()
       }],
       /**
        * Overflow X
        * @see https://tailwindcss.com/docs/overflow
        */
       "overflow-x": [{
-        "overflow-x": N()
+        "overflow-x": I()
       }],
       /**
        * Overflow Y
        * @see https://tailwindcss.com/docs/overflow
        */
       "overflow-y": [{
-        "overflow-y": N()
+        "overflow-y": I()
       }],
       /**
        * Overscroll Behavior
        * @see https://tailwindcss.com/docs/overscroll-behavior
        */
       overscroll: [{
-        overscroll: T()
+        overscroll: M()
       }],
       /**
        * Overscroll Behavior X
        * @see https://tailwindcss.com/docs/overscroll-behavior
        */
       "overscroll-x": [{
-        "overscroll-x": T()
+        "overscroll-x": M()
       }],
       /**
        * Overscroll Behavior Y
        * @see https://tailwindcss.com/docs/overscroll-behavior
        */
       "overscroll-y": [{
-        "overscroll-y": T()
+        "overscroll-y": M()
       }],
       /**
        * Position
@@ -528,21 +520,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       inset: [{
-        inset: R()
+        inset: C()
       }],
       /**
        * Inset Inline
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       "inset-x": [{
-        "inset-x": R()
+        "inset-x": C()
       }],
       /**
        * Inset Block
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       "inset-y": [{
-        "inset-y": R()
+        "inset-y": C()
       }],
       /**
        * Inset Inline Start
@@ -550,12 +542,12 @@ const Xr = (e, t) => {
        * @todo class group will be renamed to `inset-s` in next major release
        */
       start: [{
-        "inset-s": R(),
+        "inset-s": C(),
         /**
          * @deprecated since Tailwind CSS v4.2.0 in favor of `inset-s-*` utilities.
          * @see https://github.com/tailwindlabs/tailwindcss/pull/19613
          */
-        start: R()
+        start: C()
       }],
       /**
        * Inset Inline End
@@ -563,54 +555,54 @@ const Xr = (e, t) => {
        * @todo class group will be renamed to `inset-e` in next major release
        */
       end: [{
-        "inset-e": R(),
+        "inset-e": C(),
         /**
          * @deprecated since Tailwind CSS v4.2.0 in favor of `inset-e-*` utilities.
          * @see https://github.com/tailwindlabs/tailwindcss/pull/19613
          */
-        end: R()
+        end: C()
       }],
       /**
        * Inset Block Start
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       "inset-bs": [{
-        "inset-bs": R()
+        "inset-bs": C()
       }],
       /**
        * Inset Block End
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       "inset-be": [{
-        "inset-be": R()
+        "inset-be": C()
       }],
       /**
        * Top
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       top: [{
-        top: R()
+        top: C()
       }],
       /**
        * Right
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       right: [{
-        right: R()
+        right: C()
       }],
       /**
        * Bottom
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       bottom: [{
-        bottom: R()
+        bottom: C()
       }],
       /**
        * Left
        * @see https://tailwindcss.com/docs/top-right-bottom-left
        */
       left: [{
-        left: R()
+        left: C()
       }],
       /**
        * Visibility
@@ -622,7 +614,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/z-index
        */
       z: [{
-        z: [ze, "auto", L, M]
+        z: [Ne, "auto", z, A]
       }],
       // ------------------------
       // --- Flexbox and Grid ---
@@ -632,7 +624,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/flex-basis
        */
       basis: [{
-        basis: [$e, "full", "auto", l, ...v()]
+        basis: [ke, "full", "auto", l, ...x()]
       }],
       /**
        * Flex Direction
@@ -653,35 +645,35 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/flex
        */
       flex: [{
-        flex: [H, $e, "auto", "initial", "none", M]
+        flex: [K, ke, "auto", "initial", "none", A]
       }],
       /**
        * Flex Grow
        * @see https://tailwindcss.com/docs/flex-grow
        */
       grow: [{
-        grow: ["", H, L, M]
+        grow: ["", K, z, A]
       }],
       /**
        * Flex Shrink
        * @see https://tailwindcss.com/docs/flex-shrink
        */
       shrink: [{
-        shrink: ["", H, L, M]
+        shrink: ["", K, z, A]
       }],
       /**
        * Order
        * @see https://tailwindcss.com/docs/order
        */
       order: [{
-        order: [ze, "first", "last", "none", L, M]
+        order: [Ne, "first", "last", "none", z, A]
       }],
       /**
        * Grid Template Columns
        * @see https://tailwindcss.com/docs/grid-template-columns
        */
       "grid-cols": [{
-        "grid-cols": E()
+        "grid-cols": F()
       }],
       /**
        * Grid Column Start / End
@@ -695,21 +687,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/grid-column
        */
       "col-start": [{
-        "col-start": J()
+        "col-start": te()
       }],
       /**
        * Grid Column End
        * @see https://tailwindcss.com/docs/grid-column
        */
       "col-end": [{
-        "col-end": J()
+        "col-end": te()
       }],
       /**
        * Grid Template Rows
        * @see https://tailwindcss.com/docs/grid-template-rows
        */
       "grid-rows": [{
-        "grid-rows": E()
+        "grid-rows": F()
       }],
       /**
        * Grid Row Start / End
@@ -723,14 +715,14 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/grid-row
        */
       "row-start": [{
-        "row-start": J()
+        "row-start": te()
       }],
       /**
        * Grid Row End
        * @see https://tailwindcss.com/docs/grid-row
        */
       "row-end": [{
-        "row-end": J()
+        "row-end": te()
       }],
       /**
        * Grid Auto Flow
@@ -744,70 +736,70 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/grid-auto-columns
        */
       "auto-cols": [{
-        "auto-cols": oe()
+        "auto-cols": ne()
       }],
       /**
        * Grid Auto Rows
        * @see https://tailwindcss.com/docs/grid-auto-rows
        */
       "auto-rows": [{
-        "auto-rows": oe()
+        "auto-rows": ne()
       }],
       /**
        * Gap
        * @see https://tailwindcss.com/docs/gap
        */
       gap: [{
-        gap: v()
+        gap: x()
       }],
       /**
        * Gap X
        * @see https://tailwindcss.com/docs/gap
        */
       "gap-x": [{
-        "gap-x": v()
+        "gap-x": x()
       }],
       /**
        * Gap Y
        * @see https://tailwindcss.com/docs/gap
        */
       "gap-y": [{
-        "gap-y": v()
+        "gap-y": x()
       }],
       /**
        * Justify Content
        * @see https://tailwindcss.com/docs/justify-content
        */
       "justify-content": [{
-        justify: [...K(), "normal"]
+        justify: [...B(), "normal"]
       }],
       /**
        * Justify Items
        * @see https://tailwindcss.com/docs/justify-items
        */
       "justify-items": [{
-        "justify-items": [...te(), "normal"]
+        "justify-items": [...Z(), "normal"]
       }],
       /**
        * Justify Self
        * @see https://tailwindcss.com/docs/justify-self
        */
       "justify-self": [{
-        "justify-self": ["auto", ...te()]
+        "justify-self": ["auto", ...Z()]
       }],
       /**
        * Align Content
        * @see https://tailwindcss.com/docs/align-content
        */
       "align-content": [{
-        content: ["normal", ...K()]
+        content: ["normal", ...B()]
       }],
       /**
        * Align Items
        * @see https://tailwindcss.com/docs/align-items
        */
       "align-items": [{
-        items: [...te(), {
+        items: [...Z(), {
           baseline: ["", "last"]
         }]
       }],
@@ -816,7 +808,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/align-self
        */
       "align-self": [{
-        self: ["auto", ...te(), {
+        self: ["auto", ...Z(), {
           baseline: ["", "last"]
         }]
       }],
@@ -825,21 +817,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/place-content
        */
       "place-content": [{
-        "place-content": K()
+        "place-content": B()
       }],
       /**
        * Place Items
        * @see https://tailwindcss.com/docs/place-items
        */
       "place-items": [{
-        "place-items": [...te(), "baseline"]
+        "place-items": [...Z(), "baseline"]
       }],
       /**
        * Place Self
        * @see https://tailwindcss.com/docs/place-self
        */
       "place-self": [{
-        "place-self": ["auto", ...te()]
+        "place-self": ["auto", ...Z()]
       }],
       // Spacing
       /**
@@ -847,161 +839,161 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/padding
        */
       p: [{
-        p: v()
+        p: x()
       }],
       /**
        * Padding Inline
        * @see https://tailwindcss.com/docs/padding
        */
       px: [{
-        px: v()
+        px: x()
       }],
       /**
        * Padding Block
        * @see https://tailwindcss.com/docs/padding
        */
       py: [{
-        py: v()
+        py: x()
       }],
       /**
        * Padding Inline Start
        * @see https://tailwindcss.com/docs/padding
        */
       ps: [{
-        ps: v()
+        ps: x()
       }],
       /**
        * Padding Inline End
        * @see https://tailwindcss.com/docs/padding
        */
       pe: [{
-        pe: v()
+        pe: x()
       }],
       /**
        * Padding Block Start
        * @see https://tailwindcss.com/docs/padding
        */
       pbs: [{
-        pbs: v()
+        pbs: x()
       }],
       /**
        * Padding Block End
        * @see https://tailwindcss.com/docs/padding
        */
       pbe: [{
-        pbe: v()
+        pbe: x()
       }],
       /**
        * Padding Top
        * @see https://tailwindcss.com/docs/padding
        */
       pt: [{
-        pt: v()
+        pt: x()
       }],
       /**
        * Padding Right
        * @see https://tailwindcss.com/docs/padding
        */
       pr: [{
-        pr: v()
+        pr: x()
       }],
       /**
        * Padding Bottom
        * @see https://tailwindcss.com/docs/padding
        */
       pb: [{
-        pb: v()
+        pb: x()
       }],
       /**
        * Padding Left
        * @see https://tailwindcss.com/docs/padding
        */
       pl: [{
-        pl: v()
+        pl: x()
       }],
       /**
        * Margin
        * @see https://tailwindcss.com/docs/margin
        */
       m: [{
-        m: F()
+        m: ee()
       }],
       /**
        * Margin Inline
        * @see https://tailwindcss.com/docs/margin
        */
       mx: [{
-        mx: F()
+        mx: ee()
       }],
       /**
        * Margin Block
        * @see https://tailwindcss.com/docs/margin
        */
       my: [{
-        my: F()
+        my: ee()
       }],
       /**
        * Margin Inline Start
        * @see https://tailwindcss.com/docs/margin
        */
       ms: [{
-        ms: F()
+        ms: ee()
       }],
       /**
        * Margin Inline End
        * @see https://tailwindcss.com/docs/margin
        */
       me: [{
-        me: F()
+        me: ee()
       }],
       /**
        * Margin Block Start
        * @see https://tailwindcss.com/docs/margin
        */
       mbs: [{
-        mbs: F()
+        mbs: ee()
       }],
       /**
        * Margin Block End
        * @see https://tailwindcss.com/docs/margin
        */
       mbe: [{
-        mbe: F()
+        mbe: ee()
       }],
       /**
        * Margin Top
        * @see https://tailwindcss.com/docs/margin
        */
       mt: [{
-        mt: F()
+        mt: ee()
       }],
       /**
        * Margin Right
        * @see https://tailwindcss.com/docs/margin
        */
       mr: [{
-        mr: F()
+        mr: ee()
       }],
       /**
        * Margin Bottom
        * @see https://tailwindcss.com/docs/margin
        */
       mb: [{
-        mb: F()
+        mb: ee()
       }],
       /**
        * Margin Left
        * @see https://tailwindcss.com/docs/margin
        */
       ml: [{
-        ml: F()
+        ml: ee()
       }],
       /**
        * Space Between X
        * @see https://tailwindcss.com/docs/margin#adding-space-between-children
        */
       "space-x": [{
-        "space-x": v()
+        "space-x": x()
       }],
       /**
        * Space Between X Reverse
@@ -1013,7 +1005,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/margin#adding-space-between-children
        */
       "space-y": [{
-        "space-y": v()
+        "space-y": x()
       }],
       /**
        * Space Between Y Reverse
@@ -1028,56 +1020,56 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/width#setting-both-width-and-height
        */
       size: [{
-        size: _()
+        size: E()
       }],
       /**
        * Inline Size
        * @see https://tailwindcss.com/docs/width
        */
       "inline-size": [{
-        inline: ["auto", ...D()]
+        inline: ["auto", ...O()]
       }],
       /**
        * Min-Inline Size
        * @see https://tailwindcss.com/docs/min-width
        */
       "min-inline-size": [{
-        "min-inline": ["auto", ...D()]
+        "min-inline": ["auto", ...O()]
       }],
       /**
        * Max-Inline Size
        * @see https://tailwindcss.com/docs/max-width
        */
       "max-inline-size": [{
-        "max-inline": ["none", ...D()]
+        "max-inline": ["none", ...O()]
       }],
       /**
        * Block Size
        * @see https://tailwindcss.com/docs/height
        */
       "block-size": [{
-        block: ["auto", ...q()]
+        block: ["auto", ...P()]
       }],
       /**
        * Min-Block Size
        * @see https://tailwindcss.com/docs/min-height
        */
       "min-block-size": [{
-        "min-block": ["auto", ...q()]
+        "min-block": ["auto", ...P()]
       }],
       /**
        * Max-Block Size
        * @see https://tailwindcss.com/docs/max-height
        */
       "max-block-size": [{
-        "max-block": ["none", ...q()]
+        "max-block": ["none", ...P()]
       }],
       /**
        * Width
        * @see https://tailwindcss.com/docs/width
        */
       w: [{
-        w: [l, "screen", ..._()]
+        w: [l, "screen", ...E()]
       }],
       /**
        * Min-Width
@@ -1089,7 +1081,7 @@ const Xr = (e, t) => {
           "screen",
           /** Deprecated. @see https://github.com/tailwindlabs/tailwindcss.com/issues/2027#issuecomment-2620152757 */
           "none",
-          ..._()
+          ...E()
         ]
       }],
       /**
@@ -1107,7 +1099,7 @@ const Xr = (e, t) => {
           {
             screen: [i]
           },
-          ..._()
+          ...E()
         ]
       }],
       /**
@@ -1115,21 +1107,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/height
        */
       h: [{
-        h: ["screen", "lh", ..._()]
+        h: ["screen", "lh", ...E()]
       }],
       /**
        * Min-Height
        * @see https://tailwindcss.com/docs/min-height
        */
       "min-h": [{
-        "min-h": ["screen", "lh", "none", ..._()]
+        "min-h": ["screen", "lh", "none", ...E()]
       }],
       /**
        * Max-Height
        * @see https://tailwindcss.com/docs/max-height
        */
       "max-h": [{
-        "max-h": ["screen", "lh", ..._()]
+        "max-h": ["screen", "lh", ...E()]
       }],
       // ------------------
       // --- Typography ---
@@ -1139,7 +1131,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/font-size
        */
       "font-size": [{
-        text: ["base", r, Ge, _e]
+        text: ["base", r, Be, Ce]
       }],
       /**
        * Font Smoothing
@@ -1156,28 +1148,28 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/font-weight
        */
       "font-weight": [{
-        font: [n, Rn, En]
+        font: [n, Cn, kn]
       }],
       /**
        * Font Stretch
        * @see https://tailwindcss.com/docs/font-stretch
        */
       "font-stretch": [{
-        "font-stretch": ["ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded", st, M]
+        "font-stretch": ["ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded", nt, A]
       }],
       /**
        * Font Family
        * @see https://tailwindcss.com/docs/font-family
        */
       "font-family": [{
-        font: [An, Cn, t]
+        font: [Sn, Nn, t]
       }],
       /**
        * Font Feature Settings
        * @see https://tailwindcss.com/docs/font-feature-settings
        */
       "font-features": [{
-        "font-features": [M]
+        "font-features": [A]
       }],
       /**
        * Font Variant Numeric
@@ -1214,14 +1206,14 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/letter-spacing
        */
       tracking: [{
-        tracking: [a, L, M]
+        tracking: [a, z, A]
       }],
       /**
        * Line Clamp
        * @see https://tailwindcss.com/docs/line-clamp
        */
       "line-clamp": [{
-        "line-clamp": [H, "none", L, Ot]
+        "line-clamp": [K, "none", z, zt]
       }],
       /**
        * Line Height
@@ -1231,7 +1223,7 @@ const Xr = (e, t) => {
         leading: [
           /** Deprecated since Tailwind CSS v4.0.0. @see https://github.com/tailwindlabs/tailwindcss.com/issues/2027#issuecomment-2620152757 */
           s,
-          ...v()
+          ...x()
         ]
       }],
       /**
@@ -1239,7 +1231,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/list-style-image
        */
       "list-image": [{
-        "list-image": ["none", L, M]
+        "list-image": ["none", z, A]
       }],
       /**
        * List Style Position
@@ -1253,7 +1245,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/list-style-type
        */
       "list-style-type": [{
-        list: ["disc", "decimal", "none", L, M]
+        list: ["disc", "decimal", "none", z, A]
       }],
       /**
        * Text Alignment
@@ -1268,14 +1260,14 @@ const Xr = (e, t) => {
        * @see https://v3.tailwindcss.com/docs/placeholder-color
        */
       "placeholder-color": [{
-        placeholder: S()
+        placeholder: y()
       }],
       /**
        * Text Color
        * @see https://tailwindcss.com/docs/text-color
        */
       "text-color": [{
-        text: S()
+        text: y()
       }],
       /**
        * Text Decoration
@@ -1287,28 +1279,28 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/text-decoration-style
        */
       "text-decoration-style": [{
-        decoration: [...ce(), "wavy"]
+        decoration: [...ae(), "wavy"]
       }],
       /**
        * Text Decoration Thickness
        * @see https://tailwindcss.com/docs/text-decoration-thickness
        */
       "text-decoration-thickness": [{
-        decoration: [H, "from-font", "auto", L, _e]
+        decoration: [K, "from-font", "auto", z, Ce]
       }],
       /**
        * Text Decoration Color
        * @see https://tailwindcss.com/docs/text-decoration-color
        */
       "text-decoration-color": [{
-        decoration: S()
+        decoration: y()
       }],
       /**
        * Text Underline Offset
        * @see https://tailwindcss.com/docs/text-underline-offset
        */
       "underline-offset": [{
-        "underline-offset": [H, "auto", L, M]
+        "underline-offset": [K, "auto", z, A]
       }],
       /**
        * Text Transform
@@ -1332,14 +1324,14 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/text-indent
        */
       indent: [{
-        indent: v()
+        indent: x()
       }],
       /**
        * Vertical Alignment
        * @see https://tailwindcss.com/docs/vertical-align
        */
       "vertical-align": [{
-        align: ["baseline", "top", "middle", "bottom", "text-top", "text-bottom", "sub", "super", L, M]
+        align: ["baseline", "top", "middle", "bottom", "text-top", "text-bottom", "sub", "super", z, A]
       }],
       /**
        * Whitespace
@@ -1374,7 +1366,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/content
        */
       content: [{
-        content: ["none", L, M]
+        content: ["none", z, A]
       }],
       // -------------------
       // --- Backgrounds ---
@@ -1405,21 +1397,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/background-position
        */
       "bg-position": [{
-        bg: O()
+        bg: G()
       }],
       /**
        * Background Repeat
        * @see https://tailwindcss.com/docs/background-repeat
        */
       "bg-repeat": [{
-        bg: C()
+        bg: R()
       }],
       /**
        * Background Size
        * @see https://tailwindcss.com/docs/background-size
        */
       "bg-size": [{
-        bg: B()
+        bg: L()
       }],
       /**
        * Background Image
@@ -1429,59 +1421,59 @@ const Xr = (e, t) => {
         bg: ["none", {
           linear: [{
             to: ["t", "tr", "r", "br", "b", "bl", "l", "tl"]
-          }, ze, L, M],
-          radial: ["", L, M],
-          conic: [ze, L, M]
-        }, Ln, _n]
+          }, Ne, z, A],
+          radial: ["", z, A],
+          conic: [Ne, z, A]
+        }, Tn, $n]
       }],
       /**
        * Background Color
        * @see https://tailwindcss.com/docs/background-color
        */
       "bg-color": [{
-        bg: S()
+        bg: y()
       }],
       /**
        * Gradient Color Stops From Position
        * @see https://tailwindcss.com/docs/gradient-color-stops
        */
       "gradient-from-pos": [{
-        from: X()
+        from: q()
       }],
       /**
        * Gradient Color Stops Via Position
        * @see https://tailwindcss.com/docs/gradient-color-stops
        */
       "gradient-via-pos": [{
-        via: X()
+        via: q()
       }],
       /**
        * Gradient Color Stops To Position
        * @see https://tailwindcss.com/docs/gradient-color-stops
        */
       "gradient-to-pos": [{
-        to: X()
+        to: q()
       }],
       /**
        * Gradient Color Stops From
        * @see https://tailwindcss.com/docs/gradient-color-stops
        */
       "gradient-from": [{
-        from: S()
+        from: y()
       }],
       /**
        * Gradient Color Stops Via
        * @see https://tailwindcss.com/docs/gradient-color-stops
        */
       "gradient-via": [{
-        via: S()
+        via: y()
       }],
       /**
        * Gradient Color Stops To
        * @see https://tailwindcss.com/docs/gradient-color-stops
        */
       "gradient-to": [{
-        to: S()
+        to: y()
       }],
       // ---------------
       // --- Borders ---
@@ -1491,189 +1483,189 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/border-radius
        */
       rounded: [{
-        rounded: U()
+        rounded: Y()
       }],
       /**
        * Border Radius Start
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-s": [{
-        "rounded-s": U()
+        "rounded-s": Y()
       }],
       /**
        * Border Radius End
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-e": [{
-        "rounded-e": U()
+        "rounded-e": Y()
       }],
       /**
        * Border Radius Top
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-t": [{
-        "rounded-t": U()
+        "rounded-t": Y()
       }],
       /**
        * Border Radius Right
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-r": [{
-        "rounded-r": U()
+        "rounded-r": Y()
       }],
       /**
        * Border Radius Bottom
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-b": [{
-        "rounded-b": U()
+        "rounded-b": Y()
       }],
       /**
        * Border Radius Left
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-l": [{
-        "rounded-l": U()
+        "rounded-l": Y()
       }],
       /**
        * Border Radius Start Start
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-ss": [{
-        "rounded-ss": U()
+        "rounded-ss": Y()
       }],
       /**
        * Border Radius Start End
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-se": [{
-        "rounded-se": U()
+        "rounded-se": Y()
       }],
       /**
        * Border Radius End End
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-ee": [{
-        "rounded-ee": U()
+        "rounded-ee": Y()
       }],
       /**
        * Border Radius End Start
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-es": [{
-        "rounded-es": U()
+        "rounded-es": Y()
       }],
       /**
        * Border Radius Top Left
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-tl": [{
-        "rounded-tl": U()
+        "rounded-tl": Y()
       }],
       /**
        * Border Radius Top Right
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-tr": [{
-        "rounded-tr": U()
+        "rounded-tr": Y()
       }],
       /**
        * Border Radius Bottom Right
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-br": [{
-        "rounded-br": U()
+        "rounded-br": Y()
       }],
       /**
        * Border Radius Bottom Left
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-bl": [{
-        "rounded-bl": U()
+        "rounded-bl": Y()
       }],
       /**
        * Border Width
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w": [{
-        border: Y()
+        border: V()
       }],
       /**
        * Border Width Inline
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-x": [{
-        "border-x": Y()
+        "border-x": V()
       }],
       /**
        * Border Width Block
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-y": [{
-        "border-y": Y()
+        "border-y": V()
       }],
       /**
        * Border Width Inline Start
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-s": [{
-        "border-s": Y()
+        "border-s": V()
       }],
       /**
        * Border Width Inline End
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-e": [{
-        "border-e": Y()
+        "border-e": V()
       }],
       /**
        * Border Width Block Start
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-bs": [{
-        "border-bs": Y()
+        "border-bs": V()
       }],
       /**
        * Border Width Block End
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-be": [{
-        "border-be": Y()
+        "border-be": V()
       }],
       /**
        * Border Width Top
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-t": [{
-        "border-t": Y()
+        "border-t": V()
       }],
       /**
        * Border Width Right
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-r": [{
-        "border-r": Y()
+        "border-r": V()
       }],
       /**
        * Border Width Bottom
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-b": [{
-        "border-b": Y()
+        "border-b": V()
       }],
       /**
        * Border Width Left
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-l": [{
-        "border-l": Y()
+        "border-l": V()
       }],
       /**
        * Divide Width X
        * @see https://tailwindcss.com/docs/border-width#between-children
        */
       "divide-x": [{
-        "divide-x": Y()
+        "divide-x": V()
       }],
       /**
        * Divide Width X Reverse
@@ -1685,7 +1677,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/border-width#between-children
        */
       "divide-y": [{
-        "divide-y": Y()
+        "divide-y": V()
       }],
       /**
        * Divide Width Y Reverse
@@ -1697,126 +1689,126 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/border-style
        */
       "border-style": [{
-        border: [...ce(), "hidden", "none"]
+        border: [...ae(), "hidden", "none"]
       }],
       /**
        * Divide Style
        * @see https://tailwindcss.com/docs/border-style#setting-the-divider-style
        */
       "divide-style": [{
-        divide: [...ce(), "hidden", "none"]
+        divide: [...ae(), "hidden", "none"]
       }],
       /**
        * Border Color
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color": [{
-        border: S()
+        border: y()
       }],
       /**
        * Border Color Inline
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-x": [{
-        "border-x": S()
+        "border-x": y()
       }],
       /**
        * Border Color Block
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-y": [{
-        "border-y": S()
+        "border-y": y()
       }],
       /**
        * Border Color Inline Start
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-s": [{
-        "border-s": S()
+        "border-s": y()
       }],
       /**
        * Border Color Inline End
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-e": [{
-        "border-e": S()
+        "border-e": y()
       }],
       /**
        * Border Color Block Start
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-bs": [{
-        "border-bs": S()
+        "border-bs": y()
       }],
       /**
        * Border Color Block End
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-be": [{
-        "border-be": S()
+        "border-be": y()
       }],
       /**
        * Border Color Top
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-t": [{
-        "border-t": S()
+        "border-t": y()
       }],
       /**
        * Border Color Right
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-r": [{
-        "border-r": S()
+        "border-r": y()
       }],
       /**
        * Border Color Bottom
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-b": [{
-        "border-b": S()
+        "border-b": y()
       }],
       /**
        * Border Color Left
        * @see https://tailwindcss.com/docs/border-color
        */
       "border-color-l": [{
-        "border-l": S()
+        "border-l": y()
       }],
       /**
        * Divide Color
        * @see https://tailwindcss.com/docs/divide-color
        */
       "divide-color": [{
-        divide: S()
+        divide: y()
       }],
       /**
        * Outline Style
        * @see https://tailwindcss.com/docs/outline-style
        */
       "outline-style": [{
-        outline: [...ce(), "none", "hidden"]
+        outline: [...ae(), "none", "hidden"]
       }],
       /**
        * Outline Offset
        * @see https://tailwindcss.com/docs/outline-offset
        */
       "outline-offset": [{
-        "outline-offset": [H, L, M]
+        "outline-offset": [K, z, A]
       }],
       /**
        * Outline Width
        * @see https://tailwindcss.com/docs/outline-width
        */
       "outline-w": [{
-        outline: ["", H, Ge, _e]
+        outline: ["", K, Be, Ce]
       }],
       /**
        * Outline Color
        * @see https://tailwindcss.com/docs/outline-color
        */
       "outline-color": [{
-        outline: S()
+        outline: y()
       }],
       // ---------------
       // --- Effects ---
@@ -1831,8 +1823,8 @@ const Xr = (e, t) => {
           "",
           "none",
           u,
-          Je,
-          Qe
+          Ye,
+          Xe
         ]
       }],
       /**
@@ -1840,28 +1832,28 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/box-shadow#setting-the-shadow-color
        */
       "shadow-color": [{
-        shadow: S()
+        shadow: y()
       }],
       /**
        * Inset Box Shadow
        * @see https://tailwindcss.com/docs/box-shadow#adding-an-inset-shadow
        */
       "inset-shadow": [{
-        "inset-shadow": ["none", b, Je, Qe]
+        "inset-shadow": ["none", m, Ye, Xe]
       }],
       /**
        * Inset Box Shadow Color
        * @see https://tailwindcss.com/docs/box-shadow#setting-the-inset-shadow-color
        */
       "inset-shadow-color": [{
-        "inset-shadow": S()
+        "inset-shadow": y()
       }],
       /**
        * Ring Width
        * @see https://tailwindcss.com/docs/box-shadow#adding-a-ring
        */
       "ring-w": [{
-        ring: Y()
+        ring: V()
       }],
       /**
        * Ring Width Inset
@@ -1875,7 +1867,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/box-shadow#setting-the-ring-color
        */
       "ring-color": [{
-        ring: S()
+        ring: y()
       }],
       /**
        * Ring Offset Width
@@ -1884,7 +1876,7 @@ const Xr = (e, t) => {
        * @see https://github.com/tailwindlabs/tailwindcss/blob/v4.0.0/packages/tailwindcss/src/utilities.ts#L4158
        */
       "ring-offset-w": [{
-        "ring-offset": [H, _e]
+        "ring-offset": [K, Ce]
       }],
       /**
        * Ring Offset Color
@@ -1893,56 +1885,56 @@ const Xr = (e, t) => {
        * @see https://github.com/tailwindlabs/tailwindcss/blob/v4.0.0/packages/tailwindcss/src/utilities.ts#L4158
        */
       "ring-offset-color": [{
-        "ring-offset": S()
+        "ring-offset": y()
       }],
       /**
        * Inset Ring Width
        * @see https://tailwindcss.com/docs/box-shadow#adding-an-inset-ring
        */
       "inset-ring-w": [{
-        "inset-ring": Y()
+        "inset-ring": V()
       }],
       /**
        * Inset Ring Color
        * @see https://tailwindcss.com/docs/box-shadow#setting-the-inset-ring-color
        */
       "inset-ring-color": [{
-        "inset-ring": S()
+        "inset-ring": y()
       }],
       /**
        * Text Shadow
        * @see https://tailwindcss.com/docs/text-shadow
        */
       "text-shadow": [{
-        "text-shadow": ["none", h, Je, Qe]
+        "text-shadow": ["none", p, Ye, Xe]
       }],
       /**
        * Text Shadow Color
        * @see https://tailwindcss.com/docs/text-shadow#setting-the-shadow-color
        */
       "text-shadow-color": [{
-        "text-shadow": S()
+        "text-shadow": y()
       }],
       /**
        * Opacity
        * @see https://tailwindcss.com/docs/opacity
        */
       opacity: [{
-        opacity: [H, L, M]
+        opacity: [K, z, A]
       }],
       /**
        * Mix Blend Mode
        * @see https://tailwindcss.com/docs/mix-blend-mode
        */
       "mix-blend": [{
-        "mix-blend": [...ae(), "plus-darker", "plus-lighter"]
+        "mix-blend": [...ie(), "plus-darker", "plus-lighter"]
       }],
       /**
        * Background Blend Mode
        * @see https://tailwindcss.com/docs/background-blend-mode
        */
       "bg-blend": [{
-        "bg-blend": ae()
+        "bg-blend": ie()
       }],
       /**
        * Mask Clip
@@ -1963,106 +1955,106 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/mask-image
        */
       "mask-image-linear-pos": [{
-        "mask-linear": [H]
+        "mask-linear": [K]
       }],
       "mask-image-linear-from-pos": [{
-        "mask-linear-from": Z()
+        "mask-linear-from": J()
       }],
       "mask-image-linear-to-pos": [{
-        "mask-linear-to": Z()
+        "mask-linear-to": J()
       }],
       "mask-image-linear-from-color": [{
-        "mask-linear-from": S()
+        "mask-linear-from": y()
       }],
       "mask-image-linear-to-color": [{
-        "mask-linear-to": S()
+        "mask-linear-to": y()
       }],
       "mask-image-t-from-pos": [{
-        "mask-t-from": Z()
+        "mask-t-from": J()
       }],
       "mask-image-t-to-pos": [{
-        "mask-t-to": Z()
+        "mask-t-to": J()
       }],
       "mask-image-t-from-color": [{
-        "mask-t-from": S()
+        "mask-t-from": y()
       }],
       "mask-image-t-to-color": [{
-        "mask-t-to": S()
+        "mask-t-to": y()
       }],
       "mask-image-r-from-pos": [{
-        "mask-r-from": Z()
+        "mask-r-from": J()
       }],
       "mask-image-r-to-pos": [{
-        "mask-r-to": Z()
+        "mask-r-to": J()
       }],
       "mask-image-r-from-color": [{
-        "mask-r-from": S()
+        "mask-r-from": y()
       }],
       "mask-image-r-to-color": [{
-        "mask-r-to": S()
+        "mask-r-to": y()
       }],
       "mask-image-b-from-pos": [{
-        "mask-b-from": Z()
+        "mask-b-from": J()
       }],
       "mask-image-b-to-pos": [{
-        "mask-b-to": Z()
+        "mask-b-to": J()
       }],
       "mask-image-b-from-color": [{
-        "mask-b-from": S()
+        "mask-b-from": y()
       }],
       "mask-image-b-to-color": [{
-        "mask-b-to": S()
+        "mask-b-to": y()
       }],
       "mask-image-l-from-pos": [{
-        "mask-l-from": Z()
+        "mask-l-from": J()
       }],
       "mask-image-l-to-pos": [{
-        "mask-l-to": Z()
+        "mask-l-to": J()
       }],
       "mask-image-l-from-color": [{
-        "mask-l-from": S()
+        "mask-l-from": y()
       }],
       "mask-image-l-to-color": [{
-        "mask-l-to": S()
+        "mask-l-to": y()
       }],
       "mask-image-x-from-pos": [{
-        "mask-x-from": Z()
+        "mask-x-from": J()
       }],
       "mask-image-x-to-pos": [{
-        "mask-x-to": Z()
+        "mask-x-to": J()
       }],
       "mask-image-x-from-color": [{
-        "mask-x-from": S()
+        "mask-x-from": y()
       }],
       "mask-image-x-to-color": [{
-        "mask-x-to": S()
+        "mask-x-to": y()
       }],
       "mask-image-y-from-pos": [{
-        "mask-y-from": Z()
+        "mask-y-from": J()
       }],
       "mask-image-y-to-pos": [{
-        "mask-y-to": Z()
+        "mask-y-to": J()
       }],
       "mask-image-y-from-color": [{
-        "mask-y-from": S()
+        "mask-y-from": y()
       }],
       "mask-image-y-to-color": [{
-        "mask-y-to": S()
+        "mask-y-to": y()
       }],
       "mask-image-radial": [{
-        "mask-radial": [L, M]
+        "mask-radial": [z, A]
       }],
       "mask-image-radial-from-pos": [{
-        "mask-radial-from": Z()
+        "mask-radial-from": J()
       }],
       "mask-image-radial-to-pos": [{
-        "mask-radial-to": Z()
+        "mask-radial-to": J()
       }],
       "mask-image-radial-from-color": [{
-        "mask-radial-from": S()
+        "mask-radial-from": y()
       }],
       "mask-image-radial-to-color": [{
-        "mask-radial-to": S()
+        "mask-radial-to": y()
       }],
       "mask-image-radial-shape": [{
         "mask-radial": ["circle", "ellipse"]
@@ -2077,19 +2069,19 @@ const Xr = (e, t) => {
         "mask-radial-at": $()
       }],
       "mask-image-conic-pos": [{
-        "mask-conic": [H]
+        "mask-conic": [K]
       }],
       "mask-image-conic-from-pos": [{
-        "mask-conic-from": Z()
+        "mask-conic-from": J()
       }],
       "mask-image-conic-to-pos": [{
-        "mask-conic-to": Z()
+        "mask-conic-to": J()
       }],
       "mask-image-conic-from-color": [{
-        "mask-conic-from": S()
+        "mask-conic-from": y()
       }],
       "mask-image-conic-to-color": [{
-        "mask-conic-to": S()
+        "mask-conic-to": y()
       }],
       /**
        * Mask Mode
@@ -2110,21 +2102,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/mask-position
        */
       "mask-position": [{
-        mask: O()
+        mask: G()
       }],
       /**
        * Mask Repeat
        * @see https://tailwindcss.com/docs/mask-repeat
        */
       "mask-repeat": [{
-        mask: C()
+        mask: R()
       }],
       /**
        * Mask Size
        * @see https://tailwindcss.com/docs/mask-size
        */
       "mask-size": [{
-        mask: B()
+        mask: L()
       }],
       /**
        * Mask Type
@@ -2138,7 +2130,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/mask-image
        */
       "mask-image": [{
-        mask: ["none", L, M]
+        mask: ["none", z, A]
       }],
       // ---------------
       // --- Filters ---
@@ -2152,8 +2144,8 @@ const Xr = (e, t) => {
           // Deprecated since Tailwind CSS v3.0.0
           "",
           "none",
-          L,
-          M
+          z,
+          A
         ]
       }],
       /**
@@ -2161,21 +2153,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/blur
        */
       blur: [{
-        blur: fe()
+        blur: xe()
       }],
       /**
        * Brightness
        * @see https://tailwindcss.com/docs/brightness
        */
       brightness: [{
-        brightness: [H, L, M]
+        brightness: [K, z, A]
       }],
       /**
        * Contrast
        * @see https://tailwindcss.com/docs/contrast
        */
       contrast: [{
-        contrast: [H, L, M]
+        contrast: [K, z, A]
       }],
       /**
        * Drop Shadow
@@ -2186,9 +2178,9 @@ const Xr = (e, t) => {
           // Deprecated since Tailwind CSS v4.0.0
           "",
           "none",
-          p,
-          Je,
-          Qe
+          h,
+          Ye,
+          Xe
         ]
       }],
       /**
@@ -2196,42 +2188,42 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/filter-drop-shadow#setting-the-shadow-color
        */
       "drop-shadow-color": [{
-        "drop-shadow": S()
+        "drop-shadow": y()
       }],
       /**
        * Grayscale
        * @see https://tailwindcss.com/docs/grayscale
        */
       grayscale: [{
-        grayscale: ["", H, L, M]
+        grayscale: ["", K, z, A]
       }],
       /**
        * Hue Rotate
        * @see https://tailwindcss.com/docs/hue-rotate
        */
       "hue-rotate": [{
-        "hue-rotate": [H, L, M]
+        "hue-rotate": [K, z, A]
       }],
       /**
        * Invert
        * @see https://tailwindcss.com/docs/invert
        */
       invert: [{
-        invert: ["", H, L, M]
+        invert: ["", K, z, A]
       }],
       /**
        * Saturate
        * @see https://tailwindcss.com/docs/saturate
        */
       saturate: [{
-        saturate: [H, L, M]
+        saturate: [K, z, A]
       }],
       /**
        * Sepia
        * @see https://tailwindcss.com/docs/sepia
        */
       sepia: [{
-        sepia: ["", H, L, M]
+        sepia: ["", K, z, A]
       }],
       /**
        * Backdrop Filter
@@ -2242,8 +2234,8 @@ const Xr = (e, t) => {
           // Deprecated since Tailwind CSS v3.0.0
           "",
           "none",
-          L,
-          M
+          z,
+          A
         ]
       }],
       /**
@@ -2251,63 +2243,63 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/backdrop-blur
        */
       "backdrop-blur": [{
-        "backdrop-blur": fe()
+        "backdrop-blur": xe()
       }],
       /**
        * Backdrop Brightness
        * @see https://tailwindcss.com/docs/backdrop-brightness
        */
       "backdrop-brightness": [{
-        "backdrop-brightness": [H, L, M]
+        "backdrop-brightness": [K, z, A]
       }],
       /**
        * Backdrop Contrast
        * @see https://tailwindcss.com/docs/backdrop-contrast
        */
       "backdrop-contrast": [{
-        "backdrop-contrast": [H, L, M]
+        "backdrop-contrast": [K, z, A]
       }],
       /**
        * Backdrop Grayscale
        * @see https://tailwindcss.com/docs/backdrop-grayscale
        */
       "backdrop-grayscale": [{
-        "backdrop-grayscale": ["", H, L, M]
+        "backdrop-grayscale": ["", K, z, A]
       }],
       /**
        * Backdrop Hue Rotate
        * @see https://tailwindcss.com/docs/backdrop-hue-rotate
        */
       "backdrop-hue-rotate": [{
-        "backdrop-hue-rotate": [H, L, M]
+        "backdrop-hue-rotate": [K, z, A]
       }],
       /**
        * Backdrop Invert
        * @see https://tailwindcss.com/docs/backdrop-invert
        */
       "backdrop-invert": [{
-        "backdrop-invert": ["", H, L, M]
+        "backdrop-invert": ["", K, z, A]
       }],
       /**
        * Backdrop Opacity
        * @see https://tailwindcss.com/docs/backdrop-opacity
        */
       "backdrop-opacity": [{
-        "backdrop-opacity": [H, L, M]
+        "backdrop-opacity": [K, z, A]
       }],
       /**
        * Backdrop Saturate
        * @see https://tailwindcss.com/docs/backdrop-saturate
        */
       "backdrop-saturate": [{
-        "backdrop-saturate": [H, L, M]
+        "backdrop-saturate": [K, z, A]
       }],
       /**
        * Backdrop Sepia
        * @see https://tailwindcss.com/docs/backdrop-sepia
        */
       "backdrop-sepia": [{
-        "backdrop-sepia": ["", H, L, M]
+        "backdrop-sepia": ["", K, z, A]
       }],
       // --------------
       // --- Tables ---
@@ -2324,21 +2316,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/border-spacing
        */
       "border-spacing": [{
-        "border-spacing": v()
+        "border-spacing": x()
       }],
       /**
        * Border Spacing X
        * @see https://tailwindcss.com/docs/border-spacing
        */
       "border-spacing-x": [{
-        "border-spacing-x": v()
+        "border-spacing-x": x()
       }],
       /**
        * Border Spacing Y
        * @see https://tailwindcss.com/docs/border-spacing
        */
       "border-spacing-y": [{
-        "border-spacing-y": v()
+        "border-spacing-y": x()
       }],
       /**
        * Table Layout
@@ -2362,7 +2354,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/transition-property
        */
       transition: [{
-        transition: ["", "all", "colors", "opacity", "shadow", "transform", "none", L, M]
+        transition: ["", "all", "colors", "opacity", "shadow", "transform", "none", z, A]
       }],
       /**
        * Transition Behavior
@@ -2376,28 +2368,28 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/transition-duration
        */
       duration: [{
-        duration: [H, "initial", L, M]
+        duration: [K, "initial", z, A]
       }],
       /**
        * Transition Timing Function
        * @see https://tailwindcss.com/docs/transition-timing-function
        */
       ease: [{
-        ease: ["linear", "initial", k, L, M]
+        ease: ["linear", "initial", N, z, A]
       }],
       /**
        * Transition Delay
        * @see https://tailwindcss.com/docs/transition-delay
        */
       delay: [{
-        delay: [H, L, M]
+        delay: [K, z, A]
       }],
       /**
        * Animation
        * @see https://tailwindcss.com/docs/animation
        */
       animate: [{
-        animate: ["none", g, L, M]
+        animate: ["none", v, z, A]
       }],
       // ------------------
       // --- Transforms ---
@@ -2414,70 +2406,70 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/perspective
        */
       perspective: [{
-        perspective: [f, L, M]
+        perspective: [f, z, A]
       }],
       /**
        * Perspective Origin
        * @see https://tailwindcss.com/docs/perspective-origin
        */
       "perspective-origin": [{
-        "perspective-origin": w()
+        "perspective-origin": T()
       }],
       /**
        * Rotate
        * @see https://tailwindcss.com/docs/rotate
        */
       rotate: [{
-        rotate: ge()
+        rotate: me()
       }],
       /**
        * Rotate X
        * @see https://tailwindcss.com/docs/rotate
        */
       "rotate-x": [{
-        "rotate-x": ge()
+        "rotate-x": me()
       }],
       /**
        * Rotate Y
        * @see https://tailwindcss.com/docs/rotate
        */
       "rotate-y": [{
-        "rotate-y": ge()
+        "rotate-y": me()
       }],
       /**
        * Rotate Z
        * @see https://tailwindcss.com/docs/rotate
        */
       "rotate-z": [{
-        "rotate-z": ge()
+        "rotate-z": me()
       }],
       /**
        * Scale
        * @see https://tailwindcss.com/docs/scale
        */
       scale: [{
-        scale: xe()
+        scale: D()
       }],
       /**
        * Scale X
        * @see https://tailwindcss.com/docs/scale
        */
       "scale-x": [{
-        "scale-x": xe()
+        "scale-x": D()
       }],
       /**
        * Scale Y
        * @see https://tailwindcss.com/docs/scale
        */
       "scale-y": [{
-        "scale-y": xe()
+        "scale-y": D()
       }],
       /**
        * Scale Z
        * @see https://tailwindcss.com/docs/scale
        */
       "scale-z": [{
-        "scale-z": xe()
+        "scale-z": D()
       }],
       /**
        * Scale 3D
@@ -2510,14 +2502,14 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/transform
        */
       transform: [{
-        transform: [L, M, "", "none", "gpu", "cpu"]
+        transform: [z, A, "", "none", "gpu", "cpu"]
       }],
       /**
        * Transform Origin
        * @see https://tailwindcss.com/docs/transform-origin
        */
       "transform-origin": [{
-        origin: w()
+        origin: T()
       }],
       /**
        * Transform Style
@@ -2531,28 +2523,28 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/translate
        */
       translate: [{
-        translate: P()
+        translate: se()
       }],
       /**
        * Translate X
        * @see https://tailwindcss.com/docs/translate
        */
       "translate-x": [{
-        "translate-x": P()
+        "translate-x": se()
       }],
       /**
        * Translate Y
        * @see https://tailwindcss.com/docs/translate
        */
       "translate-y": [{
-        "translate-y": P()
+        "translate-y": se()
       }],
       /**
        * Translate Z
        * @see https://tailwindcss.com/docs/translate
        */
       "translate-z": [{
-        "translate-z": P()
+        "translate-z": se()
       }],
       /**
        * Translate None
@@ -2567,7 +2559,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/accent-color
        */
       accent: [{
-        accent: S()
+        accent: y()
       }],
       /**
        * Appearance
@@ -2581,7 +2573,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/just-in-time-mode#caret-color-utilities
        */
       "caret-color": [{
-        caret: S()
+        caret: y()
       }],
       /**
        * Color Scheme
@@ -2595,7 +2587,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/cursor
        */
       cursor: [{
-        cursor: ["auto", "default", "pointer", "wait", "text", "move", "help", "not-allowed", "none", "context-menu", "progress", "cell", "crosshair", "vertical-text", "alias", "copy", "no-drop", "grab", "grabbing", "all-scroll", "col-resize", "row-resize", "n-resize", "e-resize", "s-resize", "w-resize", "ne-resize", "nw-resize", "se-resize", "sw-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "zoom-in", "zoom-out", L, M]
+        cursor: ["auto", "default", "pointer", "wait", "text", "move", "help", "not-allowed", "none", "context-menu", "progress", "cell", "crosshair", "vertical-text", "alias", "copy", "no-drop", "grab", "grabbing", "all-scroll", "col-resize", "row-resize", "n-resize", "e-resize", "s-resize", "w-resize", "ne-resize", "nw-resize", "se-resize", "sw-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "zoom-in", "zoom-out", z, A]
       }],
       /**
        * Field Sizing
@@ -2630,154 +2622,154 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-m": [{
-        "scroll-m": v()
+        "scroll-m": x()
       }],
       /**
        * Scroll Margin Inline
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-mx": [{
-        "scroll-mx": v()
+        "scroll-mx": x()
       }],
       /**
        * Scroll Margin Block
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-my": [{
-        "scroll-my": v()
+        "scroll-my": x()
       }],
       /**
        * Scroll Margin Inline Start
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-ms": [{
-        "scroll-ms": v()
+        "scroll-ms": x()
       }],
       /**
        * Scroll Margin Inline End
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-me": [{
-        "scroll-me": v()
+        "scroll-me": x()
       }],
       /**
        * Scroll Margin Block Start
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-mbs": [{
-        "scroll-mbs": v()
+        "scroll-mbs": x()
       }],
       /**
        * Scroll Margin Block End
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-mbe": [{
-        "scroll-mbe": v()
+        "scroll-mbe": x()
       }],
       /**
        * Scroll Margin Top
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-mt": [{
-        "scroll-mt": v()
+        "scroll-mt": x()
       }],
       /**
        * Scroll Margin Right
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-mr": [{
-        "scroll-mr": v()
+        "scroll-mr": x()
       }],
       /**
        * Scroll Margin Bottom
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-mb": [{
-        "scroll-mb": v()
+        "scroll-mb": x()
       }],
       /**
        * Scroll Margin Left
        * @see https://tailwindcss.com/docs/scroll-margin
        */
       "scroll-ml": [{
-        "scroll-ml": v()
+        "scroll-ml": x()
       }],
       /**
        * Scroll Padding
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-p": [{
-        "scroll-p": v()
+        "scroll-p": x()
       }],
       /**
        * Scroll Padding Inline
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-px": [{
-        "scroll-px": v()
+        "scroll-px": x()
       }],
       /**
        * Scroll Padding Block
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-py": [{
-        "scroll-py": v()
+        "scroll-py": x()
       }],
       /**
        * Scroll Padding Inline Start
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-ps": [{
-        "scroll-ps": v()
+        "scroll-ps": x()
       }],
       /**
        * Scroll Padding Inline End
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-pe": [{
-        "scroll-pe": v()
+        "scroll-pe": x()
       }],
       /**
        * Scroll Padding Block Start
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-pbs": [{
-        "scroll-pbs": v()
+        "scroll-pbs": x()
       }],
       /**
        * Scroll Padding Block End
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-pbe": [{
-        "scroll-pbe": v()
+        "scroll-pbe": x()
       }],
       /**
        * Scroll Padding Top
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-pt": [{
-        "scroll-pt": v()
+        "scroll-pt": x()
       }],
       /**
        * Scroll Padding Right
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-pr": [{
-        "scroll-pr": v()
+        "scroll-pr": x()
       }],
       /**
        * Scroll Padding Bottom
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-pb": [{
-        "scroll-pb": v()
+        "scroll-pb": x()
       }],
       /**
        * Scroll Padding Left
        * @see https://tailwindcss.com/docs/scroll-padding
        */
       "scroll-pl": [{
-        "scroll-pl": v()
+        "scroll-pl": x()
       }],
       /**
        * Scroll Snap Align
@@ -2845,7 +2837,7 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/will-change
        */
       "will-change": [{
-        "will-change": ["auto", "scroll", "contents", "transform", L, M]
+        "will-change": ["auto", "scroll", "contents", "transform", z, A]
       }],
       // -----------
       // --- SVG ---
@@ -2855,21 +2847,21 @@ const Xr = (e, t) => {
        * @see https://tailwindcss.com/docs/fill
        */
       fill: [{
-        fill: ["none", ...S()]
+        fill: ["none", ...y()]
       }],
       /**
        * Stroke Width
        * @see https://tailwindcss.com/docs/stroke-width
        */
       "stroke-w": [{
-        stroke: [H, Ge, _e, Ot]
+        stroke: [K, Be, Ce, zt]
       }],
       /**
        * Stroke
        * @see https://tailwindcss.com/docs/stroke
        */
       stroke: [{
-        stroke: ["none", ...S()]
+        stroke: ["none", ...y()]
       }],
       // ---------------------
       // --- Accessibility ---
@@ -2937,11 +2929,11 @@ const Xr = (e, t) => {
     },
     orderSensitiveModifiers: ["*", "**", "after", "backdrop", "before", "details-content", "file", "first-letter", "first-line", "marker", "placeholder", "selection"]
   };
-}, Pn = /* @__PURE__ */ hn(Dn);
-function I(...e) {
-  return Pn(qr(e));
+}, An = /* @__PURE__ */ cn(_n);
+function S(...e) {
+  return An(Fr(e));
 }
-const Ue = [
+const Ve = [
   [0, 0],
   [3, 0],
   [6, 0],
@@ -2950,56 +2942,56 @@ const Ue = [
   [3, 6],
   [0, 6],
   [0, 3]
-], Bn = 2, jn = 100, Bt = "(prefers-reduced-motion: reduce)";
-function pr(e) {
-  return Ue.filter((t, r) => e === null || (r - e + Ue.length) % Ue.length >= Bn).map(([t, r]) => `M${t} ${r}h2v2h-2Z`).join("");
+], zn = 2, Mn = 100, Lt = "(prefers-reduced-motion: reduce)";
+function cr(e) {
+  return Ve.filter((t, r) => e === null || (r - e + Ve.length) % Ve.length >= zn).map(([t, r]) => `M${t} ${r}h2v2h-2Z`).join("");
 }
-const Fn = Ue.map((e, t) => pr(t)), Vn = pr(null);
-function Gn() {
-  const [e, t] = V(
-    () => typeof window < "u" && typeof window.matchMedia == "function" && window.matchMedia(Bt).matches
+const Rn = Ve.map((e, t) => cr(t)), Ln = cr(null);
+function On() {
+  const [e, t] = H(
+    () => typeof window < "u" && typeof window.matchMedia == "function" && window.matchMedia(Lt).matches
   );
-  return G(() => {
+  return U(() => {
     var a;
     if (typeof window > "u" || typeof window.matchMedia != "function") return;
-    const r = window.matchMedia(Bt), n = () => t(r.matches);
+    const r = window.matchMedia(Lt), n = () => t(r.matches);
     return n(), (a = r.addEventListener) == null || a.call(r, "change", n), () => {
       var s;
       return (s = r.removeEventListener) == null ? void 0 : s.call(r, "change", n);
     };
   }, []), e;
 }
-function br({ size: e = "md", label: t = "Loading", className: r }) {
-  const n = de(e, "Spinner"), a = Gn(), [s, i] = V(0);
-  G(() => {
-    if (a) return;
-    const u = setInterval(() => i((b) => (b + 1) % Ue.length), jn);
-    return () => clearInterval(u);
-  }, [a]);
-  const l = {
+function dr({ size: e = "md", label: t = "Loading", className: r }) {
+  const n = On(), [a, s] = H(0);
+  U(() => {
+    if (n) return;
+    const d = setInterval(() => s((u) => (u + 1) % Ve.length), Mn);
+    return () => clearInterval(d);
+  }, [n]);
+  const i = {
     sm: { box: "w-3 h-3", pixel: 1.5 },
     md: { box: "w-4 h-4", pixel: 2 },
     lg: { box: "w-6 h-6", pixel: 3 }
-  }, { box: c, pixel: d } = l[n];
-  return /* @__PURE__ */ y("span", { role: "status", className: I("inline-flex shrink-0 items-center justify-center", c, r), children: [
+  }, { box: l, pixel: c } = i[e];
+  return /* @__PURE__ */ k("span", { role: "status", className: S("inline-flex shrink-0 items-center justify-center", l, r), children: [
     /* @__PURE__ */ o(
       "svg",
       {
         "aria-hidden": "true",
         viewBox: "0 0 8 8",
-        width: 8 * d,
-        height: 8 * d,
+        width: 8 * c,
+        height: 8 * c,
         fill: "currentColor",
         shapeRendering: "crispEdges",
-        "data-spinner-frame": a ? "static" : s,
-        children: /* @__PURE__ */ o("path", { d: a ? Vn : Fn[s] })
+        "data-spinner-frame": n ? "static" : a,
+        children: /* @__PURE__ */ o("path", { d: n ? Ln : Rn[a] })
       }
     ),
     /* @__PURE__ */ o("span", { className: "sr-only", children: t })
   ] });
 }
-br.displayName = "Spinner";
-const Hn = {
+dr.displayName = "Spinner";
+const Pn = {
   AlertCircle: "⚠",
   // ⚠ warning sign
   AlertTriangle: "⚠",
@@ -3104,7 +3096,7 @@ const Hn = {
   // ✖ heavy X
   X: "✕"
   // ✕ multiplication X
-}, Un = {
+}, Dn = {
   AlertCircle: [
     ".#####.",
     "#######",
@@ -3574,31 +3566,31 @@ const Hn = {
     "#.....#"
   ]
 };
-function Wn(e) {
+function jn(e) {
   let t = "";
   return e.forEach((r, n) => {
     for (const a of r.matchAll(/#+/g))
       t += `M${a.index} ${n}h${a[0].length}v1h-${a[0].length}Z`;
   }), t;
 }
-const Kn = Object.fromEntries(
-  Object.entries(Un).map(([e, t]) => [e, Wn(t)])
-), jt = {
+const Bn = Object.fromEntries(
+  Object.entries(Dn).map(([e, t]) => [e, jn(t)])
+), Ot = {
   3: { box: "w-3 h-3 text-xs", pixel: 1.5 },
   4: { box: "w-4 h-4 text-sm", pixel: 2 },
   5: { box: "w-5 h-5 text-base", pixel: 2 },
   6: { box: "w-6 h-6 text-lg", pixel: 3 },
   8: { box: "w-8 h-8 text-2xl", pixel: 4 }
-}, ee = ({
+}, Q = ({
   name: e,
   size: t = "4",
   className: r
 }) => {
-  const n = Kn[e], { box: a, pixel: s } = jt[t] ?? jt[4];
+  const n = Bn[e], { box: a, pixel: s } = Ot[t] ?? Ot[4];
   return /* @__PURE__ */ o(
     "span",
     {
-      className: I(
+      className: S(
         "inline-flex items-center justify-center font-mono leading-none select-none",
         a,
         r
@@ -3618,13 +3610,13 @@ const Kn = Object.fromEntries(
     }
   );
 };
-function qn(e) {
-  return typeof e == "string" && Object.prototype.hasOwnProperty.call(Hn, e);
+function Fn(e) {
+  return typeof e == "string" && Object.prototype.hasOwnProperty.call(Pn, e);
 }
-function he(e, t = {}) {
-  return qn(e) ? /* @__PURE__ */ o(ee, { name: e, ...t }) : e;
+function pe(e, t = {}) {
+  return Fn(e) ? /* @__PURE__ */ o(Q, { name: e, ...t }) : e;
 }
-const Xe = re(
+const We = re(
   ({
     variant: e = "primary",
     size: t = "md",
@@ -3637,12 +3629,12 @@ const Xe = re(
     target: c,
     rel: d,
     loading: u = !1,
-    onClick: b,
-    "aria-label": h,
-    "aria-labelledby": p,
-    ...m
+    onClick: m,
+    "aria-label": p,
+    "aria-labelledby": h,
+    ...b
   }, f) => {
-    const x = de(t, "Button", "md"), k = `
+    const g = `
       inline-flex items-center justify-center
       font-mono text-sm
       transition-colors [transition-duration:var(--duration-fast)]
@@ -3650,42 +3642,34 @@ const Xe = re(
       disabled:cursor-not-allowed disabled:opacity-50
       focus:outline-none
       focus-visible:![box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--btn-ring)]
-    `, g = () => e === "icon" ? !0 : !a || typeof a == "string" || typeof a == "number" ? !1 : typeof a == "object" && a !== null && "type" in a ? typeof a.type < "u" : Array.isArray(a) ? a.every(
-      (F) => typeof F == "object" && F !== null && "type" in F
+    `, N = () => e === "icon" ? !0 : !a || typeof a == "string" || typeof a == "number" ? !1 : typeof a == "object" && a !== null && "type" in a ? typeof a.type < "u" : Array.isArray(a) ? a.every(
+      (B) => typeof B == "object" && B !== null && "type" in B
     ) : !1;
-    G(() => {
-      if (process.env.NODE_ENV === "production" || !(e === "icon" || g())) return;
-      h != null && String(h).trim() !== "" || p != null && String(p).trim() !== "" || console.warn(
+    U(() => {
+      if (process.env.NODE_ENV === "production" || !(e === "icon" || N())) return;
+      p != null && String(p).trim() !== "" || h != null && String(h).trim() !== "" || console.warn(
         "[@scorp-ds/components] Button: icon-only buttons should include aria-label or aria-labelledby for screen readers."
       );
-    }, [e, x, a, s, i, h, p]), G(() => {
-      process.env.NODE_ENV === "production" || x !== "icon" || console.warn(
-        '[@scorp-ds/components] Button: size="icon" is deprecated. Icon-only buttons are squared automatically; use size="md".'
-      );
-    }, [x]);
-    const z = () => {
-      if (g() || e === "icon")
-        switch (x) {
+    }, [e, t, a, s, i, p, h]);
+    const v = () => {
+      if (N() || e === "icon")
+        switch (t) {
           case "sm":
             return "size-control-sm plate-round";
           case "lg":
             return "size-control-lg plate-round";
-          case "icon":
-            return "size-control-md plate-round";
           default:
             return "size-control-md plate-round";
         }
-      switch (x) {
+      switch (t) {
         case "sm":
           return "h-control-sm px-4 py-1.5 plate-round";
         case "lg":
           return "h-control-lg px-6 py-3.5 plate-round";
-        case "icon":
-          return "size-control-md plate-round";
         default:
           return "h-control-md px-5 py-2.5 plate-round";
       }
-    }, $ = {
+    }, w = {
       primary: `
         bg-[var(--button-primary-background)] hover:bg-[var(--button-primary-background-hover)] active:brightness-95
         text-[var(--button-primary-text)]
@@ -3723,51 +3707,41 @@ const Xe = re(
         disabled:bg-[var(--button-icon-disabled-background)] disabled:text-[var(--button-icon-disabled-text)]
         disabled:opacity-100
       `
-    }, w = {
+    }, $ = {
       sm: "w-4 h-4",
       // 16px
       md: "w-5 h-5",
       // 20px
-      lg: "w-6 h-6",
+      lg: "w-6 h-6"
       // 24px
-      icon: "w-5 h-5"
-      // 20px
-    }, N = {
+    }, T = {
       sm: "gap-1.5",
       // 6px - tighter for visual balance in compact buttons
       md: "gap-2",
       // 8px - standard spacing
-      lg: "gap-2.5",
+      lg: "gap-2.5"
       // 10px - more breathing room for larger buttons
-      icon: "gap-0"
-      // No gap for icon-only
-    }, T = (F) => {
-      if (!F) return null;
-      const _ = he(F);
-      return typeof _ == "object" && _ !== null && "type" in _ ? /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center shrink-0 ${w[x]}`, children: _ }) : _;
-    }, v = () => {
-      if (g() && a) {
-        const _ = x === "icon" ? "md" : x;
-        return typeof a == "object" && a !== null && "type" in a ? /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center shrink-0 ${w[_]}`, children: a }) : /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center shrink-0 ${w[_]}`, children: a });
-      }
-      return a;
-    }, R = {
+    }, I = (B) => {
+      if (!B) return null;
+      const Z = pe(B);
+      return typeof Z == "object" && Z !== null && "type" in Z ? /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center shrink-0 ${$[t]}`, children: Z }) : Z;
+    }, M = () => N() && a ? typeof a == "object" && a !== null && "type" in a ? /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center shrink-0 ${$[t]}`, children: a }) : /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center shrink-0 ${$[t]}`, children: a }) : a, x = {
       "--btn-ring": e === "primary" || e === "link" ? "var(--focus-ring-primary)" : e === "destructive" ? "var(--focus-ring-destructive)" : e === "icon" ? "var(--focus-ring-icon)" : "var(--focus-ring-secondary)",
       outline: "none"
-    }, E = u && !r, W = (F) => {
-      if (E) {
-        F.preventDefault();
+    }, C = u && !r, F = (B) => {
+      if (C) {
+        B.preventDefault();
         return;
       }
-      b == null || b(F);
-    }, J = x === "icon" ? "md" : x, oe = E ? "relative cursor-progress" : "", K = /* @__PURE__ */ y(we, { children: [
-      s && T(s),
-      v(),
-      i && T(i)
-    ] }), te = E ? /* @__PURE__ */ y(we, { children: [
-      /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center opacity-0 ${N[x]}`, children: K }),
-      /* @__PURE__ */ o("span", { "aria-hidden": "true", className: "absolute inset-0 flex items-center justify-center", children: /* @__PURE__ */ o(br, { size: J }) })
-    ] }) : K;
+      m == null || m(B);
+    }, W = C ? "relative cursor-progress" : "", te = /* @__PURE__ */ k(ge, { children: [
+      s && I(s),
+      M(),
+      i && I(i)
+    ] }), ne = C ? /* @__PURE__ */ k(ge, { children: [
+      /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center opacity-0 ${T[t]}`, children: te }),
+      /* @__PURE__ */ o("span", { "aria-hidden": "true", className: "absolute inset-0 flex items-center justify-center", children: /* @__PURE__ */ o(dr, { size: t }) })
+    ] }) : te;
     return l ? /* @__PURE__ */ o(
       "a",
       {
@@ -3775,38 +3749,38 @@ const Xe = re(
         href: r ? void 0 : l,
         target: c,
         rel: d,
-        "aria-disabled": r || E || void 0,
-        "aria-busy": E || void 0,
-        className: `${k} ${z()} ${$[e]} ${N[x]} ${oe} no-underline ${r ? "pointer-events-none opacity-50" : ""} ${n}`,
-        style: R,
-        "aria-label": h,
-        "aria-labelledby": p,
-        onClick: W,
-        ...m,
-        children: te
+        "aria-disabled": r || C || void 0,
+        "aria-busy": C || void 0,
+        className: `${g} ${v()} ${w[e]} ${T[t]} ${W} no-underline ${r ? "pointer-events-none opacity-50" : ""} ${n}`,
+        style: x,
+        "aria-label": p,
+        "aria-labelledby": h,
+        onClick: F,
+        ...b,
+        children: ne
       }
     ) : /* @__PURE__ */ o(
       "button",
       {
         ref: f,
         disabled: r,
-        className: `${k} ${z()} ${$[e]} ${N[x]} ${oe} ${n}`,
-        style: R,
-        "aria-label": h,
-        "aria-labelledby": p,
-        "aria-disabled": E || void 0,
-        "aria-busy": E || void 0,
-        onClick: W,
-        ...m,
-        children: te
+        className: `${g} ${v()} ${w[e]} ${T[t]} ${W} ${n}`,
+        style: x,
+        "aria-label": p,
+        "aria-labelledby": h,
+        "aria-disabled": C || void 0,
+        "aria-busy": C || void 0,
+        onClick: F,
+        ...b,
+        children: ne
       }
     );
   }
 );
-Xe.displayName = "Button";
-const Ft = (e) => e != null && e !== !1 && e !== "";
-function je({ error: e, helperText: t, errorMessage: r, describedBy: n }) {
-  const a = ue(), s = Ft(r), i = !s && Ft(t), l = s || i ? `${a}-message` : void 0;
+We.displayName = "Button";
+const Pt = (e) => e != null && e !== !1 && e !== "";
+function Pe({ error: e, helperText: t, errorMessage: r, describedBy: n }) {
+  const a = ce(), s = Pt(r), i = !s && Pt(t), l = s || i ? `${a}-message` : void 0;
   return {
     invalid: e || s,
     hasMessage: l != null,
@@ -3818,25 +3792,25 @@ function je({ error: e, helperText: t, errorMessage: r, describedBy: n }) {
     }
   };
 }
-function Fe({
+function De({
   id: e,
   tone: t,
   children: r,
   className: n = ""
 }) {
-  return e == null ? null : /* @__PURE__ */ y(
+  return e == null ? null : /* @__PURE__ */ k(
     "p",
     {
       id: e,
       className: `flex items-start gap-1.5 font-mono text-xs ${t === "error" ? "text-error-700 dark:text-error-400" : "text-[var(--text-secondary)]"} ${n}`,
       children: [
-        t === "error" && /* @__PURE__ */ o("span", { className: "flex h-[1lh] shrink-0 items-center", children: /* @__PURE__ */ o(ee, { name: "AlertCircle", size: "3" }) }),
+        t === "error" && /* @__PURE__ */ o("span", { className: "flex h-[1lh] shrink-0 items-center", children: /* @__PURE__ */ o(Q, { name: "AlertCircle", size: "3" }) }),
         /* @__PURE__ */ o("span", { children: r })
       ]
     }
   );
 }
-const Xn = re(
+const Vn = re(
   ({
     size: e = "md",
     variant: t = "box",
@@ -3849,27 +3823,27 @@ const Xn = re(
     id: c,
     "aria-describedby": d,
     ...u
-  }, b) => {
-    const h = de(e, "Input"), p = je({ error: r, helperText: n, errorMessage: a, describedBy: d }), m = p.invalid, f = ue(), x = c ?? (l != null && l !== "" ? f : void 0), k = `
+  }, m) => {
+    const p = Pe({ error: r, helperText: n, errorMessage: a, describedBy: d }), h = p.invalid, b = ce(), f = c ?? (l != null && l !== "" ? b : void 0), g = `
       w-full
       font-mono text-sm
       transition-colors [transition-duration:var(--duration-fast)]
       placeholder:text-[var(--field-placeholder)]
       disabled:cursor-not-allowed
       focus:outline-none
-    `, g = {
+    `, N = {
       sm: "h-control-sm px-3 py-1.5 plate-round",
       md: "h-control-md px-4 py-2.5 plate-round",
       lg: "h-control-lg px-5 py-3.5 plate-round"
-    }, z = m ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]", $ = m ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", w = m ? "border-b border-[var(--field-border-error)] focus:!border-[var(--field-border-focus)]" : "border-b border-[var(--field-border)] hover:border-[var(--field-border-hover)] focus:!border-[var(--field-border-focus)]", N = t === "quiet" ? /* @__PURE__ */ o(
+    }, v = h ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]", w = h ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", $ = h ? "border-b border-[var(--field-border-error)] focus:!border-[var(--field-border-focus)]" : "border-b border-[var(--field-border)] hover:border-[var(--field-border-hover)] focus:!border-[var(--field-border-focus)]", T = t === "quiet" ? /* @__PURE__ */ o(
       "input",
       {
-        ref: b,
-        id: x,
+        ref: m,
+        id: f,
         disabled: s,
-        "aria-invalid": m || void 0,
+        "aria-invalid": h || void 0,
         "aria-describedby": p.describedBy,
-        className: `${k} ${g[h].replace("plate-round", "rounded-none")} !px-0 bg-transparent text-[var(--text-primary)] disabled:opacity-50 ${w} ${i}`,
+        className: `${g} ${N[e].replace("plate-round", "rounded-none")} !px-0 bg-transparent text-[var(--text-primary)] disabled:opacity-50 ${$} ${i}`,
         ...u
       }
     ) : (
@@ -3878,38 +3852,38 @@ const Xn = re(
       /* @__PURE__ */ o(
         "div",
         {
-          className: `w-full plate-round p-px transition-colors [transition-duration:var(--duration-fast)] ${$} ${s ? "opacity-50" : ""}`,
+          className: `w-full plate-round p-px transition-colors [transition-duration:var(--duration-fast)] ${w} ${s ? "opacity-50" : ""}`,
           children: /* @__PURE__ */ o(
             "input",
             {
-              ref: b,
-              id: x,
+              ref: m,
+              id: f,
               disabled: s,
-              "aria-invalid": m || void 0,
+              "aria-invalid": h || void 0,
               "aria-describedby": p.describedBy,
-              className: `${k} ${g[h]} ${z} ${i}`,
+              className: `${g} ${N[e]} ${v} ${i}`,
               ...u
             }
           )
         }
       )
-    ), T = l != null && l !== "";
-    return !T && !p.hasMessage ? N : /* @__PURE__ */ y("div", { className: "w-full space-y-1", children: [
-      T && /* @__PURE__ */ o(
+    ), I = l != null && l !== "";
+    return !I && !p.hasMessage ? T : /* @__PURE__ */ k("div", { className: "w-full space-y-1", children: [
+      I && /* @__PURE__ */ o(
         "label",
         {
-          htmlFor: x,
+          htmlFor: f,
           className: "block font-mono text-sm text-secondary-800 dark:text-secondary-200",
           children: l
         }
       ),
-      N,
-      /* @__PURE__ */ o(Fe, { ...p.message })
+      T,
+      /* @__PURE__ */ o(De, { ...p.message })
     ] });
   }
 );
-Xn.displayName = "Input";
-const Yn = [
+Vn.displayName = "Input";
+const Hn = [
   "a[href]",
   "area[href]",
   "button:not([disabled])",
@@ -3923,19 +3897,19 @@ const Yn = [
   "[contenteditable='true']",
   '[tabindex]:not([tabindex="-1"])'
 ].join(",");
-function Zn(e) {
-  return Array.from(e.querySelectorAll(Yn)).filter(
+function Gn(e) {
+  return Array.from(e.querySelectorAll(Hn)).filter(
     (t) => !t.hasAttribute("hidden") && t.closest("[hidden]") == null && t.getAttribute("aria-hidden") !== "true"
   );
 }
-function hr(e, t) {
-  G(() => {
+function ur(e, t) {
+  U(() => {
     if (!t) return;
     const r = (n) => {
       if (n.key !== "Tab" || n.defaultPrevented) return;
       const a = e.current;
       if (!a) return;
-      const s = Zn(a), i = document.activeElement;
+      const s = Gn(a), i = document.activeElement;
       if (s.length === 0) {
         n.preventDefault(), a.focus();
         return;
@@ -3954,129 +3928,127 @@ function hr(e, t) {
     return document.addEventListener("keydown", r, !0), () => document.removeEventListener("keydown", r, !0);
   }, [e, t]);
 }
-function Ve({
+function je({
   value: e,
   defaultValue: t,
   onChange: r
 }) {
-  const [n, a] = V(t), s = e !== void 0, i = s ? e : n, l = Q(r);
+  const [n, a] = H(t), s = e !== void 0, i = s ? e : n, l = X(r);
   l.current = r;
-  const c = Q(i);
+  const c = X(i);
   c.current = i;
-  const d = pe(
+  const d = ue(
     (u) => {
-      var b;
-      Object.is(u, c.current) || (s || a(u), (b = l.current) == null || b.call(l, u));
+      var m;
+      Object.is(u, c.current) || (s || a(u), (m = l.current) == null || m.call(l, u));
     },
     [s]
   );
   return [i, d];
 }
-const Vt = /* @__PURE__ */ new Set();
-function se(e, t, r) {
+const Dt = /* @__PURE__ */ new Set();
+function Un(e, t, r) {
   if (process.env.NODE_ENV === "production") return;
   const n = `${e}:${t}`;
-  Vt.has(n) || (Vt.add(n), console.warn(`[@scorp-ds/components] ${e}: ${t} is deprecated. Use ${r}.`));
+  Dt.has(n) || (Dt.add(n), console.warn(`[@scorp-ds/components] ${e}: ${t} is deprecated. Use ${r}.`));
 }
-const Qn = 960;
-function Jn() {
-  let e = Qn;
+const Wn = 960;
+function Kn() {
+  let e = Wn;
   if (typeof document < "u") {
     const t = getComputedStyle(document.documentElement).getPropertyValue("--breakpoint-docked"), r = Number.parseFloat(t);
     Number.isFinite(r) && r > 0 && (e = r);
   }
   return `(min-width: ${e}px)`;
 }
-const eo = { sm: "360px", md: "640px", lg: "740px", full: "100vw" };
-function ls({
+const qn = { sm: "360px", md: "640px", lg: "740px", full: "100vw" };
+function ts({
   open: e,
   defaultOpen: t = !1,
   onOpenChange: r,
-  isOpen: n,
-  onClose: a,
-  title: s,
-  children: i,
-  footerContent: l,
-  size: c,
-  width: d,
-  docked: u = !1
+  title: n,
+  children: a,
+  footerContent: s,
+  size: i,
+  width: l,
+  docked: c = !1
 }) {
-  n !== void 0 && se("Modal", "isOpen", "open"), a !== void 0 && se("Modal", "onClose", "onOpenChange"), d !== void 0 && se("Modal", "width", "size");
-  const [b, h] = Ve({
-    value: e ?? n,
+  l !== void 0 && Un("Modal", "width", "size");
+  const [d, u] = je({
+    value: e,
     defaultValue: t,
     onChange: r
-  }), p = pe(() => {
-    b && (h(!1), a == null || a());
-  }, [b, h, a]), m = c !== void 0 || d === void 0 ? eo[c ?? "lg"] : typeof d == "number" ? `${d}px` : d, f = Q(null), x = Q(null), [k, g] = V(b);
-  G(() => {
-    b && g(!0);
-  }, [b]);
-  const z = k && !b, $ = Pe(Jn, []), [w, N] = V(
-    () => typeof window < "u" && typeof window.matchMedia == "function" && window.matchMedia($).matches
+  }), m = ue(() => {
+    d && u(!1);
+  }, [d, u]), p = i !== void 0 || l === void 0 ? qn[i ?? "lg"] : typeof l == "number" ? `${l}px` : l, h = X(null), b = X(null), [f, g] = H(d);
+  U(() => {
+    d && g(!0);
+  }, [d]);
+  const N = f && !d, v = Le(Kn, []), [w, $] = H(
+    () => typeof window < "u" && typeof window.matchMedia == "function" && window.matchMedia(v).matches
   );
-  G(() => {
+  U(() => {
     if (typeof window.matchMedia != "function") return;
-    const E = window.matchMedia($), W = () => N(E.matches);
-    return E.addEventListener("change", W), () => E.removeEventListener("change", W);
-  }, [$]);
-  const T = u && w, v = b && k;
-  if (G(() => {
-    var E;
-    if (v)
-      return x.current = document.activeElement, (E = f.current) == null || E.focus(), () => {
-        var W;
-        (W = x.current) == null || W.focus(), x.current = null;
+    const x = window.matchMedia(v), C = () => $(x.matches);
+    return x.addEventListener("change", C), () => x.removeEventListener("change", C);
+  }, [v]);
+  const T = c && w, I = d && f;
+  if (U(() => {
+    var x;
+    if (I)
+      return b.current = document.activeElement, (x = h.current) == null || x.focus(), () => {
+        var C;
+        (C = b.current) == null || C.focus(), b.current = null;
       };
-  }, [v]), hr(f, v && !T), G(() => {
-    const E = (W) => {
-      W.key === "Escape" && p();
+  }, [I]), ur(h, I && !T), U(() => {
+    const x = (C) => {
+      C.key === "Escape" && m();
     };
-    return b && document.addEventListener("keydown", E), () => {
-      document.removeEventListener("keydown", E);
+    return d && document.addEventListener("keydown", x), () => {
+      document.removeEventListener("keydown", x);
     };
-  }, [b, p]), G(() => (b && !T ? document.body.style.overflow = "hidden" : document.body.style.overflow = "unset", () => {
+  }, [d, m]), U(() => (d && !T ? document.body.style.overflow = "hidden" : document.body.style.overflow = "unset", () => {
     document.body.style.overflow = "unset";
-  }), [b, T]), !k) return null;
-  const R = (
+  }), [d, T]), !f) return null;
+  const M = (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- stops backdrop clicks inside the panel; Escape and the close button are the keyboard path
     /* @__PURE__ */ o(
       "div",
       {
-        ref: f,
+        ref: h,
         tabIndex: -1,
         className: "max-w-full max-h-[80vh] plate-round-lg p-px bg-[var(--surface-container-stroke)] flex focus:outline-none",
-        style: { width: m },
+        style: { width: p },
         role: "dialog",
         "aria-modal": T ? void 0 : "true",
-        "aria-label": s,
-        onClick: (E) => E.stopPropagation(),
-        children: /* @__PURE__ */ y("div", { className: "w-full plate-round-lg bg-[var(--surface-card)] flex flex-col overflow-hidden", children: [
-          /* @__PURE__ */ y("div", { className: "flex items-center justify-between px-6 py-5 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: [
-            /* @__PURE__ */ o("h2", { className: "text-base font-mono text-[var(--text-primary)] font-medium flex-1 min-w-0 truncate", children: s }),
+        "aria-label": n,
+        onClick: (x) => x.stopPropagation(),
+        children: /* @__PURE__ */ k("div", { className: "w-full plate-round-lg bg-[var(--surface-card)] flex flex-col overflow-hidden", children: [
+          /* @__PURE__ */ k("div", { className: "flex items-center justify-between px-6 py-5 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: [
+            /* @__PURE__ */ o("h2", { className: "text-base font-mono text-[var(--text-primary)] font-medium flex-1 min-w-0 truncate", children: n }),
             /* @__PURE__ */ o(
               "span",
               {
                 className: "relative ml-4 inline-flex shrink-0 before:content-[''] before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-touch before:h-touch",
-                onClick: (E) => {
-                  E.target === E.currentTarget && p();
+                onClick: (x) => {
+                  x.target === x.currentTarget && m();
                 },
                 children: /* @__PURE__ */ o(
-                  Xe,
+                  We,
                   {
                     variant: "secondary",
                     size: "sm",
                     type: "button",
-                    onClick: p,
+                    onClick: m,
                     "aria-label": "Close modal",
-                    children: /* @__PURE__ */ o(ee, { name: "X" })
+                    children: /* @__PURE__ */ o(Q, { name: "X" })
                   }
                 )
               }
             )
           ] }),
-          /* @__PURE__ */ o("div", { className: "overflow-y-auto px-6 py-5", tabIndex: 0, children: i }),
-          l && /* @__PURE__ */ o("div", { className: "flex items-center justify-end gap-3 px-6 py-5 border-t-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: l })
+          /* @__PURE__ */ o("div", { className: "overflow-y-auto px-6 py-5", tabIndex: 0, children: a }),
+          s && /* @__PURE__ */ o("div", { className: "flex items-center justify-end gap-3 px-6 py-5 border-t-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]", children: s })
         ] })
       }
     )
@@ -4084,7 +4056,7 @@ function ls({
   return T ? /* @__PURE__ */ o(
     "div",
     {
-      className: `fixed inset-x-0 mx-auto w-fit max-w-full ${z ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
+      className: `fixed inset-x-0 mx-auto w-fit max-w-full ${N ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
       style: {
         zIndex: "var(--z-index-modal)",
         bottom: "var(--spacing-12)",
@@ -4092,57 +4064,54 @@ function ls({
         filter: "var(--elevation-docked-filter)"
       },
       onAnimationEnd: () => {
-        z && g(!1);
+        N && g(!1);
       },
-      children: R
+      children: M
     }
-  ) : /* @__PURE__ */ o(we, { children: /* @__PURE__ */ o(
+  ) : /* @__PURE__ */ o(ge, { children: /* @__PURE__ */ o(
     "div",
     {
-      className: `fixed inset-0 flex items-center justify-center p-5 bg-[var(--surface-overlay)] ${z ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
+      className: `fixed inset-0 flex items-center justify-center p-5 bg-[var(--surface-overlay)] ${N ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
       style: { zIndex: "var(--z-index-modal)", animationDuration: "var(--duration-normal)" },
-      onClick: p,
+      onClick: m,
       onAnimationEnd: () => {
-        z && g(!1);
+        N && g(!1);
       },
-      children: R
+      children: M
     }
   ) });
 }
-const to = /(?:^|\s)flex(?:\s|$)/;
-function cs({
+function rs({
   title: e,
   subtitle: t,
   headerContent: r,
   children: n,
   footerContent: a,
-  layout: s,
+  layout: s = "block",
   className: i = ""
 }) {
-  const l = !s && to.test(i);
-  l && se("Card", "inferring layout from a `flex` class in className", 'layout="flex"');
-  const c = s ? s === "flex" : l;
+  const l = s === "flex";
   return /* @__PURE__ */ o(
     "div",
     {
       className: `
         plate-round-lg p-px bg-[var(--surface-container-stroke)]
-        ${c ? "flex flex-col" : ""}
+        ${l ? "flex flex-col" : ""}
         ${i}
       `,
-      children: /* @__PURE__ */ y(
+      children: /* @__PURE__ */ k(
         "div",
         {
           className: `
         plate-round-lg bg-[var(--surface-card)] h-full w-full
-        ${c ? "flex flex-col flex-1 min-h-0" : ""}
+        ${l ? "flex flex-col flex-1 min-h-0" : ""}
       `,
           children: [
-            (e || t || r) && /* @__PURE__ */ o("div", { className: "p-4 lg:p-6 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)] overflow-hidden rounded-none", children: r || /* @__PURE__ */ y("div", { children: [
+            (e || t || r) && /* @__PURE__ */ o("div", { className: "p-4 lg:p-6 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)] overflow-hidden rounded-none", children: r || /* @__PURE__ */ k("div", { children: [
               e && /* @__PURE__ */ o("h3", { className: "text-base font-mono font-bold text-[var(--text-primary)] mb-1", children: e }),
               t && /* @__PURE__ */ o("p", { className: "font-mono text-sm text-secondary-800 dark:text-secondary-300", children: t })
             ] }) }),
-            /* @__PURE__ */ o("div", { className: `p-4 lg:p-6 ${c ? "flex-1 flex flex-col min-h-0" : ""}`, children: n }),
+            /* @__PURE__ */ o("div", { className: `p-4 lg:p-6 ${l ? "flex-1 flex flex-col min-h-0" : ""}`, children: n }),
             a && /* @__PURE__ */ o("div", { className: "p-4 lg:p-6 border-t-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)] overflow-hidden", children: a })
           ]
         }
@@ -4150,30 +4119,25 @@ function cs({
     }
   );
 }
-function ds({
-  tone: e,
-  variant: t,
-  size: r = "md",
-  caps: n = !1,
-  dashed: a = !1,
-  children: s,
-  iconLeft: i,
-  onDismiss: l,
-  onClose: c,
-  dismissLabel: d,
-  onCloseLabel: u,
-  className: b = ""
+function ns({
+  tone: e = "neutral",
+  size: t = "md",
+  caps: r = !1,
+  dashed: n = !1,
+  children: a,
+  iconLeft: s,
+  onDismiss: i,
+  dismissLabel: l,
+  className: c = ""
 }) {
-  const h = de(r, "Badge");
-  t !== void 0 && se("Badge", "variant", "tone"), c !== void 0 && se("Badge", "onClose", "onDismiss"), u !== void 0 && se("Badge", "onCloseLabel", "dismissLabel");
-  const p = e ?? (t === "default" ? "neutral" : t) ?? "neutral", m = l ?? c, f = d ?? u ?? (typeof s == "string" ? `Remove ${s}` : "Remove badge"), x = {
+  const d = l ?? (typeof a == "string" ? `Remove ${a}` : "Remove badge"), u = {
     sm: "h-5 px-2 py-1 text-xs",
     // h-5 = 20px, px-2 = 8px, text-xs = 12px
     md: "h-6 px-2.5 py-1 text-xs",
     // h-6 = 24px, px-2.5 = 10px, text-xs = 12px
     lg: "h-7 px-3 py-1.5 text-sm"
     // h-7 = 28px, px-3 = 12px, text-sm = 14px
-  }, k = {
+  }, m = {
     neutral: `
       bg-[var(--surface-muted)]
       text-secondary-800 dark:text-secondary-200
@@ -4204,7 +4168,7 @@ function ds({
     bone: `
       bg-secondary-500 text-secondary-950
     `
-  }, g = {
+  }, p = {
     neutral: "border-current text-secondary-800 dark:text-secondary-200",
     primary: "border-current text-primary-800 dark:text-primary-300",
     success: "border-current text-success-800 dark:text-success-300",
@@ -4212,7 +4176,7 @@ function ds({
     error: "border-current text-error-800 dark:text-error-300",
     info: "border-current text-info-800 dark:text-info-300",
     bone: "border-secondary-500 text-secondary-800 dark:text-secondary-200"
-  }, z = {
+  }, h = {
     sm: "w-3 h-3",
     // 12px
     md: "w-3.5 h-3.5",
@@ -4220,26 +4184,26 @@ function ds({
     lg: "w-4 h-4"
     // 16px
   };
-  return /* @__PURE__ */ y(
+  return /* @__PURE__ */ k(
     "span",
     {
       className: `
         inline-flex items-center gap-1.5
         font-mono font-medium
-        ${a ? `rounded-none border border-dashed bg-transparent ${g[p]}` : `plate-round ${k[p]}`}
-        ${x[h]}
-        ${n ? "uppercase [letter-spacing:.08em]" : ""}
-        ${b}
+        ${n ? `rounded-none border border-dashed bg-transparent ${p[e]}` : `plate-round ${m[e]}`}
+        ${u[t]}
+        ${r ? "uppercase [letter-spacing:.08em]" : ""}
+        ${c}
       `,
       children: [
-        i && /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center ${z[h]} flex-shrink-0`, children: he(i) }),
-        /* @__PURE__ */ o("span", { className: "inline-flex items-center", children: s }),
-        m && /* @__PURE__ */ o(
+        s && /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center ${h[t]} flex-shrink-0`, children: pe(s) }),
+        /* @__PURE__ */ o("span", { className: "inline-flex items-center", children: a }),
+        i && /* @__PURE__ */ o(
           "button",
           {
             type: "button",
-            onClick: ($) => {
-              $.stopPropagation(), m();
+            onClick: (b) => {
+              b.stopPropagation(), i();
             },
             className: `
             relative inline-flex items-center justify-center
@@ -4253,33 +4217,30 @@ function ds({
             focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring-primary)]
             focus:ring-offset-1 focus:ring-offset-[var(--focus-offset-color)]
           `,
-            "aria-label": f,
-            children: /* @__PURE__ */ o(ee, { name: "X", size: "3" })
+            "aria-label": d,
+            children: /* @__PURE__ */ o(Q, { name: "X", size: "3" })
           }
         )
       ]
     }
   );
 }
-function us({
-  tone: e,
-  variant: t,
-  title: r,
-  description: n,
-  iconLeft: a,
-  onDismiss: s,
-  onClose: i,
-  dismissLabel: l = "Close alert",
-  className: c = ""
+function os({
+  tone: e = "neutral",
+  title: t,
+  description: r,
+  iconLeft: n,
+  onDismiss: a,
+  dismissLabel: s = "Close alert",
+  className: i = ""
 }) {
-  t !== void 0 && se("Alert", "variant", "tone"), i !== void 0 && se("Alert", "onClose", "onDismiss");
-  const d = e ?? (t === "default" ? "neutral" : t) ?? "neutral", u = s ?? i, b = {
+  const l = {
     neutral: "Bell",
     success: "CheckCircle",
     warning: "AlertTriangle",
     error: "AlertCircle",
     info: "Info"
-  }, h = he(a, { size: "4" }) || /* @__PURE__ */ o(ee, { name: b[d], size: "4" }), m = {
+  }, c = pe(n, { size: "4" }) || /* @__PURE__ */ o(Q, { name: l[e], size: "4" }), u = {
     // Neutral: neutral semantic surfaces (surface + border roles)
     neutral: {
       ring: "bg-[var(--border-default)]",
@@ -4320,47 +4281,47 @@ function us({
       title: "text-info-900 dark:text-info-50",
       description: "text-info-900 dark:text-info-300"
     }
-  }[d], f = d === "error" ? "focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-error)]" : "focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]";
-  return /* @__PURE__ */ o("div", { role: "alert", className: `plate-round p-px ${m.ring} ${c}`, children: /* @__PURE__ */ y(
+  }[e], m = e === "error" ? "focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-error)]" : "focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]";
+  return /* @__PURE__ */ o("div", { role: "alert", className: `plate-round p-px ${u.ring} ${i}`, children: /* @__PURE__ */ k(
     "div",
     {
       className: `
         plate-round
         flex items-start gap-3
         p-4
-        ${m.fill}
+        ${u.fill}
       `,
       children: [
-        h && /* @__PURE__ */ o("div", { className: `flex h-5 flex-shrink-0 items-center ${m.icon}`, children: h }),
-        /* @__PURE__ */ y("div", { className: "flex-1 min-w-0", children: [
-          r && /* @__PURE__ */ o("h4", { className: `font-mono text-sm font-bold mb-1 ${m.title}`, children: r }),
-          n && /* @__PURE__ */ o("div", { className: `font-mono text-sm ${m.description}`, children: n })
+        c && /* @__PURE__ */ o("div", { className: `flex h-5 flex-shrink-0 items-center ${u.icon}`, children: c }),
+        /* @__PURE__ */ k("div", { className: "flex-1 min-w-0", children: [
+          t && /* @__PURE__ */ o("h4", { className: `font-mono text-sm font-bold mb-1 ${u.title}`, children: t }),
+          r && /* @__PURE__ */ o("div", { className: `font-mono text-sm ${u.description}`, children: r })
         ] }),
-        u && /* @__PURE__ */ o(
+        a && /* @__PURE__ */ o(
           "button",
           {
             type: "button",
-            onClick: u,
+            onClick: a,
             className: `
             relative flex-shrink-0
             font-mono text-xs font-bold
-            ${m.description}
+            ${u.description}
             hover:text-error-800 dark:hover:text-error-300
             transition-colors [transition-duration:var(--duration-fast)]
             before:content-[''] before:absolute before:left-1/2 before:top-1/2
             before:-translate-x-1/2 before:-translate-y-1/2
             before:w-touch before:h-touch
-            focus:outline-none ${f}
+            focus:outline-none ${m}
           `,
-            "aria-label": l,
-            children: /* @__PURE__ */ o(ee, { name: "X", size: "3" })
+            "aria-label": s,
+            children: /* @__PURE__ */ o(Q, { name: "X", size: "3" })
           }
         )
       ]
     }
   ) });
 }
-function ro({
+function Xn({
   src: e,
   alt: t,
   initials: r,
@@ -4370,7 +4331,7 @@ function ro({
   className: i = "",
   onError: l
 }) {
-  const c = de(a, "Avatar", "md"), [d, u] = V(!1), h = {
+  const [c, d] = H(!1), m = {
     sm: {
       container: "w-6 h-6",
       // 24px × 24px
@@ -4419,30 +4380,30 @@ function ro({
       statusOffset: "bottom-2 right-2"
       // Position for xl
     }
-  }[c], p = () => {
-    u(!0), l && l();
-  }, m = e && !d, f = !m && r, x = !m && !f && n, k = !m && !f && !x, z = m || t === void 0 ? {} : t === "" ? { "aria-hidden": !0 } : { role: "img", "aria-label": t }, $ = {
+  }[a], p = () => {
+    d(!0), l && l();
+  }, h = e && !c, b = !h && r, f = !h && !b && n, g = !h && !b && !f, v = h || t === void 0 ? {} : t === "" ? { "aria-hidden": !0 } : { role: "img", "aria-label": t }, w = {
     online: "bg-success-600 dark:bg-success-500",
     offline: "bg-secondary-500 dark:bg-secondary-600",
     away: "bg-warning-600 dark:bg-warning-500"
   };
-  return /* @__PURE__ */ y("div", { className: `relative inline-block ${h.container} ${i}`, children: [
-    /* @__PURE__ */ y(
+  return /* @__PURE__ */ k("div", { className: `relative inline-block ${m.container} ${i}`, children: [
+    /* @__PURE__ */ k(
       "div",
       {
-        ...z,
+        ...v,
         className: `
-          ${h.container}
+          ${m.container}
           plate-round
           overflow-hidden
           flex items-center justify-center
           bg-secondary-200 dark:bg-secondary-800
           text-secondary-900 dark:text-secondary-50
           font-mono font-bold
-          ${h.text}
+          ${m.text}
         `,
         children: [
-          m && /* @__PURE__ */ o(
+          h && /* @__PURE__ */ o(
             "img",
             {
               src: e,
@@ -4451,9 +4412,9 @@ function ro({
               onError: p
             }
           ),
-          f && /* @__PURE__ */ o("span", { className: "select-none", children: r }),
-          x && /* @__PURE__ */ o("div", { className: `${h.icon} inline-flex items-center justify-center leading-none text-secondary-700 dark:text-secondary-300`, children: he(n) }),
-          k && /* @__PURE__ */ o("span", { className: `${h.icon} inline-flex items-center justify-center font-mono font-bold text-secondary-900 dark:text-secondary-100`, "aria-hidden": "true", children: "@" })
+          b && /* @__PURE__ */ o("span", { className: "select-none", children: r }),
+          f && /* @__PURE__ */ o("div", { className: `${m.icon} inline-flex items-center justify-center leading-none text-secondary-700 dark:text-secondary-300`, children: pe(n) }),
+          g && /* @__PURE__ */ o("span", { className: `${m.icon} inline-flex items-center justify-center font-mono font-bold text-secondary-900 dark:text-secondary-100`, "aria-hidden": "true", children: "@" })
         ]
       }
     ),
@@ -4463,9 +4424,9 @@ function ro({
         role: "img",
         className: `
             absolute block
-            ${h.statusOffset}
-            ${h.status}
-            ${$[s]}
+            ${m.statusOffset}
+            ${m.status}
+            ${w[s]}
             rounded-none
             border-2 border-[var(--field-background)]
           `,
@@ -4474,178 +4435,173 @@ function ro({
     )
   ] });
 }
-const no = {
+const Yn = {
   horizontal: { none: "", sm: "my-1", md: "my-4", lg: "my-8" },
   vertical: { none: "", sm: "mx-1", md: "mx-4", lg: "mx-8" }
 };
-function ms({
-  orientation: e,
+function as({
+  orientation: e = "horizontal",
   label: t,
-  variant: r,
-  text: n,
-  spacing: a = "md",
-  className: s = ""
+  spacing: r = "md",
+  className: n = ""
 }) {
-  r !== void 0 && se("Divider", "variant", "orientation, and label for the labelled form"), n !== void 0 && se("Divider", "text", "label");
-  const i = e ?? (r === "vertical" ? "vertical" : "horizontal"), l = t ?? (r === "withText" ? n : void 0), c = de(a, "Divider", "md"), d = no[i][c];
-  return i === "vertical" ? /* @__PURE__ */ o(
+  const a = Yn[e][r];
+  return e === "vertical" ? /* @__PURE__ */ o(
     "div",
     {
-      className: `h-full border-l border-solid border-term-dim ${d} ${s}`,
+      className: `h-full border-l border-solid border-term-dim ${a} ${n}`,
       role: "separator",
       "aria-orientation": "vertical"
     }
-  ) : l != null && l !== !1 && l !== "" ? /* @__PURE__ */ y(
+  ) : t != null && t !== !1 && t !== "" ? /* @__PURE__ */ k(
     "div",
     {
-      className: `flex items-center w-full ${d} ${s}`,
+      className: `flex items-center w-full ${a} ${n}`,
       role: "separator",
-      "aria-label": typeof l == "string" ? l : void 0,
+      "aria-label": typeof t == "string" ? t : void 0,
       children: [
         /* @__PURE__ */ o("span", { className: "flex-1 overflow-hidden whitespace-nowrap font-mono text-term-dim leading-none select-none", "aria-hidden": "true", children: "─".repeat(80) }),
-        /* @__PURE__ */ o("span", { className: "px-2 font-mono text-xs text-term-dim whitespace-nowrap", children: l }),
+        /* @__PURE__ */ o("span", { className: "px-2 font-mono text-xs text-term-dim whitespace-nowrap", children: t }),
         /* @__PURE__ */ o("span", { className: "flex-1 overflow-hidden whitespace-nowrap font-mono text-term-dim leading-none select-none", "aria-hidden": "true", children: "─".repeat(80) })
       ]
     }
   ) : /* @__PURE__ */ o(
     "div",
     {
-      className: `w-full border-t border-solid border-term-dim ${d} ${s}`,
+      className: `w-full border-t border-solid border-term-dim ${a} ${n}`,
       role: "separator",
       "aria-orientation": "horizontal"
     }
   );
 }
-const oo = { top: "bottom", bottom: "top", left: "right", right: "left" }, ao = 8, Oe = 8;
-function so(e, t, r, n, a) {
+const Zn = { top: "bottom", bottom: "top", left: "right", right: "left" }, Qn = 8, Me = 8;
+function Jn(e, t, r, n, a) {
   const s = {
     top: t.top,
     bottom: a - t.bottom,
     left: t.left,
     right: n - t.right
-  }, i = (c) => (c === "top" || c === "bottom" ? r.height : r.width) + ao + Oe;
+  }, i = (c) => (c === "top" || c === "bottom" ? r.height : r.width) + Qn + Me;
   if (s[e] >= i(e)) return e;
-  const l = oo[e];
+  const l = Zn[e];
   return s[l] >= i(l) ? l : e;
 }
-function gr(e, t, r, n) {
+function mr(e, t, r, n) {
   return e === "start" ? t : e === "end" ? t + r - n : t + r / 2 - n / 2;
 }
-function io(e, t, r, n) {
-  const a = gr(n, e.left, e.width, t), s = a + t;
-  return a < Oe ? Oe - a : s > r - Oe ? Math.max(Oe - a, r - Oe - s) : 0;
+function eo(e, t, r, n) {
+  const a = mr(n, e.left, e.width, t), s = a + t;
+  return a < Me ? Me - a : s > r - Me ? Math.max(Me - a, r - Me - s) : 0;
 }
-function lo({
+function to({
   content: e,
   children: t,
-  side: r,
+  side: r = "top",
   align: n = "center",
-  position: a,
-  delay: s = 200,
-  maxWidth: i = "200px",
-  className: l = ""
+  delay: a = 200,
+  maxWidth: s = "200px",
+  className: i = ""
 }) {
-  a !== void 0 && se("Tooltip", "position", "side");
-  const c = r ?? a ?? "top", [d, u] = V(!1), [b, h] = V(!1), p = Q(null), m = Q(null), f = Q(null), x = Q(null), k = ue(), [g, z] = V(c), [$, w] = V(0), [N, T] = V(0), v = () => {
-    p.current && clearTimeout(p.current), m.current && clearTimeout(m.current);
-  }, R = () => {
-    v(), p.current = setTimeout(() => {
-      u(!0), m.current = setTimeout(() => h(!0), 50);
-    }, s);
-  }, E = pe(() => {
-    v(), u(!1), h(!1);
-  }, []), W = (O) => {
-    var C;
-    (C = x.current) != null && C.contains(O.relatedTarget) || E();
+  const [l, c] = H(!1), [d, u] = H(!1), m = X(null), p = X(null), h = X(null), b = X(null), f = ce(), [g, N] = H(r), [v, w] = H(0), [$, T] = H(0), I = () => {
+    m.current && clearTimeout(m.current), p.current && clearTimeout(p.current);
+  }, M = () => {
+    I(), m.current = setTimeout(() => {
+      c(!0), p.current = setTimeout(() => u(!0), 50);
+    }, a);
+  }, x = ue(() => {
+    I(), c(!1), u(!1);
+  }, []), C = (P) => {
+    var y;
+    (y = b.current) != null && y.contains(P.relatedTarget) || x();
   };
-  G(() => {
-    if (!d) return;
-    const O = (C) => {
-      C.key === "Escape" && E();
+  U(() => {
+    if (!l) return;
+    const P = (y) => {
+      y.key === "Escape" && x();
     };
-    return document.addEventListener("keydown", O), () => document.removeEventListener("keydown", O);
-  }, [d, E]), G(() => v, []), Me(() => {
-    var P, ie;
-    if (!d) return;
-    const O = (P = x.current) == null ? void 0 : P.getBoundingClientRect(), C = (ie = f.current) == null ? void 0 : ie.getBoundingClientRect();
-    if (!O || !C) return;
-    const B = window.innerWidth || document.documentElement.clientWidth, X = window.innerHeight || document.documentElement.clientHeight, U = so(c, O, C, B, X), Y = U === "top" || U === "bottom", ce = Y ? io(O, C.width, B, n) : 0, ae = Y ? C.width : C.height, Z = Y ? O.left : O.top, fe = Y ? O.width : O.height, ge = gr(n, Z, fe, ae) + ce, xe = n === "center" ? -ce : Z + fe / 2 - (ge + ae / 2), j = Math.max(0, ae / 2 - 12);
-    z(U), w(ce), T(Math.min(j, Math.max(-j, xe)));
-  }, [d, c, n, e, i]);
-  const J = qe(t) ? yt(t, {
+    return document.addEventListener("keydown", P), () => document.removeEventListener("keydown", P);
+  }, [l, x]), U(() => I, []), _e(() => {
+    var D, j;
+    if (!l) return;
+    const P = (D = b.current) == null ? void 0 : D.getBoundingClientRect(), y = (j = h.current) == null ? void 0 : j.getBoundingClientRect();
+    if (!P || !y) return;
+    const G = window.innerWidth || document.documentElement.clientWidth, R = window.innerHeight || document.documentElement.clientHeight, L = Jn(r, P, y, G, R), q = L === "top" || L === "bottom", Y = q ? eo(P, y.width, G, n) : 0, V = q ? y.width : y.height, ae = q ? P.left : P.top, ie = q ? P.width : P.height, J = mr(n, ae, ie, V) + Y, xe = n === "center" ? -Y : ae + ie / 2 - (J + V / 2), me = Math.max(0, V / 2 - 12);
+    N(L), w(Y), T(Math.min(me, Math.max(-me, xe)));
+  }, [l, r, n, e, s]);
+  const F = Ue(t) ? gt(t, {
     "aria-describedby": [
       t.props["aria-describedby"],
-      d ? k : void 0
+      l ? f : void 0
     ].filter(Boolean).join(" ") || void 0
-  }) : t, oe = {
+  }) : t, W = {
     top: "bottom-full mb-2",
     bottom: "top-full mt-2",
     left: "right-full mr-2",
     right: "left-full ml-2"
-  }, K = {
+  }, te = {
     horizontal: { start: "left-0", center: "left-1/2 -translate-x-1/2", end: "right-0" },
     vertical: { start: "top-0", center: "top-1/2 -translate-y-1/2", end: "bottom-0" }
-  }, te = g === "top" || g === "bottom", F = `${oe[g]} ${K[te ? "horizontal" : "vertical"][n]}`, _ = "var(--plate-caret-outer)", D = "var(--plate-caret-inner)", q = {
+  }, ne = g === "top" || g === "bottom", B = `${W[g]} ${te[ne ? "horizontal" : "vertical"][n]}`, Z = "var(--plate-caret-outer)", ee = "var(--plate-caret-inner)", E = {
     top: "top-full left-1/2 -translate-x-1/2 -translate-y-px",
     bottom: "bottom-full left-1/2 -translate-x-1/2 translate-y-px rotate-180",
     left: "left-full top-1/2 -translate-y-1/2 translate-x-[calc(var(--plate-caret-offset)*-1)] -rotate-90",
     right: "right-full top-1/2 -translate-y-1/2 translate-x-[var(--plate-caret-offset)] rotate-90"
-  }, S = {
+  }, O = {
     top: "top-full inset-x-0 h-2",
     bottom: "bottom-full inset-x-0 h-2",
     left: "left-full inset-y-0 w-2",
     right: "right-full inset-y-0 w-2"
   };
-  return /* @__PURE__ */ y(
+  return /* @__PURE__ */ k(
     "div",
     {
-      ref: x,
-      className: `relative inline-block w-fit ${l}`,
-      onMouseEnter: R,
-      onMouseLeave: E,
-      onFocus: R,
-      onBlur: W,
+      ref: b,
+      className: `relative inline-block w-fit ${i}`,
+      onMouseEnter: M,
+      onMouseLeave: x,
+      onFocus: M,
+      onBlur: C,
       children: [
-        J,
-        d && /* @__PURE__ */ y(
+        F,
+        l && /* @__PURE__ */ k(
           "div",
           {
-            ref: f,
-            id: k,
+            ref: h,
+            id: f,
             role: "tooltip",
             className: `
             absolute
-            ${F}
+            ${B}
             w-max
             z-[var(--z-index-tooltip)]
-            ${b ? "opacity-100" : "opacity-0"}
+            ${d ? "opacity-100" : "opacity-0"}
             transition-opacity [transition-duration:var(--duration-fast)]
           `,
             "data-placement": g,
             "data-align": n,
-            style: { maxWidth: i, marginLeft: $ || void 0 },
+            style: { maxWidth: s, marginLeft: v || void 0 },
             children: [
-              /* @__PURE__ */ o("span", { className: `absolute ${S[g]}`, "aria-hidden": "true" }),
+              /* @__PURE__ */ o("span", { className: `absolute ${O[g]}`, "aria-hidden": "true" }),
               /* @__PURE__ */ o("div", { className: "plate-round p-px bg-[var(--surface-container-stroke)]", children: /* @__PURE__ */ o("div", { className: "plate-round bg-[var(--surface-card)] min-w-16 px-3 py-2 text-center font-mono text-xs text-[var(--text-primary)] whitespace-normal", children: e }) }),
               /* @__PURE__ */ o(
                 "div",
                 {
-                  className: `absolute ${q[g]}`,
-                  style: te ? { marginLeft: N || void 0 } : { marginTop: N || void 0 },
+                  className: `absolute ${E[g]}`,
+                  style: ne ? { marginLeft: $ || void 0 } : { marginTop: $ || void 0 },
                   "aria-hidden": "true",
-                  children: /* @__PURE__ */ y("div", { className: "relative h-[var(--plate-caret-height)] w-[var(--plate-caret-width)]", children: [
+                  children: /* @__PURE__ */ k("div", { className: "relative h-[var(--plate-caret-height)] w-[var(--plate-caret-width)]", children: [
                     /* @__PURE__ */ o(
                       "div",
                       {
                         className: "absolute inset-0 bg-[var(--surface-container-stroke)]",
-                        style: { clipPath: _ }
+                        style: { clipPath: Z }
                       }
                     ),
                     /* @__PURE__ */ o(
                       "div",
                       {
                         className: "absolute left-[var(--plate-caret-inner-inset-x)] top-[var(--plate-caret-inner-inset-y)] h-[var(--plate-caret-inner-height)] w-[var(--plate-caret-inner-width)] bg-[var(--surface-card)]",
-                        style: { clipPath: D }
+                        style: { clipPath: ee }
                       }
                     )
                   ] })
@@ -4658,22 +4614,22 @@ function lo({
     }
   );
 }
-function pt(e) {
-  return e == null || typeof e == "boolean" ? "" : Array.isArray(e) ? e.map(pt).join("") : typeof e == "string" || typeof e == "number" ? String(e) : qe(e) ? pt(e.props.children) : String(e);
+function ut(e) {
+  return e == null || typeof e == "boolean" ? "" : Array.isArray(e) ? e.map(ut).join("") : typeof e == "string" || typeof e == "number" ? String(e) : Ue(e) ? ut(e.props.children) : String(e);
 }
-function bt(e, t, r, n = []) {
-  return Zt.forEach(e, (a) => {
-    if (!qe(a)) return;
+function mt(e, t, r, n = []) {
+  return Wt.forEach(e, (a) => {
+    if (!Ue(a)) return;
     const s = a, i = s.props;
-    if (s.type === wt) {
-      bt(i.children, t, r, n);
+    if (s.type === xt) {
+      mt(i.children, t, r, n);
       return;
     }
     if (s.type === "optgroup") {
-      bt(i.children, i.label ?? t, i.disabled || r, n);
+      mt(i.children, i.label ?? t, i.disabled || r, n);
       return;
     }
-    const l = pt(i.children);
+    const l = ut(i.children);
     n.push({
       // Native fallback: an option with no `value` submits its text
       value: i.value != null ? String(i.value) : l,
@@ -4683,7 +4639,7 @@ function bt(e, t, r, n = []) {
     });
   }), n;
 }
-function it(e, t, r) {
+function ot(e, t, r) {
   var s;
   const n = e.length;
   if (n === 0) return -1;
@@ -4692,7 +4648,7 @@ function it(e, t, r) {
     if (a += r, a >= n && (a = 0), a < 0 && (a = n - 1), !((s = e[a]) != null && s.disabled)) return a;
   return -1;
 }
-const co = re(function({
+const ro = re(function({
   size: t = "md",
   error: r = !1,
   helperText: n,
@@ -4703,86 +4659,86 @@ const co = re(function({
   value: c,
   defaultValue: d,
   onChange: u,
-  name: b,
-  label: h,
-  "aria-label": p,
-  "aria-describedby": m,
+  name: m,
+  label: p,
+  "aria-label": h,
+  "aria-describedby": b,
   id: f,
-  ...x
-}, k) {
-  var xe;
-  const g = de(t, "Select"), z = je({ error: r, helperText: n, errorMessage: a, describedBy: m }), $ = z.invalid, w = ue(), N = f ?? `${w}-trigger`, T = `${w}-listbox`, v = `${w}-label`, R = (j) => `${w}-option-${j}`, E = bt(l), W = [];
-  E.forEach((j, P) => {
-    const ie = W[W.length - 1];
-    ie && ie.label === j.group ? ie.entries.push({ option: j, index: P }) : W.push({ label: j.group, entries: [{ option: j, index: P }] });
+  ...g
+}, N) {
+  var me;
+  const v = Pe({ error: r, helperText: n, errorMessage: a, describedBy: b }), w = v.invalid, $ = ce(), T = f ?? `${$}-trigger`, I = `${$}-listbox`, M = `${$}-label`, x = (D) => `${$}-option-${D}`, C = mt(l), F = [];
+  C.forEach((D, j) => {
+    const se = F[F.length - 1];
+    se && se.label === D.group ? se.entries.push({ option: D, index: j }) : F.push({ label: D.group, entries: [{ option: D, index: j }] });
   });
-  const [J, oe] = V(!1), [K, te] = V(-1), [F, _] = V(
-    c !== void 0 ? String(c) : d !== void 0 ? String(d) : ((xe = E[0]) == null ? void 0 : xe.value) || ""
-  ), D = Q(null), q = Q(null), S = Q(null);
-  G(() => {
-    c !== void 0 && (_(String(c)), S.current && (S.current.value = String(c)));
-  }, [c]), Gr(k, () => S.current);
-  const O = E.find((j) => j.value === F), C = (O == null ? void 0 : O.label) || "", B = () => {
-    s || (oe(!J), J || te(-1));
-  }, X = () => {
-    oe(!1), te(-1);
-  }, U = (j) => {
-    c === void 0 && _(j), S.current && (S.current.value = j), u && u({
-      target: { value: j, name: b },
-      currentTarget: { value: j, name: b }
-    }), X();
+  const [W, te] = H(!1), [ne, B] = H(-1), [Z, ee] = H(
+    c !== void 0 ? String(c) : d !== void 0 ? String(d) : ((me = C[0]) == null ? void 0 : me.value) || ""
+  ), E = X(null), O = X(null), P = X(null);
+  U(() => {
+    c !== void 0 && (ee(String(c)), P.current && (P.current.value = String(c)));
+  }, [c]), Pr(N, () => P.current);
+  const y = C.find((D) => D.value === Z), G = (y == null ? void 0 : y.label) || "", R = () => {
+    s || (te(!W), W || B(-1));
+  }, L = () => {
+    te(!1), B(-1);
+  }, q = (D) => {
+    c === void 0 && ee(D), P.current && (P.current.value = D), u && u({
+      target: { value: D, name: m },
+      currentTarget: { value: D, name: m }
+    }), L();
   };
-  G(() => {
-    function j(P) {
-      D.current && !D.current.contains(P.target) && X();
+  U(() => {
+    function D(j) {
+      E.current && !E.current.contains(j.target) && L();
     }
-    if (J)
-      return document.addEventListener("mousedown", j), () => {
-        document.removeEventListener("mousedown", j);
+    if (W)
+      return document.addEventListener("mousedown", D), () => {
+        document.removeEventListener("mousedown", D);
       };
-  }, [J]), G(() => {
-    function j(P) {
-      var ke, ve;
-      if (!((ke = D.current) != null && ke.contains(P.target)) && !J)
+  }, [W]), U(() => {
+    function D(j) {
+      var ve, be;
+      if (!((ve = E.current) != null && ve.contains(j.target)) && !W)
         return;
-      if (!J) {
-        if ((P.key === "Enter" || P.key === " " || P.key === "ArrowDown" || P.key === "ArrowUp") && (ve = D.current) != null && ve.contains(P.target)) {
-          P.preventDefault(), B();
-          const me = E.findIndex((be) => be.value === F && !be.disabled);
-          te(me >= 0 ? me : it(E, -1, 1));
+      if (!W) {
+        if ((j.key === "Enter" || j.key === " " || j.key === "ArrowDown" || j.key === "ArrowUp") && (be = E.current) != null && be.contains(j.target)) {
+          j.preventDefault(), R();
+          const de = C.findIndex((fe) => fe.value === Z && !fe.disabled);
+          B(de >= 0 ? de : ot(C, -1, 1));
         }
         return;
       }
-      const ie = K;
-      switch (P.key) {
+      const se = ne;
+      switch (j.key) {
         case "Escape":
-          P.preventDefault(), X();
+          j.preventDefault(), L();
           break;
         case "Tab":
-          X();
+          L();
           break;
         case "ArrowDown":
-          P.preventDefault(), te((me) => it(E, me, 1));
+          j.preventDefault(), B((de) => ot(C, de, 1));
           break;
         case "ArrowUp":
-          P.preventDefault(), te((me) => it(E, me, -1));
+          j.preventDefault(), B((de) => ot(C, de, -1));
           break;
         case "Enter":
         case " ":
-          P.preventDefault(), ie >= 0 && ie < E.length && !E[ie].disabled && U(E[ie].value);
+          j.preventDefault(), se >= 0 && se < C.length && !C[se].disabled && q(C[se].value);
           break;
       }
     }
-    return document.addEventListener("keydown", j), () => {
-      document.removeEventListener("keydown", j);
+    return document.addEventListener("keydown", D), () => {
+      document.removeEventListener("keydown", D);
     };
-  }, [J, K, E, F]), G(() => {
-    if (K >= 0 && q.current) {
-      const P = q.current.querySelectorAll('[role="option"]')[K];
-      P && P.scrollIntoView({ block: "nearest" });
+  }, [W, ne, C, Z]), U(() => {
+    if (ne >= 0 && O.current) {
+      const j = O.current.querySelectorAll('[role="option"]')[ne];
+      j && j.scrollIntoView({ block: "nearest" });
     }
-  }, [K]);
-  const ce = {
+  }, [ne]);
+  const V = {
     sm: {
       trigger: "h-control-sm px-4 py-1.5 plate-round",
       menu: "",
@@ -4801,68 +4757,68 @@ const co = re(function({
       menuItem: "",
       icon: "w-6 h-6"
     }
-  }[g], ae = $ ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]", Z = $ ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", fe = h != null && h !== "", ge = /* @__PURE__ */ y("div", { ref: D, className: "relative inline-block w-full", children: [
+  }[t], ae = w ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]", ie = w ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", J = p != null && p !== "", xe = /* @__PURE__ */ k("div", { ref: E, className: "relative inline-block w-full", children: [
     /* @__PURE__ */ o(
       "select",
       {
-        ref: S,
-        name: b,
-        value: F,
+        ref: P,
+        name: m,
+        value: Z,
         onChange: u,
         className: "sr-only",
         "aria-hidden": "true",
         tabIndex: -1,
-        ...x,
-        children: E.map((j, P) => /* @__PURE__ */ o("option", { value: j.value, disabled: j.disabled, children: j.label }, P))
+        ...g,
+        children: C.map((D, j) => /* @__PURE__ */ o("option", { value: D.value, disabled: D.disabled, children: D.label }, j))
       }
     ),
-    /* @__PURE__ */ o("div", { className: `plate-round p-px transition-colors [transition-duration:var(--duration-fast)] ${Z} ${s ? "opacity-50" : ""}`, children: /* @__PURE__ */ y(
+    /* @__PURE__ */ o("div", { className: `plate-round p-px transition-colors [transition-duration:var(--duration-fast)] ${ie} ${s ? "opacity-50" : ""}`, children: /* @__PURE__ */ k(
       "button",
       {
         type: "button",
         role: "combobox",
-        id: N,
-        onClick: B,
+        id: T,
+        onClick: R,
         disabled: s,
         className: `
           w-full
           flex items-center justify-between
           font-mono text-sm
           transition-colors [transition-duration:var(--duration-fast)]
-          ${ce.trigger}
+          ${V.trigger}
           ${ae}
           ${s ? "cursor-not-allowed" : "cursor-pointer"}
           focus:outline-none
         `,
         "aria-haspopup": "listbox",
-        "aria-expanded": J,
-        "aria-controls": J ? T : void 0,
-        "aria-activedescendant": J && K >= 0 ? R(K) : void 0,
-        "aria-invalid": $ || void 0,
-        "aria-describedby": z.describedBy,
-        "aria-label": fe ? void 0 : p ?? "Select an option",
+        "aria-expanded": W,
+        "aria-controls": W ? I : void 0,
+        "aria-activedescendant": W && ne >= 0 ? x(ne) : void 0,
+        "aria-invalid": w || void 0,
+        "aria-describedby": v.describedBy,
+        "aria-label": J ? void 0 : h ?? "Select an option",
         children: [
-          /* @__PURE__ */ o("span", { className: "truncate text-left flex-1", children: C || "Select..." }),
+          /* @__PURE__ */ o("span", { className: "truncate text-left flex-1", children: G || "Select..." }),
           /* @__PURE__ */ o(
             "span",
             {
               className: `
-            ${ce.icon}
+            ${V.icon}
             inline-flex items-center justify-center font-mono leading-none
             text-[var(--text-secondary)]
             transition-transform [transition-duration:var(--duration-normal)]
             flex-shrink-0 ml-2
-            ${J ? "rotate-180" : ""}
+            ${W ? "rotate-180" : ""}
             ${s ? "opacity-50" : ""}
           `,
               "aria-hidden": "true",
-              children: /* @__PURE__ */ o(ee, { name: "ChevronDown" })
+              children: /* @__PURE__ */ o(Q, { name: "ChevronDown" })
             }
           )
         ]
       }
     ) }),
-    J && /* @__PURE__ */ o(
+    W && /* @__PURE__ */ o(
       "div",
       {
         style: { animationDuration: "var(--duration-normal)" },
@@ -4876,74 +4832,74 @@ const co = re(function({
         children: /* @__PURE__ */ o(
           "div",
           {
-            ref: q,
-            id: T,
+            ref: O,
+            id: I,
             role: "listbox",
-            "aria-labelledby": fe ? v : void 0,
-            "aria-label": fe ? void 0 : p ?? "Select an option",
-            className: `plate-round bg-[var(--surface-card)] ${ce.menu} max-h-80 overflow-y-auto`,
-            children: W.map((j, P) => {
-              const ie = `${w}-group-${P}`, ke = j.entries.map(({ option: ve, index: me }) => {
-                const be = ve.disabled, Re = ve.value === F, ot = K === me && !be;
-                return /* @__PURE__ */ y(
+            "aria-labelledby": J ? M : void 0,
+            "aria-label": J ? void 0 : h ?? "Select an option",
+            className: `plate-round bg-[var(--surface-card)] ${V.menu} max-h-80 overflow-y-auto`,
+            children: F.map((D, j) => {
+              const se = `${$}-group-${j}`, ve = D.entries.map(({ option: be, index: de }) => {
+                const fe = be.disabled, ze = be.value === Z, tt = ne === de && !fe;
+                return /* @__PURE__ */ k(
                   "button",
                   {
-                    id: R(me),
+                    id: x(de),
                     type: "button",
                     role: "option",
-                    "aria-selected": Re,
-                    disabled: be,
-                    onClick: () => !be && U(ve.value),
+                    "aria-selected": ze,
+                    disabled: fe,
+                    onClick: () => !fe && q(be.value),
                     className: `
                   w-full flex items-center gap-2
                   px-4 py-3
                   font-mono text-sm text-left
                   transition-colors [transition-duration:var(--duration-fast)]
-                  ${be ? "opacity-50 cursor-not-allowed" : "text-[var(--text-primary)] hover:bg-[var(--surface-muted)] cursor-pointer"}
-                  ${ot ? "bg-[var(--surface-muted)] text-[var(--accent)]" : ""}
-                  ${ce.menuItem}
+                  ${fe ? "opacity-50 cursor-not-allowed" : "text-[var(--text-primary)] hover:bg-[var(--surface-muted)] cursor-pointer"}
+                  ${tt ? "bg-[var(--surface-muted)] text-[var(--accent)]" : ""}
+                  ${V.menuItem}
                 `,
                     children: [
-                      /* @__PURE__ */ o("span", { className: "truncate flex-1 min-w-0", children: ve.label }),
-                      Re && /* @__PURE__ */ o("span", { className: `${ce.icon} inline-flex items-center justify-center font-mono font-bold text-[var(--border-focus)] flex-shrink-0`, "aria-hidden": "true", children: /* @__PURE__ */ o(ee, { name: "Check" }) })
+                      /* @__PURE__ */ o("span", { className: "truncate flex-1 min-w-0", children: be.label }),
+                      ze && /* @__PURE__ */ o("span", { className: `${V.icon} inline-flex items-center justify-center font-mono font-bold text-[var(--border-focus)] flex-shrink-0`, "aria-hidden": "true", children: /* @__PURE__ */ o(Q, { name: "Check" }) })
                     ]
                   },
-                  me
+                  de
                 );
               });
-              return j.label == null ? /* @__PURE__ */ o(wt, { children: ke }, P) : /* @__PURE__ */ y("div", { role: "group", "aria-labelledby": ie, children: [
+              return D.label == null ? /* @__PURE__ */ o(xt, { children: ve }, j) : /* @__PURE__ */ k("div", { role: "group", "aria-labelledby": se, children: [
                 /* @__PURE__ */ o(
                   "div",
                   {
-                    id: ie,
+                    id: se,
                     className: "px-4 py-2 font-mono text-xs uppercase tracking-wide text-[var(--text-secondary)]",
-                    children: j.label
+                    children: D.label
                   }
                 ),
-                ke
-              ] }, P);
+                ve
+              ] }, j);
             })
           }
         )
       }
     )
   ] });
-  return !fe && !z.hasMessage ? /* @__PURE__ */ o("div", { className: `w-full ${i}`.trim(), children: ge }) : /* @__PURE__ */ y("div", { className: `w-full space-y-1 ${i}`.trim(), children: [
-    fe && /* @__PURE__ */ o(
+  return !J && !v.hasMessage ? /* @__PURE__ */ o("div", { className: `w-full ${i}`.trim(), children: xe }) : /* @__PURE__ */ k("div", { className: `w-full space-y-1 ${i}`.trim(), children: [
+    J && /* @__PURE__ */ o(
       "label",
       {
-        id: v,
-        htmlFor: N,
+        id: M,
+        htmlFor: T,
         className: "block font-mono text-sm text-secondary-800 dark:text-secondary-200",
-        children: h
+        children: p
       }
     ),
-    ge,
-    /* @__PURE__ */ o(Fe, { ...z.message })
+    xe,
+    /* @__PURE__ */ o(De, { ...v.message })
   ] });
 });
-co.displayName = "Select";
-const uo = re(
+ro.displayName = "Select";
+const no = re(
   ({
     size: e = "md",
     label: t,
@@ -4956,19 +4912,19 @@ const uo = re(
     onCheckedChange: c,
     indeterminate: d = !1,
     className: u = "",
-    "aria-describedby": b,
-    ...h
-  }, p) => {
-    const m = de(e, "Checkbox"), f = Q(null), x = pe(
-      (E) => {
-        f.current = E, typeof p == "function" ? p(E) : p && (p.current = E);
+    "aria-describedby": m,
+    ...p
+  }, h) => {
+    const b = X(null), f = ue(
+      (C) => {
+        b.current = C, typeof h == "function" ? h(C) : h && (h.current = C);
       },
-      [p]
+      [h]
     );
-    Me(() => {
-      f.current && (f.current.indeterminate = d);
+    _e(() => {
+      b.current && (b.current.indeterminate = d);
     });
-    const k = je({ error: r, helperText: n, errorMessage: a, describedBy: b }), g = k.invalid, $ = {
+    const g = Pe({ error: r, helperText: n, errorMessage: a, describedBy: m }), N = g.invalid, w = {
       sm: {
         checkbox: "w-4 h-4",
         glyph: "3",
@@ -4990,25 +4946,25 @@ const uo = re(
         messageIndent: "pl-8"
         // box 24 + gap 8
       }
-    }[m], w = g ? "bg-[var(--field-border-error)]" : `bg-[var(--field-border)] hover:bg-[var(--field-border-hover)]
+    }[e], $ = N ? "bg-[var(--field-border-error)]" : `bg-[var(--field-border)] hover:bg-[var(--field-border-hover)]
          peer-checked:bg-[var(--button-primary-background)]
          peer-checked:hover:bg-[var(--button-primary-background-hover)]
          peer-indeterminate:bg-[var(--button-primary-background)]
-         peer-indeterminate:hover:bg-[var(--button-primary-background-hover)]`, N = g ? "peer-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-error)]" : "peer-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]", T = (E) => {
-      l && l(E), c && c(E.target.checked), E.target.indeterminate = d;
-    }, v = t != null && t !== !1 && t !== "", R = /* @__PURE__ */ y("span", { className: "relative inline-flex shrink-0 before:content-[''] before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-touch before:h-touch", children: [
+         peer-indeterminate:hover:bg-[var(--button-primary-background-hover)]`, T = N ? "peer-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-error)]" : "peer-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]", I = (C) => {
+      l && l(C), c && c(C.target.checked), C.target.indeterminate = d;
+    }, M = t != null && t !== !1 && t !== "", x = /* @__PURE__ */ k("span", { className: "relative inline-flex shrink-0 before:content-[''] before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-touch before:h-touch", children: [
       /* @__PURE__ */ o(
         "input",
         {
-          ref: x,
+          ref: f,
           type: "checkbox",
           ...i !== void 0 ? { checked: i } : {},
           disabled: s,
-          onChange: T,
+          onChange: I,
           className: "peer sr-only",
-          "aria-invalid": g || void 0,
-          "aria-describedby": k.describedBy,
-          ...h
+          "aria-invalid": N || void 0,
+          "aria-describedby": g.describedBy,
+          ...p
         }
       ),
       /* @__PURE__ */ o(
@@ -5017,15 +4973,15 @@ const uo = re(
           "aria-hidden": "true",
           className: `
             plate-round p-px inline-flex shrink-0
-            ${$.checkbox}
+            ${w.checkbox}
             transition-colors [transition-duration:var(--duration-fast)]
             ${s ? "cursor-not-allowed" : "cursor-pointer"}
-            ${w}
-            ${g ? "peer-checked:[&>span]:bg-[var(--field-border-error)] peer-indeterminate:[&>span]:bg-[var(--field-border-error)]" : "peer-checked:[&>span]:bg-[var(--button-primary-background)] peer-indeterminate:[&>span]:bg-[var(--button-primary-background)]"}
+            ${$}
+            ${N ? "peer-checked:[&>span]:bg-[var(--field-border-error)] peer-indeterminate:[&>span]:bg-[var(--field-border-error)]" : "peer-checked:[&>span]:bg-[var(--button-primary-background)] peer-indeterminate:[&>span]:bg-[var(--button-primary-background)]"}
             peer-checked:[&_[data-mark=check]]:opacity-100
             peer-indeterminate:[&_[data-mark=check]]:opacity-0
             peer-indeterminate:[&_[data-mark=bar]]:opacity-100
-            ${N}
+            ${T}
           `,
           children: /* @__PURE__ */ o(
             "span",
@@ -5035,49 +4991,49 @@ const uo = re(
               bg-[var(--field-background)]
               transition-colors [transition-duration:var(--duration-fast)]
             `,
-              children: ["check", "bar"].map((E) => /* @__PURE__ */ o(
+              children: ["check", "bar"].map((C) => /* @__PURE__ */ o(
                 "span",
                 {
-                  "data-mark": E,
-                  className: `absolute inset-0 inline-flex items-center justify-center opacity-0 transition-opacity [transition-duration:var(--duration-fast)] ${g ? "text-[var(--button-destructive-text)]" : "text-[var(--button-primary-text)]"}`,
+                  "data-mark": C,
+                  className: `absolute inset-0 inline-flex items-center justify-center opacity-0 transition-opacity [transition-duration:var(--duration-fast)] ${N ? "text-[var(--button-destructive-text)]" : "text-[var(--button-primary-text)]"}`,
                   "aria-hidden": "true",
-                  children: /* @__PURE__ */ o(ee, { name: E === "check" ? "Check" : "Minus", size: $.glyph })
+                  children: /* @__PURE__ */ o(Q, { name: C === "check" ? "Check" : "Minus", size: w.glyph })
                 },
-                E
+                C
               ))
             }
           )
         }
       )
     ] });
-    return /* @__PURE__ */ y("div", { className: `flex flex-col gap-1 ${u}`, children: [
-      /* @__PURE__ */ y(
+    return /* @__PURE__ */ k("div", { className: `flex flex-col gap-1 ${u}`, children: [
+      /* @__PURE__ */ k(
         "label",
         {
           className: `inline-flex items-center gap-2 font-mono ${s ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`,
           children: [
-            R,
-            v && /* @__PURE__ */ o("span", { className: `${$.label} text-[var(--text-primary)]`, children: t })
+            x,
+            M && /* @__PURE__ */ o("span", { className: `${w.label} text-[var(--text-primary)]`, children: t })
           ]
         }
       ),
-      /* @__PURE__ */ o(Fe, { ...k.message, className: $.messageIndent })
+      /* @__PURE__ */ o(De, { ...g.message, className: w.messageIndent })
     ] });
   }
 );
-uo.displayName = "Checkbox";
-function mo(e, t, r) {
+no.displayName = "Checkbox";
+function oo(e, t, r) {
   return !Number.isFinite(e) || r <= t ? 0 : Math.min(100, Math.max(0, (e - t) / (r - t) * 100));
 }
-const fo = re(function({ label: t, id: r, className: n = "", disabled: a, min: s = 0, max: i = 100, value: l, defaultValue: c, onChange: d, ...u }, b) {
-  const h = ue(), p = r ?? h, m = Number(s), f = Number(i), x = l !== void 0, [k, g] = V(
-    () => c !== void 0 ? Number(c) : m
-  ), z = x ? Number(l) : k, $ = mo(z, m, f), w = (N) => {
-    x || g(Number(N.target.value)), d == null || d(N);
+const ao = re(function({ label: t, id: r, className: n = "", disabled: a, min: s = 0, max: i = 100, value: l, defaultValue: c, onChange: d, ...u }, m) {
+  const p = ce(), h = r ?? p, b = Number(s), f = Number(i), g = l !== void 0, [N, v] = H(
+    () => c !== void 0 ? Number(c) : b
+  ), w = g ? Number(l) : N, $ = oo(w, b, f), T = (I) => {
+    g || v(Number(I.target.value)), d == null || d(I);
   };
-  return /* @__PURE__ */ y("span", { className: `flex w-full flex-col gap-1.5 font-mono ${n}`, children: [
-    t && /* @__PURE__ */ o("label", { htmlFor: p, className: "text-sm text-secondary-800 dark:text-secondary-300", children: t }),
-    /* @__PURE__ */ y("span", { className: `relative flex h-touch w-full items-center ${a ? "opacity-50" : ""}`, children: [
+  return /* @__PURE__ */ k("span", { className: `flex w-full flex-col gap-1.5 font-mono ${n}`, children: [
+    t && /* @__PURE__ */ o("label", { htmlFor: h, className: "text-sm text-secondary-800 dark:text-secondary-300", children: t }),
+    /* @__PURE__ */ k("span", { className: `relative flex h-touch w-full items-center ${a ? "opacity-50" : ""}`, children: [
       /* @__PURE__ */ o(
         "span",
         {
@@ -5097,14 +5053,14 @@ const fo = re(function({ label: t, id: r, className: n = "", disabled: a, min: s
       /* @__PURE__ */ o(
         "input",
         {
-          ref: b,
-          id: p,
+          ref: m,
+          id: h,
           type: "range",
           min: s,
           max: i,
           disabled: a,
-          ...x ? { value: l } : { defaultValue: c },
-          onChange: w,
+          ...g ? { value: l } : { defaultValue: c },
+          onChange: T,
           className: `
             relative m-0 h-touch w-full appearance-none bg-transparent
             ${a ? "cursor-default" : "cursor-pointer"}
@@ -5130,8 +5086,8 @@ const fo = re(function({ label: t, id: r, className: n = "", disabled: a, min: s
     ] })
   ] });
 });
-fo.displayName = "Slider";
-const po = re(
+ao.displayName = "Slider";
+const so = re(
   ({
     size: e = "md",
     label: t,
@@ -5144,9 +5100,9 @@ const po = re(
     onCheckedChange: c,
     className: d = "",
     "aria-describedby": u,
-    ...b
-  }, h) => {
-    const p = de(e, "Radio"), m = je({ error: r, helperText: n, errorMessage: a, describedBy: u }), f = m.invalid, k = {
+    ...m
+  }, p) => {
+    const h = Pe({ error: r, helperText: n, errorMessage: a, describedBy: u }), b = h.invalid, g = {
       sm: {
         radio: "w-4 h-4",
         // 16px × 16px
@@ -5177,23 +5133,23 @@ const po = re(
         messageIndent: "pl-8"
         // box 24 + gap 8
       }
-    }[p], g = f ? "bg-[var(--field-border-error)]" : `bg-[var(--field-border)] hover:bg-[var(--field-border-hover)]
+    }[e], N = b ? "bg-[var(--field-border-error)]" : `bg-[var(--field-border)] hover:bg-[var(--field-border-hover)]
          peer-checked:bg-[var(--button-primary-background)]
-         peer-checked:hover:bg-[var(--button-primary-background-hover)]`, z = f ? "peer-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-error)]" : "peer-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]", $ = (T) => {
-      const v = T.currentTarget.checked;
-      l && l(T), c && c(v);
-    }, w = t != null && t !== !1 && t !== "", N = /* @__PURE__ */ y("span", { className: "relative inline-flex shrink-0 before:content-[''] before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-touch before:h-touch", children: [
+         peer-checked:hover:bg-[var(--button-primary-background-hover)]`, v = b ? "peer-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-error)]" : "peer-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]", w = (I) => {
+      const M = I.currentTarget.checked;
+      l && l(I), c && c(M);
+    }, $ = t != null && t !== !1 && t !== "", T = /* @__PURE__ */ k("span", { className: "relative inline-flex shrink-0 before:content-[''] before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-touch before:h-touch", children: [
       /* @__PURE__ */ o(
         "input",
         {
-          ref: h,
+          ref: p,
           type: "radio",
           ...i !== void 0 ? { checked: i } : {},
           disabled: s,
-          onChange: $,
+          onChange: w,
           className: "peer sr-only",
-          "aria-describedby": m.describedBy,
-          ...b
+          "aria-describedby": h.describedBy,
+          ...m
         }
       ),
       /* @__PURE__ */ o(
@@ -5202,13 +5158,13 @@ const po = re(
           "aria-hidden": "true",
           className: `
             plate-round p-px inline-flex shrink-0
-            ${k.radio}
+            ${g.radio}
             transition-colors [transition-duration:var(--duration-fast)]
             ${s ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
-            ${g}
-            ${f ? "peer-checked:[&>span]:bg-[var(--field-border-error)]" : "peer-checked:[&>span]:bg-[var(--button-primary-background)]"}
+            ${N}
+            ${b ? "peer-checked:[&>span]:bg-[var(--field-border-error)]" : "peer-checked:[&>span]:bg-[var(--button-primary-background)]"}
             peer-checked:[&>span>span]:opacity-100
-            ${z}
+            ${v}
           `,
           children: /* @__PURE__ */ o(
             "span",
@@ -5222,10 +5178,10 @@ const po = re(
                 "span",
                 {
                   className: `
-                ${k.dot}
+                ${g.dot}
                 opacity-0
                 transition-opacity [transition-duration:var(--duration-fast)]
-                ${f ? "bg-[var(--button-destructive-text)]" : "bg-[var(--button-primary-text)]"}
+                ${b ? "bg-[var(--button-destructive-text)]" : "bg-[var(--button-primary-text)]"}
               `
                 }
               )
@@ -5234,23 +5190,23 @@ const po = re(
         }
       )
     ] });
-    return /* @__PURE__ */ y("div", { className: `flex flex-col gap-1 ${d}`, children: [
-      /* @__PURE__ */ y(
+    return /* @__PURE__ */ k("div", { className: `flex flex-col gap-1 ${d}`, children: [
+      /* @__PURE__ */ k(
         "label",
         {
           className: `inline-flex items-center gap-2 font-mono ${s ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`,
           children: [
-            N,
-            w && /* @__PURE__ */ o("span", { className: `${k.label} text-[var(--text-primary)]`, children: t })
+            T,
+            $ && /* @__PURE__ */ o("span", { className: `${g.label} text-[var(--text-primary)]`, children: t })
           ]
         }
       ),
-      /* @__PURE__ */ o(Fe, { ...m.message, className: k.messageIndent })
+      /* @__PURE__ */ o(De, { ...h.message, className: g.messageIndent })
     ] });
   }
 );
-po.displayName = "Radio";
-const bo = re(
+so.displayName = "Radio";
+const io = re(
   ({
     size: e = "md",
     error: t = !1,
@@ -5263,7 +5219,7 @@ const bo = re(
     "aria-describedby": c,
     ...d
   }, u) => {
-    const b = de(e, "Textarea"), h = je({ error: t, helperText: r, errorMessage: n, describedBy: c }), p = h.invalid, m = ue(), f = l ?? (i != null && i !== "" ? m : void 0), x = `
+    const m = Pe({ error: t, helperText: r, errorMessage: n, describedBy: c }), p = m.invalid, h = ce(), b = l ?? (i != null && i !== "" ? h : void 0), f = `
       block w-full
       font-mono text-sm
       transition-colors [transition-duration:var(--duration-fast)]
@@ -5271,11 +5227,11 @@ const bo = re(
       disabled:cursor-not-allowed
       focus:outline-none
       resize-y
-    `, k = {
+    `, g = {
       sm: "min-h-control-sm px-3 py-1.5 plate-round",
       md: "min-h-control-md px-4 py-2.5 plate-round",
       lg: "min-h-control-lg px-5 py-3.5 plate-round"
-    }, g = p ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]", $ = /* @__PURE__ */ o(
+    }, N = p ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]", w = /* @__PURE__ */ o(
       "div",
       {
         className: `w-full plate-round p-px transition-colors [transition-duration:var(--duration-fast)] ${p ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]"} ${a ? "opacity-50" : ""}`,
@@ -5283,32 +5239,32 @@ const bo = re(
           "textarea",
           {
             ref: u,
-            id: f,
+            id: b,
             disabled: a,
             "aria-invalid": p || void 0,
-            "aria-describedby": h.describedBy,
-            className: `${x} ${k[b]} ${g} ${s}`,
+            "aria-describedby": m.describedBy,
+            className: `${f} ${g[e]} ${N} ${s}`,
             ...d
           }
         )
       }
-    ), w = i != null && i !== "";
-    return !w && !h.hasMessage ? $ : /* @__PURE__ */ y("div", { className: "w-full space-y-1", children: [
-      w && /* @__PURE__ */ o(
+    ), $ = i != null && i !== "";
+    return !$ && !m.hasMessage ? w : /* @__PURE__ */ k("div", { className: "w-full space-y-1", children: [
+      $ && /* @__PURE__ */ o(
         "label",
         {
-          htmlFor: f,
+          htmlFor: b,
           className: "block font-mono text-sm text-secondary-800 dark:text-secondary-200",
           children: i
         }
       ),
-      $,
-      /* @__PURE__ */ o(Fe, { ...h.message })
+      w,
+      /* @__PURE__ */ o(De, { ...m.message })
     ] });
   }
 );
-bo.displayName = "Textarea";
-const ho = {
+io.displayName = "Textarea";
+const lo = {
   sm: {
     track: "h-[var(--switch-track-height-sm)] w-[var(--switch-track-width-sm)]",
     knob: "h-[var(--switch-knob-size-sm)] w-[var(--switch-knob-size-sm)]",
@@ -5330,7 +5286,7 @@ const ho = {
     knobOn: "var(--switch-knob-travel-lg)",
     iconSize: "w-4 h-4"
   }
-}, xr = re(
+}, fr = re(
   ({
     checked: e,
     defaultChecked: t = !1,
@@ -5343,28 +5299,28 @@ const ho = {
     icon: c,
     className: d = "",
     ...u
-  }, b) => {
-    const h = de(n, "Switch"), p = ho[h], [m, f] = Ve({
+  }, m) => {
+    const p = lo[n], [h, b] = je({
       value: e,
       defaultValue: t,
       onChange: r
-    }), x = () => {
-      l || f(!m);
-    }, k = (g) => {
-      (g.key === " " || g.key === "Enter") && (g.preventDefault(), x());
+    }), f = () => {
+      l || b(!h);
+    }, g = (N) => {
+      (N.key === " " || N.key === "Enter") && (N.preventDefault(), f());
     };
-    return /* @__PURE__ */ y("div", { className: `flex items-center gap-3 ${d}`, children: [
+    return /* @__PURE__ */ k("div", { className: `flex items-center gap-3 ${d}`, children: [
       /* @__PURE__ */ o(
         "button",
         {
-          ref: b,
+          ref: m,
           type: "button",
           role: "switch",
-          "aria-checked": m,
+          "aria-checked": h,
           "aria-label": s ?? (a || void 0),
           disabled: l,
-          onClick: x,
-          onKeyDown: k,
+          onClick: f,
+          onKeyDown: g,
           className: `
             group relative inline-flex shrink-0
             before:content-[''] before:absolute before:inset-x-0 before:top-1/2 before:-translate-y-1/2 before:h-touch
@@ -5376,14 +5332,14 @@ const ho = {
             "span",
             {
               "aria-hidden": "true",
-              "data-state": m ? "on" : "off",
+              "data-state": h ? "on" : "off",
               className: `
               relative inline-flex items-center
               ${p.track}
               plate-round
               transition-colors [transition-duration:var(--duration-normal)] motion-reduce:transition-none
               group-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]
-              ${m ? "bg-[var(--accent)]" : "bg-[var(--control-track)]"}
+              ${h ? "bg-[var(--accent)]" : "bg-[var(--control-track)]"}
             `,
               children: /* @__PURE__ */ o(
                 "span",
@@ -5397,9 +5353,9 @@ const ho = {
               transform transition-transform [transition-duration:var(--duration-normal)] motion-reduce:transition-none
             `,
                   style: {
-                    transform: `translateX(${m ? p.knobOn : p.knobOff})`
+                    transform: `translateX(${h ? p.knobOn : p.knobOff})`
                   },
-                  children: c && /* @__PURE__ */ o("span", { className: p.iconSize, children: he(c) })
+                  children: c && /* @__PURE__ */ o("span", { className: p.iconSize, children: pe(c) })
                 }
               )
             }
@@ -5410,7 +5366,7 @@ const ho = {
       /* @__PURE__ */ o(
         "span",
         {
-          onClick: x,
+          onClick: f,
           className: `select-none text-sm font-mono ${l ? "cursor-not-allowed text-secondary-700 dark:text-secondary-400" : "cursor-pointer text-[var(--text-primary)]"}`,
           children: a
         }
@@ -5418,9 +5374,8 @@ const ho = {
     ] });
   }
 );
-xr.displayName = "Switch";
-const Gt = { left: "start", right: "end" };
-function Ht(e, t, r) {
+fr.displayName = "Switch";
+function jt(e, t, r) {
   var s;
   const n = e.length;
   if (n === 0) return -1;
@@ -5429,65 +5384,62 @@ function Ht(e, t, r) {
     if (a += r, a >= n && (a = 0), a < 0 && (a = n - 1), !((s = e[a]) != null && s.disabled)) return a;
   return -1;
 }
-function fs({
+function ss({
   trigger: e,
   items: t,
   align: r = "start",
   label: n = "Actions",
   size: a = "md"
 }) {
-  const s = de(a, "Dropdown");
-  let i;
-  r === "left" || r === "right" ? (se("Dropdown", `align="${r}"`, `align="${Gt[r]}"`), i = Gt[r]) : i = r;
-  const [l, c] = V(!1), [d, u] = V(-1), b = Q(null), h = Q(null), p = () => {
-    c(!l), l || u(-1);
-  }, m = () => {
-    c(!1), u(-1);
-  }, f = (w) => {
-    w.disabled || (w.onClick(), m());
+  const [s, i] = H(!1), [l, c] = H(-1), d = X(null), u = X(null), m = () => {
+    i(!s), s || c(-1);
+  }, p = () => {
+    i(!1), c(-1);
+  }, h = (w) => {
+    w.disabled || (w.onClick(), p());
   };
-  G(() => {
-    function w(N) {
-      b.current && !b.current.contains(N.target) && m();
+  U(() => {
+    function w($) {
+      d.current && !d.current.contains($.target) && p();
     }
-    if (l)
+    if (s)
       return document.addEventListener("mousedown", w), () => {
         document.removeEventListener("mousedown", w);
       };
-  }, [l]), G(() => {
-    function w(N) {
-      if (!l) return;
-      const T = d;
-      switch (N.key) {
+  }, [s]), U(() => {
+    function w($) {
+      if (!s) return;
+      const T = l;
+      switch ($.key) {
         case "Escape":
-          N.preventDefault(), m();
+          $.preventDefault(), p();
           break;
         case "Tab":
-          m();
+          p();
           break;
         case "ArrowDown":
-          N.preventDefault(), u((v) => Ht(t, v, 1));
+          $.preventDefault(), c((I) => jt(t, I, 1));
           break;
         case "ArrowUp":
-          N.preventDefault(), u((v) => Ht(t, v, -1));
+          $.preventDefault(), c((I) => jt(t, I, -1));
           break;
         case "Enter":
         case " ":
-          N.preventDefault(), T >= 0 && T < t.length && f(t[T]);
+          $.preventDefault(), T >= 0 && T < t.length && h(t[T]);
           break;
       }
     }
-    if (l)
+    if (s)
       return document.addEventListener("keydown", w), () => {
         document.removeEventListener("keydown", w);
       };
-  }, [l, d, t]), G(() => {
-    if (d >= 0 && h.current) {
-      const N = h.current.querySelectorAll('[role="menuitem"]')[d];
-      N && N.scrollIntoView({ block: "nearest" });
+  }, [s, l, t]), U(() => {
+    if (l >= 0 && u.current) {
+      const $ = u.current.querySelectorAll('[role="menuitem"]')[l];
+      $ && $.scrollIntoView({ block: "nearest" });
     }
-  }, [d]);
-  const k = {
+  }, [l]);
+  const f = {
     sm: {
       button: "h-control-sm px-4 py-1.5 plate-round",
       menu: "",
@@ -5506,15 +5458,15 @@ function fs({
       menuItem: "",
       icon: "w-6 h-6"
     }
-  }[s], g = /* @__PURE__ */ y(
+  }[a], g = /* @__PURE__ */ k(
     "button",
     {
       type: "button",
-      onClick: p,
+      onClick: m,
       className: `
         inline-flex items-center justify-center gap-2
         font-mono text-sm
-        ${k.button}
+        ${f.button}
         transition-colors [transition-duration:var(--duration-normal)]
         cursor-pointer
         bg-[var(--button-secondary-background)] hover:bg-[var(--button-secondary-background-hover)] active:brightness-95
@@ -5522,51 +5474,51 @@ function fs({
         focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-secondary)]
       `,
       "aria-haspopup": "true",
-      "aria-expanded": l,
+      "aria-expanded": s,
       children: [
         n,
-        /* @__PURE__ */ o("span", { className: `${k.icon} inline-flex items-center justify-center font-mono leading-none transition-transform [transition-duration:var(--duration-normal)] ${l ? "rotate-180" : ""}`, "aria-hidden": "true", children: /* @__PURE__ */ o(ee, { name: "ChevronDown" }) })
+        /* @__PURE__ */ o("span", { className: `${f.icon} inline-flex items-center justify-center font-mono leading-none transition-transform [transition-duration:var(--duration-normal)] ${s ? "rotate-180" : ""}`, "aria-hidden": "true", children: /* @__PURE__ */ o(Q, { name: "ChevronDown" }) })
       ]
     }
-  ), z = {
+  ), N = {
     "aria-haspopup": "true",
-    "aria-expanded": l
+    "aria-expanded": s
   };
-  let $;
+  let v;
   if (!e)
-    $ = g;
-  else if (qe(e)) {
+    v = g;
+  else if (Ue(e)) {
     const w = e;
-    $ = yt(w, {
-      ...z,
-      onClick: (N) => {
-        var T, v;
-        (v = (T = w.props).onClick) == null || v.call(T, N), p();
+    v = gt(w, {
+      ...N,
+      onClick: ($) => {
+        var T, I;
+        (I = (T = w.props).onClick) == null || I.call(T, $), m();
       }
     });
   } else
-    $ = /* @__PURE__ */ o(
+    v = /* @__PURE__ */ o(
       "div",
       {
-        ...z,
-        onClick: p,
+        ...N,
+        onClick: m,
         role: "button",
         tabIndex: 0,
         onKeyDown: (w) => {
-          (w.key === "Enter" || w.key === " ") && (w.preventDefault(), p());
+          (w.key === "Enter" || w.key === " ") && (w.preventDefault(), m());
         },
         children: e
       }
     );
-  return /* @__PURE__ */ y("div", { ref: b, className: "relative inline-block", children: [
-    $,
-    l && /* @__PURE__ */ o(
+  return /* @__PURE__ */ k("div", { ref: d, className: "relative inline-block", children: [
+    v,
+    s && /* @__PURE__ */ o(
       "div",
       {
         style: { animationDuration: "var(--duration-normal)" },
         className: `
             absolute top-full mt-2
-            ${i === "end" ? "end-0" : "start-0"}
+            ${r === "end" ? "end-0" : "start-0"}
             min-w-52
             plate-round p-px bg-[var(--border-default)]
             z-[var(--z-index-dropdown)]
@@ -5575,37 +5527,37 @@ function fs({
         children: /* @__PURE__ */ o(
           "div",
           {
-            ref: h,
+            ref: u,
             role: "menu",
             "aria-orientation": "vertical",
-            className: `plate-round bg-[var(--surface-card)] ${k.menu}`,
-            children: t.map((w, N) => {
-              const T = w.variant === "destructive", v = w.disabled;
-              return /* @__PURE__ */ y(
+            className: `plate-round bg-[var(--surface-card)] ${f.menu}`,
+            children: t.map((w, $) => {
+              const T = w.variant === "destructive", I = w.disabled;
+              return /* @__PURE__ */ k(
                 "button",
                 {
                   type: "button",
                   role: "menuitem",
-                  disabled: v,
-                  onClick: () => f(w),
+                  disabled: I,
+                  onClick: () => h(w),
                   className: `
                   w-full flex items-center gap-2
                   px-4 py-3
                   font-mono text-sm text-left
                   transition-colors [transition-duration:var(--duration-fast)]
-                  ${v ? "opacity-50 cursor-not-allowed" : T ? "text-[var(--text-error)] hover:bg-[var(--field-background-error)]" : "text-[var(--text-primary)] hover:bg-[var(--surface-muted)]"}
-                  ${d === N && !v ? T ? "bg-[var(--field-background-error)]" : "bg-[var(--surface-muted)] text-[var(--accent)]" : ""}
-                  ${k.menuItem}
+                  ${I ? "opacity-50 cursor-not-allowed" : T ? "text-[var(--text-error)] hover:bg-[var(--field-background-error)]" : "text-[var(--text-primary)] hover:bg-[var(--surface-muted)]"}
+                  ${l === $ && !I ? T ? "bg-[var(--field-background-error)]" : "bg-[var(--surface-muted)] text-[var(--accent)]" : ""}
+                  ${f.menuItem}
                 `,
                   children: [
-                    /* @__PURE__ */ y("div", { className: "flex items-center gap-2 flex-1 min-w-0", children: [
-                      w.icon && /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center ${k.icon} flex-shrink-0`, children: he(w.icon) }),
+                    /* @__PURE__ */ k("div", { className: "flex items-center gap-2 flex-1 min-w-0", children: [
+                      w.icon && /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center ${f.icon} flex-shrink-0`, children: pe(w.icon) }),
                       /* @__PURE__ */ o("span", { className: "truncate", children: w.label })
                     ] }),
-                    w.iconRight && /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center ${k.icon} flex-shrink-0 ml-auto`, children: he(w.iconRight) })
+                    w.iconRight && /* @__PURE__ */ o("span", { className: `inline-flex items-center justify-center ${f.icon} flex-shrink-0 ml-auto`, children: pe(w.iconRight) })
                   ]
                 },
-                N
+                $
               );
             })
           }
@@ -5614,40 +5566,40 @@ function fs({
     )
   ] });
 }
-const Ye = "text-secondary-700 dark:text-secondary-600", Ae = "text-secondary-800 dark:text-secondary-500", Se = "text-[var(--text-primary)]", Ke = "text-[var(--accent)]", De = "border-[var(--surface-container-stroke)]", go = {
+const Ke = "text-secondary-700 dark:text-secondary-600", Ee = "text-secondary-800 dark:text-secondary-500", we = "text-[var(--text-primary)]", Ge = "text-[var(--accent)]", Re = "border-[var(--surface-container-stroke)]", co = {
   background: "repeating-linear-gradient(45deg, var(--surface-subtle), var(--surface-subtle) 8px, var(--surface-muted) 8px, var(--surface-muted) 16px)"
-}, We = (e) => e === "wide" ? " [--csp-bw:max(100%,min(calc(100%+240px),calc(100cqw-48px)))] w-[var(--csp-bw)] ml-[calc((100%-var(--csp-bw))/2)]" : e === "full" ? " [--csp-bw:max(100%,calc(100cqw-48px))] w-[var(--csp-bw)] ml-[calc((100%-var(--csp-bw))/2)]" : "", xo = 0.62, vo = (e) => `min(var(--font-size-xs), calc((100cqw - var(--spacing-10)) / ${(Math.max(...e.split(`
-`).map((r) => r.length)) * xo).toFixed(2)}))`, St = (e) => String(e).padStart(2, "0"), yo = (e) => e.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""), vr = (e) => e.type === "imagePair" ? 2 : e.type === "image" || e.type === "ascii" || e.type === "slot" ? 1 : 0;
-function wo(e, t = 1) {
+}, He = (e) => e === "wide" ? " [--csp-bw:max(100%,min(calc(100%+240px),calc(100cqw-48px)))] w-[var(--csp-bw)] ml-[calc((100%-var(--csp-bw))/2)]" : e === "full" ? " [--csp-bw:max(100%,calc(100cqw-48px))] w-[var(--csp-bw)] ml-[calc((100%-var(--csp-bw))/2)]" : "", uo = 0.62, mo = (e) => `min(var(--font-size-xs), calc((100cqw - var(--spacing-10)) / ${(Math.max(...e.split(`
+`).map((r) => r.length)) * uo).toFixed(2)}))`, wt = (e) => String(e).padStart(2, "0"), fo = (e) => e.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""), pr = (e) => e.type === "imagePair" ? 2 : e.type === "image" || e.type === "ascii" || e.type === "slot" ? 1 : 0;
+function po(e, t = 1) {
   const r = /* @__PURE__ */ new Map();
   let n = t;
   for (const a of e) {
-    const s = vr(a);
+    const s = pr(a);
     s && (r.set(a, n), n += s);
   }
   return r;
 }
-function $t({ fig: e, caption: t }) {
-  return !e && !t ? null : /* @__PURE__ */ y("figcaption", { className: "mt-3 flex gap-3 text-xs leading-relaxed", children: [
-    e !== void 0 && /* @__PURE__ */ y("span", { className: `flex-none ${Ke}`, children: [
+function kt({ fig: e, caption: t }) {
+  return !e && !t ? null : /* @__PURE__ */ k("figcaption", { className: "mt-3 flex gap-3 text-xs leading-relaxed", children: [
+    e !== void 0 && /* @__PURE__ */ k("span", { className: `flex-none ${Ge}`, children: [
       "fig. ",
-      St(e)
+      wt(e)
     ] }),
-    t && /* @__PURE__ */ o("span", { className: Ye, children: t })
+    t && /* @__PURE__ */ o("span", { className: Ke, children: t })
   ] });
 }
-function lt({
+function at({
   fig: e,
   caption: t,
   width: r,
   children: n
 }) {
-  return /* @__PURE__ */ y("figure", { className: `my-10 m-0${We(r)}`, children: [
+  return /* @__PURE__ */ k("figure", { className: `my-10 m-0${He(r)}`, children: [
     /* @__PURE__ */ o("div", { className: "plate-round p-px bg-[var(--border-hairline)]", children: n }),
-    /* @__PURE__ */ o($t, { fig: e, caption: t })
+    /* @__PURE__ */ o(kt, { fig: e, caption: t })
   ] });
 }
-function et({ src: e, alt: t, aspect: r }) {
+function Ze({ src: e, alt: t, aspect: r }) {
   const n = r ?? "16 / 9";
   return e ? /* @__PURE__ */ o(
     "img",
@@ -5657,46 +5609,46 @@ function et({ src: e, alt: t, aspect: r }) {
       className: "plate-round block w-full",
       style: { aspectRatio: n, objectFit: "cover" }
     }
-  ) : /* @__PURE__ */ o("div", { className: "plate-round w-full", style: { aspectRatio: n, ...go } });
+  ) : /* @__PURE__ */ o("div", { className: "plate-round w-full", style: { aspectRatio: n, ...co } });
 }
-function yr({ items: e }) {
+function br({ items: e }) {
   const t = e.length >= 4 ? "sm:grid-cols-4" : e.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2";
   return /* @__PURE__ */ o("dl", { className: `m-0 grid grid-cols-2 gap-x-8 gap-y-6 ${t}`, children: e.map((r) => (
     // dt stays first for screen readers; the figure is moved above it
     // visually, so every figure hangs from the top of its cell however
     // its label wraps. Figure and label centre in their cell.
-    /* @__PURE__ */ y("div", { className: "flex flex-col items-center text-center", children: [
-      /* @__PURE__ */ o("dt", { className: `mt-2 text-xs ${Ye}`, children: r.label }),
-      /* @__PURE__ */ o("dd", { className: `order-first m-0 text-2xl leading-none ${Ke}`, children: r.value })
+    /* @__PURE__ */ k("div", { className: "flex flex-col items-center text-center", children: [
+      /* @__PURE__ */ o("dt", { className: `mt-2 text-xs ${Ke}`, children: r.label }),
+      /* @__PURE__ */ o("dd", { className: `order-first m-0 text-2xl leading-none ${Ge}`, children: r.value })
     ] }, r.label)
   )) });
 }
-function ko({
+function bo({
   b: e,
   fig: t,
   slots: r
 }) {
   switch (e.type) {
     case "prose":
-      return /* @__PURE__ */ o("p", { className: `my-6 text-base leading-relaxed ${Ae}`, children: e.text });
+      return /* @__PURE__ */ o("p", { className: `my-6 text-base leading-relaxed ${Ee}`, children: e.text });
     case "image":
-      return /* @__PURE__ */ o(lt, { fig: t, caption: e.caption, width: e.width, children: /* @__PURE__ */ o(et, { src: e.src, alt: e.alt, aspect: e.aspect }) });
+      return /* @__PURE__ */ o(at, { fig: t, caption: e.caption, width: e.width, children: /* @__PURE__ */ o(Ze, { src: e.src, alt: e.alt, aspect: e.aspect }) });
     case "imagePair":
-      return /* @__PURE__ */ o("div", { className: `my-10 grid grid-cols-1 gap-4 sm:grid-cols-2${We(e.width)}`, children: [0, 1].map((n) => {
+      return /* @__PURE__ */ o("div", { className: `my-10 grid grid-cols-1 gap-4 sm:grid-cols-2${He(e.width)}`, children: [0, 1].map((n) => {
         var a, s, i;
-        return /* @__PURE__ */ y("figure", { className: "m-0", children: [
-          /* @__PURE__ */ o("div", { className: "plate-round p-px bg-[var(--border-hairline)]", children: /* @__PURE__ */ o(et, { src: (a = e.srcs) == null ? void 0 : a[n], alt: (s = e.alts) == null ? void 0 : s[n], aspect: "4 / 3" }) }),
-          /* @__PURE__ */ o($t, { fig: t === void 0 ? void 0 : t + n, caption: (i = e.captions) == null ? void 0 : i[n] })
+        return /* @__PURE__ */ k("figure", { className: "m-0", children: [
+          /* @__PURE__ */ o("div", { className: "plate-round p-px bg-[var(--border-hairline)]", children: /* @__PURE__ */ o(Ze, { src: (a = e.srcs) == null ? void 0 : a[n], alt: (s = e.alts) == null ? void 0 : s[n], aspect: "4 / 3" }) }),
+          /* @__PURE__ */ o(kt, { fig: t === void 0 ? void 0 : t + n, caption: (i = e.captions) == null ? void 0 : i[n] })
         ] }, n);
       }) });
     case "ascii": {
-      const n = vo(e.text);
-      return /* @__PURE__ */ o(lt, { fig: t, caption: e.caption, width: e.width, children: /* @__PURE__ */ o("div", { className: "[container-type:inline-size]", children: /* @__PURE__ */ o(
+      const n = mo(e.text);
+      return /* @__PURE__ */ o(at, { fig: t, caption: e.caption, width: e.width, children: /* @__PURE__ */ o("div", { className: "[container-type:inline-size]", children: /* @__PURE__ */ o(
         "pre",
         {
           role: "img",
           "aria-label": e.label ?? e.caption ?? "diagram",
-          className: `plate-round m-0 overflow-x-auto p-5 leading-snug ${Ae}`,
+          className: `plate-round m-0 overflow-x-auto p-5 leading-snug ${Ee}`,
           style: { fontSize: n },
           children: e.text
         }
@@ -5704,28 +5656,28 @@ function ko({
     }
     case "slot": {
       const n = r == null ? void 0 : r[e.name];
-      return /* @__PURE__ */ o(lt, { fig: t, caption: e.caption, width: e.width, children: n ? /* @__PURE__ */ o("div", { className: "plate-round overflow-hidden", children: n }) : /* @__PURE__ */ o(et, { aspect: e.aspect }) });
+      return /* @__PURE__ */ o(at, { fig: t, caption: e.caption, width: e.width, children: n ? /* @__PURE__ */ o("div", { className: "plate-round overflow-hidden", children: n }) : /* @__PURE__ */ o(Ze, { aspect: e.aspect }) });
     }
     case "list":
       return /* @__PURE__ */ o("ul", { className: "my-10 list-none p-0", children: e.items.map((n, a) => {
         const s = a === 0, i = a === e.items.length - 1;
-        return /* @__PURE__ */ y("li", { className: `relative pl-8 ${i ? "" : "pb-6"}`, children: [
-          !(s && i) && /* @__PURE__ */ o("span", { "aria-hidden": "true", className: `absolute left-1 border-l-hairline ${De} ${`${s ? "top-3" : "top-0"} ${i ? "h-3" : "bottom-0"}`}` }),
-          /* @__PURE__ */ o("span", { "aria-hidden": "true", className: `absolute left-1 top-3 w-4 border-t-hairline ${De}` }),
-          /* @__PURE__ */ o("div", { className: `text-sm leading-6 ${Se}`, children: n.title }),
-          /* @__PURE__ */ o("p", { className: `m-0 mt-1 text-sm leading-6 ${Ae}`, children: n.text })
+        return /* @__PURE__ */ k("li", { className: `relative pl-8 ${i ? "" : "pb-6"}`, children: [
+          !(s && i) && /* @__PURE__ */ o("span", { "aria-hidden": "true", className: `absolute left-1 border-l-hairline ${Re} ${`${s ? "top-3" : "top-0"} ${i ? "h-3" : "bottom-0"}`}` }),
+          /* @__PURE__ */ o("span", { "aria-hidden": "true", className: `absolute left-1 top-3 w-4 border-t-hairline ${Re}` }),
+          /* @__PURE__ */ o("div", { className: `text-sm leading-6 ${we}`, children: n.title }),
+          /* @__PURE__ */ o("p", { className: `m-0 mt-1 text-sm leading-6 ${Ee}`, children: n.text })
         ] }, n.title);
       }) });
     case "insights":
-      return /* @__PURE__ */ o("ol", { className: `my-10 list-none border-b-hairline p-0 ${De}`, children: e.items.map((n, a) => /* @__PURE__ */ y(
+      return /* @__PURE__ */ o("ol", { className: `my-10 list-none border-b-hairline p-0 ${Re}`, children: e.items.map((n, a) => /* @__PURE__ */ k(
         "li",
         {
-          className: `grid grid-cols-[theme(spacing.16)_1fr] border-t-hairline py-6 ${De}`,
+          className: `grid grid-cols-[theme(spacing.16)_1fr] border-t-hairline py-6 ${Re}`,
           children: [
-            /* @__PURE__ */ o("span", { className: `text-2xl leading-none ${Ke}`, children: St(a + 1) }),
-            /* @__PURE__ */ y("div", { children: [
-              /* @__PURE__ */ o("div", { className: `text-lg leading-snug ${Se}`, children: n.title }),
-              /* @__PURE__ */ o("p", { className: `m-0 mt-2 text-sm leading-relaxed ${Ae}`, children: n.text })
+            /* @__PURE__ */ o("span", { className: `text-2xl leading-none ${Ge}`, children: wt(a + 1) }),
+            /* @__PURE__ */ k("div", { children: [
+              /* @__PURE__ */ o("div", { className: `text-lg leading-snug ${we}`, children: n.title }),
+              /* @__PURE__ */ o("p", { className: `m-0 mt-2 text-sm leading-relaxed ${Ee}`, children: n.text })
             ] })
           ]
         },
@@ -5736,82 +5688,82 @@ function ko({
       return /* @__PURE__ */ o(
         "div",
         {
-          className: `my-10 grid grid-cols-1 gap-4 ${n ? `sm:grid-cols-3${We("wide")}` : "sm:grid-cols-2"}`,
-          children: e.items.map((a) => /* @__PURE__ */ y("div", { className: "plate-round bg-[var(--surface-muted)] p-5", children: [
-            /* @__PURE__ */ o("div", { className: `text-base leading-snug ${Se}`, children: a.title }),
-            /* @__PURE__ */ o("p", { className: `m-0 mt-2 text-sm leading-relaxed ${Ae}`, children: a.text })
+          className: `my-10 grid grid-cols-1 gap-4 ${n ? `sm:grid-cols-3${He("wide")}` : "sm:grid-cols-2"}`,
+          children: e.items.map((a) => /* @__PURE__ */ k("div", { className: "plate-round bg-[var(--surface-muted)] p-5", children: [
+            /* @__PURE__ */ o("div", { className: `text-base leading-snug ${we}`, children: a.title }),
+            /* @__PURE__ */ o("p", { className: `m-0 mt-2 text-sm leading-relaxed ${Ee}`, children: a.text })
           ] }, a.title))
         }
       );
     }
     case "quote":
-      return /* @__PURE__ */ y("figure", { className: "my-10 m-0 border-l-hairline border-[var(--accent)] pl-6", children: [
-        /* @__PURE__ */ o("blockquote", { className: `m-0 p-0 text-lg leading-relaxed ${Se}`, children: e.text }),
-        e.name && /* @__PURE__ */ y("figcaption", { className: "mt-4 flex items-center gap-3 text-sm", children: [
-          /* @__PURE__ */ o(ro, { size: "md", src: e.image, alt: "" }),
-          /* @__PURE__ */ y("span", { children: [
-            /* @__PURE__ */ o("span", { className: `block ${Se}`, children: e.name }),
-            e.role && /* @__PURE__ */ o("span", { className: `block text-xs ${Ye}`, children: e.role })
+      return /* @__PURE__ */ k("figure", { className: "my-10 m-0 border-l-hairline border-[var(--accent)] pl-6", children: [
+        /* @__PURE__ */ o("blockquote", { className: `m-0 p-0 text-lg leading-relaxed ${we}`, children: e.text }),
+        e.name && /* @__PURE__ */ k("figcaption", { className: "mt-4 flex items-center gap-3 text-sm", children: [
+          /* @__PURE__ */ o(Xn, { size: "md", src: e.image, alt: "" }),
+          /* @__PURE__ */ k("span", { children: [
+            /* @__PURE__ */ o("span", { className: `block ${we}`, children: e.name }),
+            e.role && /* @__PURE__ */ o("span", { className: `block text-xs ${Ke}`, children: e.role })
           ] })
         ] })
       ] });
     case "statement":
-      return /* @__PURE__ */ y("div", { className: `my-12 border-y-hairline py-10 ${De}${We("wide")}`, children: [
-        e.kicker && /* @__PURE__ */ o("div", { className: `mb-4 text-xs uppercase tracking-wider ${Ke}`, children: e.kicker }),
-        /* @__PURE__ */ o("p", { className: `m-0 text-2xl leading-snug ${Se}`, children: e.text })
+      return /* @__PURE__ */ k("div", { className: `my-12 border-y-hairline py-10 ${Re}${He("wide")}`, children: [
+        e.kicker && /* @__PURE__ */ o("div", { className: `mb-4 text-xs uppercase tracking-wider ${Ge}`, children: e.kicker }),
+        /* @__PURE__ */ o("p", { className: `m-0 text-2xl leading-snug ${we}`, children: e.text })
       ] });
     case "outcomes":
-      return /* @__PURE__ */ o("div", { className: "my-10", children: /* @__PURE__ */ o(yr, { items: e.items }) });
+      return /* @__PURE__ */ o("div", { className: "my-10", children: /* @__PURE__ */ o(br, { items: e.items }) });
   }
 }
-function No({
+function ho({
   blocks: e,
   slots: t,
   figureStart: r = 1,
   className: n = ""
 }) {
-  const a = wo(e, r);
-  return /* @__PURE__ */ o("div", { className: `font-mono ${n}`, children: e.map((s, i) => /* @__PURE__ */ o(ko, { b: s, fig: a.get(s), slots: t }, i)) });
+  const a = po(e, r);
+  return /* @__PURE__ */ o("div", { className: `font-mono ${n}`, children: e.map((s, i) => /* @__PURE__ */ o(bo, { b: s, fig: a.get(s), slots: t }, i)) });
 }
-function So({
+function go({
   study: e,
   className: t = ""
 }) {
   const { title: r, summary: n, outcomes: a, meta: s, cover: i } = e;
-  return /* @__PURE__ */ y("header", { className: `font-mono ${t}`, children: [
-    /* @__PURE__ */ o("h1", { className: `m-0 text-2xl leading-tight sm:text-page-title ${Se}`, children: r }),
-    /* @__PURE__ */ o("p", { className: `m-0 mt-5 text-base leading-relaxed sm:text-lg ${Ae}`, children: n }),
-    a && a.length > 0 && /* @__PURE__ */ o("div", { className: "mt-10", children: /* @__PURE__ */ o(yr, { items: a }) }),
+  return /* @__PURE__ */ k("header", { className: `font-mono ${t}`, children: [
+    /* @__PURE__ */ o("h1", { className: `m-0 text-2xl leading-tight sm:text-page-title ${we}`, children: r }),
+    /* @__PURE__ */ o("p", { className: `m-0 mt-5 text-base leading-relaxed sm:text-lg ${Ee}`, children: n }),
+    a && a.length > 0 && /* @__PURE__ */ o("div", { className: "mt-10", children: /* @__PURE__ */ o(br, { items: a }) }),
     s && s.length > 0 && // One fact a line: label and value joined by a dotted leader, like a
     // contents page. A long value wraps and stays flush right.
-    /* @__PURE__ */ o("dl", { className: "m-0 mt-10 flex flex-col gap-2", children: s.map((l) => /* @__PURE__ */ y("div", { className: "flex items-baseline gap-3 text-sm", children: [
-      /* @__PURE__ */ o("dt", { className: `flex-none text-xs uppercase tracking-wider ${Ye}`, children: l.label }),
+    /* @__PURE__ */ o("dl", { className: "m-0 mt-10 flex flex-col gap-2", children: s.map((l) => /* @__PURE__ */ k("div", { className: "flex items-baseline gap-3 text-sm", children: [
+      /* @__PURE__ */ o("dt", { className: `flex-none text-xs uppercase tracking-wider ${Ke}`, children: l.label }),
       /* @__PURE__ */ o(
         "span",
         {
           "aria-hidden": "true",
-          className: `min-w-4 flex-1 border-b-hairline border-dotted ${De}`
+          className: `min-w-4 flex-1 border-b-hairline border-dotted ${Re}`
         }
       ),
-      /* @__PURE__ */ o("dd", { className: `m-0 text-right leading-relaxed ${Se}`, children: l.value })
+      /* @__PURE__ */ o("dd", { className: `m-0 text-right leading-relaxed ${we}`, children: l.value })
     ] }, l.label)) }),
-    i && /* @__PURE__ */ y("figure", { className: `mt-12 m-0${We(i.width ?? "wide")}`, children: [
-      /* @__PURE__ */ o("div", { className: "plate-round p-px bg-[var(--border-hairline)]", children: /* @__PURE__ */ o(et, { src: i.src, alt: i.alt, aspect: i.aspect }) }),
-      /* @__PURE__ */ o($t, { caption: i.caption })
+    i && /* @__PURE__ */ k("figure", { className: `mt-12 m-0${He(i.width ?? "wide")}`, children: [
+      /* @__PURE__ */ o("div", { className: "plate-round p-px bg-[var(--border-hairline)]", children: /* @__PURE__ */ o(Ze, { src: i.src, alt: i.alt, aspect: i.aspect }) }),
+      /* @__PURE__ */ o(kt, { caption: i.caption })
     ] })
   ] });
 }
-function $o({ n: e, section: t }) {
-  return /* @__PURE__ */ y("header", { children: [
-    /* @__PURE__ */ y("div", { className: "flex gap-3 text-xs uppercase tracking-wider", children: [
-      /* @__PURE__ */ o("span", { className: Ke, children: St(e) }),
-      /* @__PURE__ */ o("span", { className: Ye, children: t.kicker })
+function xo({ n: e, section: t }) {
+  return /* @__PURE__ */ k("header", { children: [
+    /* @__PURE__ */ k("div", { className: "flex gap-3 text-xs uppercase tracking-wider", children: [
+      /* @__PURE__ */ o("span", { className: Ge, children: wt(e) }),
+      /* @__PURE__ */ o("span", { className: Ke, children: t.kicker })
     ] }),
-    /* @__PURE__ */ o("h2", { className: `m-0 mt-4 text-xl leading-snug sm:text-2xl ${Se}`, children: t.title }),
-    t.intro && /* @__PURE__ */ o("p", { className: `m-0 mt-4 text-base leading-relaxed ${Ae}`, children: t.intro })
+    /* @__PURE__ */ o("h2", { className: `m-0 mt-4 text-xl leading-snug sm:text-2xl ${we}`, children: t.title }),
+    t.intro && /* @__PURE__ */ o("p", { className: `m-0 mt-4 text-base leading-relaxed ${Ee}`, children: t.intro })
   ] });
 }
-function zo({
+function vo({
   sections: e,
   slots: t,
   className: r = ""
@@ -5820,44 +5772,44 @@ function zo({
   let a = 1;
   return /* @__PURE__ */ o("div", { className: `font-mono ${r}`, children: n.map((s, i) => {
     const l = a;
-    return a += (s.blocks ?? []).reduce((c, d) => c + vr(d), 0), /* @__PURE__ */ y(
+    return a += (s.blocks ?? []).reduce((c, d) => c + pr(d), 0), /* @__PURE__ */ k(
       "section",
       {
-        id: s.id ?? yo(s.kicker),
+        id: s.id ?? fo(s.kicker),
         className: "mt-24 first:mt-0 sm:mt-32 sm:first:mt-0",
         children: [
-          /* @__PURE__ */ o($o, { n: i + 1, section: s }),
-          s.blocks && s.blocks.length > 0 && /* @__PURE__ */ o(No, { blocks: s.blocks, slots: t, figureStart: l })
+          /* @__PURE__ */ o(xo, { n: i + 1, section: s }),
+          s.blocks && s.blocks.length > 0 && /* @__PURE__ */ o(ho, { blocks: s.blocks, slots: t, figureStart: l })
         ]
       },
       s.id ?? s.kicker
     );
   }) });
 }
-function ps({
+function is({
   study: e,
   slots: t,
   className: r = ""
 }) {
-  return /* @__PURE__ */ y("article", { className: `font-mono ${r}`, children: [
-    /* @__PURE__ */ o(So, { study: e }),
-    /* @__PURE__ */ o(zo, { sections: e.sections, slots: t, className: "mt-24 sm:mt-32" })
+  return /* @__PURE__ */ k("article", { className: `font-mono ${r}`, children: [
+    /* @__PURE__ */ o(go, { study: e }),
+    /* @__PURE__ */ o(vo, { sections: e.sections, slots: t, className: "mt-24 sm:mt-32" })
   ] });
 }
-const Io = re(function({ meta: t, title: r, description: n, titleSuffix: a, thumb: s, thumbPosition: i = "start", selected: l = !1, className: c = "", ...d }, u) {
-  const b = "as" in d && d.as ? d.as : null, h = b ? "as" : "href" in d && d.href != null ? "a" : "onClick" in d && d.onClick != null ? "button" : "div", p = `
+const yo = re(function({ meta: t, title: r, description: n, titleSuffix: a, thumb: s, thumbPosition: i = "start", selected: l = !1, className: c = "", ...d }, u) {
+  const m = "as" in d && d.as ? d.as : null, p = m ? "as" : "href" in d && d.href != null ? "a" : "onClick" in d && d.onClick != null ? "button" : "div", h = `
     block w-full text-left p-3 plate-round
     transition-colors [transition-duration:var(--duration-fast)]
     font-mono
-    ${h !== "div" ? "cursor-pointer hover:bg-[var(--surface-muted)] focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]" : ""}
+    ${p !== "div" ? "cursor-pointer hover:bg-[var(--surface-muted)] focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]" : ""}
     ${l ? "bg-[var(--surface-muted)]" : ""}
     ${c}
-  `, m = /* @__PURE__ */ y(we, { children: [
+  `, b = /* @__PURE__ */ k(ge, { children: [
     t && /* @__PURE__ */ o("span", { className: "block text-sm text-secondary-700 dark:text-secondary-600", children: t }),
-    /* @__PURE__ */ y(
+    /* @__PURE__ */ k(
       "span",
       {
-        className: `block truncate text-base leading-6 ${h !== "div" ? "text-[var(--accent)]" : "text-[var(--text-primary)]"}`,
+        className: `block truncate text-base leading-6 ${p !== "div" ? "text-[var(--accent)]" : "text-[var(--text-primary)]"}`,
         children: [
           r,
           a && /* @__PURE__ */ o("span", { className: "ml-2 leading-none", children: a })
@@ -5865,43 +5817,43 @@ const Io = re(function({ meta: t, title: r, description: n, titleSuffix: a, thum
       }
     ),
     n && /* @__PURE__ */ o("span", { className: "mt-1 block text-sm leading-6 text-secondary-800 dark:text-secondary-500", children: n })
-  ] }), f = s ? /* @__PURE__ */ y("span", { className: `flex items-start gap-4 ${i === "end" ? "flex-row-reverse" : ""}`, children: [
+  ] }), f = s ? /* @__PURE__ */ k("span", { className: `flex items-start gap-4 ${i === "end" ? "flex-row-reverse" : ""}`, children: [
     /* @__PURE__ */ o("span", { className: "flex-shrink-0", children: s }),
-    /* @__PURE__ */ o("span", { className: "block min-w-0 flex-1", children: m })
-  ] }) : m;
-  if (b) {
-    const { asProps: k, ...g } = d, z = { ...g };
-    return delete z.as, /* @__PURE__ */ o(b, { ref: u, className: p, ...z, ...k, children: f });
+    /* @__PURE__ */ o("span", { className: "block min-w-0 flex-1", children: b })
+  ] }) : b;
+  if (m) {
+    const { asProps: N, ...v } = d, w = { ...v };
+    return delete w.as, /* @__PURE__ */ o(m, { ref: u, className: h, ...w, ...N, children: f });
   }
-  if (h === "a") {
-    const { href: k, ...g } = d;
-    return /* @__PURE__ */ o("a", { ref: u, href: k, className: p, ...g, children: f });
+  if (p === "a") {
+    const { href: N, ...v } = d;
+    return /* @__PURE__ */ o("a", { ref: u, href: N, className: h, ...v, children: f });
   }
-  if (h === "button") {
-    const { onClick: k, ...g } = d;
-    return /* @__PURE__ */ o("button", { ref: u, type: "button", onClick: k, className: p, ...g, children: f });
+  if (p === "button") {
+    const { onClick: N, ...v } = d;
+    return /* @__PURE__ */ o("button", { ref: u, type: "button", onClick: N, className: h, ...v, children: f });
   }
-  return /* @__PURE__ */ o("div", { ref: u, className: p, ...d, children: f });
+  return /* @__PURE__ */ o("div", { ref: u, className: h, ...d, children: f });
 });
-Io.displayName = "ListRow";
-const ht = re(function({ variant: t = "inline", external: r = !1, className: n = "", children: a, ...s }, i) {
-  const l = I(
+yo.displayName = "ListRow";
+const ft = re(function({ variant: t = "inline", external: r = !1, className: n = "", children: a, ...s }, i) {
+  const l = S(
     "font-mono text-[var(--accent)] transition-colors [transition-duration:var(--duration-fast)] hover:text-[var(--text-link-hover)]",
     "focus:outline-none focus-visible:[outline:var(--focus-ring-width)_solid_var(--focus-ring-primary)] focus-visible:[outline-offset:var(--focus-ring-offset)]",
     t === "inline" ? "underline underline-offset-2" : "no-underline hover:underline focus-visible:underline",
     n
-  ), c = /* @__PURE__ */ y(we, { children: [
+  ), c = /* @__PURE__ */ k(ge, { children: [
     a,
-    r && /* @__PURE__ */ y(we, { children: [
-      /* @__PURE__ */ o(ee, { name: "ExternalLink", size: "3", className: "ml-1" }),
+    r && /* @__PURE__ */ k(ge, { children: [
+      /* @__PURE__ */ o(Q, { name: "ExternalLink", size: "3", className: "ml-1" }),
       /* @__PURE__ */ o("span", { className: "sr-only", children: " (opens in new tab)" })
     ] })
   ] });
   if ("as" in s && s.as) {
-    const { as: p, asProps: m } = s;
-    return /* @__PURE__ */ o(p, { ref: i, className: l, ...r ? { target: "_blank", rel: "noopener noreferrer" } : void 0, ...m, children: c });
+    const { as: h, asProps: b } = s;
+    return /* @__PURE__ */ o(h, { ref: i, className: l, ...r ? { target: "_blank", rel: "noopener noreferrer" } : void 0, ...b, children: c });
   }
-  const { href: d, target: u, rel: b, ...h } = s;
+  const { href: d, target: u, rel: m, ...p } = s;
   return /* @__PURE__ */ o(
     "a",
     {
@@ -5909,23 +5861,20 @@ const ht = re(function({ variant: t = "inline", external: r = !1, className: n =
       href: d,
       className: l,
       target: r ? u ?? "_blank" : u,
-      rel: r ? b ?? "noopener noreferrer" : b,
-      ...h,
+      rel: r ? m ?? "noopener noreferrer" : m,
+      ...p,
       children: c
     }
   );
 });
-ht.displayName = "Link";
-function wr(e) {
-  return e === "default" ? "neutral" : e;
-}
-const To = {
+ft.displayName = "Link";
+const wo = {
   neutral: "Bell",
   success: "CheckCircle",
   warning: "AlertTriangle",
   error: "AlertCircle",
   info: "Info"
-}, Eo = {
+}, ko = {
   neutral: {
     ring: "bg-[var(--border-hairline)]",
     fill: "bg-[var(--surface-muted)]",
@@ -5956,83 +5905,82 @@ const To = {
     icon: "text-info-800 dark:text-info-400",
     text: "text-info-900 dark:text-info-50"
   }
-}, Ut = `
+}, Bt = `
   relative shrink-0 inline-flex items-center px-1 font-mono text-sm font-bold cursor-pointer
   before:content-[''] before:absolute before:inset-x-0 before:top-1/2 before:-translate-y-1/2 before:h-touch
   focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]
 `;
-function Co({ children: e, onClick: t, tone: r, variant: n, action: a, duration: s, onDismiss: i }) {
-  n !== void 0 && se("Toast", "variant", "tone");
-  const l = r ?? wr(n) ?? "neutral", [c, d] = V(!1);
-  G(() => {
-    const $ = requestAnimationFrame(() => d(!0));
-    return () => cancelAnimationFrame($);
+function No({ children: e, onClick: t, tone: r = "neutral", action: n, duration: a, onDismiss: s }) {
+  const [i, l] = H(!1);
+  U(() => {
+    const v = requestAnimationFrame(() => l(!0));
+    return () => cancelAnimationFrame(v);
   }, []);
-  const [u, b] = V(!1), [h, p] = V(!1), m = u || h, f = Q(i);
-  G(() => {
-    f.current = i;
+  const [c, d] = H(!1), [u, m] = H(!1), p = c || u, h = X(s);
+  U(() => {
+    h.current = s;
   });
-  const x = Q(s ?? 0);
-  G(() => {
-    x.current = s ?? 0;
-  }, [s]), G(() => {
-    if (m || s == null || !Number.isFinite(s) || !f.current) return;
-    const $ = Date.now(), w = setTimeout(() => {
-      var N;
-      return (N = f.current) == null ? void 0 : N.call(f);
-    }, Math.max(0, x.current));
+  const b = X(a ?? 0);
+  U(() => {
+    b.current = a ?? 0;
+  }, [a]), U(() => {
+    if (p || a == null || !Number.isFinite(a) || !h.current) return;
+    const v = Date.now(), w = setTimeout(() => {
+      var $;
+      return ($ = h.current) == null ? void 0 : $.call(h);
+    }, Math.max(0, b.current));
     return () => {
-      clearTimeout(w), x.current -= Date.now() - $;
+      clearTimeout(w), b.current -= Date.now() - v;
     };
-  }, [m, s]);
-  const k = ($) => {
-    $.currentTarget.contains($.relatedTarget) || p(!1);
-  }, g = Eo[l], z = s === 1 / 0 && i != null;
+  }, [p, a]);
+  const f = (v) => {
+    v.currentTarget.contains(v.relatedTarget) || m(!1);
+  }, g = ko[r], N = a === 1 / 0 && s != null;
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- pointer shortcut to dismiss; the dismiss and action buttons are the keyboard path
     /* @__PURE__ */ o(
       "div",
       {
-        role: l === "error" ? "alert" : "status",
+        role: r === "error" ? "alert" : "status",
         onClick: t,
-        onMouseEnter: () => b(!0),
-        onMouseLeave: () => b(!1),
-        onFocus: () => p(!0),
-        onBlur: k,
+        onMouseEnter: () => d(!0),
+        onMouseLeave: () => d(!1),
+        onFocus: () => m(!0),
+        onBlur: f,
         className: `
         plate-round p-px ${g.ring}
         transition-transform [transition-duration:var(--duration-normal)] [transition-timing-function:steps(5)]
-        ${c ? "translate-y-0" : "translate-y-16"}
+        ${i ? "translate-y-0" : "translate-y-16"}
         ${t ? "cursor-pointer" : ""}
       `,
-        children: /* @__PURE__ */ y(
+        children: /* @__PURE__ */ k(
           "div",
           {
             className: `plate-round flex max-w-[min(28rem,calc(100vw-2rem))] items-center gap-2 px-3 py-2.5 font-mono text-sm ${g.fill} ${g.text}`,
             children: [
-              /* @__PURE__ */ o("span", { className: `inline-flex shrink-0 ${g.icon}`, children: /* @__PURE__ */ o(ee, { name: To[l], size: "4" }) }),
+              /* @__PURE__ */ o("span", { className: `inline-flex shrink-0 ${g.icon}`, children: /* @__PURE__ */ o(Q, { name: wo[r], size: "4" }) }),
               /* @__PURE__ */ o("span", { className: "min-w-0 whitespace-nowrap overflow-hidden text-ellipsis", children: e }),
-              a && /* @__PURE__ */ o(
+              n && /* @__PURE__ */ o(
                 "button",
                 {
                   type: "button",
-                  className: `${Ut} underline underline-offset-2`,
-                  onClick: ($) => {
-                    $.stopPropagation(), a.onClick(), i == null || i();
+                  className: `${Bt} underline underline-offset-2`,
+                  onClick: (v) => {
+                    v.stopPropagation(), n.onClick(), s == null || s();
                   },
-                  children: a.label
+                  children: n.label
                 }
               ),
-              z && /* @__PURE__ */ o(
+              N && /* @__PURE__ */ o(
                 "button",
                 {
                   type: "button",
                   "aria-label": "Dismiss notification",
-                  className: Ut,
-                  onClick: ($) => {
-                    $.stopPropagation(), i == null || i();
+                  className: Bt,
+                  onClick: (v) => {
+                    v.stopPropagation(), s == null || s();
                   },
-                  children: /* @__PURE__ */ o(ee, { name: "X", size: "3" })
+                  children: /* @__PURE__ */ o(Q, { name: "X", size: "3" })
                 }
               )
             ]
@@ -6042,39 +5990,37 @@ function Co({ children: e, onClick: t, tone: r, variant: n, action: a, duration:
     )
   );
 }
-const _o = 5e3, zt = [];
-let nt = zt, Ao = 0;
-const gt = /* @__PURE__ */ new Set();
-function kr(e) {
-  nt = e, gt.forEach((t) => t());
+const $o = 5e3, Nt = [];
+let et = Nt, So = 0;
+const pt = /* @__PURE__ */ new Set();
+function hr(e) {
+  et = e, pt.forEach((t) => t());
 }
-function Nr(e) {
-  return gt.add(e), () => {
-    gt.delete(e);
+function gr(e) {
+  return pt.add(e), () => {
+    pt.delete(e);
   };
 }
-const Sr = () => nt, $r = () => zt;
-function He(e, t = {}) {
-  const { id: r = `toast-${++Ao}`, duration: n = _o, tone: a, variant: s, ...i } = t;
-  s !== void 0 && se("toast()", "variant", "tone");
-  const l = a ?? wr(s), c = { id: r, message: e, duration: n, ...i };
-  return l !== void 0 && (c.tone = l), kr([...nt.filter((d) => d.id !== r), c]), r;
+const xr = () => et, vr = () => Nt;
+function Fe(e, t = {}) {
+  const { id: r = `toast-${++So}`, duration: n = $o, tone: a, ...s } = t, i = { id: r, message: e, duration: n, ...s };
+  return a !== void 0 && (i.tone = a), hr([...et.filter((l) => l.id !== r), i]), r;
 }
-function It(e) {
-  kr(e === void 0 ? zt : nt.filter((t) => t.id !== e));
+function $t(e) {
+  hr(e === void 0 ? Nt : et.filter((t) => t.id !== e));
 }
-const Mo = Object.assign(He, {
-  success: (e, t) => He(e, { ...t, tone: "success" }),
-  warning: (e, t) => He(e, { ...t, tone: "warning" }),
-  error: (e, t) => He(e, { ...t, tone: "error" }),
-  info: (e, t) => He(e, { ...t, tone: "info" }),
-  dismiss: It
+const Io = Object.assign(Fe, {
+  success: (e, t) => Fe(e, { ...t, tone: "success" }),
+  warning: (e, t) => Fe(e, { ...t, tone: "warning" }),
+  error: (e, t) => Fe(e, { ...t, tone: "error" }),
+  info: (e, t) => Fe(e, { ...t, tone: "info" }),
+  dismiss: $t
 });
-function bs() {
-  return { toasts: Qt(Nr, Sr, $r), toast: Mo, dismiss: It };
+function ls() {
+  return { toasts: Kt(gr, xr, vr), toast: Io, dismiss: $t };
 }
-function hs({ toasts: e, onDismiss: t }) {
-  const r = Qt(Nr, Sr, $r), n = e !== void 0, a = n ? e : r, s = n ? t : It;
+function cs({ toasts: e, onDismiss: t }) {
+  const r = Kt(gr, xr, vr), n = e !== void 0, a = n ? e : r, s = n ? t : $t;
   return /* @__PURE__ */ o(
     "div",
     {
@@ -6082,10 +6028,9 @@ function hs({ toasts: e, onDismiss: t }) {
       className: "fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2",
       style: { zIndex: "var(--z-index-popover)" },
       children: a.map((i) => /* @__PURE__ */ o(
-        Co,
+        No,
         {
           tone: i.tone,
-          variant: i.variant,
           action: i.action,
           duration: i.duration,
           onClick: s ? () => s(i.id) : void 0,
@@ -6097,164 +6042,160 @@ function hs({ toasts: e, onDismiss: t }) {
     }
   );
 }
-function gs({
+function ds({
   open: e,
   defaultOpen: t = !1,
   onOpenChange: r,
-  isOpen: n,
-  onClose: a,
-  "aria-label": s,
-  ariaLabel: i,
-  closeLabel: l = "Close",
-  children: c
+  "aria-label": n,
+  closeLabel: a = "Close",
+  children: s
 }) {
-  n !== void 0 && se("BottomSheet", "isOpen", "open"), a !== void 0 && se("BottomSheet", "onClose", "onOpenChange"), i !== void 0 && se("BottomSheet", "ariaLabel", "aria-label");
-  const d = s ?? i, [u, b] = Ve({
-    value: e ?? n,
+  const [i, l] = je({
+    value: e,
     defaultValue: t,
     onChange: r
-  }), h = pe(() => {
-    u && (b(!1), a == null || a());
-  }, [u, b, a]), [p, m] = V(u);
-  G(() => {
-    u && m(!0);
-  }, [u]);
-  const f = p && !u, x = Q(null), k = Q(null), g = u && p;
-  return G(() => {
-    var z;
-    if (g)
-      return k.current = document.activeElement, (z = x.current) == null || z.focus(), () => {
-        var $;
-        ($ = k.current) == null || $.focus(), k.current = null;
+  }), c = ue(() => {
+    i && l(!1);
+  }, [i, l]), [d, u] = H(i);
+  U(() => {
+    i && u(!0);
+  }, [i]);
+  const m = d && !i, p = X(null), h = X(null), b = i && d;
+  return U(() => {
+    var f;
+    if (b)
+      return h.current = document.activeElement, (f = p.current) == null || f.focus(), () => {
+        var g;
+        (g = h.current) == null || g.focus(), h.current = null;
       };
-  }, [g]), hr(x, g), G(() => {
-    if (!u) return;
-    const z = ($) => {
-      $.key === "Escape" && h();
+  }, [b]), ur(p, b), U(() => {
+    if (!i) return;
+    const f = (g) => {
+      g.key === "Escape" && c();
     };
-    return document.addEventListener("keydown", z), () => document.removeEventListener("keydown", z);
-  }, [u, h]), G(() => (u ? document.body.style.overflow = "hidden" : document.body.style.overflow = "unset", () => {
+    return document.addEventListener("keydown", f), () => document.removeEventListener("keydown", f);
+  }, [i, c]), U(() => (i ? document.body.style.overflow = "hidden" : document.body.style.overflow = "unset", () => {
     document.body.style.overflow = "unset";
-  }), [u]), p ? /* @__PURE__ */ y(we, { children: [
+  }), [i]), d ? /* @__PURE__ */ k(ge, { children: [
     /* @__PURE__ */ o(
       "div",
       {
-        className: `fixed inset-0 bg-[var(--surface-overlay)] ${f ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
+        className: `fixed inset-0 bg-[var(--surface-overlay)] ${m ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"}`,
         style: { zIndex: "var(--z-index-overlay)", animationDuration: "var(--duration-slow)" },
-        onClick: h,
+        onClick: c,
         "aria-hidden": "true"
       }
     ),
     /* @__PURE__ */ o(
       "div",
       {
-        ref: x,
+        ref: p,
         tabIndex: -1,
         role: "dialog",
         "aria-modal": "true",
-        "aria-label": d,
-        className: `focus:outline-none fixed bottom-0 inset-x-0 mx-auto w-[min(540px,100%)] plate-round-lg-top bg-[var(--surface-container-stroke)] pt-px px-px ${f ? "animate-out slide-out-to-bottom fill-mode-forwards" : "animate-in slide-in-from-bottom"}`,
+        "aria-label": n,
+        className: `focus:outline-none fixed bottom-0 inset-x-0 mx-auto w-[min(540px,100%)] plate-round-lg-top bg-[var(--surface-container-stroke)] pt-px px-px ${m ? "animate-out slide-out-to-bottom fill-mode-forwards" : "animate-in slide-in-from-bottom"}`,
         style: { zIndex: "var(--z-index-modal)", animationDuration: "var(--duration-slow)" },
         onAnimationEnd: () => {
-          f && m(!1);
+          m && u(!1);
         },
-        children: /* @__PURE__ */ y("div", { className: "plate-round-lg-top bg-[var(--surface-card)] px-5 pb-6 pt-1 flex flex-col items-center gap-3 max-h-[70vh]", children: [
-          /* @__PURE__ */ y("div", { className: "relative flex h-touch w-full shrink-0 items-center justify-center", children: [
+        children: /* @__PURE__ */ k("div", { className: "plate-round-lg-top bg-[var(--surface-card)] px-5 pb-6 pt-1 flex flex-col items-center gap-3 max-h-[70vh]", children: [
+          /* @__PURE__ */ k("div", { className: "relative flex h-touch w-full shrink-0 items-center justify-center", children: [
             /* @__PURE__ */ o("div", { className: "w-9 h-1 bg-[var(--surface-container-stroke)]", "aria-hidden": "true" }),
             /* @__PURE__ */ o(
               "button",
               {
                 type: "button",
-                onClick: h,
-                "aria-label": l,
+                onClick: c,
+                "aria-label": a,
                 className: "absolute right-0 top-0 inline-flex h-touch w-touch items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors [transition-duration:var(--duration-fast)] focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]",
-                children: /* @__PURE__ */ o(ee, { name: "X", size: "4" })
+                children: /* @__PURE__ */ o(Q, { name: "X", size: "4" })
               }
             )
           ] }),
-          /* @__PURE__ */ o("div", { className: "w-full overflow-y-auto", tabIndex: 0, children: c })
+          /* @__PURE__ */ o("div", { className: "w-full overflow-y-auto", tabIndex: 0, children: s })
         ] })
       }
     )
   ] }) : null;
 }
-function xs() {
-  const { resolvedTheme: e, setTheme: t } = Hr(), [r, n] = V(!1);
-  if (G(() => {
+function us() {
+  const { resolvedTheme: e, setTheme: t } = Dr(), [r, n] = H(!1);
+  if (U(() => {
     n(!0);
   }, []), !r)
-    return /* @__PURE__ */ y("div", { className: "flex items-center gap-3", children: [
+    return /* @__PURE__ */ k("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ o("div", { className: "w-11 h-6 rounded-none bg-[var(--field-border)]" }),
       /* @__PURE__ */ o("span", { className: "text-sm font-mono text-[var(--text-secondary)]", children: "Theme" })
     ] });
   const a = e === "dark", s = a ? "Dark" : "Light", i = a ? "light" : "dark";
-  return /* @__PURE__ */ y("div", { className: "flex items-center gap-3", children: [
+  return /* @__PURE__ */ k("div", { className: "flex items-center gap-3", children: [
     /* @__PURE__ */ o(
-      xr,
+      fr,
       {
         checked: a,
         onCheckedChange: () => {
           t(i);
         },
         size: "sm",
-        icon: a ? /* @__PURE__ */ o(ee, { name: "Moon", size: "3", className: "text-[var(--border-focus)]" }) : /* @__PURE__ */ o(ee, { name: "Sun", size: "3", className: "text-[var(--text-secondary)]" }),
+        icon: a ? /* @__PURE__ */ o(Q, { name: "Moon", size: "3", className: "text-[var(--border-focus)]" }) : /* @__PURE__ */ o(Q, { name: "Sun", size: "3", className: "text-[var(--text-secondary)]" }),
         "aria-label": `Switch to ${i} theme`
       }
     ),
     /* @__PURE__ */ o("span", { className: "text-sm font-mono text-[var(--text-primary)]", children: s })
   ] });
 }
-const zr = Be(null);
-function Tt(e) {
-  const t = Te(zr);
+const yr = Oe(null);
+function St(e) {
+  const t = Se(yr);
   if (!t)
     throw new Error(`[@scorp-ds/components] ${e} must be used inside <Tabs>.`);
   return t;
 }
-function vs({
+function ms({
   value: e,
   defaultValue: t,
   onValueChange: r,
   children: n,
   className: a
 }) {
-  const s = e !== void 0, [i, l] = V(() => t ?? ""), c = s ? e : i, d = ue().replace(/:/g, ""), u = Q([]), b = pe(
-    (p) => {
-      s || l(p), r == null || r(p);
+  const s = e !== void 0, [i, l] = H(() => t ?? ""), c = s ? e : i, d = ce().replace(/:/g, ""), u = X([]), m = ue(
+    (h) => {
+      s || l(h), r == null || r(h);
     },
     [s, r]
-  ), h = Pe(
+  ), p = Le(
     () => ({
       value: c,
-      onValueChange: b,
+      onValueChange: m,
       baseId: d,
       listValuesRef: u,
       isControlled: s
     }),
-    [c, b, d, s]
+    [c, m, d, s]
   );
-  return /* @__PURE__ */ o(zr.Provider, { value: h, children: /* @__PURE__ */ o("div", { className: I("w-full", a), children: n }) });
+  return /* @__PURE__ */ o(yr.Provider, { value: p, children: /* @__PURE__ */ o("div", { className: S("w-full", a), children: n }) });
 }
-function Lo(e) {
+function To(e) {
   const t = [];
-  return Ie.Children.forEach(e, (r) => {
-    if (!Ie.isValidElement(r)) return;
+  return $e.Children.forEach(e, (r) => {
+    if (!$e.isValidElement(r)) return;
     if (r.type.displayName === "TabsTrigger") {
       const a = r.props.value;
       typeof a == "string" && t.push(a);
     }
   }), t;
 }
-function Ro({
+function Co({
   children: e,
   className: t,
   "aria-label": r,
   "aria-labelledby": n
 }) {
-  const { value: a, isControlled: s, onValueChange: i, listValuesRef: l } = Tt("TabsList"), c = Lo(e);
+  const { value: a, isControlled: s, onValueChange: i, listValuesRef: l } = St("TabsList"), c = To(e);
   l.current = c;
   const d = c.join("\0");
-  return Me(() => {
+  return _e(() => {
     const u = l.current;
     s || u.length === 0 || u.includes(a) || i(u[0]);
   }, [s, l, i, a, d]), /* @__PURE__ */ o(
@@ -6263,7 +6204,7 @@ function Ro({
       role: "tablist",
       "aria-label": r,
       "aria-labelledby": n,
-      className: I(
+      className: S(
         "flex flex-wrap gap-0 border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)]",
         t
       ),
@@ -6271,54 +6212,54 @@ function Ro({
     }
   );
 }
-Ro.displayName = "TabsList";
-const Oo = re(function({ value: t, children: r, className: n, disabled: a, onKeyDown: s, onClick: i, type: l = "button", ...c }, d) {
-  const { value: u, onValueChange: b, baseId: h, listValuesRef: p } = Tt("TabsTrigger"), m = u === t, f = `${h}-tab-${t}`, x = `${h}-panel-${t}`, k = (T) => {
-    b(T), requestAnimationFrame(() => {
-      var v;
-      (v = document.getElementById(`${h}-tab-${T}`)) == null || v.focus();
+Co.displayName = "TabsList";
+const Eo = re(function({ value: t, children: r, className: n, disabled: a, onKeyDown: s, onClick: i, type: l = "button", ...c }, d) {
+  const { value: u, onValueChange: m, baseId: p, listValuesRef: h } = St("TabsTrigger"), b = u === t, f = `${p}-tab-${t}`, g = `${p}-panel-${t}`, N = (M) => {
+    m(M), requestAnimationFrame(() => {
+      var x;
+      (x = document.getElementById(`${p}-tab-${M}`)) == null || x.focus();
     });
-  }, g = (T) => {
-    const v = document.getElementById(`${h}-tab-${T}`);
-    return v == null || !v.disabled;
-  }, z = (T) => {
-    const v = p.current, R = v.indexOf(t);
-    if (R < 0) return null;
-    for (let E = 1; E <= v.length; E += 1) {
-      const W = v[((R + T * E) % v.length + v.length) % v.length];
-      if (W !== t && g(W)) return W;
+  }, v = (M) => {
+    const x = document.getElementById(`${p}-tab-${M}`);
+    return x == null || !x.disabled;
+  }, w = (M) => {
+    const x = h.current, C = x.indexOf(t);
+    if (C < 0) return null;
+    for (let F = 1; F <= x.length; F += 1) {
+      const W = x[((C + M * F) % x.length + x.length) % x.length];
+      if (W !== t && v(W)) return W;
     }
     return null;
-  }, $ = (T, v) => {
-    const R = p.current;
-    for (let E = T; E >= 0 && E < R.length; E += v)
-      if (g(R[E])) return R[E];
+  }, $ = (M, x) => {
+    const C = h.current;
+    for (let F = M; F >= 0 && F < C.length; F += x)
+      if (v(C[F])) return C[F];
     return null;
-  }, w = (T) => {
-    const v = z(T);
-    v && k(v);
-  }, N = (T) => {
-    if (s == null || s(T), T.defaultPrevented || a) return;
-    const v = p.current;
-    switch (T.key) {
+  }, T = (M) => {
+    const x = w(M);
+    x && N(x);
+  }, I = (M) => {
+    if (s == null || s(M), M.defaultPrevented || a) return;
+    const x = h.current;
+    switch (M.key) {
       case "ArrowRight":
       case "ArrowDown":
-        T.preventDefault(), w(1);
+        M.preventDefault(), T(1);
         break;
       case "ArrowLeft":
       case "ArrowUp":
-        T.preventDefault(), w(-1);
+        M.preventDefault(), T(-1);
         break;
       case "Home": {
-        T.preventDefault();
-        const R = $(0, 1);
-        R && k(R);
+        M.preventDefault();
+        const C = $(0, 1);
+        C && N(C);
         break;
       }
       case "End": {
-        T.preventDefault();
-        const R = $(v.length - 1, -1);
-        R && k(R);
+        M.preventDefault();
+        const C = $(x.length - 1, -1);
+        C && N(C);
         break;
       }
     }
@@ -6330,11 +6271,11 @@ const Oo = re(function({ value: t, children: r, className: n, disabled: a, onKey
       type: l,
       role: "tab",
       id: f,
-      "aria-selected": m,
-      "aria-controls": x,
-      tabIndex: m ? 0 : -1,
+      "aria-selected": b,
+      "aria-controls": g,
+      tabIndex: b ? 0 : -1,
       disabled: a,
-      className: I(
+      className: S(
         "-mb-px rounded-none border-b-2 px-4 py-2 font-mono text-sm transition-colors [transition-duration:var(--duration-normal)]",
         // TAP TARGET: the trigger box is ~37px tall and its underline sets the
         // strip's baseline, so growing it with padding would shift that line.
@@ -6344,22 +6285,22 @@ const Oo = re(function({ value: t, children: r, className: n, disabled: a, onKey
         // FOCUS: inset box-shadow ring, the system recipe (outlines are
         // swallowed by the plate clip elsewhere, so every control uses inset).
         "focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]",
-        m ? "border-[var(--button-primary-background)] bg-transparent text-[var(--text-primary)]" : "border-transparent text-secondary-700 hover:text-[var(--text-primary)] dark:text-secondary-300",
+        b ? "border-[var(--button-primary-background)] bg-transparent text-[var(--text-primary)]" : "border-transparent text-secondary-700 hover:text-[var(--text-primary)] dark:text-secondary-300",
         a && "cursor-not-allowed opacity-50",
         n
       ),
-      onClick: (T) => {
-        i == null || i(T), !T.defaultPrevented && !a && b(t);
+      onClick: (M) => {
+        i == null || i(M), !M.defaultPrevented && !a && m(t);
       },
-      onKeyDown: N,
+      onKeyDown: I,
       ...c,
       children: r
     }
   );
 });
-Oo.displayName = "TabsTrigger";
-function Do({ value: e, children: t, className: r, forceMount: n = !1 }) {
-  const { value: a, baseId: s } = Tt("TabsContent"), i = a === e, l = `${s}-tab-${e}`, c = `${s}-panel-${e}`;
+Eo.displayName = "TabsTrigger";
+function _o({ value: e, children: t, className: r, forceMount: n = !1 }) {
+  const { value: a, baseId: s } = St("TabsContent"), i = a === e, l = `${s}-tab-${e}`, c = `${s}-panel-${e}`;
   return !n && !i ? null : !i && n ? /* @__PURE__ */ o(
     "div",
     {
@@ -6367,7 +6308,7 @@ function Do({ value: e, children: t, className: r, forceMount: n = !1 }) {
       role: "tabpanel",
       "aria-labelledby": l,
       hidden: !0,
-      className: I("p-4 font-mono outline-none", r),
+      className: S("p-4 font-mono outline-none", r),
       children: t
     }
   ) : /* @__PURE__ */ o(
@@ -6377,7 +6318,7 @@ function Do({ value: e, children: t, className: r, forceMount: n = !1 }) {
       role: "tabpanel",
       "aria-labelledby": l,
       tabIndex: 0,
-      className: I(
+      className: S(
         "p-4 font-mono outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--focus-offset-color)]",
         r
       ),
@@ -6385,23 +6326,23 @@ function Do({ value: e, children: t, className: r, forceMount: n = !1 }) {
     }
   );
 }
-Do.displayName = "TabsContent";
-const Po = { sm: "size-control-sm", md: "size-control-md", lg: "size-control-lg" }, Bo = { animationTimingFunction: "steps(4, jump-none)" };
-function Ir({ variant: e = "text", lines: t = 1, size: r = "md", animated: n = !0, className: a }) {
-  const s = de(r, "Skeleton"), i = n ? "animate-pulse motion-reduce:animate-none" : "", l = n ? Bo : void 0;
+_o.displayName = "TabsContent";
+const Ao = { sm: "size-control-sm", md: "size-control-md", lg: "size-control-lg" }, zo = { animationTimingFunction: "steps(4, jump-none)" };
+function wr({ variant: e = "text", lines: t = 1, size: r = "md", animated: n = !0, className: a }) {
+  const s = n ? "animate-pulse motion-reduce:animate-none" : "", i = n ? zo : void 0;
   if (e === "text") {
-    const c = Math.max(1, Math.floor(t));
-    return /* @__PURE__ */ o("div", { "aria-hidden": "true", "data-skeleton": "text", className: I("flex w-full flex-col gap-2", a), children: Array.from({ length: c }, (d, u) => /* @__PURE__ */ o(
+    const l = Math.max(1, Math.floor(t));
+    return /* @__PURE__ */ o("div", { "aria-hidden": "true", "data-skeleton": "text", className: S("flex w-full flex-col gap-2", a), children: Array.from({ length: l }, (c, d) => /* @__PURE__ */ o(
       "span",
       {
-        style: l,
-        className: I(
+        style: i,
+        className: S(
           "block h-3 bg-[var(--surface-muted)]",
-          c > 1 && u === c - 1 ? "w-3/5" : "w-full",
-          i
+          l > 1 && d === l - 1 ? "w-3/5" : "w-full",
+          s
         )
       },
-      u
+      d
     )) });
   }
   return /* @__PURE__ */ o(
@@ -6409,31 +6350,31 @@ function Ir({ variant: e = "text", lines: t = 1, size: r = "md", animated: n = !
     {
       "aria-hidden": "true",
       "data-skeleton": e,
-      style: l,
-      className: I(
+      style: i,
+      className: S(
         "block shrink-0 plate-round bg-[var(--surface-muted)]",
-        e === "avatar" ? Po[s] : "h-24 w-full",
-        i,
+        e === "avatar" ? Ao[r] : "h-24 w-full",
+        s,
         a
       )
     }
   );
 }
-Ir.displayName = "Skeleton";
-const jo = typeof window < "u" ? Me : G, Tr = {
+wr.displayName = "Skeleton";
+const Mo = typeof window < "u" ? _e : U, kr = {
   compact: "px-3 py-2",
   // 12 / 8
   comfortable: "px-4 py-3",
   // 16 / 12
   spacious: "px-5 py-4"
   // 20 / 16
-}, Et = Be("compact"), Er = Be(null), Fo = re(function({ className: t, striped: r, bordered: n, density: a = "compact", children: s, "aria-busy": i, ...l }, c) {
-  const [d, u] = V(0), b = pe((p) => u((m) => m + p), []), h = /* @__PURE__ */ o(Er.Provider, { value: b, children: /* @__PURE__ */ o(Et.Provider, { value: a, children: /* @__PURE__ */ o(
+}, It = Oe("compact"), Nr = Oe(null), Ro = re(function({ className: t, striped: r, bordered: n, density: a = "compact", children: s, "aria-busy": i, ...l }, c) {
+  const [d, u] = H(0), m = ue((h) => u((b) => b + h), []), p = /* @__PURE__ */ o(Nr.Provider, { value: m, children: /* @__PURE__ */ o(It.Provider, { value: a, children: /* @__PURE__ */ o(
     "table",
     {
       ref: c,
       "aria-busy": i ?? (d > 0 ? !0 : void 0),
-      className: I(
+      className: S(
         "w-full border-collapse font-mono text-sm text-[var(--text-primary)]",
         r && "[&_tbody_tr:nth-child(even)]:bg-[var(--surface-subtle)]",
         t
@@ -6442,15 +6383,15 @@ const jo = typeof window < "u" ? Me : G, Tr = {
       children: s
     }
   ) }) });
-  return n ? /* @__PURE__ */ o("div", { className: "plate-round-lg p-px bg-[var(--surface-container-stroke)]", children: /* @__PURE__ */ o("div", { className: "plate-round-lg bg-[var(--surface-card)]", children: h }) }) : h;
+  return n ? /* @__PURE__ */ o("div", { className: "plate-round-lg p-px bg-[var(--surface-container-stroke)]", children: /* @__PURE__ */ o("div", { className: "plate-round-lg bg-[var(--surface-card)]", children: p }) }) : p;
 });
-Fo.displayName = "Table";
-const Vo = re(function({ className: t, ...r }, n) {
+Ro.displayName = "Table";
+const Lo = re(function({ className: t, ...r }, n) {
   return /* @__PURE__ */ o(
     "thead",
     {
       ref: n,
-      className: I(
+      className: S(
         "border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)] bg-[var(--surface-subtle)]",
         t
       ),
@@ -6458,41 +6399,41 @@ const Vo = re(function({ className: t, ...r }, n) {
     }
   );
 });
-Vo.displayName = "TableHeader";
-const Go = re(function({ className: t, loading: r = !1, loadingRows: n = 3, emptyState: a, colSpan: s, children: i, ...l }, c) {
-  const d = Te(Er), u = Q(null), b = pe(
-    (g) => {
-      u.current = g, typeof c == "function" ? c(g) : c && (c.current = g);
+Lo.displayName = "TableHeader";
+const Oo = re(function({ className: t, loading: r = !1, loadingRows: n = 3, emptyState: a, colSpan: s, children: i, ...l }, c) {
+  const d = Se(Nr), u = X(null), m = ue(
+    (v) => {
+      u.current = v, typeof c == "function" ? c(v) : c && (c.current = v);
     },
     [c]
-  ), h = !r && a != null && Zt.toArray(i).length === 0, p = r || h, [m, f] = V(1);
-  jo(() => {
-    var $, w, N;
-    if (!p || s != null) return;
-    const g = (N = (w = ($ = u.current) == null ? void 0 : $.closest("table")) == null ? void 0 : w.tHead) == null ? void 0 : N.rows[0];
-    if (!g) return;
-    const z = Array.from(g.cells).reduce((T, v) => T + v.colSpan, 0);
-    f(Math.max(1, z));
-  }, [p, s]);
-  const x = Math.max(1, s ?? m);
-  G(() => {
+  ), p = !r && a != null && Wt.toArray(i).length === 0, h = r || p, [b, f] = H(1);
+  Mo(() => {
+    var $, T, I;
+    if (!h || s != null) return;
+    const v = (I = (T = ($ = u.current) == null ? void 0 : $.closest("table")) == null ? void 0 : T.tHead) == null ? void 0 : I.rows[0];
+    if (!v) return;
+    const w = Array.from(v.cells).reduce((M, x) => M + x.colSpan, 0);
+    f(Math.max(1, w));
+  }, [h, s]);
+  const g = Math.max(1, s ?? b);
+  U(() => {
     if (!(!r || !d))
       return d(1), () => d(-1);
   }, [r, d]);
-  let k = i;
+  let N = i;
   if (r) {
-    const g = Math.max(1, Math.floor(n));
-    k = Array.from({ length: g }, (z, $) => /* @__PURE__ */ o(xt, { "aria-hidden": "true", "data-table-loading-row": "", children: Array.from({ length: x }, (w, N) => /* @__PURE__ */ o(vt, { children: /* @__PURE__ */ o("div", { className: "flex h-5 items-center", children: /* @__PURE__ */ o(Ir, {}) }) }, N)) }, $));
-  } else h && (k = /* @__PURE__ */ o(xt, { "data-table-empty-row": "", children: /* @__PURE__ */ o(vt, { colSpan: x, className: "text-center", children: a }) }));
-  return /* @__PURE__ */ o("tbody", { ref: b, className: I(t), ...l, children: k });
+    const v = Math.max(1, Math.floor(n));
+    N = Array.from({ length: v }, (w, $) => /* @__PURE__ */ o(bt, { "aria-hidden": "true", "data-table-loading-row": "", children: Array.from({ length: g }, (T, I) => /* @__PURE__ */ o(ht, { children: /* @__PURE__ */ o("div", { className: "flex h-5 items-center", children: /* @__PURE__ */ o(wr, {}) }) }, I)) }, $));
+  } else p && (N = /* @__PURE__ */ o(bt, { "data-table-empty-row": "", children: /* @__PURE__ */ o(ht, { colSpan: g, className: "text-center", children: a }) }));
+  return /* @__PURE__ */ o("tbody", { ref: m, className: S(t), ...l, children: N });
 });
-Go.displayName = "TableBody";
-const Ho = re(function({ className: t, ...r }, n) {
+Oo.displayName = "TableBody";
+const Po = re(function({ className: t, ...r }, n) {
   return /* @__PURE__ */ o(
     "tfoot",
     {
       ref: n,
-      className: I(
+      className: S(
         "border-t-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)] bg-[var(--surface-subtle)]",
         t
       ),
@@ -6500,13 +6441,13 @@ const Ho = re(function({ className: t, ...r }, n) {
     }
   );
 });
-Ho.displayName = "TableFooter";
-const xt = re(function({ className: t, ...r }, n) {
+Po.displayName = "TableFooter";
+const bt = re(function({ className: t, ...r }, n) {
   return /* @__PURE__ */ o(
     "tr",
     {
       ref: n,
-      className: I(
+      className: S(
         "border-b-[length:var(--border-width-hairline)] border-solid border-[var(--surface-container-stroke)] transition-colors [transition-duration:var(--duration-normal)]",
         t
       ),
@@ -6514,16 +6455,16 @@ const xt = re(function({ className: t, ...r }, n) {
     }
   );
 });
-xt.displayName = "TableRow";
-const Uo = re(function({ className: t, scope: r = "col", ...n }, a) {
-  const s = Te(Et);
+bt.displayName = "TableRow";
+const Do = re(function({ className: t, scope: r = "col", ...n }, a) {
+  const s = Se(It);
   return /* @__PURE__ */ o(
     "th",
     {
       ref: a,
       scope: r,
-      className: I(
-        Tr[s],
+      className: S(
+        kr[s],
         "text-left font-bold text-[var(--text-primary)]",
         t
       ),
@@ -6531,15 +6472,15 @@ const Uo = re(function({ className: t, scope: r = "col", ...n }, a) {
     }
   );
 });
-Uo.displayName = "TableHead";
-const vt = re(function({ className: t, ...r }, n) {
-  const a = Te(Et);
+Do.displayName = "TableHead";
+const ht = re(function({ className: t, ...r }, n) {
+  const a = Se(It);
   return /* @__PURE__ */ o(
     "td",
     {
       ref: n,
-      className: I(
-        Tr[a],
+      className: S(
+        kr[a],
         "align-middle text-secondary-800 dark:text-secondary-200",
         t
       ),
@@ -6547,14 +6488,14 @@ const vt = re(function({ className: t, ...r }, n) {
     }
   );
 });
-vt.displayName = "TableCell";
-const Wo = {
+ht.displayName = "TableCell";
+const jo = {
   top: "bottom",
   bottom: "top",
   left: "right",
   right: "left"
-}, tt = (e) => e === "top" || e === "bottom";
-function ct(e, t, r, n, a, s) {
+}, Qe = (e) => e === "top" || e === "bottom";
+function st(e, t, r, n, a, s) {
   switch (e) {
     case "top":
       return t.top - a - s;
@@ -6566,7 +6507,7 @@ function ct(e, t, r, n, a, s) {
       return r - (t.left + t.width) - a - s;
   }
 }
-function Ko(e, t, r, n, a) {
+function Bo(e, t, r, n, a) {
   switch (e) {
     case "top":
       return t.top - a - n;
@@ -6578,11 +6519,11 @@ function Ko(e, t, r, n, a) {
       return t.left + t.width + a;
   }
 }
-function qo(e, t, r, n, a) {
-  return tt(e) ? t === "start" ? r.left : t === "end" ? r.left + r.width - n : r.left + r.width / 2 - n / 2 : t === "start" ? r.top : t === "end" ? r.top + r.height - a : r.top + r.height / 2 - a / 2;
+function Fo(e, t, r, n, a) {
+  return Qe(e) ? t === "start" ? r.left : t === "end" ? r.left + r.width - n : r.left + r.width / 2 - n / 2 : t === "start" ? r.top : t === "end" ? r.top + r.height - a : r.top + r.height / 2 - a / 2;
 }
-const Wt = (e, t, r) => r < t ? t : Math.min(Math.max(e, t), r);
-function Xo({
+const Ft = (e, t, r) => r < t ? t : Math.min(Math.max(e, t), r);
+function Vo({
   anchor: e,
   floating: t,
   side: r = "bottom",
@@ -6592,24 +6533,24 @@ function Xo({
   viewport: i,
   flip: l = !0
 }) {
-  const c = (i == null ? void 0 : i.width) ?? (typeof window < "u" ? window.innerWidth : 0), d = (i == null ? void 0 : i.height) ?? (typeof window < "u" ? window.innerHeight : 0), { width: u, height: b } = t;
-  let h = r;
-  const p = tt(r) ? b : u, m = ct(r, e, c, d, a, s);
-  if (l && m < p) {
-    const z = Wo[r];
-    ct(z, e, c, d, a, s) > m && (h = z);
+  const c = (i == null ? void 0 : i.width) ?? (typeof window < "u" ? window.innerWidth : 0), d = (i == null ? void 0 : i.height) ?? (typeof window < "u" ? window.innerHeight : 0), { width: u, height: m } = t;
+  let p = r;
+  const h = Qe(r) ? m : u, b = st(r, e, c, d, a, s);
+  if (l && b < h) {
+    const w = jo[r];
+    st(w, e, c, d, a, s) > b && (p = w);
   }
-  const f = Ko(h, e, u, b, a), x = qo(h, n, e, u, b), k = tt(h) ? f : Wt(x, s, d - b - s), g = tt(h) ? Wt(x, s, c - u - s) : f;
+  const f = Bo(p, e, u, m, a), g = Fo(p, n, e, u, m), N = Qe(p) ? f : Ft(g, s, d - m - s), v = Qe(p) ? Ft(g, s, c - u - s) : f;
   return {
-    top: k,
-    left: g,
-    side: h,
+    top: N,
+    left: v,
+    side: p,
     align: n,
-    available: Math.max(0, ct(h, e, c, d, a, s))
+    available: Math.max(0, st(p, e, c, d, a, s))
   };
 }
-const Yo = typeof window < "u" ? Me : G;
-function Zo({
+const Ho = typeof window < "u" ? _e : U;
+function Go({
   open: e,
   anchorRef: t,
   floatingRef: r,
@@ -6618,22 +6559,22 @@ function Zo({
   offset: s = 8,
   padding: i = 8
 }) {
-  const [l, c] = V(null), d = pe(() => {
-    const u = t.current, b = r.current;
-    if (!u || !b) return;
-    const h = u.getBoundingClientRect(), p = b.getBoundingClientRect(), m = Xo({
-      anchor: { top: h.top, left: h.left, width: h.width, height: h.height },
-      floating: { width: p.width, height: p.height },
+  const [l, c] = H(null), d = ue(() => {
+    const u = t.current, m = r.current;
+    if (!u || !m) return;
+    const p = u.getBoundingClientRect(), h = m.getBoundingClientRect(), b = Vo({
+      anchor: { top: p.top, left: p.left, width: p.width, height: p.height },
+      floating: { width: h.width, height: h.height },
       side: n,
       align: a,
       offset: s,
       padding: i
     });
     c(
-      (f) => f && f.top === m.top && f.left === m.left && f.side === m.side && f.available === m.available && f.anchorWidth === h.width ? f : { ...m, anchorWidth: h.width }
+      (f) => f && f.top === b.top && f.left === b.left && f.side === b.side && f.available === b.available && f.anchorWidth === p.width ? f : { ...b, anchorWidth: p.width }
     );
   }, [t, r, n, a, s, i]);
-  return Yo(() => {
+  return Ho(() => {
     if (!e) {
       c(null);
       return;
@@ -6645,8 +6586,8 @@ function Zo({
     };
   }, [e, d]), { position: l, update: d };
 }
-const Qo = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-function Cr({
+const Uo = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+function $r({
   open: e,
   defaultOpen: t = !1,
   onOpenChange: r,
@@ -6658,113 +6599,113 @@ function Cr({
   offset: c = 8,
   closeOnOutsideClick: d = !0,
   closeOnEscape: u = !0,
-  autoFocus: b = !0,
-  returnFocus: h = !0,
-  matchAnchorWidth: p = !1,
-  role: m = "dialog",
+  autoFocus: m = !0,
+  returnFocus: p = !0,
+  matchAnchorWidth: h = !1,
+  role: b = "dialog",
   "aria-label": f,
-  "aria-labelledby": x,
-  id: k,
-  className: g,
-  contentClassName: z,
+  "aria-labelledby": g,
+  id: N,
+  className: v,
+  contentClassName: w,
   triggerWrapperClassName: $,
-  portal: w = !1
+  portal: T = !1
 }) {
-  const [N, T] = Ve({
+  const [I, M] = je({
     value: e,
     defaultValue: t,
     onChange: r
-  }), v = ue(), R = k ?? `${v}-popover`, E = Q(null), W = Q(null), J = Q("programmatic"), oe = Pe(
+  }), x = ce(), C = N ?? `${x}-popover`, F = X(null), W = X(null), te = X("programmatic"), ne = Le(
     () => ({
       get current() {
-        var C;
-        return (a == null ? void 0 : a.current) ?? ((C = E.current) == null ? void 0 : C.firstElementChild) ?? E.current;
+        var R;
+        return (a == null ? void 0 : a.current) ?? ((R = F.current) == null ? void 0 : R.firstElementChild) ?? F.current;
       }
     }),
     [a]
-  ), { position: K } = Zo({ open: N, anchorRef: oe, floatingRef: W, side: i, align: l, offset: c }), te = (C) => {
-    J.current = C, T(!1);
-  }, F = (C) => {
-    var B, X, U;
-    return C != null && (((B = W.current) == null ? void 0 : B.contains(C)) || ((X = E.current) == null ? void 0 : X.contains(C)) || ((U = a == null ? void 0 : a.current) == null ? void 0 : U.contains(C)) || !1);
+  ), { position: B } = Go({ open: I, anchorRef: ne, floatingRef: W, side: i, align: l, offset: c }), Z = (R) => {
+    te.current = R, M(!1);
+  }, ee = (R) => {
+    var L, q, Y;
+    return R != null && (((L = W.current) == null ? void 0 : L.contains(R)) || ((q = F.current) == null ? void 0 : q.contains(R)) || ((Y = a == null ? void 0 : a.current) == null ? void 0 : Y.contains(R)) || !1);
   };
-  G(() => {
-    if (!N || !d) return;
-    const C = (B) => {
-      F(B.target) || te("outside");
+  U(() => {
+    if (!I || !d) return;
+    const R = (L) => {
+      ee(L.target) || Z("outside");
     };
-    return document.addEventListener("mousedown", C), () => document.removeEventListener("mousedown", C);
-  }, [N, d]), G(() => {
-    if (!N || !u) return;
-    const C = (B) => {
-      if (B.key !== "Escape") return;
-      const X = B.target;
-      (F(X) || X === document.body || X === document.documentElement) && te("escape");
+    return document.addEventListener("mousedown", R), () => document.removeEventListener("mousedown", R);
+  }, [I, d]), U(() => {
+    if (!I || !u) return;
+    const R = (L) => {
+      if (L.key !== "Escape") return;
+      const q = L.target;
+      (ee(q) || q === document.body || q === document.documentElement) && Z("escape");
     };
-    return document.addEventListener("keydown", C), () => document.removeEventListener("keydown", C);
-  }, [N, u]);
-  const _ = Q(N);
-  G(() => {
-    var C;
-    if (N && !_.current && (J.current = "programmatic", b && W.current && (W.current.querySelector(Qo) ?? W.current).focus({ preventScroll: !0 })), !N && _.current && h) {
-      const B = J.current, X = document.activeElement, U = X == null || X === document.body;
-      B !== "outside" && B !== "blur" && (U || F(X)) && ((C = oe.current) == null || C.focus({ preventScroll: !0 }));
+    return document.addEventListener("keydown", R), () => document.removeEventListener("keydown", R);
+  }, [I, u]);
+  const E = X(I);
+  U(() => {
+    var R;
+    if (I && !E.current && (te.current = "programmatic", m && W.current && (W.current.querySelector(Uo) ?? W.current).focus({ preventScroll: !0 })), !I && E.current && p) {
+      const L = te.current, q = document.activeElement, Y = q == null || q === document.body;
+      L !== "outside" && L !== "blur" && (Y || ee(q)) && ((R = ne.current) == null || R.focus({ preventScroll: !0 }));
     }
-    _.current = N;
-  }, [N]);
-  const D = (C) => {
-    const B = C.relatedTarget;
-    B && !F(B) && te("blur");
-  }, q = n && qe(n) ? yt(
+    E.current = I;
+  }, [I]);
+  const O = (R) => {
+    const L = R.relatedTarget;
+    L && !ee(L) && Z("blur");
+  }, P = n && Ue(n) ? gt(
     n,
     {
-      "aria-expanded": N,
-      "aria-controls": N ? R : void 0,
-      "aria-haspopup": m === "dialog" ? "dialog" : void 0,
-      onClick: (C) => {
-        var B, X;
-        (X = (B = n.props).onClick) == null || X.call(B, C), !C.defaultPrevented && (N ? te("trigger") : T(!0));
+      "aria-expanded": I,
+      "aria-controls": I ? C : void 0,
+      "aria-haspopup": b === "dialog" ? "dialog" : void 0,
+      onClick: (R) => {
+        var L, q;
+        (q = (L = n.props).onClick) == null || q.call(L, R), !R.defaultPrevented && (I ? Z("trigger") : M(!0));
       }
     }
-  ) : null, S = (C) => w && typeof document < "u" ? Wr(C, document.body) : C, O = {
+  ) : null, y = (R) => T && typeof document < "u" ? Br(R, document.body) : R, G = {
     position: "fixed",
-    top: (K == null ? void 0 : K.top) ?? 0,
-    left: (K == null ? void 0 : K.left) ?? 0,
+    top: (B == null ? void 0 : B.top) ?? 0,
+    left: (B == null ? void 0 : B.left) ?? 0,
     zIndex: "var(--z-index-popover)",
-    minWidth: p && K ? K.anchorWidth : void 0,
+    minWidth: h && B ? B.anchorWidth : void 0,
     animationDuration: "var(--duration-fast)",
     // Exposed so content can cap its height to the room on the chosen side
-    "--popover-available-height": K ? `${K.available}px` : void 0
+    "--popover-available-height": B ? `${B.available}px` : void 0
   };
-  return /* @__PURE__ */ y(we, { children: [
-    q && /* @__PURE__ */ o("span", { ref: E, className: I("inline-flex", $), children: q }),
-    N && S(
+  return /* @__PURE__ */ k(ge, { children: [
+    P && /* @__PURE__ */ o("span", { ref: F, className: S("inline-flex", $), children: P }),
+    I && y(
       /* @__PURE__ */ o(
         "div",
         {
           ref: W,
-          id: R,
-          role: m ?? void 0,
-          "aria-label": m ? f : void 0,
-          "aria-labelledby": m ? x : void 0,
+          id: C,
+          role: b ?? void 0,
+          "aria-label": b ? f : void 0,
+          "aria-labelledby": b ? g : void 0,
           tabIndex: -1,
-          "data-side": (K == null ? void 0 : K.side) ?? i,
+          "data-side": (B == null ? void 0 : B.side) ?? i,
           "data-align": l,
-          onBlur: D,
-          style: O,
-          className: I(
+          onBlur: O,
+          style: G,
+          className: S(
             "w-max max-w-[calc(100vw-1rem)] plate-round p-px bg-[var(--surface-container-stroke)] focus:outline-none",
             "animate-in fade-in motion-reduce:animate-none",
             // Measured before it is shown, so it never flashes at 0,0
-            K ? "opacity-100" : "opacity-0",
-            g
+            B ? "opacity-100" : "opacity-0",
+            v
           ),
           children: /* @__PURE__ */ o(
             "div",
             {
-              className: I(
+              className: S(
                 "plate-round bg-[var(--surface-card)] p-4 font-mono text-sm text-[var(--text-primary)]",
-                z
+                w
               ),
               children: s
             }
@@ -6774,162 +6715,162 @@ function Cr({
     )
   ] });
 }
-Cr.displayName = "Popover";
-const Jo = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), ea = re(function({
+$r.displayName = "Popover";
+const Wo = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), Ko = re(function({
   options: t,
   value: r,
   defaultValue: n = null,
   onValueChange: a,
   onInputChange: s,
-  filter: i = Jo,
+  filter: i = Wo,
   emptyText: l = "No matches",
   size: c = "md",
   label: d,
   helperText: u,
-  errorMessage: b,
-  error: h = !1,
-  openOnFocus: p = !1,
-  portal: m = !1,
+  errorMessage: m,
+  error: p = !1,
+  openOnFocus: h = !1,
+  portal: b = !1,
   disabled: f = !1,
-  placeholder: x,
-  name: k,
-  id: g,
-  className: z,
+  placeholder: g,
+  name: N,
+  id: v,
+  className: w,
   "aria-describedby": $,
-  "aria-label": w,
-  onKeyDown: N,
-  onFocus: T,
-  onBlur: v,
-  ...R
-}, E) {
-  const W = de(c, "Combobox"), J = je({ error: h, helperText: u, errorMessage: b, describedBy: $ }), oe = ue(), K = g ?? `${oe}-input`, te = `${oe}-listbox`, F = `${oe}-label`, _ = `${oe}-empty`, D = (A) => `${oe}-option-${A}`, [q, S] = Ve({
+  "aria-label": T,
+  onKeyDown: I,
+  onFocus: M,
+  onBlur: x,
+  ...C
+}, F) {
+  const W = Pe({ error: p, helperText: u, errorMessage: m, describedBy: $ }), te = ce(), ne = v ?? `${te}-input`, B = `${te}-listbox`, Z = `${te}-label`, ee = `${te}-empty`, E = (_) => `${te}-option-${_}`, [O, P] = je({
     value: r,
     defaultValue: n
-  }), O = t.find((A) => A.value === q) ?? null, [C, B] = V(!1), [X, U] = V((O == null ? void 0 : O.label) ?? ""), [Y, ce] = V(!1), [ae, Z] = V(-1), fe = Q(null), ge = Q(null), xe = Q(null);
-  G(() => {
-    C || U((O == null ? void 0 : O.label) ?? "");
-  }, [O == null ? void 0 : O.label, C]);
-  const j = Pe(
-    () => Y && X !== "" ? t.filter((A) => i(A, X)) : t,
-    [Y, X, t, i]
-  ), P = j.map((A, ne) => A.disabled ? -1 : ne).filter((A) => A >= 0), ie = P[0] ?? -1, ke = P[P.length - 1] ?? -1, ve = (A, ne) => {
-    if (P.length === 0) return -1;
-    const ye = P.indexOf(A);
-    if (ye === -1) return ne === 1 ? ie : ke;
-    const Ce = (ye + ne + P.length) % P.length;
-    return P[Ce];
-  }, me = (A) => {
+  }), y = t.find((_) => _.value === O) ?? null, [G, R] = H(!1), [L, q] = H((y == null ? void 0 : y.label) ?? ""), [Y, V] = H(!1), [ae, ie] = H(-1), J = X(null), xe = X(null), me = X(null);
+  U(() => {
+    G || q((y == null ? void 0 : y.label) ?? "");
+  }, [y == null ? void 0 : y.label, G]);
+  const D = Le(
+    () => Y && L !== "" ? t.filter((_) => i(_, L)) : t,
+    [Y, L, t, i]
+  ), j = D.map((_, oe) => _.disabled ? -1 : oe).filter((_) => _ >= 0), se = j[0] ?? -1, ve = j[j.length - 1] ?? -1, be = (_, oe) => {
+    if (j.length === 0) return -1;
+    const he = j.indexOf(_);
+    if (he === -1) return oe === 1 ? se : ve;
+    const Te = (he + oe + j.length) % j.length;
+    return j[Te];
+  }, de = (_) => {
     if (f) return;
-    B(!0);
-    const ne = O ? j.findIndex((ye) => ye.value === O.value && !ye.disabled) : -1;
-    Z(A === "selected" ? ne >= 0 ? ne : ie : A === "first" ? ie : A === "last" ? ke : -1);
-  }, be = () => {
-    B(!1), ce(!1), Z(-1), U((O == null ? void 0 : O.label) ?? "");
-  }, Re = (A) => {
-    S((A == null ? void 0 : A.value) ?? null), ((A == null ? void 0 : A.value) ?? null) !== q && (a == null || a((A == null ? void 0 : A.value) ?? null, A)), U((A == null ? void 0 : A.label) ?? ""), ce(!1), B(!1), Z(-1);
+    R(!0);
+    const oe = y ? D.findIndex((he) => he.value === y.value && !he.disabled) : -1;
+    ie(_ === "selected" ? oe >= 0 ? oe : se : _ === "first" ? se : _ === "last" ? ve : -1);
+  }, fe = () => {
+    R(!1), V(!1), ie(-1), q((y == null ? void 0 : y.label) ?? "");
+  }, ze = (_) => {
+    P((_ == null ? void 0 : _.value) ?? null), ((_ == null ? void 0 : _.value) ?? null) !== O && (a == null || a((_ == null ? void 0 : _.value) ?? null, _)), q((_ == null ? void 0 : _.label) ?? ""), V(!1), R(!1), ie(-1);
   };
-  G(() => {
-    var ne;
-    if (!C || ae < 0) return;
-    const A = document.getElementById(D(ae));
-    (ne = A == null ? void 0 : A.scrollIntoView) == null || ne.call(A, { block: "nearest" });
-  }, [C, ae]);
-  const ot = (A) => {
-    const ne = A.target.value;
-    if (U(ne), ce(!0), s == null || s(ne), !f) {
-      B(!0);
-      const ye = ne === "" ? t : t.filter((Ce) => i(Ce, ne));
-      Z(ye.findIndex((Ce) => !Ce.disabled));
+  U(() => {
+    var oe;
+    if (!G || ae < 0) return;
+    const _ = document.getElementById(E(ae));
+    (oe = _ == null ? void 0 : _.scrollIntoView) == null || oe.call(_, { block: "nearest" });
+  }, [G, ae]);
+  const tt = (_) => {
+    const oe = _.target.value;
+    if (q(oe), V(!0), s == null || s(oe), !f) {
+      R(!0);
+      const he = oe === "" ? t : t.filter((Te) => i(Te, oe));
+      ie(he.findIndex((Te) => !Te.disabled));
     }
-  }, Pr = (A) => {
-    if (N == null || N(A), !(A.defaultPrevented || f))
-      switch (A.key) {
+  }, zr = (_) => {
+    if (I == null || I(_), !(_.defaultPrevented || f))
+      switch (_.key) {
         case "ArrowDown":
-          A.preventDefault(), C ? Z((ne) => ve(ne, 1)) : me(A.altKey ? "none" : "selected");
+          _.preventDefault(), G ? ie((oe) => be(oe, 1)) : de(_.altKey ? "none" : "selected");
           break;
         case "ArrowUp":
-          A.preventDefault(), C ? Z((ne) => ve(ne, -1)) : me(O ? "selected" : "last");
+          _.preventDefault(), G ? ie((oe) => be(oe, -1)) : de(y ? "selected" : "last");
           break;
         case "Home":
-          C && P.length && (A.preventDefault(), Z(ie));
+          G && j.length && (_.preventDefault(), ie(se));
           break;
         case "End":
-          C && P.length && (A.preventDefault(), Z(ke));
+          G && j.length && (_.preventDefault(), ie(ve));
           break;
         case "Enter":
-          C && ae >= 0 && j[ae] && !j[ae].disabled && (A.preventDefault(), Re(j[ae]));
+          G && ae >= 0 && D[ae] && !D[ae].disabled && (_.preventDefault(), ze(D[ae]));
           break;
         case "Escape":
-          C ? (A.preventDefault(), be()) : (X !== "" || q != null) && (A.preventDefault(), Re(null));
+          G ? (_.preventDefault(), fe()) : (L !== "" || O != null) && (_.preventDefault(), ze(null));
           break;
         case "Tab":
-          C && be();
+          G && fe();
           break;
       }
-  }, Br = (A) => {
-    ge.current = A, typeof E == "function" ? E(A) : E && (E.current = A);
-  }, _t = {
+  }, Mr = (_) => {
+    xe.current = _, typeof F == "function" ? F(_) : F && (F.current = _);
+  }, Ct = {
     sm: { input: "h-control-sm pl-3 pr-9", icon: "right-3" },
     md: { input: "h-control-md pl-4 pr-10", icon: "right-4" },
     lg: { input: "h-control-lg pl-5 pr-11", icon: "right-5" }
-  }[W], at = J.invalid, jr = at ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", Ze = d != null && d !== "", Fr = C && ae >= 0 && j[ae] ? D(ae) : void 0;
-  return /* @__PURE__ */ y("div", { className: I("w-full", z), children: [
-    /* @__PURE__ */ y("div", { className: "w-full space-y-1", children: [
-      Ze && /* @__PURE__ */ o(
+  }[c], rt = W.invalid, Rr = rt ? "bg-[var(--field-border-error)] focus-within:!bg-[var(--field-border-focus)]" : "bg-[var(--field-border)] hover:bg-[var(--field-border-hover)] focus-within:!bg-[var(--field-border-focus)]", qe = d != null && d !== "", Lr = G && ae >= 0 && D[ae] ? E(ae) : void 0;
+  return /* @__PURE__ */ k("div", { className: S("w-full", w), children: [
+    /* @__PURE__ */ k("div", { className: "w-full space-y-1", children: [
+      qe && /* @__PURE__ */ o(
         "label",
         {
-          id: F,
-          htmlFor: K,
+          id: Z,
+          htmlFor: ne,
           className: "block font-mono text-sm text-secondary-800 dark:text-secondary-200",
           children: d
         }
       ),
-      /* @__PURE__ */ y(
+      /* @__PURE__ */ k(
         "div",
         {
-          ref: fe,
-          className: I(
+          ref: J,
+          className: S(
             "relative w-full plate-round p-px transition-colors [transition-duration:var(--duration-fast)]",
-            jr,
+            Rr,
             f && "opacity-50"
           ),
           children: [
             /* @__PURE__ */ o(
               "input",
               {
-                ...R,
-                ref: Br,
-                id: K,
+                ...C,
+                ref: Mr,
+                id: ne,
                 type: "text",
                 role: "combobox",
                 autoComplete: "off",
                 "aria-autocomplete": "list",
-                "aria-expanded": C,
-                "aria-controls": C ? j.length > 0 ? te : _ : void 0,
-                "aria-activedescendant": Fr,
-                "aria-invalid": at || void 0,
-                "aria-describedby": J.describedBy,
-                "aria-label": Ze ? void 0 : w,
+                "aria-expanded": G,
+                "aria-controls": G ? D.length > 0 ? B : ee : void 0,
+                "aria-activedescendant": Lr,
+                "aria-invalid": rt || void 0,
+                "aria-describedby": W.describedBy,
+                "aria-label": qe ? void 0 : T,
                 disabled: f,
-                placeholder: x,
-                value: X,
-                onChange: ot,
-                onKeyDown: Pr,
+                placeholder: g,
+                value: L,
+                onChange: tt,
+                onKeyDown: zr,
                 onClick: () => {
-                  C || me("selected");
+                  G || de("selected");
                 },
-                onFocus: (A) => {
-                  T == null || T(A), p && !C && me("selected");
+                onFocus: (_) => {
+                  M == null || M(_), h && !G && de("selected");
                 },
-                onBlur: (A) => {
-                  v == null || v(A), C && be();
+                onBlur: (_) => {
+                  x == null || x(_), G && fe();
                 },
-                className: I(
+                className: S(
                   "w-full plate-round font-mono text-sm",
                   "transition-colors [transition-duration:var(--duration-fast)]",
                   "placeholder:text-[var(--field-placeholder)] focus:outline-none disabled:cursor-not-allowed",
-                  at ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]",
-                  _t.input
+                  rt ? "bg-[var(--field-background-error)] text-[var(--text-primary)]" : "bg-[var(--field-background)] text-[var(--text-primary)]",
+                  Ct.input
                 )
               }
             ),
@@ -6937,103 +6878,103 @@ const Jo = (e, t) => e.label.toLowerCase().includes(t.trim().toLowerCase()), ea 
               "span",
               {
                 "aria-hidden": "true",
-                className: I(
+                className: S(
                   "pointer-events-none absolute top-1/2 -translate-y-1/2 inline-flex text-[var(--text-secondary)]",
                   "transition-transform [transition-duration:var(--duration-normal)] motion-reduce:transition-none",
-                  C && "rotate-180",
-                  _t.icon
+                  G && "rotate-180",
+                  Ct.icon
                 ),
-                children: /* @__PURE__ */ o(ee, { name: "ChevronDown" })
+                children: /* @__PURE__ */ o(Q, { name: "ChevronDown" })
               }
             )
           ]
         }
       ),
-      /* @__PURE__ */ o(Fe, { ...J.message })
+      /* @__PURE__ */ o(De, { ...W.message })
     ] }),
-    k != null && /* @__PURE__ */ o("input", { type: "hidden", name: k, value: q ?? "" }),
+    N != null && /* @__PURE__ */ o("input", { type: "hidden", name: N, value: O ?? "" }),
     /* @__PURE__ */ o(
-      Cr,
+      $r,
       {
-        open: C,
-        onOpenChange: (A) => {
-          A || be();
+        open: G,
+        onOpenChange: (_) => {
+          _ || fe();
         },
-        anchorRef: fe,
+        anchorRef: J,
         role: null,
         autoFocus: !1,
         returnFocus: !1,
         closeOnEscape: !1,
         matchAnchorWidth: !0,
-        portal: m,
+        portal: b,
         offset: 4,
         contentClassName: "p-0",
-        children: j.length > 0 ? /* @__PURE__ */ o(
+        children: D.length > 0 ? /* @__PURE__ */ o(
           "ul",
           {
-            ref: xe,
-            id: te,
+            ref: me,
+            id: B,
             role: "listbox",
-            "aria-labelledby": Ze ? F : void 0,
-            "aria-label": Ze ? void 0 : w,
+            "aria-labelledby": qe ? Z : void 0,
+            "aria-label": qe ? void 0 : T,
             className: "max-h-[min(var(--control-menu-max-height),var(--popover-available-height,var(--control-menu-max-height)))] overflow-y-auto py-1",
-            children: j.map((A, ne) => {
-              const ye = A.value === q, Ce = ne === ae;
+            children: D.map((_, oe) => {
+              const he = _.value === O, Te = oe === ae;
               return (
                 // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- pointer path only; the keyboard selects through the input with aria-activedescendant
-                /* @__PURE__ */ y(
+                /* @__PURE__ */ k(
                   "li",
                   {
-                    id: D(ne),
+                    id: E(oe),
                     role: "option",
-                    "aria-selected": ye,
-                    "aria-disabled": A.disabled || void 0,
-                    onMouseDown: (Vr) => Vr.preventDefault(),
+                    "aria-selected": he,
+                    "aria-disabled": _.disabled || void 0,
+                    onMouseDown: (Or) => Or.preventDefault(),
                     onMouseMove: () => {
-                      !A.disabled && ae !== ne && Z(ne);
+                      !_.disabled && ae !== oe && ie(oe);
                     },
                     onClick: () => {
-                      A.disabled || Re(A);
+                      _.disabled || ze(_);
                     },
-                    className: I(
+                    className: S(
                       "flex min-h-touch items-center gap-2 px-4 py-2 font-mono text-sm",
-                      A.disabled ? "cursor-not-allowed text-[var(--text-disabled)]" : "cursor-pointer text-[var(--text-primary)]",
-                      Ce && !A.disabled && "bg-[var(--surface-subtle)]"
+                      _.disabled ? "cursor-not-allowed text-[var(--text-disabled)]" : "cursor-pointer text-[var(--text-primary)]",
+                      Te && !_.disabled && "bg-[var(--surface-subtle)]"
                     ),
                     children: [
-                      /* @__PURE__ */ o("span", { className: "min-w-0 flex-1 truncate", children: A.label }),
-                      ye && /* @__PURE__ */ o(ee, { name: "Check", className: "shrink-0 text-[var(--border-focus)]" })
+                      /* @__PURE__ */ o("span", { className: "min-w-0 flex-1 truncate", children: _.label }),
+                      he && /* @__PURE__ */ o(Q, { name: "Check", className: "shrink-0 text-[var(--border-focus)]" })
                     ]
                   },
-                  A.value
+                  _.value
                 )
               );
             })
           }
-        ) : /* @__PURE__ */ o("div", { id: _, role: "status", className: "px-4 py-3 font-mono text-sm text-[var(--text-secondary)]", children: l })
+        ) : /* @__PURE__ */ o("div", { id: ee, role: "status", className: "px-4 py-3 font-mono text-sm text-[var(--text-secondary)]", children: l })
       }
     )
   ] });
 });
-ea.displayName = "Combobox";
-const ta = {
+Ko.displayName = "Combobox";
+const qo = {
   primary: "bg-primary-500 dark:bg-primary-400",
   neutral: "bg-secondary-600 dark:bg-secondary-400",
   info: "bg-info-600 dark:bg-info-400",
   success: "bg-success-600 dark:bg-success-400",
   warning: "bg-warning-600 dark:bg-warning-400",
   error: "bg-error-600 dark:bg-error-400"
-}, ra = { sm: "h-2", md: "h-3", lg: "h-4" }, Kt = 4;
-function na() {
+}, Xo = { sm: "h-2", md: "h-3", lg: "h-4" }, Vt = 4;
+function Yo() {
   if (typeof window > "u" || typeof getComputedStyle != "function") return 120;
   const e = getComputedStyle(document.documentElement).getPropertyValue("--duration-fast").trim(), t = e.endsWith("ms") ? parseFloat(e) : e.endsWith("s") ? parseFloat(e) * 1e3 : NaN;
   return Number.isFinite(t) && t > 0 ? t : 120;
 }
-function oa() {
-  const e = "(prefers-reduced-motion: reduce)", [t, r] = V(
+function Zo() {
+  const e = "(prefers-reduced-motion: reduce)", [t, r] = H(
     () => typeof window < "u" && typeof window.matchMedia == "function" && window.matchMedia(e).matches
   );
-  return G(() => {
+  return U(() => {
     var s;
     if (typeof window.matchMedia != "function") return;
     const n = window.matchMedia(e), a = () => r(n.matches);
@@ -7043,32 +6984,29 @@ function oa() {
     };
   }, []), t;
 }
-function aa({
+function Qo({
   value: e,
   max: t = 100,
   label: r,
   showLabel: n = !0,
   showValue: a = !0,
   size: s = "md",
-  tone: i,
-  variant: l,
-  segments: c = 20,
-  className: d
+  tone: i = "primary",
+  segments: l = 20,
+  className: c
 }) {
-  const u = de(s, "ProgressBar");
-  l !== void 0 && se("ProgressBar", "variant", "tone");
-  const b = i ?? l ?? "primary", h = ue(), p = e == null || Number.isNaN(e), m = t > 0 ? t : 100, f = p ? 0 : Math.min(Math.max(e, 0), m), x = Math.round(f / m * 100), k = Math.floor(f / m * c), g = oa(), [z, $] = V(0);
-  G(() => {
-    if (!p || g) return;
-    const N = window.setInterval(() => $((T) => (T + 1) % (c + Kt)), na());
-    return () => window.clearInterval(N);
-  }, [p, g, c]);
-  const w = (N) => p ? g ? !0 : N > z - Kt - 1 && N <= z - 1 : N < k;
-  return /* @__PURE__ */ y("div", { className: I("w-full space-y-1.5 font-mono", d), children: [
-    n && /* @__PURE__ */ y("div", { className: "flex items-baseline justify-between gap-3 text-sm", children: [
-      /* @__PURE__ */ o("span", { id: h, className: "min-w-0 truncate text-[var(--text-primary)]", children: r }),
-      a && !p && /* @__PURE__ */ y("span", { className: "shrink-0 tabular-nums text-[var(--text-secondary)]", "aria-hidden": "true", children: [
-        x,
+  const d = ce(), u = e == null || Number.isNaN(e), m = t > 0 ? t : 100, p = u ? 0 : Math.min(Math.max(e, 0), m), h = Math.round(p / m * 100), b = Math.floor(p / m * l), f = Zo(), [g, N] = H(0);
+  U(() => {
+    if (!u || f) return;
+    const w = window.setInterval(() => N(($) => ($ + 1) % (l + Vt)), Yo());
+    return () => window.clearInterval(w);
+  }, [u, f, l]);
+  const v = (w) => u ? f ? !0 : w > g - Vt - 1 && w <= g - 1 : w < b;
+  return /* @__PURE__ */ k("div", { className: S("w-full space-y-1.5 font-mono", c), children: [
+    n && /* @__PURE__ */ k("div", { className: "flex items-baseline justify-between gap-3 text-sm", children: [
+      /* @__PURE__ */ o("span", { id: d, className: "min-w-0 truncate text-[var(--text-primary)]", children: r }),
+      a && !u && /* @__PURE__ */ k("span", { className: "shrink-0 tabular-nums text-[var(--text-secondary)]", "aria-hidden": "true", children: [
+        h,
         "%"
       ] })
     ] }),
@@ -7076,31 +7014,31 @@ function aa({
       "div",
       {
         role: "progressbar",
-        "aria-labelledby": n ? h : void 0,
+        "aria-labelledby": n ? d : void 0,
         "aria-label": n ? void 0 : r,
         "aria-valuemin": 0,
         "aria-valuemax": m,
-        "aria-valuenow": p ? void 0 : f,
-        "aria-valuetext": p ? void 0 : `${x}%`,
-        "data-state": p ? "indeterminate" : f >= m ? "complete" : "loading",
-        "data-tone": b,
+        "aria-valuenow": u ? void 0 : p,
+        "aria-valuetext": u ? void 0 : `${h}%`,
+        "data-state": u ? "indeterminate" : p >= m ? "complete" : "loading",
+        "data-tone": i,
         className: "bg-[var(--border-default)] p-px",
         children: /* @__PURE__ */ o(
           "div",
           {
-            className: I("flex gap-0.5 bg-[var(--surface-subtle)] p-0.5", ra[u]),
+            className: S("flex gap-0.5 bg-[var(--surface-subtle)] p-0.5", Xo[s]),
             "aria-hidden": "true",
-            children: Array.from({ length: c }, (N, T) => /* @__PURE__ */ o(
+            children: Array.from({ length: l }, (w, $) => /* @__PURE__ */ o(
               "span",
               {
-                "data-filled": w(T) || void 0,
-                className: I(
+                "data-filled": v($) || void 0,
+                className: S(
                   "h-full flex-1",
-                  w(T) ? ta[b] : "bg-[var(--surface-muted)]",
-                  p && g && "opacity-50"
+                  v($) ? qo[i] : "bg-[var(--surface-muted)]",
+                  u && f && "opacity-50"
                 )
               },
-              T
+              $
             ))
           }
         )
@@ -7108,12 +7046,12 @@ function aa({
     )
   ] });
 }
-aa.displayName = "ProgressBar";
-const sa = {
+Qo.displayName = "ProgressBar";
+const Jo = {
   sm: { root: "gap-3 px-4 py-6", icon: "6", plate: "p-2", title: "text-sm", description: "text-xs", button: "sm" },
   md: { root: "gap-4 px-6 py-12", icon: "8", plate: "p-3", title: "text-lg", description: "text-sm", button: "md" }
 };
-function ia({
+function ea({
   icon: e = "Archive",
   title: t,
   description: r,
@@ -7124,97 +7062,97 @@ function ia({
   children: l,
   className: c
 }) {
-  const d = sa[s], u = (b, h) => /* @__PURE__ */ o(
-    Xe,
+  const d = Jo[s], u = (m, p) => /* @__PURE__ */ o(
+    We,
     {
-      variant: h,
+      variant: p,
       size: d.button,
-      onClick: b.onClick,
-      href: b.href,
-      iconLeft: b.icon ? he(b.icon) : void 0,
-      children: b.label
+      onClick: m.onClick,
+      href: m.href,
+      iconLeft: m.icon ? pe(m.icon) : void 0,
+      children: m.label
     }
   );
-  return /* @__PURE__ */ y("div", { className: I("flex flex-col items-center text-center font-mono", d.root, c), children: [
-    e && /* @__PURE__ */ o("span", { className: I("inline-flex plate-round bg-[var(--surface-subtle)] text-[var(--text-secondary)]", d.plate), children: he(e, { size: d.icon }) }),
-    /* @__PURE__ */ y("div", { className: "flex max-w-prose flex-col gap-1", children: [
-      /* @__PURE__ */ o(i, { className: I("font-medium text-[var(--text-primary)]", d.title), children: t }),
-      r && /* @__PURE__ */ o("p", { className: I("text-[var(--text-secondary)]", d.description), children: r })
+  return /* @__PURE__ */ k("div", { className: S("flex flex-col items-center text-center font-mono", d.root, c), children: [
+    e && /* @__PURE__ */ o("span", { className: S("inline-flex plate-round bg-[var(--surface-subtle)] text-[var(--text-secondary)]", d.plate), children: pe(e, { size: d.icon }) }),
+    /* @__PURE__ */ k("div", { className: "flex max-w-prose flex-col gap-1", children: [
+      /* @__PURE__ */ o(i, { className: S("font-medium text-[var(--text-primary)]", d.title), children: t }),
+      r && /* @__PURE__ */ o("p", { className: S("text-[var(--text-secondary)]", d.description), children: r })
     ] }),
-    (n || a) && /* @__PURE__ */ y("div", { className: "flex flex-wrap items-center justify-center gap-3", children: [
+    (n || a) && /* @__PURE__ */ k("div", { className: "flex flex-wrap items-center justify-center gap-3", children: [
       n && u(n, "primary"),
       a && u(a, "secondary")
     ] }),
     l
   ] });
 }
-ia.displayName = "EmptyState";
-const _r = Be(null), Ar = Be(null);
-function Mr(e) {
-  const t = Te(_r);
+ea.displayName = "EmptyState";
+const Sr = Oe(null), Ir = Oe(null);
+function Tr(e) {
+  const t = Se(Sr);
   if (!t) throw new Error(`${e} must be used inside <Accordion>.`);
   return t;
 }
-function Lr(e) {
-  const t = Te(Ar);
+function Cr(e) {
+  const t = Se(Ir);
   if (!t) throw new Error(`${e} must be used inside <AccordionItem>.`);
   return t;
 }
-function ys(e) {
-  const { children: t, headingLevel: r = 3, disabled: n = !1, className: a } = e, s = e.type === "multiple", i = Q(null), l = (m) => m === void 0 ? void 0 : Array.isArray(m) ? m : m === "" ? [] : [m], [c, d] = Ve({
+function fs(e) {
+  const { children: t, headingLevel: r = 3, disabled: n = !1, className: a } = e, s = e.type === "multiple", i = X(null), l = (b) => b === void 0 ? void 0 : Array.isArray(b) ? b : b === "" ? [] : [b], [c, d] = je({
     value: l(e.value),
     defaultValue: l(e.defaultValue) ?? []
-  }), u = (m) => {
-    var f, x;
-    d(m), s ? (f = e.onValueChange) == null || f.call(e, m) : (x = e.onValueChange) == null || x.call(e, m[0] ?? "");
-  }, b = s || e.collapsible === !0, h = {
-    isOpen: (m) => c.includes(m),
-    isLocked: (m) => !b && c.includes(m),
-    toggle: (m) => {
-      if (c.includes(m)) {
-        if (!b) return;
-        u(c.filter((f) => f !== m));
+  }), u = (b) => {
+    var f, g;
+    d(b), s ? (f = e.onValueChange) == null || f.call(e, b) : (g = e.onValueChange) == null || g.call(e, b[0] ?? "");
+  }, m = s || e.collapsible === !0, p = {
+    isOpen: (b) => c.includes(b),
+    isLocked: (b) => !m && c.includes(b),
+    toggle: (b) => {
+      if (c.includes(b)) {
+        if (!m) return;
+        u(c.filter((f) => f !== b));
       } else
-        u(s ? [...c, m] : [m]);
+        u(s ? [...c, b] : [b]);
     },
     headingLevel: r,
     disabled: n,
     rootRef: i
-  }, p = (m) => {
-    var z;
-    const f = m.target;
+  }, h = (b) => {
+    var w;
+    const f = b.target;
     if (!f.hasAttribute("data-accordion-trigger")) return;
-    const x = Array.from(
-      ((z = i.current) == null ? void 0 : z.querySelectorAll("[data-accordion-trigger]:not(:disabled)")) ?? []
-    ).filter(($) => $.closest("[data-accordion-root]") === i.current), k = x.indexOf(f);
-    if (k === -1) return;
-    let g = null;
-    m.key === "ArrowDown" ? g = (k + 1) % x.length : m.key === "ArrowUp" ? g = (k - 1 + x.length) % x.length : m.key === "Home" ? g = 0 : m.key === "End" && (g = x.length - 1), g !== null && (m.preventDefault(), x[g].focus());
+    const g = Array.from(
+      ((w = i.current) == null ? void 0 : w.querySelectorAll("[data-accordion-trigger]:not(:disabled)")) ?? []
+    ).filter(($) => $.closest("[data-accordion-root]") === i.current), N = g.indexOf(f);
+    if (N === -1) return;
+    let v = null;
+    b.key === "ArrowDown" ? v = (N + 1) % g.length : b.key === "ArrowUp" ? v = (N - 1 + g.length) % g.length : b.key === "Home" ? v = 0 : b.key === "End" && (v = g.length - 1), v !== null && (b.preventDefault(), g[v].focus());
   };
-  return /* @__PURE__ */ o(_r.Provider, { value: h, children: /* @__PURE__ */ o(
+  return /* @__PURE__ */ o(Sr.Provider, { value: p, children: /* @__PURE__ */ o(
     "div",
     {
       ref: i,
       "data-accordion-root": "",
-      onKeyDown: p,
-      className: I("w-full border-t border-[var(--border-hairline)] font-mono", a),
+      onKeyDown: h,
+      className: S("w-full border-t border-[var(--border-hairline)] font-mono", a),
       children: t
     }
   ) });
 }
-function ws({ value: e, disabled: t = !1, children: r, className: n }) {
-  const a = Mr("AccordionItem"), s = ue(), i = a.isOpen(e), l = {
+function ps({ value: e, disabled: t = !1, children: r, className: n }) {
+  const a = Tr("AccordionItem"), s = ce(), i = a.isOpen(e), l = {
     value: e,
     open: i,
     disabled: t || a.disabled,
     triggerId: `${s}-trigger`,
     contentId: `${s}-content`
   };
-  return /* @__PURE__ */ o(Ar.Provider, { value: l, children: /* @__PURE__ */ o("div", { "data-state": i ? "open" : "closed", className: I("border-b border-[var(--border-hairline)]", n), children: r }) });
+  return /* @__PURE__ */ o(Ir.Provider, { value: l, children: /* @__PURE__ */ o("div", { "data-state": i ? "open" : "closed", className: S("border-b border-[var(--border-hairline)]", n), children: r }) });
 }
-function ks({ children: e, className: t }) {
-  const r = Mr("AccordionTrigger"), n = Lr("AccordionTrigger"), a = `h${r.headingLevel}`, s = r.isLocked(n.value);
-  return /* @__PURE__ */ o(a, { className: "m-0", children: /* @__PURE__ */ y(
+function bs({ children: e, className: t }) {
+  const r = Tr("AccordionTrigger"), n = Cr("AccordionTrigger"), a = `h${r.headingLevel}`, s = r.isLocked(n.value);
+  return /* @__PURE__ */ o(a, { className: "m-0", children: /* @__PURE__ */ k(
     "button",
     {
       type: "button",
@@ -7225,7 +7163,7 @@ function ks({ children: e, className: t }) {
       "aria-disabled": s || void 0,
       disabled: n.disabled,
       onClick: () => r.toggle(n.value),
-      className: I(
+      className: S(
         "flex min-h-touch w-full items-center justify-between gap-3 px-4 py-3 text-left font-mono text-sm font-medium",
         "text-[var(--text-primary)] transition-colors [transition-duration:var(--duration-fast)]",
         "hover:bg-[var(--surface-subtle)] focus:outline-none",
@@ -7237,10 +7175,10 @@ function ks({ children: e, className: t }) {
       children: [
         /* @__PURE__ */ o("span", { className: "min-w-0 flex-1", children: e }),
         /* @__PURE__ */ o(
-          ee,
+          Q,
           {
             name: "ChevronRight",
-            className: I(
+            className: S(
               "shrink-0 text-[var(--text-secondary)] transition-transform [transition-duration:var(--duration-normal)] motion-reduce:transition-none",
               n.open && "rotate-90"
             )
@@ -7250,8 +7188,8 @@ function ks({ children: e, className: t }) {
     }
   ) });
 }
-function Ns({ children: e, className: t }) {
-  const r = Lr("AccordionContent");
+function hs({ children: e, className: t }) {
+  const r = Cr("AccordionContent");
   return /* @__PURE__ */ o(
     "div",
     {
@@ -7259,19 +7197,19 @@ function Ns({ children: e, className: t }) {
       role: "region",
       "aria-labelledby": r.triggerId,
       "data-state": r.open ? "open" : "closed",
-      className: I(
+      className: S(
         // grid-rows 0fr -> 1fr animates to the content's natural height;
         // visibility flips at the end of the close so hidden bodies leave
         // the tab order and accessibility tree.
         "grid transition-[grid-template-rows,visibility] [transition-duration:var(--duration-normal)] motion-reduce:transition-none",
         r.open ? "visible grid-rows-[1fr]" : "invisible grid-rows-[0fr]"
       ),
-      children: /* @__PURE__ */ o("div", { className: "min-h-0 overflow-hidden", children: /* @__PURE__ */ o("div", { className: I("px-4 pb-4 pt-1 font-mono text-sm text-[var(--text-secondary)]", t), children: e }) })
+      children: /* @__PURE__ */ o("div", { className: "min-h-0 overflow-hidden", children: /* @__PURE__ */ o("div", { className: S("px-4 pb-4 pt-1 font-mono text-sm text-[var(--text-secondary)]", t), children: e }) })
     }
   );
 }
-const la = "focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]";
-function ca({
+const ta = "focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]";
+function ra({
   items: e,
   maxItems: t,
   itemsBeforeCollapse: r = 1,
@@ -7280,106 +7218,106 @@ function ca({
   "aria-label": s = "Breadcrumb",
   className: i
 }) {
-  const [l, c] = V(!1), d = Q(null), u = Q(null), b = Math.max(0, r), h = Math.max(1, n), p = !l && t != null && e.length > t && e.length > b + h, m = p ? e.length - b - h : 0;
-  G(() => {
-    var z;
+  const [l, c] = H(!1), d = X(null), u = X(null), m = Math.max(0, r), p = Math.max(1, n), h = !l && t != null && e.length > t && e.length > m + p, b = h ? e.length - m - p : 0;
+  U(() => {
+    var w;
     if (!l || u.current == null) return;
-    const g = (z = d.current) == null ? void 0 : z.querySelector(
+    const v = (w = d.current) == null ? void 0 : w.querySelector(
       `[data-crumb-index="${u.current}"] a, [data-crumb-index="${u.current}"] [data-crumb-link]`
     );
-    g == null || g.focus(), u.current = null;
+    v == null || v.focus(), u.current = null;
   }, [l]);
-  const f = e.length - 1, x = (g, z, $) => /* @__PURE__ */ y(
+  const f = e.length - 1, g = (v, w, $) => /* @__PURE__ */ k(
     "li",
     {
-      "data-crumb-index": z,
+      "data-crumb-index": w,
       className: "inline-flex min-w-0 items-center",
       children: [
-        $ && /* @__PURE__ */ o(ee, { name: "ChevronRight", size: "3", className: "mx-1 shrink-0 text-[var(--text-secondary)]" }),
-        z === f ? /* @__PURE__ */ o(
+        $ && /* @__PURE__ */ o(Q, { name: "ChevronRight", size: "3", className: "mx-1 shrink-0 text-[var(--text-secondary)]" }),
+        w === f ? /* @__PURE__ */ o(
           "span",
           {
             "aria-current": "page",
             className: "inline-flex min-h-touch min-w-0 items-center truncate px-1 text-[var(--text-primary)]",
-            children: g.label
+            children: v.label
           }
-        ) : g.as ? /* @__PURE__ */ o(
-          ht,
+        ) : v.as ? /* @__PURE__ */ o(
+          ft,
           {
             variant: "quiet",
-            as: g.as,
-            asProps: { ...g.asProps, "data-crumb-link": "" },
+            as: v.as,
+            asProps: { ...v.asProps, "data-crumb-link": "" },
             className: "inline-flex min-h-touch min-w-0 items-center truncate px-1",
-            children: g.label
+            children: v.label
           }
         ) : /* @__PURE__ */ o(
-          ht,
+          ft,
           {
             variant: "quiet",
-            href: g.href ?? "#",
+            href: v.href ?? "#",
             className: "inline-flex min-h-touch min-w-0 items-center truncate px-1",
-            children: g.label
+            children: v.label
           }
         )
       ]
     },
-    g.key ?? z
+    v.key ?? w
   );
-  let k;
-  if (p) {
-    const g = e.slice(0, b), z = e.slice(e.length - h);
-    k = /* @__PURE__ */ y(we, { children: [
-      g.map(($, w) => x($, w, w > 0)),
-      /* @__PURE__ */ y("li", { className: "inline-flex items-center", children: [
-        b > 0 && /* @__PURE__ */ o(ee, { name: "ChevronRight", size: "3", className: "mx-1 shrink-0 text-[var(--text-secondary)]" }),
+  let N;
+  if (h) {
+    const v = e.slice(0, m), w = e.slice(e.length - p);
+    N = /* @__PURE__ */ k(ge, { children: [
+      v.map(($, T) => g($, T, T > 0)),
+      /* @__PURE__ */ k("li", { className: "inline-flex items-center", children: [
+        m > 0 && /* @__PURE__ */ o(Q, { name: "ChevronRight", size: "3", className: "mx-1 shrink-0 text-[var(--text-secondary)]" }),
         /* @__PURE__ */ o(
           "button",
           {
             type: "button",
-            "aria-label": a(m),
+            "aria-label": a(b),
             onClick: () => {
-              u.current = b, c(!0);
+              u.current = m, c(!0);
             },
-            className: I(
+            className: S(
               "plate-round inline-flex h-touch min-w-touch items-center justify-center px-2 text-[var(--text-primary)]",
               "transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none hover:bg-[var(--surface-muted)]",
-              la
+              ta
             ),
             children: /* @__PURE__ */ o("span", { "aria-hidden": "true", children: "..." })
           }
         )
       ] }),
-      z.map(($, w) => x($, e.length - h + w, !0))
+      w.map(($, T) => g($, e.length - p + T, !0))
     ] });
   } else
-    k = e.map((g, z) => x(g, z, z > 0));
-  return /* @__PURE__ */ o("nav", { "aria-label": s, className: I("font-mono text-sm", i), children: /* @__PURE__ */ o("ol", { ref: d, className: "flex min-w-0 flex-wrap items-center", children: k }) });
+    N = e.map((v, w) => g(v, w, w > 0));
+  return /* @__PURE__ */ o("nav", { "aria-label": s, className: S("font-mono text-sm", i), children: /* @__PURE__ */ o("ol", { ref: d, className: "flex min-w-0 flex-wrap items-center", children: N }) });
 }
-ca.displayName = "Breadcrumbs";
-const dt = (e, t) => t < e ? [] : Array.from({ length: t - e + 1 }, (r, n) => e + n);
-function da(e, t, r = 1, n = 1) {
+ra.displayName = "Breadcrumbs";
+const it = (e, t) => t < e ? [] : Array.from({ length: t - e + 1 }, (r, n) => e + n);
+function na(e, t, r = 1, n = 1) {
   if (t <= 0) return [];
-  const a = Math.min(Math.max(1, e), t), s = dt(1, Math.min(n, t)), i = dt(Math.max(t - n + 1, n + 1), t), l = Math.max(
+  const a = Math.min(Math.max(1, e), t), s = it(1, Math.min(n, t)), i = it(Math.max(t - n + 1, n + 1), t), l = Math.max(
     Math.min(a - r, t - n - r * 2 - 1),
     n + 2
   ), c = Math.min(
     Math.max(a + r, n + r * 2 + 2),
     i.length > 0 ? i[0] - 2 : t - 1
   ), d = [...s];
-  l > n + 2 ? d.push("ellipsis-start") : n + 1 < t - n && d.push(n + 1), d.push(...dt(l, c)), c < t - n - 1 ? d.push("ellipsis-end") : t - n > n && d.push(t - n), d.push(...i);
+  l > n + 2 ? d.push("ellipsis-start") : n + 1 < t - n && d.push(n + 1), d.push(...it(l, c)), c < t - n - 1 ? d.push("ellipsis-end") : t - n > n && d.push(t - n), d.push(...i);
   const u = /* @__PURE__ */ new Set();
-  return d.filter((b) => typeof b == "number" && (b < 1 || b > t) || u.has(b) ? !1 : (u.add(b), !0));
+  return d.filter((m) => typeof m == "number" && (m < 1 || m > t) || u.has(m) ? !1 : (u.add(m), !0));
 }
-const ua = {
+const oa = {
   sm: "h-control-sm min-w-control-sm px-2 text-sm",
   md: "h-control-md min-w-control-md px-2.5 text-sm",
   lg: "h-control-lg min-w-control-lg px-3 text-base"
-}, Rr = {
+}, Er = {
   sm: "min-h-touch min-w-touch",
   md: "min-h-touch min-w-touch",
   lg: "min-h-control-lg min-w-control-lg"
-}, qt = { sm: "4", md: "4", lg: "5" };
-function ut({
+}, Ht = { sm: "4", md: "4", lg: "5" };
+function lt({
   size: e,
   current: t = !1,
   disabled: r = !1,
@@ -7395,20 +7333,20 @@ function ut({
       "aria-current": t ? "page" : void 0,
       disabled: r,
       onClick: a,
-      className: I(
+      className: S(
         "group inline-flex items-center justify-center font-mono focus:outline-none",
-        Rr[e],
+        Er[e],
         r ? "cursor-not-allowed opacity-50" : "cursor-pointer"
       ),
       children: /* @__PURE__ */ o(
         "span",
         {
-          className: I(
+          className: S(
             "plate-round inline-flex items-center justify-center tabular-nums",
             "transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none",
             "group-focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]",
-            ua[e],
-            t ? "bg-[var(--button-primary-background)] text-[var(--button-primary-text)]" : I(
+            oa[e],
+            t ? "bg-[var(--button-primary-background)] text-[var(--button-primary-text)]" : S(
               "bg-[var(--button-ghost-background)] text-[var(--button-ghost-text)]",
               !r && "group-hover:bg-[var(--button-ghost-background-hover)]"
             )
@@ -7419,7 +7357,7 @@ function ut({
     }
   );
 }
-function ma({
+function aa({
   page: e,
   defaultPage: t = 1,
   pageCount: r,
@@ -7428,59 +7366,59 @@ function ma({
   boundaryCount: s = 1,
   size: i = "md",
   showPrevNext: l = !0,
-  getPageLabel: c = (p) => `Page ${p}`,
+  getPageLabel: c = (h) => `Page ${h}`,
   previousLabel: d = "Previous page",
   nextLabel: u = "Next page",
-  "aria-label": b = "Pagination",
-  className: h
+  "aria-label": m = "Pagination",
+  className: p
 }) {
-  const p = de(i, "Pagination"), [m, f] = V(t), x = e !== void 0, g = Math.min(Math.max(1, x ? e : m), Math.max(1, r));
+  const [h, b] = H(t), f = e !== void 0, N = Math.min(Math.max(1, f ? e : h), Math.max(1, r));
   if (r <= 0) return null;
-  const z = (w) => {
-    const N = Math.min(Math.max(1, w), r);
-    N !== g && (x || f(N), n == null || n(N));
-  }, $ = da(g, r, a, s);
-  return /* @__PURE__ */ o("nav", { "aria-label": b, className: I("font-mono", h), children: /* @__PURE__ */ y("ul", { className: "flex flex-wrap items-center", children: [
-    l && /* @__PURE__ */ o("li", { children: /* @__PURE__ */ o(ut, { size: p, label: d, disabled: g <= 1, onClick: () => z(g - 1), children: /* @__PURE__ */ o(ee, { name: "ArrowLeft", size: qt[p] }) }) }),
-    $.map(
-      (w) => typeof w == "number" ? /* @__PURE__ */ o("li", { children: /* @__PURE__ */ o(
-        ut,
+  const v = ($) => {
+    const T = Math.min(Math.max(1, $), r);
+    T !== N && (f || b(T), n == null || n(T));
+  }, w = na(N, r, a, s);
+  return /* @__PURE__ */ o("nav", { "aria-label": m, className: S("font-mono", p), children: /* @__PURE__ */ k("ul", { className: "flex flex-wrap items-center", children: [
+    l && /* @__PURE__ */ o("li", { children: /* @__PURE__ */ o(lt, { size: i, label: d, disabled: N <= 1, onClick: () => v(N - 1), children: /* @__PURE__ */ o(Q, { name: "ArrowLeft", size: Ht[i] }) }) }),
+    w.map(
+      ($) => typeof $ == "number" ? /* @__PURE__ */ o("li", { children: /* @__PURE__ */ o(
+        lt,
         {
-          size: p,
-          current: w === g,
-          label: c(w),
-          onClick: () => z(w),
-          children: w
+          size: i,
+          current: $ === N,
+          label: c($),
+          onClick: () => v($),
+          children: $
         }
-      ) }, w) : /* @__PURE__ */ o(
+      ) }, $) : /* @__PURE__ */ o(
         "li",
         {
           "aria-hidden": "true",
-          className: I(
+          className: S(
             "inline-flex items-center justify-center text-[var(--text-secondary)]",
-            Rr[p],
-            p === "lg" ? "text-base" : "text-sm"
+            Er[i],
+            i === "lg" ? "text-base" : "text-sm"
           ),
           children: "..."
         },
-        w
+        $
       )
     ),
-    l && /* @__PURE__ */ o("li", { children: /* @__PURE__ */ o(ut, { size: p, label: u, disabled: g >= r, onClick: () => z(g + 1), children: /* @__PURE__ */ o(ee, { name: "ArrowRight", size: qt[p] }) }) })
+    l && /* @__PURE__ */ o("li", { children: /* @__PURE__ */ o(lt, { size: i, label: u, disabled: N >= r, onClick: () => v(N + 1), children: /* @__PURE__ */ o(Q, { name: "ArrowRight", size: Ht[i] }) }) })
   ] }) });
 }
-ma.displayName = "Pagination";
-const Ct = Be({ collapsed: !1 });
-function fa({ "aria-label": e, collapsed: t = !1, children: r, className: n }) {
-  const a = Ie.Children.toArray(r).some(
-    (s) => Ie.isValidElement(s) && s.type === Or
+aa.displayName = "Pagination";
+const Tt = Oe({ collapsed: !1 });
+function sa({ "aria-label": e, collapsed: t = !1, children: r, className: n }) {
+  const a = $e.Children.toArray(r).some(
+    (s) => $e.isValidElement(s) && s.type === _r
   );
-  return /* @__PURE__ */ o(Ct.Provider, { value: { collapsed: t }, children: /* @__PURE__ */ o(
+  return /* @__PURE__ */ o(Tt.Provider, { value: { collapsed: t }, children: /* @__PURE__ */ o(
     "nav",
     {
       "aria-label": e,
       "data-collapsed": t || void 0,
-      className: I(
+      className: S(
         "border border-[var(--border-hairline)] bg-[var(--surface-container)] font-mono text-sm",
         t ? "w-fit p-2" : "w-64 p-4",
         n
@@ -7489,10 +7427,10 @@ function fa({ "aria-label": e, collapsed: t = !1, children: r, className: n }) {
     }
   ) });
 }
-fa.displayName = "SideNav";
-function Or({ heading: e, children: t, className: r }) {
-  const { collapsed: n } = Te(Ct), a = ue();
-  return /* @__PURE__ */ y(
+sa.displayName = "SideNav";
+function _r({ heading: e, children: t, className: r }) {
+  const { collapsed: n } = Se(Tt), a = ce();
+  return /* @__PURE__ */ k(
     "div",
     {
       role: e ? "group" : void 0,
@@ -7503,7 +7441,7 @@ function Or({ heading: e, children: t, className: r }) {
           "div",
           {
             id: a,
-            className: I(
+            className: S(
               "px-3 pb-2 text-xs uppercase tracking-wider text-[var(--text-secondary)]",
               n && "sr-only"
             ),
@@ -7515,17 +7453,17 @@ function Or({ heading: e, children: t, className: r }) {
     }
   );
 }
-Or.displayName = "SideNavSection";
-const pa = "plate-round flex w-full min-h-touch items-center gap-3 px-3 py-2 text-left font-mono text-sm transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]", ba = "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]", ha = "bg-[var(--surface-muted)] text-[var(--accent)]";
-function Dr(e) {
+_r.displayName = "SideNavSection";
+const ia = "plate-round flex w-full min-h-touch items-center gap-3 px-3 py-2 text-left font-mono text-sm transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]", la = "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]", ca = "bg-[var(--surface-muted)] text-[var(--accent)]";
+function Ar(e) {
   let t = !1;
-  return Ie.Children.forEach(e, (r) => {
-    if (t || !Ie.isValidElement(r)) return;
+  return $e.Children.forEach(e, (r) => {
+    if (t || !$e.isValidElement(r)) return;
     const n = r.props;
-    (n.active || Dr(n.children)) && (t = !0);
+    (n.active || Ar(n.children)) && (t = !0);
   }), t;
 }
-function ga({
+function da({
   label: e,
   icon: t,
   active: r = !1,
@@ -7537,76 +7475,76 @@ function ga({
   children: c,
   expanded: d,
   defaultExpanded: u,
-  onExpandedChange: b,
-  className: h
+  onExpandedChange: m,
+  className: p
 }) {
-  const { collapsed: p } = Te(Ct), m = ue(), f = Ie.Children.toArray(c).some(Ie.isValidElement), [x, k] = V(
-    () => u ?? (f && Dr(c))
-  ), g = d ?? x, z = () => {
-    const v = !g;
-    d === void 0 && k(v), b == null || b(v);
-  }, $ = /* @__PURE__ */ y(we, { children: [
-    t && he(t, { className: "shrink-0" }),
-    /* @__PURE__ */ o("span", { className: I("min-w-0 flex-1 truncate", p && "sr-only"), children: e }),
-    !p && l && /* @__PURE__ */ o("span", { className: "ml-auto shrink-0", children: l }),
+  const { collapsed: h } = Se(Tt), b = ce(), f = $e.Children.toArray(c).some($e.isValidElement), [g, N] = H(
+    () => u ?? (f && Ar(c))
+  ), v = d ?? g, w = () => {
+    const x = !v;
+    d === void 0 && N(x), m == null || m(x);
+  }, $ = /* @__PURE__ */ k(ge, { children: [
+    t && pe(t, { className: "shrink-0" }),
+    /* @__PURE__ */ o("span", { className: S("min-w-0 flex-1 truncate", h && "sr-only"), children: e }),
+    !h && l && /* @__PURE__ */ o("span", { className: "ml-auto shrink-0", children: l }),
     f && /* @__PURE__ */ o(
-      ee,
+      Q,
       {
-        name: g ? "ChevronDown" : "ChevronRight",
-        size: p ? "3" : "4",
-        className: I("shrink-0", !p && "ml-auto")
+        name: v ? "ChevronDown" : "ChevronRight",
+        size: h ? "3" : "4",
+        className: S("shrink-0", !h && "ml-auto")
       }
     )
-  ] }), w = I(pa, r ? ha : ba, p && "min-w-touch justify-center gap-1 px-2", h), N = p ? { "aria-label": e } : {};
-  let T;
-  return f ? T = /* @__PURE__ */ o(
+  ] }), T = S(ia, r ? ca : la, h && "min-w-touch justify-center gap-1 px-2", p), I = h ? { "aria-label": e } : {};
+  let M;
+  return f ? M = /* @__PURE__ */ o(
     "button",
     {
       type: "button",
-      "aria-expanded": g,
-      "aria-controls": m,
-      onClick: z,
-      className: w,
-      ...N,
+      "aria-expanded": v,
+      "aria-controls": b,
+      onClick: w,
+      className: T,
+      ...I,
       children: $
     }
-  ) : s ? T = /* @__PURE__ */ o(
+  ) : s ? M = /* @__PURE__ */ o(
     s,
     {
-      className: w,
+      className: T,
       "aria-current": r ? "page" : void 0,
       onClick: a,
-      ...N,
+      ...I,
       ...i,
       children: $
     }
-  ) : n != null ? T = /* @__PURE__ */ o(
+  ) : n != null ? M = /* @__PURE__ */ o(
     "a",
     {
       href: n,
       "aria-current": r ? "page" : void 0,
       onClick: a,
-      className: w,
-      ...N,
+      className: T,
+      ...I,
       children: $
     }
-  ) : T = /* @__PURE__ */ o(
+  ) : M = /* @__PURE__ */ o(
     "button",
     {
       type: "button",
       "aria-current": r ? "page" : void 0,
       onClick: a,
-      className: w,
-      ...N,
+      className: T,
+      ...I,
       children: $
     }
-  ), /* @__PURE__ */ y("li", { children: [
-    p ? /* @__PURE__ */ o(lo, { content: e, side: "right", children: T }) : T,
-    f && g && /* @__PURE__ */ o("ul", { id: m, className: I("mt-1 space-y-1", !p && "ml-6"), children: c })
+  ), /* @__PURE__ */ k("li", { children: [
+    h ? /* @__PURE__ */ o(to, { content: e, side: "right", children: M }) : M,
+    f && v && /* @__PURE__ */ o("ul", { id: b, className: S("mt-1 space-y-1", !h && "ml-6"), children: c })
   ] });
 }
-ga.displayName = "SideNavItem";
-function xa({
+da.displayName = "SideNavItem";
+function ua({
   brand: e,
   navigation: t,
   actions: r,
@@ -7619,45 +7557,45 @@ function xa({
   navLabel: d = "Main",
   className: u
 }) {
-  const b = ue(), [h, p] = V(i), m = s ?? h, f = n ?? t, x = (k) => {
-    s === void 0 && p(k), l == null || l(k);
+  const m = ce(), [p, h] = H(i), b = s ?? p, f = n ?? t, g = (N) => {
+    s === void 0 && h(N), l == null || l(N);
   };
-  return /* @__PURE__ */ y(
+  return /* @__PURE__ */ k(
     "header",
     {
-      className: I(
+      className: S(
         "w-full border-b border-[var(--border-hairline)] bg-[var(--surface-container)] font-mono text-sm text-[var(--text-primary)]",
         a && "sticky top-0 z-[var(--z-index-sticky)]",
         u
       ),
       children: [
-        /* @__PURE__ */ y("div", { className: "flex min-h-control-lg items-center gap-4 px-4 py-1", children: [
+        /* @__PURE__ */ k("div", { className: "flex min-h-control-lg items-center gap-4 px-4 py-1", children: [
           /* @__PURE__ */ o("div", { className: "flex shrink-0 items-center", children: e }),
           t && /* @__PURE__ */ o("nav", { "aria-label": d, className: "hidden min-w-0 flex-1 md:block", children: /* @__PURE__ */ o("div", { className: "flex flex-wrap items-center gap-4", children: t }) }),
-          /* @__PURE__ */ y("div", { className: "ml-auto flex shrink-0 items-center gap-2", children: [
+          /* @__PURE__ */ k("div", { className: "ml-auto flex shrink-0 items-center gap-2", children: [
             r,
             f && /* @__PURE__ */ o(
-              Xe,
+              We,
               {
                 variant: "ghost",
                 size: "lg",
                 "aria-label": c,
-                "aria-expanded": m,
-                "aria-controls": b,
-                onClick: () => x(!m),
+                "aria-expanded": b,
+                "aria-controls": m,
+                onClick: () => g(!b),
                 className: "min-w-touch md:hidden",
-                children: /* @__PURE__ */ o(ee, { name: m ? "X" : "Menu", size: "5" })
+                children: /* @__PURE__ */ o(Q, { name: b ? "X" : "Menu", size: "5" })
               }
             )
           ] })
         ] }),
-        f && m && /* @__PURE__ */ o("div", { id: b, className: "border-t border-[var(--border-hairline)] px-4 py-3 md:hidden", children: /* @__PURE__ */ o("nav", { "aria-label": d, children: /* @__PURE__ */ o("div", { className: "flex flex-col items-start gap-1", children: f }) }) })
+        f && b && /* @__PURE__ */ o("div", { id: m, className: "border-t border-[var(--border-hairline)] px-4 py-3 md:hidden", children: /* @__PURE__ */ o("nav", { "aria-label": d, children: /* @__PURE__ */ o("div", { className: "flex flex-col items-start gap-1", children: f }) }) })
       ]
     }
   );
 }
-xa.displayName = "AppHeader";
-function va({
+ua.displayName = "AppHeader";
+function ma({
   title: e,
   status: t,
   actions: r,
@@ -7668,27 +7606,27 @@ function va({
   className: l,
   bodyClassName: c
 }) {
-  const d = ue(), u = n === "active";
+  const d = ce(), u = n === "active";
   return /* @__PURE__ */ o(
     "section",
     {
       "aria-labelledby": d,
       "data-variant": n,
-      className: I(
+      className: S(
         "plate-round-lg flex flex-col p-px",
         u ? "bg-[var(--accent)]" : "bg-[var(--surface-container-stroke)]",
         l
       ),
-      children: /* @__PURE__ */ y("div", { className: "plate-round-lg flex min-h-0 flex-1 flex-col bg-[var(--surface-card)] font-mono", children: [
-        /* @__PURE__ */ y(
+      children: /* @__PURE__ */ k("div", { className: "plate-round-lg flex min-h-0 flex-1 flex-col bg-[var(--surface-card)] font-mono", children: [
+        /* @__PURE__ */ k(
           "div",
           {
-            className: I(
+            className: S(
               "flex min-h-control-sm shrink-0 items-center gap-2 border-b border-[var(--border-hairline)] px-4 py-1 text-xs",
               u && "bg-[var(--surface-muted)]"
             ),
             children: [
-              u && /* @__PURE__ */ o(ee, { name: "ChevronRight", size: "3", className: "shrink-0 text-[var(--text-primary)]" }),
+              u && /* @__PURE__ */ o(Q, { name: "ChevronRight", size: "3", className: "shrink-0 text-[var(--text-primary)]" }),
               /* @__PURE__ */ o(
                 a,
                 {
@@ -7709,7 +7647,7 @@ function va({
             tabIndex: s ? 0 : void 0,
             role: s ? "group" : void 0,
             "aria-labelledby": s ? d : void 0,
-            className: I(
+            className: S(
               "min-h-0 flex-1 p-4 text-sm text-[var(--text-primary)]",
               s && "overflow-auto focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]",
               c
@@ -7721,50 +7659,50 @@ function va({
     }
   );
 }
-va.displayName = "Window";
-const ya = 8;
-function wa({
+ma.displayName = "Window";
+const fa = 8;
+function pa({
   content: e,
   count: t,
   enabled: r = !0,
   onFollowChange: n,
   contentRef: a
 }) {
-  const s = Q(null), [i, l] = V(!0), [c, d] = V(0), u = Q(t), b = pe(
+  const s = X(null), [i, l] = H(!0), [c, d] = H(0), u = X(t), m = ue(
     (f) => {
-      l((x) => (x !== f && (n == null || n(f)), f));
+      l((g) => (g !== f && (n == null || n(f)), f));
     },
     [n]
-  ), h = pe(() => {
+  ), p = ue(() => {
     const f = s.current;
     f && (f.scrollTop = f.scrollHeight);
   }, []);
-  Me(() => {
+  _e(() => {
     const f = t - u.current;
-    u.current = t, r && (i ? h() : f > 0 && d((x) => x + f));
-  }, [e, t, r, i, h]), Me(() => {
+    u.current = t, r && (i ? p() : f > 0 && d((g) => g + f));
+  }, [e, t, r, i, p]), _e(() => {
     const f = a == null ? void 0 : a.current;
     if (!r || !i || !f || typeof ResizeObserver > "u") return;
-    const x = new ResizeObserver(() => h());
-    return x.observe(f), () => x.disconnect();
-  }, [a, r, i, h]);
-  const p = pe(() => {
+    const g = new ResizeObserver(() => p());
+    return g.observe(f), () => g.disconnect();
+  }, [a, r, i, p]);
+  const h = ue(() => {
     const f = s.current;
     if (!f || !r) return;
-    const x = f.scrollHeight - f.scrollTop - f.clientHeight <= ya;
-    b(x), x && d(0);
-  }, [r, b]), m = pe(() => {
-    d(0), b(!0), h();
-  }, [b, h]);
-  return { scrollRef: s, onScroll: p, following: i, unseen: c, resume: m };
+    const g = f.scrollHeight - f.scrollTop - f.clientHeight <= fa;
+    m(g), g && d(0);
+  }, [r, m]), b = ue(() => {
+    d(0), m(!0), p();
+  }, [m, p]);
+  return { scrollRef: s, onScroll: h, following: i, unseen: c, resume: b };
 }
-const ka = {
+const ba = {
   info: { icon: "Info", tag: "INFO", tone: "text-info-700 dark:text-info-400" },
   warning: { icon: "AlertTriangle", tag: "WARN", tone: "text-warning-700 dark:text-warning-400" },
   error: { icon: "AlertCircle", tag: "ERROR", tone: "text-error-700 dark:text-error-400" },
   debug: { icon: "Settings", tag: "DEBUG", tone: "text-secondary-700 dark:text-secondary-400" }
 };
-function Na({
+function ha({
   lines: e,
   autoScroll: t = !0,
   showLineNumbers: r = !1,
@@ -7775,18 +7713,16 @@ function Na({
   onFollowChange: l,
   className: c
 }) {
-  const { scrollRef: d, onScroll: u, following: b, unseen: h, resume: p } = wa({
+  const { scrollRef: d, onScroll: u, following: m, unseen: p, resume: h } = pa({
     content: e,
     count: e.length,
     enabled: t,
     onFollowChange: l
-  });
-  e.some((x) => x.level === "warn") && se("LogView", 'level="warn"', 'level="warning"');
-  const m = e.some((x) => x.level), f = `${String(Math.max(e.length, 1)).length}ch`;
-  return /* @__PURE__ */ y(
+  }), b = e.some((g) => g.level), f = `${String(Math.max(e.length, 1)).length}ch`;
+  return /* @__PURE__ */ k(
     "div",
     {
-      className: I(
+      className: S(
         "relative flex h-80 flex-col",
         i && "plate-round-lg bg-[var(--surface-container-stroke)] p-px",
         c
@@ -7801,18 +7737,18 @@ function Na({
             "aria-label": a,
             tabIndex: 0,
             onScroll: u,
-            className: I(
+            className: S(
               "min-h-0 flex-1 overflow-auto py-2 font-mono text-xs leading-relaxed text-[var(--text-primary)]",
               i && "plate-round-lg bg-[var(--surface-page)]",
               "focus:outline-none focus-visible:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]"
             ),
-            children: e.length === 0 ? /* @__PURE__ */ o("p", { className: "px-3 text-[var(--text-secondary)]", children: s }) : e.map((x, k) => {
-              const g = x.level ? ka[x.level === "warn" ? "warning" : x.level] : null;
-              return /* @__PURE__ */ y(
+            children: e.length === 0 ? /* @__PURE__ */ o("p", { className: "px-3 text-[var(--text-secondary)]", children: s }) : e.map((g, N) => {
+              const v = g.level ? ba[g.level] : null;
+              return /* @__PURE__ */ k(
                 "div",
                 {
-                  "data-level": x.level,
-                  className: I("flex gap-3 px-3", n ? "items-start" : "w-max min-w-full items-start"),
+                  "data-level": g.level,
+                  className: S("flex gap-3 px-3", n ? "items-start" : "w-max min-w-full items-start"),
                   children: [
                     r && /* @__PURE__ */ o(
                       "span",
@@ -7820,39 +7756,39 @@ function Na({
                         "aria-hidden": "true",
                         className: "shrink-0 select-none text-right tabular-nums text-[var(--text-secondary)]",
                         style: { minWidth: f },
-                        children: k + 1
+                        children: N + 1
                       }
                     ),
-                    x.timestamp && /* @__PURE__ */ o("span", { className: "shrink-0 tabular-nums text-[var(--text-secondary)]", children: x.timestamp }),
-                    g ? /* @__PURE__ */ y("span", { className: I("inline-flex w-16 shrink-0 items-center gap-1 font-bold", g.tone), children: [
-                      /* @__PURE__ */ o(ee, { name: g.icon, size: "3", className: "shrink-0" }),
-                      g.tag
-                    ] }) : m && /* @__PURE__ */ o("span", { "aria-hidden": "true", className: "w-16 shrink-0" }),
-                    /* @__PURE__ */ o("span", { className: I("min-w-0 flex-1", n ? "whitespace-pre-wrap break-words" : "whitespace-pre"), children: x.text })
+                    g.timestamp && /* @__PURE__ */ o("span", { className: "shrink-0 tabular-nums text-[var(--text-secondary)]", children: g.timestamp }),
+                    v ? /* @__PURE__ */ k("span", { className: S("inline-flex w-16 shrink-0 items-center gap-1 font-bold", v.tone), children: [
+                      /* @__PURE__ */ o(Q, { name: v.icon, size: "3", className: "shrink-0" }),
+                      v.tag
+                    ] }) : b && /* @__PURE__ */ o("span", { "aria-hidden": "true", className: "w-16 shrink-0" }),
+                    /* @__PURE__ */ o("span", { className: S("min-w-0 flex-1", n ? "whitespace-pre-wrap break-words" : "whitespace-pre"), children: g.text })
                   ]
                 },
-                x.id
+                g.id
               );
             })
           }
         ),
-        t && !b && /* @__PURE__ */ o("div", { className: "pointer-events-none absolute inset-x-0 bottom-3 flex justify-center", children: /* @__PURE__ */ o(
-          Xe,
+        t && !m && /* @__PURE__ */ o("div", { className: "pointer-events-none absolute inset-x-0 bottom-3 flex justify-center", children: /* @__PURE__ */ o(
+          We,
           {
             variant: "secondary",
             size: "sm",
-            onClick: p,
-            iconLeft: /* @__PURE__ */ o(ee, { name: "ChevronDown", size: "4" }),
+            onClick: h,
+            iconLeft: /* @__PURE__ */ o(Q, { name: "ChevronDown", size: "4" }),
             className: "pointer-events-auto",
-            children: h > 0 ? `Jump to latest (${h} new)` : "Jump to latest"
+            children: p > 0 ? `Jump to latest (${p} new)` : "Jump to latest"
           }
         ) })
       ]
     }
   );
 }
-Na.displayName = "LogView";
-const Sa = {
+ha.displayName = "LogView";
+const ga = {
   neutral: "text-[var(--text-primary)]",
   primary: "bg-[var(--button-primary-background)] text-[var(--button-primary-text)] font-bold",
   success: "bg-success-50 text-success-800 dark:bg-success-950 dark:text-success-300",
@@ -7860,7 +7796,7 @@ const Sa = {
   error: "bg-error-50 text-error-800 dark:bg-error-950 dark:text-error-300",
   info: "bg-info-50 text-info-800 dark:bg-info-950 dark:text-info-300"
 };
-function $a({
+function xa({
   left: e,
   center: t,
   right: r,
@@ -7868,13 +7804,13 @@ function $a({
   "aria-label": a = "Status",
   className: s
 }) {
-  return /* @__PURE__ */ y(
+  return /* @__PURE__ */ k(
     "div",
     {
       role: n ? "status" : "group",
       "aria-live": n ? "polite" : void 0,
       "aria-label": a,
-      className: I(
+      className: S(
         "grid min-h-control-sm w-full grid-cols-[1fr_auto_1fr] items-stretch border-t border-[var(--border-hairline)] bg-[var(--surface-muted)] font-mono text-xs text-[var(--text-primary)]",
         s
       ),
@@ -7886,29 +7822,29 @@ function $a({
     }
   );
 }
-$a.displayName = "StatusLine";
-function za({ icon: e, tone: t = "neutral", children: r, className: n }) {
-  return /* @__PURE__ */ y(
+xa.displayName = "StatusLine";
+function va({ icon: e, tone: t = "neutral", children: r, className: n }) {
+  return /* @__PURE__ */ k(
     "span",
     {
       "data-tone": t,
-      className: I("inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap px-3", Sa[t], n),
+      className: S("inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap px-3", ga[t], n),
       children: [
-        e && he(e, { size: "3", className: "shrink-0" }),
+        e && pe(e, { size: "3", className: "shrink-0" }),
         /* @__PURE__ */ o("span", { className: "truncate", children: r })
       ]
     }
   );
 }
-za.displayName = "StatusLineSegment";
-function Ia({ items: e, layout: t = "inline", leader: r = !1, className: n }) {
+va.displayName = "StatusLineSegment";
+function ya({ items: e, layout: t = "inline", leader: r = !1, className: n }) {
   const a = t === "inline";
   return /* @__PURE__ */ o(
     "dl",
     {
       "data-layout": t,
-      className: I("font-mono text-sm", a ? "space-y-1" : "space-y-3", n),
-      children: e.map((s, i) => /* @__PURE__ */ y(
+      className: S("font-mono text-sm", a ? "space-y-1" : "space-y-3", n),
+      children: e.map((s, i) => /* @__PURE__ */ k(
         "div",
         {
           className: a ? "flex items-baseline justify-between gap-2" : "flex flex-col gap-0.5",
@@ -7916,7 +7852,7 @@ function Ia({ items: e, layout: t = "inline", leader: r = !1, className: n }) {
             /* @__PURE__ */ o(
               "dt",
               {
-                className: I(
+                className: S(
                   "text-[var(--text-secondary)]",
                   !a && "text-xs uppercase tracking-wider",
                   a && !r && "shrink-0",
@@ -7925,7 +7861,7 @@ function Ia({ items: e, layout: t = "inline", leader: r = !1, className: n }) {
                 children: s.term
               }
             ),
-            /* @__PURE__ */ o("dd", { className: I("min-w-0 text-[var(--text-primary)]", a && "text-right"), children: s.description })
+            /* @__PURE__ */ o("dd", { className: S("min-w-0 text-[var(--text-primary)]", a && "text-right"), children: s.description })
           ]
         },
         s.key ?? i
@@ -7933,8 +7869,8 @@ function Ia({ items: e, layout: t = "inline", leader: r = !1, className: n }) {
     }
   );
 }
-Ia.displayName = "DescriptionList";
-function Ta({
+ya.displayName = "DescriptionList";
+function wa({
   value: e,
   min: t = 0,
   max: r = 100,
@@ -7943,10 +7879,10 @@ function Ta({
   optimum: s
 }) {
   if (n == null && a == null && s == null) return "primary";
-  const i = Math.min(Math.max(n ?? t, t), r), l = Math.min(Math.max(a ?? r, i), r), c = s ?? (t + r) / 2, d = (b) => b < i ? 0 : b > l ? 2 : 1, u = Math.abs(d(Math.min(Math.max(e, t), r)) - d(c));
+  const i = Math.min(Math.max(n ?? t, t), r), l = Math.min(Math.max(a ?? r, i), r), c = s ?? (t + r) / 2, d = (m) => m < i ? 0 : m > l ? 2 : 1, u = Math.abs(d(Math.min(Math.max(e, t), r)) - d(c));
   return u === 0 ? "success" : u === 1 ? "warning" : "error";
 }
-const Ea = {
+const ka = {
   primary: "bg-primary-600 dark:bg-primary-400",
   neutral: "bg-secondary-600 dark:bg-secondary-400",
   info: "bg-info-600 dark:bg-info-400",
@@ -7954,7 +7890,7 @@ const Ea = {
   warning: "bg-warning-600 dark:bg-warning-400",
   error: "bg-error-600 dark:bg-error-400"
 };
-function Ca({
+function Na({
   value: e,
   min: t = 0,
   max: r = 100,
@@ -7966,16 +7902,16 @@ function Ca({
   tone: c,
   segments: d = 20,
   size: u = "md",
-  className: b
+  className: m
 }) {
-  const h = de(u, "Meter"), p = ue(), m = r - t || 1, f = Math.min(Math.max(e, t), r), x = (f - t) / m, k = l ?? `${Math.round(x * 100)}%`, g = c ?? Ta({ value: e, min: t, max: r, low: n, high: a, optimum: s }), z = Math.max(1, Math.round(d)), $ = Math.round(x * z);
-  return /* @__PURE__ */ y("div", { className: I("font-mono text-sm", b), "data-tone": g, children: [
-    /* @__PURE__ */ y("div", { className: "mb-1 flex items-baseline justify-between gap-3", children: [
+  const p = ce(), h = r - t || 1, b = Math.min(Math.max(e, t), r), f = (b - t) / h, g = l ?? `${Math.round(f * 100)}%`, N = c ?? wa({ value: e, min: t, max: r, low: n, high: a, optimum: s }), v = Math.max(1, Math.round(d)), w = Math.round(f * v);
+  return /* @__PURE__ */ k("div", { className: S("font-mono text-sm", m), "data-tone": N, children: [
+    /* @__PURE__ */ k("div", { className: "mb-1 flex items-baseline justify-between gap-3", children: [
       /* @__PURE__ */ o("span", { id: p, className: "text-[var(--text-primary)]", children: i }),
-      /* @__PURE__ */ y("span", { className: "inline-flex items-center gap-1 tabular-nums text-[var(--text-secondary)]", children: [
-        g === "warning" && /* @__PURE__ */ o(ee, { name: "AlertTriangle", size: "3" }),
-        g === "error" && /* @__PURE__ */ o(ee, { name: "AlertCircle", size: "3" }),
-        k
+      /* @__PURE__ */ k("span", { className: "inline-flex items-center gap-1 tabular-nums text-[var(--text-secondary)]", children: [
+        N === "warning" && /* @__PURE__ */ o(Q, { name: "AlertTriangle", size: "3" }),
+        N === "error" && /* @__PURE__ */ o(Q, { name: "AlertCircle", size: "3" }),
+        g
       ] })
     ] }),
     /* @__PURE__ */ o(
@@ -7983,33 +7919,33 @@ function Ca({
       {
         role: "meter",
         "aria-labelledby": p,
-        "aria-valuenow": f,
+        "aria-valuenow": b,
         "aria-valuemin": t,
         "aria-valuemax": r,
-        "aria-valuetext": k,
+        "aria-valuetext": g,
         className: "flex gap-0.5",
-        children: Array.from({ length: z }, (w, N) => /* @__PURE__ */ o(
+        children: Array.from({ length: v }, ($, T) => /* @__PURE__ */ o(
           "span",
           {
-            "data-filled": N < $ || void 0,
-            className: I(
+            "data-filled": T < w || void 0,
+            className: S(
               "flex-1",
-              h === "sm" ? "h-2" : "h-3",
-              N < $ ? Ea[g] : "bg-[var(--surface-muted)] ring-1 ring-inset ring-[var(--surface-container-stroke)]"
+              u === "sm" ? "h-2" : "h-3",
+              T < w ? ka[N] : "bg-[var(--surface-muted)] ring-1 ring-inset ring-[var(--surface-container-stroke)]"
             )
           },
-          N
+          T
         ))
       }
     )
   ] });
 }
-Ca.displayName = "Meter";
-function _a(e) {
+Na.displayName = "Meter";
+function $a(e) {
   return e.textValue ? e.textValue : typeof e.label == "string" || typeof e.label == "number" ? String(e.label) : "";
 }
-const Aa = "plate-round flex min-h-touch cursor-pointer items-center gap-2 py-1 pr-3 font-mono text-sm pl-[calc(var(--tree-level)_*_theme(spacing.4)_+_theme(spacing.2))] transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none";
-function Ma({
+const Sa = "plate-round flex min-h-touch cursor-pointer items-center gap-2 py-1 pr-3 font-mono text-sm pl-[calc(var(--tree-level)_*_theme(spacing.4)_+_theme(spacing.2))] transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none";
+function Ia({
   nodes: e,
   "aria-label": t,
   "aria-labelledby": r,
@@ -8021,125 +7957,125 @@ function Ma({
   onSelectedChange: c,
   onActivate: d,
   typeahead: u = !0,
-  className: b
+  className: m
 }) {
-  var F;
-  const [h, p] = V(a), m = n ?? h, f = Pe(() => new Set(m), [m]), [x, k] = V(l), g = i !== void 0 ? i : x, [z, $] = V(null), w = Q(/* @__PURE__ */ new Map()), N = Q(!1), T = Q({ buffer: "", timer: 0 }), v = Pe(() => {
-    const _ = [], D = (q, S, O) => {
-      for (const C of q) {
-        const B = Array.isArray(C.children);
-        _.push({ node: C, level: S, parentId: O, isBranch: B }), B && f.has(C.id) && D(C.children, S + 1, C.id);
+  var ee;
+  const [p, h] = H(a), b = n ?? p, f = Le(() => new Set(b), [b]), [g, N] = H(l), v = i !== void 0 ? i : g, [w, $] = H(null), T = X(/* @__PURE__ */ new Map()), I = X(!1), M = X({ buffer: "", timer: 0 }), x = Le(() => {
+    const E = [], O = (P, y, G) => {
+      for (const R of P) {
+        const L = Array.isArray(R.children);
+        E.push({ node: R, level: y, parentId: G, isBranch: L }), L && f.has(R.id) && O(R.children, y + 1, R.id);
       }
     };
-    return D(e, 1, null), _;
-  }, [e, f]), R = z && v.some((_) => _.node.id === z) && z || g && v.some((_) => _.node.id === g) && g || ((F = v[0]) == null ? void 0 : F.node.id) || null;
-  G(() => {
-    var _;
-    !N.current || !z || (N.current = !1, (_ = w.current.get(z)) == null || _.focus());
-  }, [z, v]), G(() => () => clearTimeout(T.current.timer), []);
-  const E = (_) => {
-    var D;
-    _ && (N.current = !0, $(_), _ === z && ((D = w.current.get(_)) == null || D.focus()));
-  }, W = pe(
-    (_, D) => {
-      if (f.has(_) === D) return;
-      const S = D ? [...m, _] : m.filter((O) => O !== _);
-      n === void 0 && p(S), s == null || s(S);
+    return O(e, 1, null), E;
+  }, [e, f]), C = w && x.some((E) => E.node.id === w) && w || v && x.some((E) => E.node.id === v) && v || ((ee = x[0]) == null ? void 0 : ee.node.id) || null;
+  U(() => {
+    var E;
+    !I.current || !w || (I.current = !1, (E = T.current.get(w)) == null || E.focus());
+  }, [w, x]), U(() => () => clearTimeout(M.current.timer), []);
+  const F = (E) => {
+    var O;
+    E && (I.current = !0, $(E), E === w && ((O = T.current.get(E)) == null || O.focus()));
+  }, W = ue(
+    (E, O) => {
+      if (f.has(E) === O) return;
+      const y = O ? [...b, E] : b.filter((G) => G !== E);
+      n === void 0 && h(y), s == null || s(y);
     },
-    [f, m, n, s]
-  ), J = (_) => {
-    _.node.disabled || g !== _.node.id && (i === void 0 && k(_.node.id), c == null || c(_.node.id));
-  }, oe = (_, D) => {
-    const q = T.current;
-    clearTimeout(q.timer), q.buffer += _.toLowerCase(), q.timer = setTimeout(() => {
-      q.buffer = "";
+    [f, b, n, s]
+  ), te = (E) => {
+    E.node.disabled || v !== E.node.id && (i === void 0 && N(E.node.id), c == null || c(E.node.id));
+  }, ne = (E, O) => {
+    const P = M.current;
+    clearTimeout(P.timer), P.buffer += E.toLowerCase(), P.timer = setTimeout(() => {
+      P.buffer = "";
     }, 500);
-    const S = v.length, O = q.buffer.length === 1 ? D + 1 : D;
-    for (let C = 0; C < S; C++) {
-      const B = v[(O + C) % S];
-      if (_a(B.node).toLowerCase().startsWith(q.buffer)) {
-        E(B.node.id);
+    const y = x.length, G = P.buffer.length === 1 ? O + 1 : O;
+    for (let R = 0; R < y; R++) {
+      const L = x[(G + R) % y];
+      if ($a(L.node).toLowerCase().startsWith(P.buffer)) {
+        F(L.node.id);
         return;
       }
     }
-  }, K = (_, D) => {
-    var O, C, B, X, U;
-    if (_.target !== _.currentTarget) return;
-    const q = v.findIndex((Y) => Y.node.id === D.node.id), S = f.has(D.node.id);
-    switch (_.key) {
+  }, B = (E, O) => {
+    var G, R, L, q, Y;
+    if (E.target !== E.currentTarget) return;
+    const P = x.findIndex((V) => V.node.id === O.node.id), y = f.has(O.node.id);
+    switch (E.key) {
       case "ArrowDown":
-        _.preventDefault(), E((O = v[q + 1]) == null ? void 0 : O.node.id);
+        E.preventDefault(), F((G = x[P + 1]) == null ? void 0 : G.node.id);
         break;
       case "ArrowUp":
-        _.preventDefault(), E((C = v[q - 1]) == null ? void 0 : C.node.id);
+        E.preventDefault(), F((R = x[P - 1]) == null ? void 0 : R.node.id);
         break;
       case "ArrowRight":
-        if (_.preventDefault(), !D.isBranch) break;
-        S ? ((B = v[q + 1]) == null ? void 0 : B.parentId) === D.node.id && E(v[q + 1].node.id) : W(D.node.id, !0);
+        if (E.preventDefault(), !O.isBranch) break;
+        y ? ((L = x[P + 1]) == null ? void 0 : L.parentId) === O.node.id && F(x[P + 1].node.id) : W(O.node.id, !0);
         break;
       case "ArrowLeft":
-        _.preventDefault(), D.isBranch && S ? W(D.node.id, !1) : D.parentId && E(D.parentId);
+        E.preventDefault(), O.isBranch && y ? W(O.node.id, !1) : O.parentId && F(O.parentId);
         break;
       case "Home":
-        _.preventDefault(), E((X = v[0]) == null ? void 0 : X.node.id);
+        E.preventDefault(), F((q = x[0]) == null ? void 0 : q.node.id);
         break;
       case "End":
-        _.preventDefault(), E((U = v[v.length - 1]) == null ? void 0 : U.node.id);
+        E.preventDefault(), F((Y = x[x.length - 1]) == null ? void 0 : Y.node.id);
         break;
       case "Enter":
-        _.preventDefault(), J(D), D.node.disabled || d == null || d(D.node.id);
+        E.preventDefault(), te(O), O.node.disabled || d == null || d(O.node.id);
         break;
       case " ":
-        _.preventDefault(), J(D);
+        E.preventDefault(), te(O);
         break;
       default:
-        u && _.key.length === 1 && !_.ctrlKey && !_.metaKey && !_.altKey && /\S/.test(_.key) && (_.preventDefault(), oe(_.key, q));
+        u && E.key.length === 1 && !E.ctrlKey && !E.metaKey && !E.altKey && /\S/.test(E.key) && (E.preventDefault(), ne(E.key, P));
     }
-  }, te = (_, D, q) => _.map((S, O) => {
-    const C = Array.isArray(S.children), B = C && f.has(S.id), X = g === S.id, U = { node: S, parentId: q, isBranch: C };
-    return /* @__PURE__ */ y(
+  }, Z = (E, O, P) => E.map((y, G) => {
+    const R = Array.isArray(y.children), L = R && f.has(y.id), q = v === y.id, Y = { node: y, parentId: P, isBranch: R };
+    return /* @__PURE__ */ k(
       "li",
       {
-        ref: (Y) => {
-          Y ? w.current.set(S.id, Y) : w.current.delete(S.id);
+        ref: (V) => {
+          V ? T.current.set(y.id, V) : T.current.delete(y.id);
         },
         role: "treeitem",
-        "aria-level": D,
-        "aria-setsize": _.length,
-        "aria-posinset": O + 1,
-        "aria-expanded": C ? B : void 0,
-        "aria-selected": X,
-        "aria-disabled": S.disabled || void 0,
-        tabIndex: R === S.id ? 0 : -1,
-        onKeyDown: (Y) => K(Y, U),
-        onFocus: (Y) => {
-          Y.target === Y.currentTarget && $(S.id);
+        "aria-level": O,
+        "aria-setsize": E.length,
+        "aria-posinset": G + 1,
+        "aria-expanded": R ? L : void 0,
+        "aria-selected": q,
+        "aria-disabled": y.disabled || void 0,
+        tabIndex: C === y.id ? 0 : -1,
+        onKeyDown: (V) => B(V, Y),
+        onFocus: (V) => {
+          V.target === V.currentTarget && $(y.id);
         },
         className: "focus:outline-none [&:focus-visible>div]:[box-shadow:inset_0_0_0_var(--focus-ring-width)_var(--focus-ring-primary)]",
         children: [
-          /* @__PURE__ */ y(
+          /* @__PURE__ */ k(
             "div",
             {
-              style: { "--tree-level": D - 1 },
-              onClick: (Y) => {
-                Y.stopPropagation(), E(S.id), J(U), C && W(S.id, !B), !S.disabled && !C && (d == null || d(S.id));
+              style: { "--tree-level": O - 1 },
+              onClick: (V) => {
+                V.stopPropagation(), F(y.id), te(Y), R && W(y.id, !L), !y.disabled && !R && (d == null || d(y.id));
               },
-              className: I(
-                Aa,
-                X ? "bg-[var(--surface-muted)] text-[var(--accent)]" : "text-[var(--text-primary)] hover:bg-[var(--surface-muted)]",
-                S.disabled && "cursor-not-allowed opacity-50"
+              className: S(
+                Sa,
+                q ? "bg-[var(--surface-muted)] text-[var(--accent)]" : "text-[var(--text-primary)] hover:bg-[var(--surface-muted)]",
+                y.disabled && "cursor-not-allowed opacity-50"
               ),
               children: [
-                /* @__PURE__ */ o("span", { className: "inline-flex w-4 shrink-0 justify-center text-[var(--text-secondary)]", children: C && /* @__PURE__ */ o(ee, { name: B ? "ChevronDown" : "ChevronRight", size: "3" }) }),
-                S.icon && he(S.icon, { className: "shrink-0" }),
-                /* @__PURE__ */ o("span", { className: "min-w-0 truncate", children: S.label })
+                /* @__PURE__ */ o("span", { className: "inline-flex w-4 shrink-0 justify-center text-[var(--text-secondary)]", children: R && /* @__PURE__ */ o(Q, { name: L ? "ChevronDown" : "ChevronRight", size: "3" }) }),
+                y.icon && pe(y.icon, { className: "shrink-0" }),
+                /* @__PURE__ */ o("span", { className: "min-w-0 truncate", children: y.label })
               ]
             }
           ),
-          C && B && S.children.length > 0 && /* @__PURE__ */ o("ul", { role: "group", children: te(S.children, D + 1, S.id) })
+          R && L && y.children.length > 0 && /* @__PURE__ */ o("ul", { role: "group", children: Z(y.children, O + 1, y.id) })
         ]
       },
-      S.id
+      y.id
     );
   });
   return /* @__PURE__ */ o(
@@ -8148,30 +8084,30 @@ function Ma({
       role: "tree",
       "aria-label": t,
       "aria-labelledby": r,
-      className: I("font-mono text-sm", b),
-      children: te(e, 1, null)
+      className: S("font-mono text-sm", m),
+      children: Z(e, 1, null)
     }
   );
 }
-Ma.displayName = "TreeView";
-const La = {
+Ia.displayName = "TreeView";
+const Ta = {
   sm: "h-5 min-w-5 px-1.5 text-xs",
   md: "h-6 min-w-6 px-2 text-sm"
 };
-function Xt({ size: e, children: t, className: r }) {
+function Gt({ size: e, children: t, className: r }) {
   return /* @__PURE__ */ o(
     "kbd",
     {
-      className: I(
+      className: S(
         "plate-round inline-flex bg-[var(--surface-container-stroke)] px-px pb-0.5 pt-px align-middle font-mono",
         r
       ),
       children: /* @__PURE__ */ o(
         "span",
         {
-          className: I(
+          className: S(
             "plate-round inline-flex items-center justify-center bg-[var(--surface-muted)] leading-none text-[var(--text-primary)]",
-            La[e]
+            Ta[e]
           ),
           children: t
         }
@@ -8179,15 +8115,14 @@ function Xt({ size: e, children: t, className: r }) {
     }
   );
 }
-function Ra({ keys: e, children: t, size: r = "sm", separator: n = "+", className: a }) {
-  const s = de(r, "Kbd", "sm");
-  return !e || e.length <= 1 ? /* @__PURE__ */ o(Xt, { size: s, className: a, children: (e == null ? void 0 : e[0]) ?? t }) : /* @__PURE__ */ o("kbd", { className: I("inline-flex items-center gap-1 align-middle font-mono", a), children: e.map((i, l) => /* @__PURE__ */ y(wt, { children: [
-    l > 0 && /* @__PURE__ */ o("span", { className: I("text-[var(--text-secondary)]", s === "sm" ? "text-xs" : "text-sm"), children: n }),
-    /* @__PURE__ */ o(Xt, { size: s, children: i })
-  ] }, `${i}-${l}`)) });
+function Ca({ keys: e, children: t, size: r = "sm", separator: n = "+", className: a }) {
+  return !e || e.length <= 1 ? /* @__PURE__ */ o(Gt, { size: r, className: a, children: (e == null ? void 0 : e[0]) ?? t }) : /* @__PURE__ */ o("kbd", { className: S("inline-flex items-center gap-1 align-middle font-mono", a), children: e.map((s, i) => /* @__PURE__ */ k(xt, { children: [
+    i > 0 && /* @__PURE__ */ o("span", { className: S("text-[var(--text-secondary)]", r === "sm" ? "text-xs" : "text-sm"), children: n }),
+    /* @__PURE__ */ o(Gt, { size: r, children: s })
+  ] }, `${s}-${i}`)) });
 }
-Ra.displayName = "Kbd";
-const Oa = {
+Ca.displayName = "Kbd";
+const Ea = {
   none: "gap-0",
   1: "gap-1",
   2: "gap-2",
@@ -8196,15 +8131,15 @@ const Oa = {
   5: "gap-5",
   6: "gap-6",
   8: "gap-8"
-}, Da = re(function({ children: t, gap: r = "4", className: n, axis: a = "vertical", ...s }, i) {
+}, _a = re(function({ children: t, gap: r = "4", className: n, axis: a = "vertical", ...s }, i) {
   return /* @__PURE__ */ o(
     "div",
     {
       ref: i,
-      className: I(
+      className: S(
         "flex",
         a === "vertical" ? "flex-col" : "flex-row flex-wrap items-center",
-        Oa[r],
+        Ea[r],
         n
       ),
       ...s,
@@ -8212,8 +8147,8 @@ const Oa = {
     }
   );
 });
-Da.displayName = "Stack";
-const Pa = {
+_a.displayName = "Stack";
+const Aa = {
   none: "p-0",
   1: "p-1",
   2: "p-2",
@@ -8222,7 +8157,7 @@ const Pa = {
   5: "p-5",
   6: "p-6",
   8: "p-8"
-}, Ba = {
+}, za = {
   none: "px-0",
   1: "px-1",
   2: "px-2",
@@ -8231,7 +8166,7 @@ const Pa = {
   5: "px-5",
   6: "px-6",
   8: "px-8"
-}, ja = {
+}, Ma = {
   none: "py-0",
   1: "py-1",
   2: "py-2",
@@ -8240,7 +8175,7 @@ const Pa = {
   5: "py-5",
   6: "py-6",
   8: "py-8"
-}, mt = {
+}, ct = {
   none: "",
   page: "bg-[var(--surface-page)]",
   container: "bg-[var(--surface-container)]",
@@ -8249,7 +8184,7 @@ const Pa = {
   muted: "bg-[var(--surface-muted)]",
   raised: "bg-[var(--surface-raised)]",
   inverse: "bg-[var(--surface-inverse)] text-[var(--text-on-inverse)]"
-}, Fa = re(function({
+}, Ra = re(function({
   children: t,
   padding: r,
   paddingX: n,
@@ -8260,25 +8195,25 @@ const Pa = {
   className: c,
   ...d
 }, u) {
-  const b = l, h = n !== void 0 || a !== void 0, p = n ?? r, m = a ?? r, f = h ? I(
-    p !== void 0 && Ba[p],
-    m !== void 0 && ja[m]
-  ) : I(r !== void 0 && Pa[r]);
+  const m = l, p = n !== void 0 || a !== void 0, h = n ?? r, b = a ?? r, f = p ? S(
+    h !== void 0 && za[h],
+    b !== void 0 && Ma[b]
+  ) : S(r !== void 0 && Aa[r]);
   if (i === "none")
-    return /* @__PURE__ */ o(b, { ref: u, className: I(mt[s], f, c), ...d, children: t });
-  const x = s === "none" ? mt.card : mt[s];
+    return /* @__PURE__ */ o(m, { ref: u, className: S(ct[s], f, c), ...d, children: t });
+  const g = s === "none" ? ct.card : ct[s];
   return /* @__PURE__ */ o(
-    b,
+    m,
     {
       ref: u,
-      className: I("plate-round bg-[var(--surface-container-stroke)] p-px", c),
+      className: S("plate-round bg-[var(--surface-container-stroke)] p-px", c),
       ...d,
-      children: /* @__PURE__ */ o("div", { className: I("plate-round h-full w-full", x, f), children: t })
+      children: /* @__PURE__ */ o("div", { className: S("plate-round h-full w-full", g, f), children: t })
     }
   );
 });
-Fa.displayName = "Box";
-const Va = {
+Ra.displayName = "Box";
+const La = {
   none: "gap-0",
   1: "gap-1",
   2: "gap-2",
@@ -8287,27 +8222,27 @@ const Va = {
   5: "gap-5",
   6: "gap-6",
   8: "gap-8"
-}, Ga = {
+}, Oa = {
   start: "items-start",
   center: "items-center",
   end: "items-end",
   baseline: "items-baseline"
-}, Ha = {
+}, Pa = {
   start: "justify-start",
   center: "justify-center",
   end: "justify-end",
   between: "justify-between"
-}, Ua = re(function({ children: t, gap: r = "2", align: n = "center", justify: a = "start", wrap: s = !0, className: i, ...l }, c) {
+}, Da = re(function({ children: t, gap: r = "2", align: n = "center", justify: a = "start", wrap: s = !0, className: i, ...l }, c) {
   return /* @__PURE__ */ o(
     "div",
     {
       ref: c,
-      className: I(
+      className: S(
         "flex flex-row",
         s ? "flex-wrap" : "flex-nowrap",
-        Va[r],
-        Ga[n],
-        Ha[a],
+        La[r],
+        Oa[n],
+        Pa[a],
         i
       ),
       ...l,
@@ -8315,8 +8250,8 @@ const Va = {
     }
   );
 });
-Ua.displayName = "Inline";
-const Wa = {
+Da.displayName = "Inline";
+const ja = {
   none: "gap-0",
   1: "gap-1",
   2: "gap-2",
@@ -8325,7 +8260,7 @@ const Wa = {
   5: "gap-5",
   6: "gap-6",
   8: "gap-8"
-}, Ka = {
+}, Ba = {
   none: "gap-y-0",
   1: "gap-y-1",
   2: "gap-y-2",
@@ -8334,7 +8269,7 @@ const Wa = {
   5: "gap-y-5",
   6: "gap-y-6",
   8: "gap-y-8"
-}, qa = {
+}, Fa = {
   none: "gap-x-0",
   1: "gap-x-1",
   2: "gap-x-2",
@@ -8343,7 +8278,7 @@ const Wa = {
   5: "gap-x-5",
   6: "gap-x-6",
   8: "gap-x-8"
-}, Yt = {
+}, Ut = {
   base: {
     1: "grid-cols-1",
     2: "grid-cols-2",
@@ -8394,30 +8329,30 @@ const Wa = {
     8: "xl:grid-cols-8",
     12: "xl:grid-cols-12"
   }
-}, Xa = ["base", "sm", "md", "lg", "xl"], Ya = {
+}, Va = ["base", "sm", "md", "lg", "xl"], Ha = {
   start: "items-start",
   center: "items-center",
   end: "items-end",
   stretch: "items-stretch"
 };
-function Za(e) {
-  return typeof e == "number" ? [Yt.base[e]] : Xa.flatMap((t) => {
+function Ga(e) {
+  return typeof e == "number" ? [Ut.base[e]] : Va.flatMap((t) => {
     const r = e[t];
-    return r === void 0 ? [] : [Yt[t][r]];
+    return r === void 0 ? [] : [Ut[t][r]];
   });
 }
-const Qa = re(function({ children: t, columns: r = 1, gap: n = "4", rowGap: a, columnGap: s, align: i = "stretch", className: l, ...c }, d) {
+const Ua = re(function({ children: t, columns: r = 1, gap: n = "4", rowGap: a, columnGap: s, align: i = "stretch", className: l, ...c }, d) {
   return /* @__PURE__ */ o(
     "div",
     {
       ref: d,
-      className: I(
+      className: S(
         "grid",
-        Za(r),
-        Wa[n],
-        a !== void 0 && Ka[a],
-        s !== void 0 && qa[s],
-        Ya[i],
+        Ga(r),
+        ja[n],
+        a !== void 0 && Ba[a],
+        s !== void 0 && Fa[s],
+        Ha[i],
         l
       ),
       ...c,
@@ -8425,26 +8360,26 @@ const Qa = re(function({ children: t, columns: r = 1, gap: n = "4", rowGap: a, c
     }
   );
 });
-Qa.displayName = "Grid";
-const Ja = {
+Ua.displayName = "Grid";
+const Wa = {
   sm: "max-w-screen-sm",
   md: "max-w-screen-md",
   lg: "max-w-screen-lg",
   xl: "max-w-screen-xl",
   full: "max-w-full"
-}, es = re(function({ children: t, size: r = "lg", gutter: n = !0, as: a = "div", className: s, ...i }, l) {
+}, Ka = re(function({ children: t, size: r = "lg", gutter: n = !0, as: a = "div", className: s, ...i }, l) {
   return /* @__PURE__ */ o(
     a,
     {
       ref: l,
-      className: I("mx-auto w-full", Ja[r], n && "px-5 lg:px-10", s),
+      className: S("mx-auto w-full", Wa[r], n && "px-5 lg:px-10", s),
       ...i,
       children: t
     }
   );
 });
-es.displayName = "Container";
-const ts = {
+Ka.displayName = "Container";
+const qa = {
   xs: "max-w-xs",
   sm: "max-w-sm",
   md: "max-w-md",
@@ -8452,14 +8387,14 @@ const ts = {
   xl: "max-w-xl",
   "2xl": "max-w-2xl",
   none: "max-w-none"
-}, rs = re(function({ children: t, maxWidth: r = "md", andText: n = !1, fullHeight: a = !1, as: s = "div", className: i, ...l }, c) {
+}, Xa = re(function({ children: t, maxWidth: r = "md", andText: n = !1, fullHeight: a = !1, as: s = "div", className: i, ...l }, c) {
   return /* @__PURE__ */ o(
     s,
     {
       ref: c,
-      className: I(
+      className: S(
         "mx-auto w-full",
-        ts[r],
+        qa[r],
         n && "text-center",
         a && "flex min-h-screen flex-col justify-center",
         i
@@ -8469,13 +8404,13 @@ const ts = {
     }
   );
 });
-rs.displayName = "Center";
-const ns = re(function({ children: t, focusable: r = !1, as: n = "span", className: a, ...s }, i) {
+Xa.displayName = "Center";
+const Ya = re(function({ children: t, focusable: r = !1, as: n = "span", className: a, ...s }, i) {
   return /* @__PURE__ */ o(
     n,
     {
       ref: i,
-      className: I(
+      className: S(
         "sr-only",
         r && "focus:not-sr-only focus-within:not-sr-only",
         a
@@ -8485,10 +8420,10 @@ const ns = re(function({ children: t, focusable: r = !1, as: n = "span", classNa
     }
   );
 });
-ns.displayName = "VisuallyHidden";
-function Ss({ children: e, ...t }) {
+Ya.displayName = "VisuallyHidden";
+function gs({ children: e, ...t }) {
   return /* @__PURE__ */ o(
-    Ur,
+    jr,
     {
       attribute: "class",
       defaultTheme: "dark",
@@ -8500,81 +8435,81 @@ function Ss({ children: e, ...t }) {
   );
 }
 export {
-  ys as Accordion,
-  Ns as AccordionContent,
-  ws as AccordionItem,
-  ks as AccordionTrigger,
-  us as Alert,
-  xa as AppHeader,
-  ro as Avatar,
-  ds as Badge,
-  gs as BottomSheet,
-  Fa as Box,
-  ca as Breadcrumbs,
-  Xe as Button,
-  cs as Card,
-  No as CaseStudyContent,
-  So as CaseStudyHeader,
-  ps as CaseStudyPage,
-  zo as CaseStudySections,
-  rs as Center,
-  uo as Checkbox,
-  ea as Combobox,
-  es as Container,
-  Ia as DescriptionList,
-  ms as Divider,
-  fs as Dropdown,
-  ia as EmptyState,
-  Qa as Grid,
-  Ua as Inline,
-  Xn as Input,
-  Ra as Kbd,
-  ht as Link,
-  Io as ListRow,
-  Na as LogView,
-  Ca as Meter,
-  ls as Modal,
-  ma as Pagination,
-  Cr as Popover,
-  aa as ProgressBar,
-  po as Radio,
-  co as Select,
-  fa as SideNav,
-  ga as SideNavItem,
-  Or as SideNavSection,
-  Ir as Skeleton,
-  fo as Slider,
-  br as Spinner,
-  Da as Stack,
-  $a as StatusLine,
-  za as StatusLineSegment,
-  xr as Switch,
-  Hn as TUI_ICON_GLYPHS,
-  Fo as Table,
-  Go as TableBody,
-  vt as TableCell,
-  Ho as TableFooter,
-  Uo as TableHead,
-  Vo as TableHeader,
-  xt as TableRow,
-  vs as Tabs,
-  Do as TabsContent,
-  Ro as TabsList,
-  Oo as TabsTrigger,
-  bo as Textarea,
-  Ss as ThemeProvider,
-  xs as ThemeToggle,
-  Co as Toast,
-  hs as Toaster,
-  lo as Tooltip,
-  Ma as TreeView,
-  ee as TuiIcon,
-  ns as VisuallyHidden,
-  va as Window,
-  I as cn,
-  Ta as getMeterTone,
-  da as getPaginationRange,
-  Mo as toast,
-  bs as useToast
+  fs as Accordion,
+  hs as AccordionContent,
+  ps as AccordionItem,
+  bs as AccordionTrigger,
+  os as Alert,
+  ua as AppHeader,
+  Xn as Avatar,
+  ns as Badge,
+  ds as BottomSheet,
+  Ra as Box,
+  ra as Breadcrumbs,
+  We as Button,
+  rs as Card,
+  ho as CaseStudyContent,
+  go as CaseStudyHeader,
+  is as CaseStudyPage,
+  vo as CaseStudySections,
+  Xa as Center,
+  no as Checkbox,
+  Ko as Combobox,
+  Ka as Container,
+  ya as DescriptionList,
+  as as Divider,
+  ss as Dropdown,
+  ea as EmptyState,
+  Ua as Grid,
+  Da as Inline,
+  Vn as Input,
+  Ca as Kbd,
+  ft as Link,
+  yo as ListRow,
+  ha as LogView,
+  Na as Meter,
+  ts as Modal,
+  aa as Pagination,
+  $r as Popover,
+  Qo as ProgressBar,
+  so as Radio,
+  ro as Select,
+  sa as SideNav,
+  da as SideNavItem,
+  _r as SideNavSection,
+  wr as Skeleton,
+  ao as Slider,
+  dr as Spinner,
+  _a as Stack,
+  xa as StatusLine,
+  va as StatusLineSegment,
+  fr as Switch,
+  Pn as TUI_ICON_GLYPHS,
+  Ro as Table,
+  Oo as TableBody,
+  ht as TableCell,
+  Po as TableFooter,
+  Do as TableHead,
+  Lo as TableHeader,
+  bt as TableRow,
+  ms as Tabs,
+  _o as TabsContent,
+  Co as TabsList,
+  Eo as TabsTrigger,
+  io as Textarea,
+  gs as ThemeProvider,
+  us as ThemeToggle,
+  No as Toast,
+  cs as Toaster,
+  to as Tooltip,
+  Ia as TreeView,
+  Q as TuiIcon,
+  Ya as VisuallyHidden,
+  ma as Window,
+  S as cn,
+  wa as getMeterTone,
+  na as getPaginationRange,
+  Io as toast,
+  ls as useToast
 };
 //# sourceMappingURL=index.esm.js.map

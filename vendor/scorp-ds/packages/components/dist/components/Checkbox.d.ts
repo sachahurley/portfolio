@@ -26,10 +26,10 @@
  * - Optional label
  */
 import { type InputHTMLAttributes, type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
     /** Box size. The tap target is 44×44px at every size. */
-    size?: ControlSizeProp;
+    size?: ControlSize;
     /** Visible label; clicking it toggles the box. Without one, pass `aria-label`. */
     label?: string | ReactNode;
     /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */

@@ -18,7 +18,7 @@
  * - plate.round
  */
 import { type ReactNode } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 export interface KbdProps {
     /**
      * Keys of a combo, in press order (`["Ctrl", "Shift", "P"]`). Wins over
@@ -33,7 +33,7 @@ export interface KbdProps {
      */
     children?: ReactNode;
     /** Key size: sm 20px (default) or md 24px. */
-    size?: Extract<ControlSizeProp, "sm" | "md" | "small" | "medium">;
+    size?: Extract<ControlSize, "sm" | "md">;
     /** Visible separator between combo keys (default "+"). */
     separator?: ReactNode;
     /** Extra classes for the outer `<kbd>`. */
@@ -48,7 +48,7 @@ export interface KbdProps {
  * <Kbd>Esc</Kbd>
  * ```
  */
-export declare function Kbd({ keys, children, size: sizeProp, separator, className }: KbdProps): import("react/jsx-runtime").JSX.Element;
+export declare function Kbd({ keys, children, size, separator, className }: KbdProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace Kbd {
     var displayName: string;
 }

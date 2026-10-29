@@ -23,10 +23,10 @@
  * TOKENS USED: color inherits (currentColor); no timing token applies to a
  * continuous loop, so the frame interval is a structural constant.
  */
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 export interface SpinnerProps {
     /** Box size: sm 12px (inline, 32px controls), md 16px (default), lg 24px (48px controls, empty states). */
-    size?: ControlSizeProp;
+    size?: ControlSize;
     /**
      * What is loading, read by screen readers and never shown (default "Loading").
      * Be specific when several things load at once: "Loading invoices".
@@ -46,7 +46,7 @@ export interface SpinnerProps {
  * @param label - Visually hidden status text (default: "Loading")
  * @param className - Extra wrapper classes (color, margin)
  */
-export declare function Spinner({ size: sizeProp, label, className }: SpinnerProps): import("react/jsx-runtime").JSX.Element;
+export declare function Spinner({ size, label, className }: SpinnerProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace Spinner {
     var displayName: string;
 }

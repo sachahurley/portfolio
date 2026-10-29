@@ -28,10 +28,10 @@
  * - Children are flattened, so fragments, arrays and `<optgroup>` all work
  */
 import { type ReactNode, type SelectHTMLAttributes } from "react";
-import { type ControlSizeProp } from "../lib/size";
+import type { ControlSize } from "../lib/size";
 export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
-    /** Trigger height: sm 32px, md 40px (default), lg 48px. Legacy names are deprecated aliases. */
-    size?: ControlSizeProp;
+    /** Trigger height: sm 32px, md 40px (default), lg 48px. */
+    size?: ControlSize;
     /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
     error?: boolean;
     /** Hint shown under the trigger. Linked via `aria-describedby`. */
