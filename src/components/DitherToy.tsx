@@ -165,7 +165,7 @@ export default function DitherToy() {
     >
       <canvas ref={canvasRef} className="dtoy-canvas" aria-label="Dithered preview" />
       <div className="dtoy-controls">
-        <Button variant="secondary" size="small" type="button" onClick={() => fileRef.current?.click()}>
+        <Button variant="secondary" size="sm" type="button" onClick={() => fileRef.current?.click()}>
           choose an image
         </Button>
         <input

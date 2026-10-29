@@ -357,7 +357,7 @@ export default function BuilderLab() {
           {slider('w', target.w, lim.w, (v) => editTarget({ w: v }), 'Width or span in tiles')}
           {slider('d', target.d, lim.d, (v) => editTarget({ d: v }), 'Depth in tiles')}
           {slider('h', target.h, lim.h, (v) => editTarget({ h: v }), 'Height')}
-          <Button variant="ghost" size="small"
+          <Button variant="ghost" size="sm"
             
             onClick={() => editTarget({ seed: Math.floor(Math.random() * 10000) })}
           >
@@ -368,7 +368,7 @@ export default function BuilderLab() {
         {mode === 'scene' && selected != null && (
           <div className="bld-row">
             <span className="bld-row-label">selected</span>
-            <Button variant="ghost" size="small"
+            <Button variant="ghost" size="sm"
               
               onClick={() =>
                 clearSelectionAnd((s) => ({
@@ -379,7 +379,7 @@ export default function BuilderLab() {
             >
               delete
             </Button>
-            <Button variant="ghost" size="small"
+            <Button variant="ghost" size="sm"
               
               onClick={() => {
                 const it = scene.items[selected]
@@ -393,7 +393,7 @@ export default function BuilderLab() {
             >
               make brush
             </Button>
-            <Button variant="ghost" size="small"  onClick={() => setSelected(null)}>
+            <Button variant="ghost" size="sm"  onClick={() => setSelected(null)}>
               deselect
             </Button>
           </div>
@@ -420,7 +420,7 @@ export default function BuilderLab() {
             </div>
             <div className="bld-row">
               <span className="bld-row-label">&nbsp;</span>
-              <Button variant="ghost" size="small"
+              <Button variant="ghost" size="sm"
                 
                 onClick={() => {
                   clearSelectionAnd((s) => ({
@@ -432,7 +432,7 @@ export default function BuilderLab() {
               >
                 surprise me
               </Button>
-              <Button variant="ghost" size="small"
+              <Button variant="ghost" size="sm"
                 
                 onClick={() =>
                   clearSelectionAnd((s) => ({ ...s, scene: { ...s.scene, items: [] } }))
@@ -446,7 +446,7 @@ export default function BuilderLab() {
 
         <div className="bld-row">
           <span className="bld-row-label">&nbsp;</span>
-          <Button variant="secondary" size="small" type="button" onClick={copy}>
+          <Button variant="secondary" size="sm" type="button" onClick={copy}>
             <DitherIcon name="copy" size={16} />
             {copyState === 'copied' ? 'copied' : copyState === 'failed' ? 'copy failed' : mode === 'object' ? 'copy recipe' : 'copy scene'}
           </Button>

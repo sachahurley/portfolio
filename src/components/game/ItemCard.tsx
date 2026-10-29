@@ -123,7 +123,7 @@ export default function ItemCard({
     !isEquipped && onDestroy ? (
       <Button
         variant="destructive"
-        size="small"
+        size="sm"
         type="button"
         aria-label={`Destroy the ${item.name}`}
         onClick={onDestroy}
@@ -144,7 +144,7 @@ export default function ItemCard({
       footerContent={
         <>
           {!equipped && destroyButton}
-          <Button variant="primary" size="small" onClick={onAction}>
+          <Button variant="primary" size="sm" onClick={onAction}>
             {label}
           </Button>
         </>

@@ -52,7 +52,7 @@ export default function VillageLab() {
       </div>
 
       <div className="bld-row" style={{ marginTop: 14, justifyContent: 'center' }}>
-        <Button variant="secondary" size="small" href={TOOL_URL} target="_blank" rel="noopener noreferrer">
+        <Button variant="secondary" size="sm" href={TOOL_URL} target="_blank" rel="noopener noreferrer">
           open full screen <ArrowUpRight />
         </Button>
       </div>

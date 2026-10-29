@@ -73,8 +73,8 @@ function describeSitting(s: Sitting) {
   }
 }
 
-const ReaderAvatar = ({ size }: { size: 'small' | 'medium' }) => (
-  <Avatar size={size} icon={<DitherIcon name="moon" size={size === 'small' ? 12 : 16} />} alt="" />
+const ReaderAvatar = ({ size }: { size: 'sm' | 'md' }) => (
+  <Avatar size={size} icon={<DitherIcon name="moon" size={size === 'sm' ? 12 : 16} />} alt="" />
 )
 
 export default function TarotLab() {
@@ -221,7 +221,7 @@ export default function TarotLab() {
   /** Icon-only header action, square like the close button; the tooltip names it. */
   const iconAction = (label: string, icon: DitherIconName, onClick: () => void) => (
     <Tooltip content={label} side="bottom">
-      <Button variant="icon" size="icon" type="button" onClick={onClick} aria-label={label}>
+      <Button variant="icon" size="md" type="button" onClick={onClick} aria-label={label}>
         <DitherIcon name={icon} size={16} />
       </Button>
     </Tooltip>
@@ -234,7 +234,7 @@ export default function TarotLab() {
         <Button
           key={q}
           variant="outline"
-          size="small"
+          size="sm"
           type="button"
           className="tarot-chip"
           onClick={() => send(q)}
@@ -248,13 +248,13 @@ export default function TarotLab() {
 
   /** Back from Past sittings, at the close button's size; icon-only on handhelds. */
   const backButton = handheld ? (
-    <Button variant="icon" size="icon" type="button" onClick={() => setShowPast(false)} aria-label="Back">
+    <Button variant="icon" size="md" type="button" onClick={() => setShowPast(false)} aria-label="Back">
       <DitherIcon name="arrow-left" size={16} />
     </Button>
   ) : (
     <Button
       variant="secondary"
-      size="medium"
+      size="md"
       type="button"
       className="tarot-new"
       onClick={() => setShowPast(false)}
@@ -269,7 +269,7 @@ export default function TarotLab() {
       {/* header bar: who you're talking to, and the two session controls */}
       <header className="tarot-bar">
         <div className="tarot-bar-id">
-          <ReaderAvatar size="medium" />
+          <ReaderAvatar size="md" />
           <div className="tarot-bar-text">
             <h1 className="tarot-title">The Seer</h1>
             <p className="tarot-sub">Tarot, one conversation at a time</p>
@@ -280,7 +280,7 @@ export default function TarotLab() {
             ? backButton
             : past.length > 0 && iconAction('Past sittings', 'clock', () => setShowPast(true))}
           {!empty && !showPast && iconAction('New sitting', 'plus', newSitting)}
-          <Button variant="icon" size="icon" type="button" onClick={closePage} aria-label="Close tarot reader">
+          <Button variant="icon" size="md" type="button" onClick={closePage} aria-label="Close tarot reader">
             <DitherIcon name="close" size={16} />
           </Button>
         </div>
@@ -335,7 +335,7 @@ export default function TarotLab() {
               </p>
             ) : (
               <div key={i} className="tm tm-reader">
-                <ReaderAvatar size="small" />
+                <ReaderAvatar size="sm" />
                 <div className="tm-body">
                   {m.text && <p className="tm-text">{m.text}</p>}
                   {m.draw && <CardStrip draw={m.draw} animate={i === liveIndex} />}
@@ -357,7 +357,7 @@ export default function TarotLab() {
                 <span className="tarot-alert-body">
                   <span>{errorInfo.description}</span>
                   {errorInfo.retry && (
-                    <Button variant="secondary" size="small" type="button" onClick={retry} disabled={busy}>
+                    <Button variant="secondary" size="sm" type="button" onClick={retry} disabled={busy}>
                       Ask again
                     </Button>
                   )}
@@ -396,7 +396,7 @@ export default function TarotLab() {
                   placeholder={busy ? 'The Seer is speaking…' : 'Ask the Seer'}
                   onChange={(e) => setDraft(e.target.value)}
                 />
-                <Button variant="primary" size="icon" type="submit" disabled={busy || !draft.trim()} aria-label="Send">
+                <Button variant="primary" size="md" type="submit" disabled={busy || !draft.trim()} aria-label="Send">
                   <DitherIcon name="enter" size={16} />
                 </Button>
               </form>

@@ -20,7 +20,7 @@ export default function BackButton({ fallback = '/' }: { fallback?: string }) {
   return (
     <Button
       variant="secondary"
-      size="medium"
+      size="md"
       type="button"
       onClick={goBack}
       aria-label="Go back"

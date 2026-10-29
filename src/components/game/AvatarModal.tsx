@@ -38,7 +38,7 @@ export default function AvatarModal({ isOpen, onClose }: { isOpen: boolean; onCl
       title="Appearance"
       width="min(420px, 92vw)"
       footerContent={
-        <Button variant="secondary" size="small" type="button" onClick={onClose}>
+        <Button variant="secondary" size="sm" type="button" onClick={onClose}>
           Done
         </Button>
       }
@@ -60,7 +60,7 @@ export default function AvatarModal({ isOpen, onClose }: { isOpen: boolean; onCl
       </div>
       <Button
         variant="ghost"
-        size="small"
+        size="sm"
         type="button"
         className="av-reroll"
         onClick={() => setCandidates(rollCandidates(avatarSeed))}

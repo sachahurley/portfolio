@@ -36,10 +36,10 @@ export default function DestroyConfirmModal({
       size="sm"
       footerContent={
         <>
-          <Button variant="secondary" size="small" type="button" onClick={onClose}>
+          <Button variant="secondary" size="sm" type="button" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="destructive" size="small" type="button" onClick={onConfirm}>
+          <Button variant="destructive" size="sm" type="button" onClick={onConfirm}>
             Destroy
           </Button>
         </>

@@ -134,7 +134,7 @@ export default function ProjectDetail() {
       {project.externalUrl && (
         <Button
           variant="secondary"
-          size="small"
+          size="sm"
           href={project.externalUrl}
           target="_blank"
           rel="noopener noreferrer"

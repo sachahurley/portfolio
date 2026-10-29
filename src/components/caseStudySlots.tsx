@@ -40,7 +40,7 @@ export function InterfaceSpecimen() {
       scroll={false}
       variant="active"
       actions={
-        <Button size="small" variant="ghost">
+        <Button size="sm" variant="ghost">
           docs
         </Button>
       }

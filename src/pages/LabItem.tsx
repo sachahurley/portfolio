@@ -213,7 +213,7 @@ export default function LabItem() {
       {item.externalUrl && (
         <Button
           variant="secondary"
-          size="small"
+          size="sm"
           href={item.externalUrl}
           target="_blank"
           rel="noopener noreferrer"

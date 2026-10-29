@@ -583,11 +583,11 @@ export default function BlockShop() {
           )}
           <div className="bld-row">
             <span className="bld-row-label">&nbsp;</span>
-            <Button variant="secondary" size="small" type="button" onClick={saveBlock}>
+            <Button variant="secondary" size="sm" type="button" onClick={saveBlock}>
               save block
             </Button>
             {selBlock && (
-              <Button variant="ghost" size="small"  onClick={deleteBlock}>
+              <Button variant="ghost" size="sm"  onClick={deleteBlock}>
                 delete selected
               </Button>
             )}
@@ -621,17 +621,17 @@ export default function BlockShop() {
           )}
           <div className="bld-row">
             <span className="bld-row-label">&nbsp;</span>
-            <Button variant="secondary" size="small" type="button" onClick={saveObject}>
+            <Button variant="secondary" size="sm" type="button" onClick={saveObject}>
               save object
             </Button>
-            <Button variant="ghost" size="small"
+            <Button variant="ghost" size="sm"
               
               onClick={() => setState((s) => ({ ...s, objDraft: emptyObjDraft() }))}
             >
               clear
             </Button>
             {selObject && (
-              <Button variant="ghost" size="small"  onClick={deleteObject}>
+              <Button variant="ghost" size="sm"  onClick={deleteObject}>
                 delete selected object
               </Button>
             )}
@@ -660,7 +660,7 @@ export default function BlockShop() {
           />
           <div className="bld-row">
             <span className="bld-row-label">&nbsp;</span>
-            <Button variant="ghost" size="small"
+            <Button variant="ghost" size="sm"
               
               onClick={() => setState((s) => ({ ...s, placements: [] }))}
             >
