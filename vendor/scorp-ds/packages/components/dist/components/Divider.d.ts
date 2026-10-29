@@ -7,7 +7,8 @@
  * FORMS:
  * - orientation="horizontal": full-width rule (default)
  * - orientation="vertical": full-height rule
- * - label: a horizontal rule with a centred label between box-drawing runs
+ * - label: a horizontal rule with a centred label; each side is a hairline that
+ *   fills the width beside the label, and a long label truncates
  *
  * SPACING: vertical margins (`my-*`) on every horizontal form, labelled or
  * not; side margins (`mx-*`) on the vertical rule.
@@ -17,11 +18,11 @@ import type { ControlSize } from "../lib/size";
 export interface DividerProps {
     /** `horizontal` (default) for a full-width rule between stacked blocks; `vertical` for a full-height rule between items in a row (the parent needs a height). */
     orientation?: "horizontal" | "vertical";
-    /** Centred label on a horizontal rule ("or", a section name), drawn between box-drawing runs. Passing it gives the labelled form; a string label is also the separator's accessible name. Ignored when `orientation` is `vertical`. */
+    /** Centred label on a horizontal rule ("or", a section name), drawn between two hairline runs that fill the width beside it. Passing it gives the labelled form; a string label is also the separator's accessible name. Keep it short: a label wider than the row truncates with an ellipsis. Ignored when `orientation` is `vertical`. */
     label?: ReactNode;
     /** Margin around the rule: none, sm 4px, md 16px (default), lg 32px. Above and below a horizontal rule (labelled or not), either side of a vertical one. */
     spacing?: "none" | ControlSize;
-    /** Extra classes on the rule (width, colour override, alignment). */
+    /** Extra classes on the rule (width, colour override, alignment). They win over the defaults, so `w-64` replaces the default `w-full`. */
     className?: string;
 }
 /**
