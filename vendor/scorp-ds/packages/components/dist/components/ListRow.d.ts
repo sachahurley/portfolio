@@ -48,24 +48,26 @@ type CommonProps = {
      * `aria-current="page"` so the state is announced.
      */
     selected?: boolean;
+    /** Extra classes on the row element (padding overrides, a divider border between rows). */
     className?: string;
 };
 export type ListRowProps = CommonProps & (({
+    /** Destination URL: the row renders as an `<a>` and navigates. */
     href: string;
     onClick?: never;
     as?: never;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "className" | "title">) | ({
-    href?: never;
+    /** In-place action: the row renders as a `<button>`. Use `href` instead to navigate. */
     onClick: () => void;
+    href?: never;
     as?: never;
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "className" | "title">)
-/**
- * Custom link component (e.g. a router <Link>): the row renders it with
- * interactive styling and spreads `asProps` onto it (`to`, `state`,
- * ...), so client-side navigation works without a full page load.
- */
- | ({
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "className" | "title">) | ({
+    /**
+     * Custom link component (e.g. a router `<Link>`): the row renders it with
+     * interactive styling, so client-side navigation works without a full page load.
+     */
     as: ElementType;
+    /** Props for the `as` component (`to`, `state`, ...), spread onto it as-is. */
     asProps?: Record<string, unknown>;
     href?: never;
     onClick?: never;
@@ -75,7 +77,7 @@ export type ListRowProps = CommonProps & (({
     as?: never;
 } & Omit<HTMLAttributes<HTMLDivElement>, "className" | "title">));
 /**
- * ListRow Component
+ * One scannable line in a list of items (a post, a project, a setting), either interactive or display-only.
  *
  * Renders an `<a>` when `href` is set, a `<button>` when `onClick` is set,
  * and a plain `<div>` for display-only rows.

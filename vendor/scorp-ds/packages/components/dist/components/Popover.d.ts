@@ -99,7 +99,7 @@ export interface PopoverProps {
     triggerWrapperClassName?: string;
 }
 /**
- * Popover Component
+ * A non-modal panel anchored to a trigger, for interactive content (filters, a short form) that a `Tooltip` cannot hold.
  *
  * @example
  * <Popover trigger={<Button variant="secondary">Filters</Button>} aria-label="Filters">

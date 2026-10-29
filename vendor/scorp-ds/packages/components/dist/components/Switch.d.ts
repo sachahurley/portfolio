@@ -37,7 +37,9 @@
 import { type ButtonHTMLAttributes, type ReactNode } from "react";
 import { type ControlSizeProp } from "../lib/size";
 export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+    /** Whether the switch is on. The switch is controlled: keep this in state and update it from `onCheckedChange`. Default: false. */
     checked?: boolean;
+    /** Called with the next value when the user clicks the track or label, or presses Space or Enter. Without it the switch cannot change. */
     onCheckedChange?: (checked: boolean) => void;
     /** Track size. The tap target is at least 44px tall at every size. */
     size?: ControlSizeProp;
@@ -49,19 +51,13 @@ export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
      * settings row — so the name isn't duplicated next to the track.
      */
     hideLabel?: boolean;
+    /** Blocks interaction and dims the switch. Prefer explaining nearby why a setting is unavailable. */
     disabled?: boolean;
+    /** Icon drawn inside the knob, for a switch whose two states have a picture (a moon and sun for the theme toggle). */
     icon?: ReactNode;
 }
 /**
- * Switch Component
- *
- * @param checked - Whether switch is checked/on (default: false)
- * @param onCheckedChange - Callback when switch state changes
- * @param size - Switch size (default: "md")
- * @param label - Optional label text displayed next to switch (and the accessible name); clicking it toggles
- * @param hideLabel - Use label as the accessible name only; render no visible text
- * @param disabled - Whether switch is disabled
- * @param icon - Optional icon to display inside the knob (e.g., Moon/Sun for theme toggle)
+ * A toggle for a setting that takes effect at once, such as a preference; for a choice submitted with a form use `Checkbox`.
  */
 export declare const Switch: import("react").ForwardRefExoticComponent<SwitchProps & import("react").RefAttributes<HTMLButtonElement>>;
 //# sourceMappingURL=Switch.d.ts.map

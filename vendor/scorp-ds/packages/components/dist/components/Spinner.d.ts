@@ -36,7 +36,7 @@ export interface SpinnerProps {
     className?: string;
 }
 /**
- * Spinner Component
+ * A small animated indicator that something is loading.
  *
  * Use for waits of unknown length. For a button that is submitting, prefer
  * `<Button loading>`, which places a Spinner for you and keeps the button's

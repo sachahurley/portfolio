@@ -78,7 +78,7 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
     className?: string;
 }
 /**
- * Combobox Component
+ * A text input that filters a list of options as the user types, for choosing one value from a list too long to scan.
  *
  * @example
  * <Combobox

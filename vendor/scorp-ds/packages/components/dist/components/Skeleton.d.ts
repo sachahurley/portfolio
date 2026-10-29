@@ -44,7 +44,7 @@ export interface SkeletonProps {
     className?: string;
 }
 /**
- * Skeleton Component
+ * A placeholder shape that holds the layout while content loads, drawn as text lines, a rectangle or an avatar.
  *
  * @example
  * <Skeleton lines={3} />

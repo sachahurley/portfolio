@@ -43,7 +43,7 @@ export interface BottomSheetProps {
     children: ReactNode;
 }
 /**
- * BottomSheet Component
+ * A modal panel that slides up from the bottom edge, for short tasks and option lists on narrow screens.
  *
  * @param isOpen - Whether the sheet is currently visible
  * @param onClose - Callback when the user dismisses (close button, scrim click or ESC)

@@ -51,7 +51,7 @@ export interface DropdownProps {
     size?: ControlSizeProp;
 }
 /**
- * Dropdown Component
+ * A button that opens a menu of commands; for choosing a form value use `Select` instead.
  *
  * @param trigger - Custom trigger element (optional, defaults to button)
  * @param items - Array of menu items with labels, onClick handlers, and optional icons

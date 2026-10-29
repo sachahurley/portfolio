@@ -44,7 +44,7 @@ export interface ProgressBarProps {
     className?: string;
 }
 /**
- * ProgressBar Component
+ * Shows how far a task has got: determinate when `value` is set, indeterminate when it is omitted.
  *
  * @example
  * <ProgressBar label="Uploading" value={42} />

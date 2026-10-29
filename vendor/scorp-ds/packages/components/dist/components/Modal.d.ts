@@ -41,9 +41,13 @@
  */
 import { type ReactNode } from "react";
 export interface ModalProps {
+    /** Whether the dialog is shown. The parent owns this state: set it true to open, and false from `onClose`. */
     isOpen: boolean;
+    /** Called when the user asks to close (close button, Escape, or a scrim click). Set `isOpen` to false here. */
     onClose: () => void;
+    /** Heading in the fixed header; also the dialog's accessible name, so make it say what the dialog is for. */
     title: string;
+    /** Body content. It scrolls inside the panel when it is taller than the viewport allows; header and footer stay fixed. */
     children: ReactNode;
     /**
      * Optional fixed footer for CTAs. Render DS Buttons here (e.g. a secondary
@@ -65,12 +69,7 @@ export interface ModalProps {
     docked?: boolean;
 }
 /**
- * Modal Component
- *
- * @param isOpen - Whether the modal is currently visible
- * @param onClose - Callback function triggered when user closes modal
- * @param title - Header title text
- * @param children - Modal content (will be scrollable if it exceeds max-height)
+ * A dialog that interrupts the page for a focused task or a confirmation; it traps focus (except when `docked`) and closes on Escape, the scrim or the close button.
  */
 export declare function Modal({ isOpen, onClose, title, children, footerContent, width, docked }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map
