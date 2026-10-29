@@ -19,19 +19,27 @@
  * - Status indicator (online/offline dot)
  * - Fallback to initials if image fails to load
  * - Full light/dark theme support
- * - Accessible (alt text support)
+ * - Always named: `alt` is required and names the image or, for initials and
+ *   icons, the box (`role="img"`); `alt=""` marks a decorative avatar
  */
 import { type ReactNode } from "react";
 import { type ControlSizeProp } from "../lib/size";
+import { type IconSlot } from "../lib/icon-slot";
 export interface AvatarProps {
     /** Image URL. Shown when set and it loads; otherwise the avatar falls back to `initials`, then `icon`, then an `@` glyph. */
     src?: string;
-    /** Alt text for the image, usually the person's name. Defaults to "Avatar", so pass it whenever `src` is set. */
-    alt?: string;
+    /**
+     * Who the avatar shows, usually the person's name. Required, because it names
+     * the avatar whatever it renders: the image's alt text, and the name of the
+     * initials or icon fallback (which is also what a broken image falls back to).
+     * Pass `""` when the name is already written next to the avatar, so it is
+     * hidden from assistive tech instead of being read twice.
+     */
+    alt: string;
     /** One or two letters shown when there is no image, or the image fails to load. */
     initials?: string;
-    /** Icon shown when there is neither an image nor initials (for a team, a bot, a system account). */
-    icon?: ReactNode;
+    /** Icon shown when there is neither an image nor initials (for a team, a bot, a system account). Takes a TuiIcon name (`"Check"`) or an element. */
+    icon?: IconSlot | ReactNode;
     /** Diameter: sm 24px, md 40px (default), lg 64px, xl 96px. Legacy names are deprecated aliases. */
     size?: ControlSizeProp | "xl";
     /** Presence dot in the corner, announced as "Status: online" and so on. Omit it to show no dot. */

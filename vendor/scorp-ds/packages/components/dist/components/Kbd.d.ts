@@ -21,11 +21,16 @@ import { type ReactNode } from "react";
 import { type ControlSizeProp } from "../lib/size";
 export interface KbdProps {
     /**
-     * Keys of a combo, in press order (`["Ctrl", "Shift", "P"]`). Takes
-     * precedence over `children`.
+     * Keys of a combo, in press order (`["Ctrl", "Shift", "P"]`). Wins over
+     * `children`: when `keys` has at least one entry, `children` is not rendered.
+     * A one-entry array renders a single key, the same as passing it as `children`.
      */
     keys?: string[];
-    /** A single key label when `keys` is not used. */
+    /**
+     * A single key label (`<Kbd>Esc</Kbd>`). Rendered only when `keys` is absent or
+     * empty; if both are passed, `keys` wins and `children` is ignored. Use `keys`
+     * for a combo, not children with a typed "+".
+     */
     children?: ReactNode;
     /** Key size: sm 20px (default) or md 24px. */
     size?: Extract<ControlSizeProp, "sm" | "md" | "small" | "medium">;
@@ -35,7 +40,8 @@ export interface KbdProps {
     className?: string;
 }
 /**
- * Kbd
+ * An inline keyboard key or combo for shortcut hints. Pass one key as `children`
+ * or a combo as `keys`; if both are passed, `keys` wins.
  *
  * ```tsx
  * <p>Open the palette with <Kbd keys={["Ctrl", "K"]} />.</p>

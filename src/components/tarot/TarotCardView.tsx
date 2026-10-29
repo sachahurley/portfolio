@@ -68,7 +68,7 @@ export default function TarotCardView({
         {drawn.position.label}
         {faceUp && <span className="tc-name">{drawn.card.name}</span>}
         {faceUp && drawn.reversed && (
-          <Badge size="small" variant="default">
+          <Badge size="sm" tone="neutral">
             Reversed
           </Badge>
         )}

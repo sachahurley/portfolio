@@ -220,7 +220,7 @@ export default function TarotLab() {
 
   /** Icon-only header action, square like the close button; the tooltip names it. */
   const iconAction = (label: string, icon: DitherIconName, onClick: () => void) => (
-    <Tooltip content={label} position="bottom">
+    <Tooltip content={label} side="bottom">
       <Button variant="icon" size="icon" type="button" onClick={onClick} aria-label={label}>
         <DitherIcon name={icon} size={16} />
       </Button>
@@ -366,7 +366,7 @@ export default function TarotLab() {
             />
           )}
 
-          {closed && <Divider variant="withText" text="This sitting has run its course" spacing="small" />}
+          {closed && <Divider label="This sitting has run its course" spacing="sm" />}
           <div ref={endRef} className="tarot-end" />
         </section>
       )}

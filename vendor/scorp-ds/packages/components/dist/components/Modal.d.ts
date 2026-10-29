@@ -25,7 +25,7 @@
  * - Full light/dark theme support
  *
  * DIMENSIONS:
- * - Width: 740px fixed
+ * - Width: `size` sm 360px, md 640px, lg 740px (default), full viewport
  * - Max height: 80% of viewport height
  *
  * SHAPE: the panel is a large plate (--plate-round-lg, stepped one-bit corners)
@@ -41,10 +41,26 @@
  */
 import { type ReactNode } from "react";
 export interface ModalProps {
-    /** Whether the dialog is shown. The parent owns this state: set it true to open, and false from `onClose`. */
-    isOpen: boolean;
-    /** Called when the user asks to close (close button, Escape, or a scrim click). Set `isOpen` to false here. */
-    onClose: () => void;
+    /**
+     * Whether the dialog is shown. Pass it with `onOpenChange` to control the
+     * dialog: set it true to open, and false when `onOpenChange(false)` fires.
+     * Omit it (and use `defaultOpen`) for a dialog that manages its own state.
+     */
+    open?: boolean;
+    /**
+     * Initial open state when `open` is not passed (default false). The dialog
+     * then closes itself on Escape, the scrim or the close button.
+     */
+    defaultOpen?: boolean;
+    /**
+     * Called with `false` when the user asks to close (close button, Escape, or
+     * a scrim click). Set `open` to false here when the dialog is controlled.
+     */
+    onOpenChange?: (open: boolean) => void;
+    /** @deprecated Use `open`. Still honoured when `open` is not passed. */
+    isOpen?: boolean;
+    /** @deprecated Use `onOpenChange`. Still called whenever `onOpenChange(false)` is. */
+    onClose?: () => void;
     /** Heading in the fixed header; also the dialog's accessible name, so make it say what the dialog is for. */
     title: string;
     /** Body content. It scrolls inside the panel when it is taller than the viewport allows; header and footer stay fixed. */
@@ -55,8 +71,15 @@ export interface ModalProps {
      */
     footerContent?: ReactNode;
     /**
-     * Panel width (default 740). Numbers are px; strings pass through
-     * (e.g. "min(320px, 90vw)"). Small celebratory dialogs want ~320.
+     * Panel width: `sm` (360px) for a short confirmation or notice, `md`
+     * (640px) for a compare card or a short form, `lg` (740px, the default
+     * when neither `size` nor `width` is passed) for a full task, `full` for
+     * the whole viewport width. The panel never grows past the viewport.
+     */
+    size?: "sm" | "md" | "lg" | "full";
+    /**
+     * @deprecated Use `size`. Still honoured when `size` is not passed:
+     * numbers are px, strings pass through.
      */
     width?: number | string;
     /**
@@ -71,5 +94,5 @@ export interface ModalProps {
 /**
  * A dialog that interrupts the page for a focused task or a confirmation; it traps focus (except when `docked`) and closes on Escape, the scrim or the close button.
  */
-export declare function Modal({ isOpen, onClose, title, children, footerContent, width, docked }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function Modal({ open: openProp, defaultOpen, onOpenChange, isOpen: isOpenProp, onClose, title, children, footerContent, size, width, docked, }: ModalProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map

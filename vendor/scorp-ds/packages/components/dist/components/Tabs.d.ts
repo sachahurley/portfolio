@@ -19,16 +19,28 @@ export interface TabsProps {
  * Root tabs container. Provide either controlled `value` + `onValueChange`, or `defaultValue`.
  */
 export declare function Tabs({ value: valueProp, defaultValue, onValueChange, children, className, }: TabsProps): import("react/jsx-runtime").JSX.Element;
-export interface TabsListProps {
+/** Every TabsList prop except the requirement that one accessible name is set. */
+interface TabsListOwnProps {
     /** The `TabsTrigger` buttons, in the order the arrow keys move through them. */
     children: ReactNode;
     /** Extra classes on the tab strip (alignment, overflow). */
     className?: string;
-    /** Accessible name for the tab strip (pass this or `aria-labelledby`). */
+    /** Accessible name for the tab strip, such as "Account sections"; this or `aria-labelledby` is required. */
     "aria-label"?: string;
     /** Id of a visible heading that names the tab strip; use it instead of `aria-label` when such a heading exists. */
     "aria-labelledby"?: string;
 }
+/**
+ * The name a TabsList is announced by. The type requires one: two tab strips
+ * on a page are otherwise both read as "tab list".
+ */
+type TabsListName = {
+    "aria-label": string;
+} | {
+    "aria-labelledby": string;
+};
+/** Props of `TabsList`: its own props plus a required accessible name, given as `aria-label` or `aria-labelledby`. */
+export type TabsListProps = TabsListOwnProps & TabsListName;
 /**
  * Tab buttons row. Direct children should be `TabsTrigger` elements only (order defines keyboard flow).
  */
@@ -68,4 +80,5 @@ export declare function TabsContent({ value, children, className, forceMount }: 
 export declare namespace TabsContent {
     var displayName: string;
 }
+export {};
 //# sourceMappingURL=Tabs.d.ts.map

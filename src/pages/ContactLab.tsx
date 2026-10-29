@@ -239,7 +239,7 @@ export default function ContactLab() {
         </div>
       </div>
 
-      <BottomSheet isOpen={open !== null} onClose={close} ariaLabel={current ? current.name : 'Contact'}>
+      <BottomSheet open={open !== null} onOpenChange={(next) => !next && close()} aria-label={current ? current.name : 'Contact'}>
         <div className="mx-auto w-full max-w-lg px-6 pb-8 pt-2">
           {open === 'note' && <QuickNote sent={sent} onSend={() => setSent(true)} />}
           {open === 'word' && <SendWord sent={sent} onSend={() => setSent(true)} />}

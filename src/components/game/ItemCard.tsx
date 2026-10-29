@@ -136,8 +136,8 @@ export default function ItemCard({
     // comparing two items is its own act; a single item keeps its slot
     // (and a narrower card: no second column to hold space for)
     <Modal
-      isOpen={liveItem != null}
-      onClose={onClose}
+      open={liveItem != null}
+      onOpenChange={(next) => !next && onClose()}
       title={equipped ? 'Compare' : cap(SLOT_LABELS[item.slot])}
       docked
       width={equipped ? 640 : 440}

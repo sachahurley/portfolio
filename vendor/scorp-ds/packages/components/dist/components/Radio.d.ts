@@ -35,11 +35,18 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
     size?: ControlSizeProp;
     /** Visible label next to the box; clicking it selects the radio. Without one, pass `aria-label`. */
     label?: string | ReactNode;
-    /** Error styling without a message. Prefer `errorMessage` so users learn what to fix. */
+    /**
+     * Error styling without a message. Prefer `errorMessage` so users learn what to fix.
+     * Styling only: announce the invalid state with `aria-invalid` on the group
+     * (`<fieldset role="radiogroup">`), since ARIA does not support it on a radio.
+     */
     error?: boolean;
     /** Secondary line under the label (explains what picking this option means). */
     helperText?: ReactNode;
-    /** Validation message under the label. Sets the error state and replaces `helperText`. */
+    /**
+     * Validation message under the label, read through `aria-describedby`. Sets the
+     * error styling and replaces `helperText`. Put `aria-invalid` on the group, not here.
+     */
     errorMessage?: ReactNode;
     /**
      * Called with this radio's checked state after a change (alternative to

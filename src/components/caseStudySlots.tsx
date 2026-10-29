@@ -60,7 +60,7 @@ export function InterfaceSpecimen() {
               <TableCell>{r.name}</TableCell>
               <TableCell>{r.kind}</TableCell>
               <TableCell>
-                <Badge size="sm" variant={r.tone} caps>
+                <Badge size="sm" tone={r.tone} caps>
                   {r.state}
                 </Badge>
               </TableCell>

@@ -29,7 +29,7 @@
  * - duration.fast, touch.target (row height), spacing.4 (indent step)
  */
 import { type ReactNode } from "react";
-import { type TuiIconName } from "./TuiIcon";
+import { type IconSlot } from "../lib/icon-slot";
 /** One node of the tree. Nodes with `children` are branches. */
 export interface TreeNode {
     /** Unique, stable id across the whole tree. */
@@ -38,19 +38,20 @@ export interface TreeNode {
     label: ReactNode;
     /** Plain-text label for type-ahead when `label` is not a string. */
     textValue?: string;
-    /** Optional 1-bit icon before the label. */
-    icon?: TuiIconName;
+    /** Optional icon before the label: a TuiIcon name or an element. */
+    icon?: IconSlot;
     /** Child nodes. An empty array still renders a (childless) branch. */
     children?: TreeNode[];
     /** Skip this node for selection and activation (it stays focusable). */
     disabled?: boolean;
 }
-export interface TreeViewProps {
+/** Every TreeView prop except the requirement that one accessible name is set. */
+interface TreeViewOwnProps {
     /** Root nodes. */
     nodes: TreeNode[];
-    /** Accessible name of the tree (pass this or `aria-labelledby`). */
+    /** Accessible name of the tree, such as "Files"; this or `aria-labelledby` is required. */
     "aria-label"?: string;
-    /** Id of a visible heading naming the tree. */
+    /** Id of a visible heading naming the tree; use it instead of `aria-label` when such a heading exists. */
     "aria-labelledby"?: string;
     /** Ids of open branches (controlled). */
     expanded?: string[];
@@ -72,6 +73,17 @@ export interface TreeViewProps {
     className?: string;
 }
 /**
+ * The name a TreeView is announced by. The type requires one: a screen reader
+ * entering an unnamed tree says only "tree".
+ */
+type TreeViewName = {
+    "aria-label": string;
+} | {
+    "aria-labelledby": string;
+};
+/** Props of `TreeView`: its own props plus a required accessible name, given as `aria-label` or `aria-labelledby`. */
+export type TreeViewProps = TreeViewOwnProps & TreeViewName;
+/**
  * TreeView
  *
  * ```tsx
@@ -87,4 +99,5 @@ export declare function TreeView({ nodes, "aria-label": ariaLabel, "aria-labelle
 export declare namespace TreeView {
     var displayName: string;
 }
+export {};
 //# sourceMappingURL=TreeView.d.ts.map

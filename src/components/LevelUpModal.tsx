@@ -44,8 +44,8 @@ export default function LevelUpModal() {
 
   return (
     <Modal
-      isOpen={shown != null && gem != null}
-      onClose={dismissModal}
+      open={shown != null && gem != null}
+      onOpenChange={(next) => !next && dismissModal()}
       title="Level up"
       width={320}
       footerContent={
