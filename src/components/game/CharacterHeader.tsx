@@ -72,7 +72,7 @@ export default function CharacterHeader() {
               blur/Enter, so half-typed names never hit the save. */}
           <Input
             key={name}
-            size="small"
+            size="sm"
             defaultValue={name}
             maxLength={40}
             aria-label="Character name"

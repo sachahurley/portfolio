@@ -205,7 +205,7 @@ export default function Character() {
       {/* .ch-close is a layout hook only; the control is the DS icon Button */}
       <Button
         variant="icon"
-        size="icon"
+        size="md"
         type="button"
         className="ch-close"
         onClick={closePage}

@@ -69,7 +69,7 @@ export default function LockGate({
         <div className="vault-form">
           <Input
             ref={inputRef}
-            size="small"
+            size="sm"
             type={inputType}
             aria-label={inputType === 'password' ? 'Password' : 'Unlock code'}
             aria-invalid={!!error}
@@ -78,7 +78,7 @@ export default function LockGate({
             spellCheck={false}
             disabled={busy}
           />
-          <Button variant="secondary" size="small" type="submit" disabled={busy}>
+          <Button variant="secondary" size="sm" type="submit" disabled={busy}>
             {busy ? 'checking' : 'unlock'}
           </Button>
         </div>

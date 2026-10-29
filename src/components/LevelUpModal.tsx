@@ -49,7 +49,7 @@ export default function LevelUpModal() {
       title="Level up"
       width={320}
       footerContent={
-        <Button variant="secondary" size="small" type="button" onClick={dismissModal}>
+        <Button variant="secondary" size="sm" type="button" onClick={dismissModal}>
           Continue
         </Button>
       }

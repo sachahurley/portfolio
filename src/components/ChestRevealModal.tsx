@@ -41,12 +41,12 @@ export default function ChestRevealModal({
       width={320}
       footerContent={
         <>
-          <Button variant="secondary" size="small" type="button" onClick={onClose}>
+          <Button variant="secondary" size="sm" type="button" onClick={onClose}>
             Take it
           </Button>
           {/* straight into the empty slot; taken items equip via the pack card */}
           {canEquip && onEquip && (
-            <Button variant="primary" size="small" type="button" onClick={onEquip}>
+            <Button variant="primary" size="sm" type="button" onClick={onEquip}>
               Equip
             </Button>
           )}

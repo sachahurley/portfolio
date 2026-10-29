@@ -113,7 +113,7 @@ export default function TileAtlas() {
       <div className="atlas-bar">
         <Input
           id="atlas-search"
-          size="small"
+          size="sm"
           type="search"
           value={q}
           onChange={(e) => choose({ q: e.target.value })}
@@ -161,7 +161,7 @@ export default function TileAtlas() {
         {sel && (
           <>
             {' · '}
-            <Button variant="link" size="small" onClick={() => copyId(sel.id)}>
+            <Button variant="link" size="sm" onClick={() => copyId(sel.id)}>
               {copied ? 'copied' : sel.id}
             </Button>
           </>
@@ -186,7 +186,7 @@ export default function TileAtlas() {
 
       {matches.length === 0 && <p className="atlas-note">Nothing matches. The names are drafts, so try a plainer word.</p>}
       {matches.length > shown && (
-        <Button variant="secondary" size="small" onClick={() => setShown(shown + PAGE)}>
+        <Button variant="secondary" size="sm" onClick={() => setShown(shown + PAGE)}>
           show {Math.min(PAGE, matches.length - shown)} more
         </Button>
       )}
