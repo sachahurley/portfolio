@@ -18,9 +18,10 @@
  *    renders a queue the app owns. Items only auto-dismiss when they set a
  *    `duration`, so existing callers keep their own timing.
  *
- * VARIANTS: default | success | warning | error | info, with the same 1-bit
- * severity icons and semantic colors as Alert (default Bell, info Info,
- * success CheckCircle, warning AlertTriangle, error AlertCircle).
+ * TONES: neutral | info | success | warning | error (decision 0024), with the
+ * same 1-bit severity icons and semantic colors as Alert (neutral Bell, info
+ * Info, success CheckCircle, warning AlertTriangle, error AlertCircle). The
+ * deprecated `variant` still works; its `default` maps to `neutral`.
  *
  * TIMING: imperative toasts auto-dismiss after 5000ms; the timer pauses while
  * the plate is hovered or holds focus, and `duration: Infinity` persists
@@ -30,13 +31,18 @@
  * `role="alert"` (announced immediately), all others `role="status"`.
  *
  * TOKENS USED:
- * - plate.round (silhouette); default: border.hairline (ring), surface.muted (fill)
- * - variants: success / warning / error / info 50, 300, 700, 950 scales (as Alert)
+ * - plate.round (silhouette); neutral: border.hairline (ring), surface.muted (fill)
+ * - tones: success / warning / error / info 50, 300, 700, 950 scales (as Alert)
  * - text.primary, duration.normal + steps(5) (motion), focus.ring.*
  * - z-index.popover (toasts stack above modals by decision)
  */
 import { type ReactNode } from "react";
-/** Severity of a toast; picks the icon, colors, and live-region role. */
+/** Severity of a toast; picks the icon, colors, and live-region role (`error` is announced assertively). */
+export type ToastTone = "neutral" | "info" | "success" | "warning" | "error";
+/**
+ * Severity of a toast under its old name, where `default` meant `neutral`.
+ * @deprecated Use `ToastTone` and the `tone` prop.
+ */
 export type ToastVariant = "default" | "success" | "warning" | "error" | "info";
 /** A single inline action on a toast, e.g. `{ label: "Undo", onClick: restore }`. */
 export interface ToastAction {
@@ -51,7 +57,12 @@ export interface ToastItem {
     id: string | number;
     /** Toast content. Keep it to one short line. */
     message: ReactNode;
-    /** Severity (default: "default"). "error" is announced assertively. */
+    /** Severity (default: "neutral"). "error" is announced assertively. */
+    tone?: ToastTone;
+    /**
+     * Severity under its old name; `default` maps to `neutral`. When both are set, `tone` wins.
+     * @deprecated Use `tone`.
+     */
     variant?: ToastVariant;
     /** Optional inline action, such as Undo. */
     action?: ToastAction;
@@ -78,7 +89,12 @@ export interface ToastProps {
     children: ReactNode;
     /** Called when the plate is clicked (pointer shortcut; wire to dismiss). */
     onClick?: () => void;
-    /** Severity (default: "default"): icon, colors, and `role` (error = alert). */
+    /** Severity (default: "neutral"): icon, colors, and `role` (error = alert). */
+    tone?: ToastTone;
+    /**
+     * Severity under its old name; `default` maps to `neutral`. When both are set, `tone` wins.
+     * @deprecated Use `tone`.
+     */
     variant?: ToastVariant;
     /** Optional inline action button, such as Undo. Pressing it also dismisses. */
     action?: ToastAction;
@@ -94,10 +110,15 @@ export interface ToastProps {
  * A single toast plate. Usually rendered via `Toaster`, but exported for
  * custom placements. Announced via `role="status"` (`role="alert"` for errors).
  */
-export declare function Toast({ children, onClick, variant, action, duration, onDismiss }: ToastProps): import("react/jsx-runtime").JSX.Element;
+export declare function Toast({ children, onClick, tone: toneProp, variant, action, duration, onDismiss }: ToastProps): import("react/jsx-runtime").JSX.Element;
 /** Options for `toast()`; everything but the message is optional. */
 export interface ToastOptions {
-    /** Severity (default: "default"). The `toast.success()` style helpers set it for you. */
+    /** Severity (default: "neutral"). The `toast.success()` style helpers set it for you. */
+    tone?: ToastTone;
+    /**
+     * Severity under its old name; `default` maps to `neutral`. When both are set, `tone` wins.
+     * @deprecated Use `tone`.
+     */
     variant?: ToastVariant;
     /** Optional inline action, such as Undo. */
     action?: ToastAction;
@@ -106,7 +127,7 @@ export interface ToastOptions {
     /** Reuse an id to replace a toast in place (e.g. "Saving..." then "Saved"). */
     id?: ToastItem["id"];
 }
-type ShowToast = (message: ReactNode, options?: Omit<ToastOptions, "variant">) => ToastItem["id"];
+type ShowToast = (message: ReactNode, options?: Omit<ToastOptions, "tone" | "variant">) => ToastItem["id"];
 /** The `toast` function plus its severity helpers and `dismiss`. */
 export interface ToastApi {
     /** Queues a toast and returns its id. Needs a mounted `<Toaster />` to be seen. */

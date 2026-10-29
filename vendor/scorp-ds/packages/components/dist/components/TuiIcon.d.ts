@@ -82,8 +82,13 @@ export declare const TUI_ICON_BITMAPS: Record<TuiIconName, readonly string[]>;
 /** Icon box sizes, named after the Tailwind size number (4 = 16px). */
 export type TuiIconSize = "3" | "4" | "5" | "6" | "8";
 export interface TuiIconProps {
-    /** Icon name -- must match a key in {@link TUI_ICON_GLYPHS} (same as the Lucide component name). */
-    name: string;
+    /**
+     * Which icon to draw: a {@link TuiIconName} (the Lucide component name, e.g. `"Check"`,
+     * `"ChevronRight"`). Names held in data need the type too: annotate the field as
+     * `TuiIconName` or the literal with `as const`. A name with no bitmap still renders
+     * "?" at runtime rather than throwing.
+     */
+    name: TuiIconName;
     /** Box size as a Tailwind size number: "3" (12px), "4" (16px, default), "5" (20px), "6" (24px), "8" (32px). */
     size?: TuiIconSize;
     /** Additional CSS classes (color, margin, etc.) */

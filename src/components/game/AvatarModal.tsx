@@ -33,8 +33,8 @@ export default function AvatarModal({ isOpen, onClose }: { isOpen: boolean; onCl
 
   return (
     <Modal
-      isOpen={isOpen}
-      onClose={onClose}
+      open={isOpen}
+      onOpenChange={(next) => !next && onClose()}
       title="Appearance"
       width="min(420px, 92vw)"
       footerContent={

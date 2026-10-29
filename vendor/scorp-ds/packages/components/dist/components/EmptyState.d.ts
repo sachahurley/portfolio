@@ -19,7 +19,7 @@
  *   (description, icon), plate.round, Button tokens for actions
  */
 import type { ReactNode } from "react";
-import { type TuiIconName } from "./TuiIcon";
+import { type IconSlot } from "../lib/icon-slot";
 /** A Button rendered by EmptyState. */
 export interface EmptyStateAction {
     /** Button text; start with a verb ("Create project"). */
@@ -28,12 +28,12 @@ export interface EmptyStateAction {
     onClick?: () => void;
     /** Renders the button as a link instead. */
     href?: string;
-    /** Optional 1-bit icon before the label. */
-    icon?: TuiIconName;
+    /** Optional icon before the label: a TuiIcon name or an element. */
+    icon?: IconSlot;
 }
 export interface EmptyStateProps {
-    /** 1-bit icon shown above the title (default "Archive"). Pass `null` for none. */
-    icon?: TuiIconName | null;
+    /** Icon shown above the title: a TuiIcon name or an element (default "Archive"). Pass `null` for none. */
+    icon?: IconSlot | null;
     /** Short statement of the situation, e.g. "No results". */
     title: ReactNode;
     /** One or two sentences: why it is empty and what to do. */

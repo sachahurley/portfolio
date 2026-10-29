@@ -32,7 +32,7 @@
  * - plate.round, focus inset ring, duration.fast, touch.target (row height)
  */
 import { type ElementType, type MouseEvent, type ReactNode } from "react";
-import { type TuiIconName } from "./TuiIcon";
+import { type IconSlot } from "../lib/icon-slot";
 export interface SideNavProps {
     /**
      * Accessible name for the nav landmark, e.g. "Primary". Required when the
@@ -70,8 +70,8 @@ export declare namespace SideNavSection {
 export interface SideNavItemProps {
     /** Row text. Also the accessible name and tooltip in collapsed mode. */
     label: string;
-    /** 1-bit icon shown before the label (strongly recommended; required for a useful collapsed rail). */
-    icon?: TuiIconName;
+    /** Icon shown before the label, a TuiIcon name or an element (strongly recommended; required for a useful collapsed rail). */
+    icon?: IconSlot;
     /** Marks the current route: holds the hover fill and sets `aria-current="page"`. */
     active?: boolean;
     /** Destination; renders an `<a>`. */
@@ -80,7 +80,9 @@ export interface SideNavItemProps {
     onClick?: (event: MouseEvent<HTMLElement>) => void;
     /** Custom link component (e.g. a router `<Link>`); its props go in `asProps`. */
     as?: ElementType;
-    /** Props spread onto the `as` component (`to`, `state`, ...). */
+    /**
+     * Props for the `as` component (`to`, `state`, ...), spread onto it as-is. They are spread untyped: TypeScript does not check them against the `as` component's own props, so a misspelt `to` is not caught at compile time.
+     */
     asProps?: Record<string, unknown>;
     /** Trailing content at the row end (a count Badge, a Kbd hint). Hidden when collapsed. */
     trailing?: ReactNode;

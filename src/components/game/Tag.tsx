@@ -12,7 +12,7 @@ import { Badge } from '@scorp-ds/components'
 
 export default function Tag({ filled = false, children }: { filled?: boolean; children: ReactNode }) {
   return (
-    <Badge variant={filled ? 'bone' : 'default'} size="small" className="[letter-spacing:.08em]">
+    <Badge tone={filled ? 'bone' : 'neutral'} size="small" className="[letter-spacing:.08em]">
       {children}
     </Badge>
   )

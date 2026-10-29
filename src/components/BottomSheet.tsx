@@ -42,7 +42,7 @@ export default function BottomSheet({
         : location.pathname.startsWith(path)
 
   return (
-    <DSBottomSheet isOpen={open} onClose={onClose} ariaLabel="Menu">
+    <DSBottomSheet open={open} onOpenChange={(next) => !next && onClose()} aria-label="Menu">
         {/* Organised like the home page: Navigation, then Featured. Character
             is the portrait row below; World lives on the home page. */}
         <nav className="menu-nav" aria-label="Site">

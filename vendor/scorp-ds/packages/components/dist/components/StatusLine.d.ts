@@ -21,7 +21,7 @@
  * - text.primary (neutral), control.height.sm (bar height)
  */
 import type { ReactNode } from "react";
-import { type TuiIconName } from "./TuiIcon";
+import { type IconSlot } from "../lib/icon-slot";
 /** Semantic tone of a status segment. */
 export type StatusLineTone = "neutral" | "primary" | "success" | "warning" | "error" | "info";
 export interface StatusLineProps {
@@ -54,8 +54,8 @@ export declare namespace StatusLine {
     var displayName: string;
 }
 export interface StatusLineSegmentProps {
-    /** 1-bit icon before the text. Use one with any non-neutral tone. */
-    icon?: TuiIconName;
+    /** Icon before the text, a TuiIcon name or an element. Use one with any non-neutral tone. */
+    icon?: IconSlot;
     /** Semantic tone (default "neutral"). */
     tone?: StatusLineTone;
     /** Segment text. Keep it to a few words. */

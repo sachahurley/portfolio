@@ -19,10 +19,16 @@
  *
  * TOKENS USED:
  * - border.default (ring), surface.subtle (track), surface.muted (empty blocks)
- * - primary / success / warning / error scales (filled blocks)
+ * - primary / neutral (secondary) / info / success / warning / error scales
+ *   (filled blocks)
  * - text.primary, text.secondary, duration.fast (indeterminate hop interval)
+ *
+ * TONES: `tone` takes decision 0024's five roles plus ProgressBar's own
+ * `primary`, the default accent. The deprecated `variant` still works.
  */
 import { type ControlSizeProp } from "../lib/size";
+/** Fill colour of a ProgressBar: the five semantic roles plus `primary`, the default accent. */
+export type ProgressBarTone = "primary" | "neutral" | "info" | "success" | "warning" | "error";
 export interface ProgressBarProps {
     /** Current progress, 0 to `max`. Omit (or pass `null`) for an indeterminate bar. */
     value?: number | null;
@@ -36,7 +42,12 @@ export interface ProgressBarProps {
     showValue?: boolean;
     /** Track thickness: sm, md (default), lg. */
     size?: ControlSizeProp;
-    /** Fill color by meaning: primary (default accent), success, warning, error. */
+    /** Fill colour by meaning: primary (the default accent), or a semantic role: neutral, info, success, warning, error. */
+    tone?: ProgressBarTone;
+    /**
+     * Fill colour under its old name. When both are set, `tone` wins.
+     * @deprecated Use `tone`.
+     */
     variant?: "primary" | "success" | "warning" | "error";
     /** Number of blocks across the track (default 20, so each block is 5%). */
     segments?: number;
@@ -52,10 +63,10 @@ export interface ProgressBarProps {
  *
  * @param value - Progress toward `max`; omit for indeterminate
  * @param label - Accessible name (visible by default)
- * @param variant - primary, success, warning, error
+ * @param tone - primary (default), neutral, info, success, warning, error
  * @param size - sm, md, lg track thickness
  */
-export declare function ProgressBar({ value, max, label, showLabel, showValue, size: sizeProp, variant, segments, className, }: ProgressBarProps): import("react/jsx-runtime").JSX.Element;
+export declare function ProgressBar({ value, max, label, showLabel, showValue, size: sizeProp, tone: toneProp, variant, segments, className, }: ProgressBarProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace ProgressBar {
     var displayName: string;
 }

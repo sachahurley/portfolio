@@ -66,9 +66,9 @@ function WindowArt() {
     <div className="featured-art featured-art--window">
       <Window title="scorp-ds" status="43 components" titleAs="h3" scroll={false} variant="active" bodyClassName="px-3 py-2 flex flex-col gap-2">
         <div className="flex gap-1.5 overflow-hidden">
-          <Badge size="sm" variant="success" caps>button</Badge>
-          <Badge size="sm" variant="success" caps>table</Badge>
-          <Badge size="sm" variant="info" caps>window</Badge>
+          <Badge size="sm" tone="success" caps>button</Badge>
+          <Badge size="sm" tone="success" caps>table</Badge>
+          <Badge size="sm" tone="info" caps>window</Badge>
         </div>
         <Meter value={378} max={378} label="tokens" valueText="378 / 378" size="sm" />
       </Window>
@@ -159,7 +159,7 @@ function KitArt() {
       <div className="flex items-center gap-2">
         <Button size="sm">ship</Button>
         <Button size="sm" variant="secondary">docs</Button>
-        <Badge size="sm" variant="success" caps>stable</Badge>
+        <Badge size="sm" tone="success" caps>stable</Badge>
       </div>
       <div className="flex items-center gap-4">
         <Switch size="sm" checked label="dark" onCheckedChange={() => {}} />
@@ -241,9 +241,9 @@ function TabsArt() {
         <TabsContent value="components">
           <div className="featured-art-rows">
             <span>Button</span>
-            <Badge size="sm" variant="success" caps>stable</Badge>
+            <Badge size="sm" tone="success" caps>stable</Badge>
             <span>Window</span>
-            <Badge size="sm" variant="info" caps>new</Badge>
+            <Badge size="sm" tone="info" caps>new</Badge>
           </div>
         </TabsContent>
       </Tabs>

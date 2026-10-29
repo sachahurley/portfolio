@@ -27,13 +27,27 @@
  * - touch.target (44px close button)
  */
 import { type ReactNode } from "react";
-export interface BottomSheetProps {
-    /** Controls whether the sheet is visible. */
-    isOpen: boolean;
-    /** Called when the user dismisses the sheet (close button, scrim click or ESC). */
-    onClose: () => void;
-    /** Accessible name for the sheet dialog. */
-    ariaLabel: string;
+interface BottomSheetBaseProps {
+    /**
+     * Whether the sheet is shown. Pass it with `onOpenChange` to control the
+     * sheet: set it true to open, and false when `onOpenChange(false)` fires.
+     * Omit it (and use `defaultOpen`) for a sheet that manages its own state.
+     */
+    open?: boolean;
+    /**
+     * Initial open state when `open` is not passed (default false). The sheet
+     * then closes itself on Escape, the scrim or the close button.
+     */
+    defaultOpen?: boolean;
+    /**
+     * Called with `false` when the user dismisses the sheet (close button, scrim
+     * click or Escape). Set `open` to false here when the sheet is controlled.
+     */
+    onOpenChange?: (open: boolean) => void;
+    /** @deprecated Use `open`. Still honoured when `open` is not passed. */
+    isOpen?: boolean;
+    /** @deprecated Use `onOpenChange`. Still called whenever `onOpenChange(false)` is. */
+    onClose?: () => void;
     /**
      * Accessible name for the close button. Override it when several sheets can
      * be announced in the same view and "Close" alone would be ambiguous.
@@ -42,14 +56,33 @@ export interface BottomSheetProps {
     /** Sheet content. */
     children: ReactNode;
 }
+/** Names the sheet with `aria-label` (the current prop). */
+interface BottomSheetNamedProps extends BottomSheetBaseProps {
+    /** Accessible name announced for the sheet dialog, e.g. "Site menu". Required. */
+    "aria-label": string;
+    /** @deprecated Use `aria-label`. Ignored when `aria-label` is passed. */
+    ariaLabel?: string;
+}
+/** Names the sheet with the deprecated `ariaLabel`, so existing callers still type-check. */
+interface BottomSheetLegacyNamedProps extends BottomSheetBaseProps {
+    /** Accessible name announced for the sheet dialog, e.g. "Site menu". Required. */
+    "aria-label"?: string;
+    /** @deprecated Use `aria-label`. Ignored when `aria-label` is passed. */
+    ariaLabel: string;
+}
+/**
+ * Props for `BottomSheet`. An accessible name is required: pass `aria-label`
+ * (or, deprecated, `ariaLabel`).
+ */
+export type BottomSheetProps = BottomSheetNamedProps | BottomSheetLegacyNamedProps;
 /**
  * A modal panel that slides up from the bottom edge, for short tasks and option lists on narrow screens.
  *
- * @param isOpen - Whether the sheet is currently visible
- * @param onClose - Callback when the user dismisses (close button, scrim click or ESC)
- * @param ariaLabel - Accessible name announced for the dialog
- * @param closeLabel - Accessible name for the close button (default "Close")
- * @param children - Sheet content
+ * @example
+ * <BottomSheet open={open} onOpenChange={setOpen} aria-label="Site menu">
+ *   <nav>...</nav>
+ * </BottomSheet>
  */
-export declare function BottomSheet({ isOpen, onClose, ariaLabel, closeLabel, children }: BottomSheetProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function BottomSheet({ open: openProp, defaultOpen, onOpenChange, isOpen: isOpenProp, onClose, "aria-label": ariaLabelProp, ariaLabel: legacyAriaLabel, closeLabel, children, }: BottomSheetProps): import("react/jsx-runtime").JSX.Element | null;
+export {};
 //# sourceMappingURL=BottomSheet.d.ts.map

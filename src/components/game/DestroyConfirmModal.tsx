@@ -30,10 +30,10 @@ export default function DestroyConfirmModal({
 
   return (
     <Modal
-      isOpen={liveItem != null}
-      onClose={onClose}
+      open={liveItem != null}
+      onOpenChange={(next) => !next && onClose()}
       title="Are you sure?"
-      width={360}
+      size="sm"
       footerContent={
         <>
           <Button variant="secondary" size="small" type="button" onClick={onClose}>

@@ -19,6 +19,8 @@
  *
  * Features:
  * - Custom dropdown menu matching Dropdown component styling
+ * - The trigger is an APG select-only combobox (`role="combobox"`,
+ *   `aria-haspopup="listbox"`, `aria-expanded`, `aria-controls`)
  * - Keyboard navigation (Arrow keys, Escape, Enter, Tab closes), announced
  *   through `aria-activedescendant` on the trigger
  * - Click outside to close
@@ -40,7 +42,7 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
      */
     errorMessage?: ReactNode;
     /**
-     * Optional visible label; associates with the custom trigger via `htmlFor` / `id` on the button.
+     * Optional visible label; associates with the custom trigger (the combobox) via `htmlFor` / `id`.
      */
     label?: ReactNode;
 }

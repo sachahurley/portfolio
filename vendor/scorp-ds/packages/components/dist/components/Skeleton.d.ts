@@ -36,9 +36,17 @@ export interface SkeletonProps {
     variant?: "text" | "rect" | "avatar";
     /** Number of text lines for `variant="text"` (default 1). The last of several is shorter. */
     lines?: number;
-    /** Avatar square size: sm 32px, md 40px (default), lg 48px (control heights). */
+    /**
+     * Avatar square size: sm 32px, md 40px (default), lg 48px (control heights).
+     * Only the `avatar` variant reads it: `text` and `rect` ignore it, so size those
+     * with `lines` and `className`. Legacy small/medium/large are deprecated aliases.
+     */
     size?: ControlSizeProp;
-    /** Turn the pulse off (e.g. many skeletons on one screen). Reduced motion always turns it off. */
+    /**
+     * Whether the stepped pulse runs. Defaults to `true`; pass `false` to hold the
+     * placeholder still (e.g. many skeletons on one screen). Reduced motion always
+     * stops the pulse, whatever this says.
+     */
     animated?: boolean;
     /** Sizing classes. Rects need a height (e.g. `h-32 w-full`); text lines take the container width. */
     className?: string;
@@ -53,7 +61,8 @@ export interface SkeletonProps {
  *
  * @param variant - text, rect, or avatar
  * @param lines - Text line count
- * @param size - Avatar size (sm, md, lg)
+ * @param size - Avatar size (sm, md, lg); ignored by text and rect
+ * @param animated - Stepped pulse on (default true) or off
  */
 export declare function Skeleton({ variant, lines, size: sizeProp, animated, className }: SkeletonProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace Skeleton {
