@@ -21,6 +21,14 @@
  * STATE: `expanded` and `selected` are each controlled or uncontrolled
  * (`defaultExpanded` / `defaultSelected`).
  *
+ * DATA STATES (same names as TableBody):
+ * - `loading`: the tree keeps its role and name, gains `aria-busy`, and shows
+ *   three Skeleton rows hidden from assistive tech in place of the nodes.
+ * - `emptyState`: with no nodes, renders in place of the tree inside a named
+ *   `role="group"`, because a tree with no treeitems is invalid ARIA. With
+ *   no `emptyState` and no nodes, TreeView renders nothing: it cannot tell
+ *   "empty" from "not loaded yet", so it does not claim either.
+ *
  * DISCLOSURE ICONS: 1-bit ChevronRight (closed) and ChevronDown (open).
  *
  * TOKENS USED:
@@ -69,6 +77,17 @@ interface TreeViewOwnProps {
     onActivate?: (id: string) => void;
     /** Type-ahead on printable keys (default true). */
     typeahead?: boolean;
+    /**
+     * Set while the nodes are on their way: three Skeleton rows replace the nodes and
+     * the tree gets `aria-busy` until it is false again. Wins over `emptyState`.
+     */
+    loading?: boolean;
+    /**
+     * What to show when `nodes` is empty: a sentence, or an `EmptyState size="sm"` with
+     * `titleAs="p"`. It renders in place of the tree, in a `role="group"` carrying the
+     * tree's name. Without it an empty tree renders nothing. Ignored while `loading`.
+     */
+    emptyState?: ReactNode;
     /** Extra classes for the tree root. */
     className?: string;
 }
@@ -86,6 +105,8 @@ export type TreeViewProps = TreeViewOwnProps & TreeViewName;
 /**
  * TreeView
  *
+ * Pass `loading` while the nodes load and `emptyState` for when there are none.
+ *
  * ```tsx
  * <TreeView
  *   aria-label="Files"
@@ -95,7 +116,7 @@ export type TreeViewProps = TreeViewOwnProps & TreeViewName;
  * />
  * ```
  */
-export declare function TreeView({ nodes, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, expanded: expandedProp, defaultExpanded, onExpandedChange, selected: selectedProp, defaultSelected, onSelectedChange, onActivate, typeahead, className, }: TreeViewProps): import("react").JSX.Element;
+export declare function TreeView({ nodes, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, expanded: expandedProp, defaultExpanded, onExpandedChange, selected: selectedProp, defaultSelected, onSelectedChange, onActivate, typeahead, loading, emptyState, className, }: TreeViewProps): import("react").JSX.Element | null;
 export declare namespace TreeView {
     var displayName: string;
 }
