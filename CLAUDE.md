@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- `npm run dev` - runs `dev.sh`: starts the scorp-ds components watch build (expects a sibling checkout at `~/Projects/scorp-ds`) plus the Vite dev server on port 5173 (`strictPort`, so it fails loudly instead of hopping ports)
+- `npm run dev` - runs `dev.sh`: starts the scorp-ds components watch build (the checkout at `~/Projects/scorp-ds`, or `SCORP_DS_DIR`) plus the Vite dev server on port 5173 (`strictPort`, so it fails loudly instead of hopping ports)
 - `npm run dev:portfolio-only` - Vite only, no design-system watch (use when not editing scorp-ds)
 - `npm run build` - `tsc -b && vite build` (the typecheck; there is no separate typecheck script)
 - `npm run lint` - ESLint
@@ -22,13 +22,25 @@ React 19 + TypeScript + Vite SPA using react-router-dom and Tailwind 3.
 
 ### Design system: vendored scorp-ds
 
-`@scorp-ds/components` and `@scorp-ds/tokens` are `file:` dependencies pointing at `vendor/scorp-ds/packages/`. The source of truth is the sibling `~/Projects/scorp-ds` repo; `npm run vendor:ds` syncs it in. Three consequences:
+`@scorp-ds/components` and `@scorp-ds/tokens` are `file:` dependencies pointing at `vendor/scorp-ds/packages/`. The source of truth is the sibling `~/Projects/scorp-ds` repo; `npm run vendor:ds` syncs it in.
+
+**To find or use a component, read `vendor/scorp-ds/catalog.md` first.** It is the scorp-ds component catalog, vendored with the code: what each component is for, what to use instead, how to import it, and every prop with the values it accepts. It always matches the DS version in `vendor/`, so do not guess a prop value it does not list, and do not hand-copy a component list into this file. Spec links in it open on GitHub. Never edit anything under `vendor/`: if the DS lacks something, compose it from DS parts in `src/`, and treat the gap as a scorp-ds change (below).
+
+Three consequences of vendoring:
 
 - `vite.config.ts` excludes both packages from `optimizeDeps` so edits in the sibling repo reflect immediately in dev, and dedupes `react`/`react-dom` to avoid invalid-hook-call white screens.
 - `tailwind.config.js` gets its entire theme from `@scorp-ds/tokens/tailwind.preset`; do not add raw values to the Tailwind config.
 - Source maps are not vendored (`vendor-ds.sh` deletes them after the copy). They pointed at scorp-ds paths that don't exist here, and as single-line several-hundred-KB files they were the one thing in `vendor/` git could never merge. `check-ds-sync.sh` already excluded them from its diff.
 
 #### Working on scorp-ds and the portfolio together
+
+First decide where the change belongs. A change to how the portfolio *uses* the DS (layout, content, composition) is a normal portfolio branch with `npm run dev:portfolio-only`. A change to a component or token is a scorp-ds change, even when the portfolio is where you noticed it:
+
+1. Make it in a scorp-ds worktree you own (rule 4 below).
+2. `SCORP_DS_DIR=<that worktree> npm run dev` here to see it live: the watch build feeds each rebuild into `vendor/`.
+3. In scorp-ds, `npm run consumers:check` builds all three consumers against the branch before its PR.
+4. Merge scorp-ds first; the vendor pass that follows every scorp-ds merge brings it here.
+5. `git checkout -- vendor/` before committing anything in the portfolio meanwhile: dev mode leaves your work-in-progress build there, and `ds-check` fails on it.
 
 The `vendor/` directory is committed build output, so two branches that both re-vendor **will** conflict. That is structural, not bad luck. Four rules keep it cheap:
 
