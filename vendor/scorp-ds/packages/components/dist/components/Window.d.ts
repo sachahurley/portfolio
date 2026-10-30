@@ -40,12 +40,6 @@ export interface WindowProps {
      * user is working in.
      */
     active?: boolean;
-    /**
-     * The focused-pane marker under its old name: `"active"` is `active`.
-     * When both are passed, `active` wins.
-     * @deprecated Use `active`. A focused pane is a state, not a visual treatment (decision 0024).
-     */
-    variant?: "default" | "active";
     /** Heading element used for the title (default "h2"). Match your page outline. */
     titleAs?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "span";
     /** Scrolling body (default true). Set false to let content size the pane. */
@@ -66,7 +60,7 @@ export interface WindowProps {
  * </Window>
  * ```
  */
-export declare function Window({ title, status, actions, active: activeProp, variant, titleAs: TitleTag, scroll, children, className, bodyClassName, }: WindowProps): import("react").JSX.Element;
+export declare function Window({ title, status, actions, active, titleAs: TitleTag, scroll, children, className, bodyClassName, }: WindowProps): import("react").JSX.Element;
 export declare namespace Window {
     var displayName: string;
 }
