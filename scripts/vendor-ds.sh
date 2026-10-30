@@ -50,6 +50,12 @@ find "$DEST/tokens/src" -name '*.test.*' -delete
 cp "$DS/packages/tokens/tailwind.preset.js" "$DEST/tokens/tailwind.preset.js"
 cp "$DS/packages/tokens/package.json" "$DEST/tokens/package.json"
 
+# The component catalog: what each component is for, what to use instead, and
+# every prop value. Vendored so an agent working here reads the reference for
+# exactly the DS version this repo runs (see CLAUDE.md).
+echo "→ copying the component catalog …"
+bash "$(dirname "$0")/vendor-catalog.sh" < "$DS/docs/component-references/catalog.md" > vendor/scorp-ds/catalog.md
+
 # Record what this build actually came from. The DS checkout is shared, so
 # "which commit is this?" is not answerable after the fact without it.
 if git -C "$DS" rev-parse --git-dir > /dev/null 2>&1; then

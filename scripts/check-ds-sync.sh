@@ -37,6 +37,15 @@ do
   fi
 done
 
+# The catalog, compared through the same rewrite vendor-ds.sh applies.
+if ! bash "$(dirname "$0")/vendor-catalog.sh" < "$DS/docs/component-references/catalog.md" \
+  | diff -q vendor/scorp-ds/catalog.md - > /dev/null 2>&1; then
+  echo "STALE   catalog.md"
+  fail=1
+else
+  echo "match   catalog.md"
+fi
+
 # Honest component check: rebuild the DS dist and diff it against the
 # vendored copy. Sourcemaps are excluded (path noise, no runtime effect).
 if [ "${SKIP_DS_BUILD:-0}" != "1" ]; then

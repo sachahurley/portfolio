@@ -17,7 +17,9 @@
 # TO STOP: Press Ctrl+C (stops all three processes)
 # =============================================================
 
-SCORP_DS_COMPONENTS="$HOME/Projects/scorp-ds/packages/components"
+# SCORP_DS_DIR points the watch build at a scorp-ds worktree you own, the same
+# override vendor:ds takes; the default is the shared sibling checkout.
+SCORP_DS_COMPONENTS="$(cd "${SCORP_DS_DIR:-$HOME/Projects/scorp-ds}" && pwd)/packages/components"
 VENDOR_DIST="$(cd "$(dirname "$0")" && pwd)/vendor/scorp-ds/packages/components/dist"
 
 echo ""
