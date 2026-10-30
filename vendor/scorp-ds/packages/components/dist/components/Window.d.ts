@@ -34,7 +34,17 @@ export interface WindowProps {
     status?: ReactNode;
     /** Title bar actions (icon Buttons, a Badge). Keep them small (`size="sm"`). */
     actions?: ReactNode;
-    /** `active` marks the focused pane (accent ring + marker); default is `default`. */
+    /**
+     * Marks the focused pane: the accent ring, a muted title bar and a ChevronRight
+     * marker, so focus never relies on colour alone. Set it on the one pane the
+     * user is working in.
+     */
+    active?: boolean;
+    /**
+     * The focused-pane marker under its old name: `"active"` is `active`.
+     * When both are passed, `active` wins.
+     * @deprecated Use `active`. A focused pane is a state, not a visual treatment (decision 0024).
+     */
     variant?: "default" | "active";
     /** Heading element used for the title (default "h2"). Match your page outline. */
     titleAs?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "span";
@@ -51,12 +61,12 @@ export interface WindowProps {
  * Window
  *
  * ```tsx
- * <Window title="sessions.log" status="tail -f" variant="active" scroll={false} bodyClassName="p-0" className="h-80">
+ * <Window title="sessions.log" status="tail -f" active scroll={false} bodyClassName="p-0" className="h-80">
  *   <LogView lines={lines} framed={false} className="h-full" />
  * </Window>
  * ```
  */
-export declare function Window({ title, status, actions, variant, titleAs: TitleTag, scroll, children, className, bodyClassName, }: WindowProps): import("react").JSX.Element;
+export declare function Window({ title, status, actions, active: activeProp, variant, titleAs: TitleTag, scroll, children, className, bodyClassName, }: WindowProps): import("react").JSX.Element;
 export declare namespace Window {
     var displayName: string;
 }
