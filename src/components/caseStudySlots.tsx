@@ -38,7 +38,7 @@ export function InterfaceSpecimen() {
       status="43 exported"
       titleAs="h3"
       scroll={false}
-      variant="active"
+      active
       actions={
         <Button size="sm" variant="ghost">
           docs
