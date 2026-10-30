@@ -64,7 +64,7 @@ export type FeaturedArt =
 function WindowArt() {
   return (
     <div className="featured-art featured-art--window">
-      <Window title="scorp-ds" status="43 components" titleAs="h3" scroll={false} variant="active" bodyClassName="px-3 py-2 flex flex-col gap-2">
+      <Window title="scorp-ds" status="43 components" titleAs="h3" scroll={false} active bodyClassName="px-3 py-2 flex flex-col gap-2">
         <div className="flex gap-1.5 overflow-hidden">
           <Badge size="sm" tone="success" caps>button</Badge>
           <Badge size="sm" tone="success" caps>table</Badge>

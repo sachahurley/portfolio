@@ -133,7 +133,7 @@ function TerminalMail({ sent, onSend }: { sent: boolean; onSend: () => void }) {
         }
       }}
     >
-      <Window title="mail · new message" status="draft" variant="active">
+      <Window title="mail · new message" status="draft" active>
         <div className="grid gap-3 p-1">
           <div className="grid grid-cols-[56px_1fr] items-center gap-2">
             <span className={`${muted} uppercase tracking-wider`}>to</span>
